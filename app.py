@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 from data import competitions, fixtures, history
 from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
+from worldwide import worldwide, SYDNEY
 from engine import predict
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
@@ -35,6 +36,28 @@ with st.sidebar:
     if st.button('Refresh football data'):
         st.rerun()
     st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
+st.subheader('🌍 Worldwide fixtures by Sydney date')
+st.caption('Search football fixtures by calendar date, independently of your selected competitions. Free TheSportsDB results are limited and are NOT a complete worldwide schedule.')
+choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days'],horizontal=True)
+today=datetime.now(SYDNEY).date()
+start_day=today+timedelta(days=1) if choice=='Tomorrow' else today
+span=3 if choice=='Next 3 days' else 7 if choice=='Next 7 days' else 1
+with st.expander('Worldwide match finder',expanded=True):
+    try:
+        global_matches,global_errors=worldwide(start_day,span)
+        country_options=sorted({m['country'] for m in global_matches})
+        country=st.selectbox('Country', ['All countries']+country_options)
+        term=st.text_input('Search team or league',placeholder='Type a team or competition')
+        filtered=[m for m in global_matches if (country=='All countries' or m['country']==country)
+                  and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
+        st.caption(f'{len(filtered)} returned matches · Sydney time · Free API may return only a small subset per day.')
+        for m in filtered:
+            st.write(f"**{m['home']} vs {m['away']}** · {m['local']:%a %d %b, %I:%M %p} AEDT/AEST · {m['league']} ({m['country']})")
+        if not filtered:st.info('No matches returned for these filters. This does not mean no games are scheduled.')
+        if global_errors:st.warning('Some date requests failed: '+'; '.join(global_errors[:3]))
+    except Exception as exc:
+        st.warning(f'Worldwide free fixture source unavailable: {exc}')
+st.divider()
 try:comps=competitions(key)
 except Exception as e:st.error(f'Unable to retrieve competitions: {e}');st.stop()
 names={f"{c.get('area',{}).get('name','World')} · {c['name']} ({c['code']})":c['code'] for c in comps}
