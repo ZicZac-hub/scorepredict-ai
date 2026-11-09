@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import streamlit as st
 from data import competitions, fixtures, history
+from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
 from engine import predict
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
@@ -30,6 +31,7 @@ with st.sidebar:
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
     min_prob=st.slider('Minimum double-chance probability',0.50,0.95,0.65,0.01)
+    use_secondary=st.checkbox('Use API-Football backup',value=True,help='Uses a separate free daily quota. Requests are cached for six hours.')
     if st.button('Refresh football data'):
         st.rerun()
     st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
@@ -38,22 +40,34 @@ except Exception as e:st.error(f'Unable to retrieve competitions: {e}');st.stop(
 names={f"{c.get('area',{}).get('name','World')} · {c['name']} ({c['code']})":c['code'] for c in comps}
 selected=st.multiselect('Competitions to monitor',list(names),default=list(names)[:min(3,len(names))])
 if not selected:st.info('Choose one or more competitions.');st.stop()
+try:secondary_key=st.secrets.get('API_FOOTBALL_KEY','') or os.environ.get('API_FOOTBALL_KEY','')
+except Exception:secondary_key=os.environ.get('API_FOOTBALL_KEY','')
+if use_secondary and not secondary_key:st.warning('API-Football backup is enabled but API_FOOTBALL_KEY is missing from Secrets.')
 if len(selected)>8:st.warning('Select up to eight competitions to protect free-tier API limits.');st.stop()
 now=datetime.now(timezone.utc)
 rows=[];histories={};errors=[];fixture_counts=[]
 with st.spinner('Collecting fixtures and completed results...'):
     for name in selected:
         code=names[name]
+        upcoming=[];past=[];source='football-data.org'
         try:
             upcoming=fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=15)).isoformat())
         except Exception as e:
-            errors.append(f'{name}: fixture request failed: {e}')
-            continue
+            errors.append(f'{name}: primary fixtures unavailable ({e})')
         try:
             past=history(key,code)
         except Exception as e:
-            past=[]
-            errors.append(f'{name}: historical data unavailable ({e}); fixtures can still be displayed.')
+            errors.append(f'{name}: primary historical data unavailable ({e})')
+        # The backup is queried only when primary coverage is missing.
+        if use_secondary and secondary_key and code in supported_codes() and (not upcoming or not past):
+            try:
+                if not upcoming:
+                    upcoming=secondary_fixtures(secondary_key,code,now,14)
+                    if upcoming:source='API-Football backup'
+                if not past:
+                    past=secondary_history(secondary_key,code,now)
+            except Exception as e:
+                errors.append(f'{name}: API-Football backup unavailable ({e})')
         histories[name]=past
         visible=0
         for m in upcoming:
@@ -62,12 +76,13 @@ with st.spinner('Collecting fixtures and completed results...'):
             if kickoff > (now+timedelta(days=days)).isoformat().replace('+00:00','Z'):continue
             visible+=1
             has_teams=bool((m.get('homeTeam') or {}).get('id') and (m.get('awayTeam') or {}).get('id'))
+            matching_past=[x for x in past if x.get('provider')==m.get('provider')]
             try:
-                result=predict(m,past) if has_teams and past else None
+                result=predict(m,matching_past) if has_teams and matching_past else None
             except Exception:
                 result=None
             rows.append({'league':name,'fixture':m,'result':result,'kickoff':kickoff})
-        fixture_counts.append({'Competition':name,'API scheduled fixtures':len(upcoming),'Within selected time window':visible})
+        fixture_counts.append({'Competition':name,'Source':source,'API scheduled fixtures':len(upcoming),'Within selected time window':visible})
 rows.sort(key=lambda r:r['kickoff'])
 # Allow the user to select fixtures explicitly; no match is invented.
 eligible=[r for r in rows if r.get('result')]
@@ -81,9 +96,9 @@ chosen_rows=[labels[k] for k in chosen_labels]
 
 for e in errors:st.warning(e)
 with st.expander('Why are some matches missing? · API coverage diagnostics'):
-    st.caption('Only matches returned by football-data.org for the chosen competitions can appear. An API rate limit or missing competition cannot be fixed by changing the date slider.')
+    st.caption('API-Football backup is used when primary fixture/history data is missing. Both providers have free-plan limits. Backup snapshots may be outdated.')
     if fixture_counts:st.dataframe(pd.DataFrame(fixture_counts),hide_index=True,use_container_width=True)
-    st.caption('Times are shown in UTC in match labels. Some competitions are not covered by the free API. Matches with unavailable teams or historical data are displayed without a prediction.')
+    st.caption('Times are shown in UTC. Matches without sufficient history appear without predictions. Provider team IDs are never mixed in score modelling.')
 conn=None
 try:
     conn=connect()
