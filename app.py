@@ -38,17 +38,17 @@ with st.sidebar:
     st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
 st.subheader('🌍 Worldwide fixtures by Sydney date')
 st.caption('Search football fixtures by calendar date, independently of your selected competitions. Free TheSportsDB results are limited and are NOT a complete worldwide schedule.')
-choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days'],horizontal=True)
+choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True)
 today=datetime.now(SYDNEY).date()
 start_day=today+timedelta(days=1) if choice=='Tomorrow' else today
-span=3 if choice=='Next 3 days' else 7 if choice=='Next 7 days' else 1
+span=3 if choice=='Next 3 days' else 7 if choice=='Next 7 days' else 14 if choice=='Next 14 days' else 1
 with st.expander('Worldwide match finder',expanded=True):
     try:
         global_matches,global_errors=worldwide(start_day,span)
         country_options=sorted({m['country'] for m in global_matches})
         country=st.selectbox('Country', ['All countries']+country_options)
         term=st.text_input('Search team or league',placeholder='Type a team or competition')
-        filtered=[m for m in global_matches if (country=='All countries' or m['country']==country)
+        filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc) and (country=='All countries' or m['country']==country)
                   and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
         st.caption(f'{len(filtered)} returned matches · Sydney time · Free API may return only a small subset per day.')
         for m in filtered:
@@ -175,7 +175,7 @@ tabs=st.tabs(['📅 Upcoming predictions','🛡️ Five double-chance picks','�
 
 def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
 with tabs[0]:
-    if not rows:st.info('No upcoming fixtures in the selected competitions/date range. Try other competitions.')
+    if not rows:st.info('No upcoming fixtures returned for the selected competitions/date range. This does not mean there are no matches scheduled.')
     for r in rows[:max_games]:
         m,p=r['fixture'],r['result']
         with st.container(border=True):
