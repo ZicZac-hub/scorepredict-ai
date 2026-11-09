@@ -31,8 +31,8 @@ with st.sidebar:
     max_games=st.slider('Display fixtures',5,80,30,5)
     min_prob=st.slider('Minimum double-chance probability',0.50,0.95,0.65,0.01)
     if st.button('Refresh football data'):
-        st.cache_data.clear();st.rerun()
-    st.caption('Data cached for 1 hour. API limits and competition availability depend on your provider plan.')
+        st.rerun()
+    st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
 try:comps=competitions(key)
 except Exception as e:st.error(f'Unable to retrieve competitions: {e}');st.stop()
 names={f"{c.get('area',{}).get('name','World')} · {c['name']} ({c['code']})":c['code'] for c in comps}
@@ -45,7 +45,7 @@ with st.spinner('Collecting fixtures and completed results...'):
     for name in selected:
         code=names[name]
         try:
-            upcoming=fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=days+1)).isoformat())
+            upcoming=fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=15)).isoformat())
         except Exception as e:
             errors.append(f'{name}: fixture request failed: {e}')
             continue
