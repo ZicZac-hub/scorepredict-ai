@@ -146,6 +146,35 @@ st.divider()
 st.caption('For information and research only. Probabilities are model estimates, not betting advice or guaranteed results.')
 
 with tabs[6]:
+    st.subheader('Choose the two matches for your exact-score double')
+    st.caption('Choose any two different fixtures from your selected matches. The app will rank five exact-score combinations for that pair.')
+    if len(chosen_rows)>=2:
+        pair_options={fixture_label(r):r for r in chosen_rows}
+        pair_names=list(pair_options)
+        first_name=st.selectbox('Match 1',pair_names,key='manual_double_first')
+        second_names=[name for name in pair_names if name!=first_name]
+        second_name=st.selectbox('Match 2',second_names,key='manual_double_second')
+        first=pair_options[first_name]
+        second=pair_options[second_name]
+        manual_options=[]
+        for h1,a1,p1 in first['result']['scores'][:10]:
+            for h2,a2,p2 in second['result']['scores'][:10]:
+                manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
+                    'P1':p1,'P2':p2,'Joint':p1*p2})
+        manual_options.sort(key=lambda o:o['Joint'],reverse=True)
+        st.markdown('**Top five exact-score doubles for your two chosen matches**')
+        st.write(f"**Match 1:** {first_name}")
+        st.write(f"**Match 2:** {second_name}")
+        manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
+            'Match 2 score':o['Score 2'],'Match 1 probability':f"{o['P1']:.2%}",
+            'Match 2 probability':f"{o['P2']:.2%}",
+            'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
+        st.dataframe(manual_df,hide_index=True,use_container_width=True)
+        st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
+                           'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
+    else:
+        st.info('Select at least two fixtures in the match selector above to choose your own double.')
+    st.divider()
     st.subheader('Five model-ranked exact-score doubles from your selected fixtures')
     st.caption('An exact-score double requires BOTH matches to finish at the specified scores. These probabilities are usually low; they are estimates, not guarantees.')
     if len(chosen_rows)<2:
