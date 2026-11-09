@@ -29,7 +29,7 @@ if not key:
     st.stop()
 with st.sidebar:
     st.header('Model settings')
-    days=st.slider('Upcoming days',1,14,7)
+    days=st.slider('Upcoming days',1,14,14)
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
     min_prob=st.slider('Minimum double-chance probability',0.50,0.95,0.65,0.01)
@@ -70,7 +70,7 @@ st.divider()
 try:comps=competitions(key)
 except Exception as e:st.error(f'Unable to retrieve competitions: {e}');st.stop()
 names={f"{c.get('area',{}).get('name','World')} · {c['name']} ({c['code']})":c['code'] for c in comps}
-selected=st.multiselect('Competitions to monitor',list(names),default=list(names)[:min(3,len(names))])
+selected=st.multiselect('Competitions to monitor',list(names),default=[n for n in names if any(token in n for token in ('Premier League (PL)','Primera Division (PD)','Champions League (CL)'))][:3] or list(names)[:min(3,len(names))])
 if not selected:st.info('Choose one or more competitions for statistical modelling. Worldwide fixture discovery above remains available.');st.stop()
 if use_secondary and not secondary_key:st.warning('API-Football backup is enabled but API_FOOTBALL_KEY is missing from Secrets.')
 if len(selected)>8:st.warning('Select up to eight competitions to protect free-tier API limits.');st.stop()
@@ -106,7 +106,7 @@ with st.spinner('Collecting fixtures and completed results...'):
             if kickoff > (now+timedelta(days=days)).isoformat().replace('+00:00','Z'):continue
             visible+=1
             has_teams=bool((m.get('homeTeam') or {}).get('id') and (m.get('awayTeam') or {}).get('id'))
-            matching_past=[x for x in past if x.get('provider')==m.get('provider')]
+            matching_past=[x for x in past if x.get('provider','football-data.org')==m.get('provider','football-data.org')]
             try:
                 result=predict(m,matching_past) if has_teams and matching_past else None
             except Exception:
