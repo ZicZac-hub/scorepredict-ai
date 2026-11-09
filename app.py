@@ -7,6 +7,7 @@ import streamlit as st
 from data import competitions, fixtures, history
 from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
 from worldwide import worldwide, SYDNEY
+from global_fixtures import global_fixtures
 from engine import predict
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
@@ -36,8 +37,10 @@ with st.sidebar:
     if st.button('Refresh football data'):
         st.rerun()
     st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
+try:secondary_key=st.secrets.get('API_FOOTBALL_KEY','') or os.environ.get('API_FOOTBALL_KEY','')
+except Exception:secondary_key=os.environ.get('API_FOOTBALL_KEY','')
 st.subheader('🌍 Worldwide fixtures by Sydney date')
-st.caption('Search football fixtures by calendar date, independently of your selected competitions. Free TheSportsDB results are limited and are NOT a complete worldwide schedule.')
+st.caption('Date-first discovery combines cached API-Football results (if supported by your plan) and limited TheSportsDB fixtures. Coverage is not complete worldwide.')
 choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True)
 today=datetime.now(SYDNEY).date()
 start_day=today+timedelta(days=1) if choice=='Tomorrow' else today
@@ -45,12 +48,18 @@ span=3 if choice=='Next 3 days' else 7 if choice=='Next 7 days' else 14 if choic
 with st.expander('Worldwide match finder',expanded=True):
     try:
         global_matches,global_errors=worldwide(start_day,span)
+        if use_secondary and secondary_key:
+            api_matches,api_errors=global_fixtures(secondary_key,start_day,span)
+            global_errors+=api_errors
+            seen={(m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) for m in api_matches}
+            global_matches=api_matches+[m for m in global_matches if (m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) not in seen]
+            global_matches.sort(key=lambda m:m['kickoff'])
         country_options=sorted({m['country'] for m in global_matches})
         country=st.selectbox('Country', ['All countries']+country_options)
         term=st.text_input('Search team or league',placeholder='Type a team or competition')
         filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc) and (country=='All countries' or m['country']==country)
                   and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
-        st.caption(f'{len(filtered)} returned matches · Sydney time · Free API may return only a small subset per day.')
+        st.caption(f'{len(filtered)} returned matches · Sydney time · Results depend on free-plan coverage and API quotas.')
         for m in filtered:
             st.write(f"**{m['home']} vs {m['away']}** · {m['local']:%a %d %b, %I:%M %p} AEDT/AEST · {m['league']} ({m['country']})")
         if not filtered:st.info('No matches returned for these filters. This does not mean no games are scheduled.')
@@ -62,9 +71,7 @@ try:comps=competitions(key)
 except Exception as e:st.error(f'Unable to retrieve competitions: {e}');st.stop()
 names={f"{c.get('area',{}).get('name','World')} · {c['name']} ({c['code']})":c['code'] for c in comps}
 selected=st.multiselect('Competitions to monitor',list(names),default=list(names)[:min(3,len(names))])
-if not selected:st.info('Choose one or more competitions.');st.stop()
-try:secondary_key=st.secrets.get('API_FOOTBALL_KEY','') or os.environ.get('API_FOOTBALL_KEY','')
-except Exception:secondary_key=os.environ.get('API_FOOTBALL_KEY','')
+if not selected:st.info('Choose one or more competitions for statistical modelling. Worldwide fixture discovery above remains available.');st.stop()
 if use_secondary and not secondary_key:st.warning('API-Football backup is enabled but API_FOOTBALL_KEY is missing from Secrets.')
 if len(selected)>8:st.warning('Select up to eight competitions to protect free-tier API limits.');st.stop()
 now=datetime.now(timezone.utc)
@@ -130,6 +137,15 @@ discoverable=[]
 for m in worldwide_rows:
     identity=(m['kickoff'].strftime('%Y-%m-%d'),normalized_team(m['home']),normalized_team(m['away']))
     match=model_index.get(identity)
+    if match is None:
+        # Also match by Sydney calendar date to avoid UTC midnight boundary mismatches.
+        for r in rows:
+            f=r['fixture']
+            if (normalized_team(f['homeTeam']['name'])==normalized_team(m['home']) and
+                normalized_team(f['awayTeam']['name'])==normalized_team(m['away']) and
+                abs((datetime.fromisoformat(r['kickoff'].replace('Z','+00:00'))-m['kickoff']).total_seconds())<7200):
+                match=r
+                break
     discoverable.append({'name':f"{m['home']} vs {m['away']} · {m['local']:%d %b %I:%M %p} Sydney · {m['league']}",
                          'model':match,'event':m})
 
