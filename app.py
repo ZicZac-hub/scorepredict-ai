@@ -107,15 +107,54 @@ with st.spinner('Collecting fixtures and completed results...'):
             rows.append({'league':name,'fixture':m,'result':result,'kickoff':kickoff})
         fixture_counts.append({'Competition':name,'Source':source,'API scheduled fixtures':len(upcoming),'Within selected time window':visible})
 rows.sort(key=lambda r:r['kickoff'])
+# Combine date-first discovery with statistically modelled fixtures.
+# Do not equate team IDs across providers or invent model results.
+worldwide_rows=[]
+try:
+    worldwide_rows=global_matches
+except NameError:
+    pass
+def normalized_team(name):
+    import re
+    return re.sub(r'[^a-z0-9]+','',str(name).casefold())
+model_index={}
+for r in rows:
+    m=r['fixture']
+    try:
+        utc_day=r['kickoff'][:10]
+        identity=(utc_day,normalized_team(m['homeTeam']['name']),normalized_team(m['awayTeam']['name']))
+        model_index[identity]=r
+    except (KeyError,TypeError):
+        continue
+discoverable=[]
+for m in worldwide_rows:
+    identity=(m['kickoff'].strftime('%Y-%m-%d'),normalized_team(m['home']),normalized_team(m['away']))
+    match=model_index.get(identity)
+    discoverable.append({'name':f"{m['home']} vs {m['away']} · {m['local']:%d %b %I:%M %p} Sydney · {m['league']}",
+                         'model':match,'event':m})
+
 # Allow the user to select fixtures explicitly; no match is invented.
 eligible=[r for r in rows if r.get('result')]
 def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
+st.subheader('🌐 Choose matches from worldwide discovery')
+st.caption('Free worldwide discovery and modelled fixtures are combined below. A discovered match without verified historical data cannot receive a statistical exact-score prediction.')
+worldwide_options={item['name']:item for item in discoverable}
+selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),help='Only matches matched to verified model history can be used for exact-score doubles.')
+unmodelled=[worldwide_options[name] for name in selected_worldwide if not worldwide_options[name]['model'] or not worldwide_options[name]['model'].get('result')]
+if unmodelled:
+    st.info(f"{len(unmodelled)} selected worldwide match(es) do not have sufficient compatible historical data for exact-score predictions. They are displayed for discovery only.")
 st.subheader('🎯 Choose your matches for detailed analysis')
 chosen_labels=st.multiselect('Select fixtures to analyse and combine',list(labels),default=list(labels)[:min(8,len(labels))],help='Select at least two fixtures for exact-score doubles. The available fixtures depend on your API plan and chosen competitions.')
 chosen_rows=[labels[k] for k in chosen_labels]
+for name in selected_worldwide:
+    candidate=worldwide_options[name]['model']
+    if candidate and candidate.get('result') and candidate not in chosen_rows:
+        chosen_rows.append(candidate)
+if selected_worldwide and not any(worldwide_options[name]['model'] and worldwide_options[name]['model'].get('result') for name in selected_worldwide):
+    st.caption('To calculate doubles, choose two fixtures with verified model data from the detailed-analysis selector.')
 
 for e in errors:st.warning(e)
 with st.expander('Why are some matches missing? · API coverage diagnostics'):
@@ -205,7 +244,7 @@ st.caption('For information and research only. Probabilities are model estimates
 
 with tabs[6]:
     st.subheader('Choose the two matches for your exact-score double')
-    st.caption('Choose any two different fixtures from your selected matches. The app will rank five exact-score combinations for that pair.')
+    st.caption('Choose two different matches with verified historical results. Worldwide fixtures without sufficient model data cannot be assigned invented probabilities.')
     if len(chosen_rows)>=2:
         pair_options={fixture_label(r):r for r in chosen_rows}
         pair_names=list(pair_options)
