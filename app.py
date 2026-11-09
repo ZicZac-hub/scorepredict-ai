@@ -27,6 +27,7 @@ if not key:
 with st.sidebar:
     st.header('Model settings')
     days=st.slider('Upcoming days',1,14,7)
+    st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
     min_prob=st.slider('Minimum double-chance probability',0.50,0.95,0.65,0.01)
     if st.button('Refresh football data'):
@@ -39,19 +40,34 @@ selected=st.multiselect('Competitions to monitor',list(names),default=list(names
 if not selected:st.info('Choose one or more competitions.');st.stop()
 if len(selected)>8:st.warning('Select up to eight competitions to protect free-tier API limits.');st.stop()
 now=datetime.now(timezone.utc)
-rows=[];histories={};errors=[]
+rows=[];histories={};errors=[];fixture_counts=[]
 with st.spinner('Collecting fixtures and completed results...'):
     for name in selected:
         code=names[name]
         try:
-            upcoming=fixtures(key,code,now.date().isoformat(),(now.date()+timedelta(days=days)).isoformat())
+            upcoming=fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=days+1)).isoformat())
+        except Exception as e:
+            errors.append(f'{name}: fixture request failed: {e}')
+            continue
+        try:
             past=history(key,code)
-            histories[name]=past
-        except Exception as e:errors.append(f'{name}: {e}');continue
+        except Exception as e:
+            past=[]
+            errors.append(f'{name}: historical data unavailable ({e}); fixtures can still be displayed.')
+        histories[name]=past
+        visible=0
         for m in upcoming:
-            if not m.get('homeTeam',{}).get('id') or not m.get('awayTeam',{}).get('id'):continue
-            if m.get('utcDate','') < now.isoformat().replace('+00:00','Z'):continue
-            rows.append({'league':name,'fixture':m,'result':predict(m,past),'kickoff':m.get('utcDate','')})
+            kickoff=m.get('utcDate','')
+            if not kickoff or kickoff < now.isoformat().replace('+00:00','Z'):continue
+            if kickoff > (now+timedelta(days=days)).isoformat().replace('+00:00','Z'):continue
+            visible+=1
+            has_teams=bool((m.get('homeTeam') or {}).get('id') and (m.get('awayTeam') or {}).get('id'))
+            try:
+                result=predict(m,past) if has_teams and past else None
+            except Exception:
+                result=None
+            rows.append({'league':name,'fixture':m,'result':result,'kickoff':kickoff})
+        fixture_counts.append({'Competition':name,'API scheduled fixtures':len(upcoming),'Within selected time window':visible})
 rows.sort(key=lambda r:r['kickoff'])
 # Allow the user to select fixtures explicitly; no match is invented.
 eligible=[r for r in rows if r.get('result')]
@@ -64,10 +80,14 @@ chosen_labels=st.multiselect('Select fixtures to analyse and combine',list(label
 chosen_rows=[labels[k] for k in chosen_labels]
 
 for e in errors:st.warning(e)
+with st.expander('Why are some matches missing? · API coverage diagnostics'):
+    st.caption('Only matches returned by football-data.org for the chosen competitions can appear. An API rate limit or missing competition cannot be fixed by changing the date slider.')
+    if fixture_counts:st.dataframe(pd.DataFrame(fixture_counts),hide_index=True,use_container_width=True)
+    st.caption('Times are shown in UTC in match labels. Some competitions are not covered by the free API. Matches with unavailable teams or historical data are displayed without a prediction.')
 conn=None
 try:
     conn=connect()
-    save_predictions(conn,rows)
+    save_predictions(conn,[r for r in rows if r['result']])
     for past in histories.values():reconcile(conn,past)
 except Exception as e:st.warning(f'Local prediction snapshot storage unavailable: {e}')
 
