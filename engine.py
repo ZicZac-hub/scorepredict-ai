@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 MODEL_VERSION = "venue-form-ensemble-v5-robust-effective-sample"
+LIVE_MODEL_VERSION = "venue-form-ensemble-v5-unregularized-live"
 
 def finished(match):
     score = match.get('score') or {}
@@ -106,7 +107,7 @@ def _h2h(matches,home_id,away_id,limit=10):
         if len(meetings)>=limit:break
     return meetings
 
-def predict(fixture,history,max_goals=10,variant='regularized'):
+def predict(fixture,history,max_goals=10,variant='baseline'):
     home_id=(fixture.get('homeTeam') or {}).get('id')
     away_id=(fixture.get('awayTeam') or {}).get('id')
     if home_id is None or away_id is None or home_id==away_id:return None
@@ -168,10 +169,10 @@ def predict(fixture,history,max_goals=10,variant='regularized'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':MODEL_VERSION if variant=='regularized' else 'venue-form-ensemble-v2-baseline',
+            'history_count':len(past),'model_version':MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION,
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
-            'uncertainty_note':'Sparse and stale histories are shrunk toward league scoring averages; improvement not yet validated.',
+            'uncertainty_note':('Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
             'methods':{'strength':(round(lam_h_strength,3),round(lam_a_strength,3)),
                        'attack_defence':(round(lam_h_simple,3),round(lam_a_simple,3))},
             'data_quality':'moderate' if min(len(hg),len(ag),len(hv),len(av))>=8 else 'limited'}
