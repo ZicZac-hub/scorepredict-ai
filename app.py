@@ -1078,8 +1078,10 @@ with active_page_slot:
             p=row['result']
             venue=min(len(p.get('home_home10',[])),len(p.get('away_away10',[])))
             recent=min(len(p.get('home_last10',[])),len(p.get('away_last10',[])))
-            return (min(venue,10),min(recent,10),min(len(p.get('h2h_last10',[])),5),
-                    max(p['home_win'],p['draw'],p['away_win']),str(row['fixture'].get('id','')))
+            return (min(venue,10)>=5 and min(recent,10)>=5,
+                    p['scores'][0][2] if p.get('scores') else 0,
+                    min(venue,10),min(recent,10),min(len(p.get('h2h_last10',[])),5),
+                    str(row['fixture'].get('id','')))
         if daily_candidates:
             daily=max(daily_candidates,key=_daily_rank)
             dm,dp=daily['fixture'],daily['result']
