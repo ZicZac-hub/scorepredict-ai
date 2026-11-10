@@ -405,9 +405,49 @@ labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 st.subheader('🌍 Worldwide Match Explorer')
 st.caption('Free worldwide discovery and modelled fixtures are combined below. A discovered match without verified historical data cannot receive a statistical exact-score prediction.')
 worldwide_options={item['name']:item for item in discoverable}
+# League-first explorer: choose a competition, then inspect its teams and fixtures.
+league_groups={}
+for item in discoverable:
+    event=item['event']
+    league_label=f"{event.get('league','Unknown league')} ({event.get('country','World')})"
+    league_groups.setdefault(league_label,[]).append(item)
+st.markdown('**🏆 Step 1 · Choose a league**')
+selected_league=st.selectbox('League / competition',['All leagues']+sorted(league_groups),
+                              key='worldwide_league_filter')
+league_items=(discoverable if selected_league=='All leagues' else league_groups[selected_league])
+league_teams=sorted({str(team) for item in league_items
+                     for team in (item['event'].get('home'),item['event'].get('away')) if team})
+st.caption(f'{len(league_items)} upcoming fixtures · {len(league_teams)} teams in the available fixture feed')
+st.markdown('**⚽ Step 2 · View teams and matches**')
+team_filter=st.selectbox('Team',['All teams']+league_teams,key='worldwide_team_filter')
+visible_worldwide=[item for item in league_items
+                   if team_filter=='All teams' or team_filter in (item['event'].get('home'),item['event'].get('away'))]
+if visible_worldwide:
+    team_rows=[]
+    for item in visible_worldwide:
+        ev=item['event']
+        team_rows.append({'Home team':ev.get('home',''), 'Away team':ev.get('away',''),
+                          'Kickoff (Sydney)':ev['local'].strftime('%d %b, %I:%M %p'),
+                          'League':ev.get('league',''),'Country':ev.get('country',''),
+                          'Model': 'Ready' if item.get('model') and item['model'].get('result') else 'History needed'})
+    st.dataframe(pd.DataFrame(team_rows),hide_index=True,use_container_width=True)
+else:
+    st.info('No upcoming fixtures found for this league and team in the current date range. Try another league or date.')
 picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
-preselected=[name for name,item in worldwide_options.items() if str(item['event']['source'])+':'+str(item['event']['id']) in picked_ids]
-selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),default=preselected,help='Matches selected in the finder appear here. Exact-score doubles require verified model history.')
+preselected=[item['name'] for item in visible_worldwide
+             if str(item['event']['source'])+':'+str(item['event']['id']) in picked_ids]
+st.markdown('**🎯 Step 3 · Select fixtures to analyse**')
+# Reset only the fixture multiselect when league/team changes, avoiding invalid stale options.
+selector_scope=(selected_league,team_filter)
+if st.session_state.get('worldwide_selector_scope')!=selector_scope:
+    st.session_state['worldwide_selector_scope']=selector_scope
+    st.session_state['worldwide_fixture_selection']=preselected
+visible_options=[item['name'] for item in visible_worldwide]
+st.session_state['worldwide_fixture_selection']=[name for name in st.session_state.get('worldwide_fixture_selection',[])
+                                                  if name in visible_options]
+selected_worldwide=st.multiselect('Matches in selected league',visible_options,
+                                   key='worldwide_fixture_selection',
+                                   help='Choose fixtures from this league to request verified historical analysis. Free API coverage varies.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
 if st.session_state.get('worldwide_model_version') != 'date-range-v3':
     st.session_state['worldwide_models']={}
