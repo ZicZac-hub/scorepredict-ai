@@ -454,9 +454,9 @@ for m in worldwide_rows:
 def _cached_pro_worldwide(key, event):
     return model_worldwide(key,event)
 
-if st.session_state.get('worldwide_model_version') != 'pro-deep-v7':
+if st.session_state.get('worldwide_model_version') != 'pro-quality-v8':
     st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='pro-deep-v7'
+    st.session_state['worldwide_model_version']='pro-quality-v8'
 _auto_cache=st.session_state.setdefault('worldwide_models',{})
 _auto_pending=[item for item in discoverable
                if item['name'] not in _auto_cache
