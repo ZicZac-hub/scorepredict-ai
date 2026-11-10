@@ -5,6 +5,7 @@ on:
     paths:
       - 'engine.py'
       - 'backtest.py'
+      - 'fetch_backtest_history.py'
       - 'test_engine_recency.py'
       - '.github/workflows/model-backtest.yml'
       - 'data/backtest_finished_matches.json'
@@ -23,18 +24,23 @@ jobs:
       - name: Run model regression tests
         run: python -m unittest -v test_engine_recency.py
       - name: Validate backtest module
-        run: python -m py_compile engine.py backtest.py
-      - name: Backtest verified historical fixtures when available
-        shell: bash
+        run: python -m py_compile engine.py backtest.py fetch_backtest_history.py
+      - name: Fetch verified multi-season results using API-Football Pro
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: |
-          if [ -s data/backtest_finished_matches.json ]; then
-            python backtest.py data/backtest_finished_matches.json --output backtest_results.json
-          else
-            echo 'No historical fixture JSON in data/backtest_finished_matches.json.'
-            echo 'Skipping historical accuracy claims; regression tests still run.'
-            printf '{"status":"awaiting_verified_historical_dataset"}\n' > backtest_results.json
-          fi
+          python fetch_backtest_history.py \
+            --leagues PL,PD,BL1,SA,FL1 \
+            --max-matches 2500 \
+            --output data/backtest_finished_matches.json
+      - name: Run historical backtest
+        run: |
+          python backtest.py data/backtest_finished_matches.json --output backtest_results.json
+      - name: Print model comparison
+        run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps(r['summary'],indent=2))"
       - uses: actions/upload-artifact@v4
         with:
           name: ziczac-backtest-results
-          path: backtest_results.json
+          path: |
+            backtest_results.json
+            data/backtest_finished_matches.json
