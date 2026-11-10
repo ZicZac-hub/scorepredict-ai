@@ -59,7 +59,7 @@ def five_two_leg_doubles(rows):
     return sorted(pairs,key=lambda r:-r['joint_probability_independent'])[:5]
 
 
-def backtest(matches, min_prior=35, max_tests=120):
+def backtest(matches, min_prior=35, max_tests=120, variant='regularized'):
     """Walk-forward test: only completed fixtures STRICTLY before kickoff train each forecast.
     Skips games on the same timestamp, avoiding contemporaneous data leakage.
     """
@@ -68,7 +68,7 @@ def backtest(matches, min_prior=35, max_tests=120):
     for idx,m in enumerate(ordered):
         if idx < min_prior: continue
         prior=[x for x in ordered[:idx] if x['utcDate'] < m['utcDate']]
-        p=predict(m,prior)
+        p=predict(m,prior,variant=variant)
         if p is None: continue
         actual=m['score']['fullTime']; hg,ag=actual['home'],actual['away']
         outcome='H' if hg>ag else ('D' if hg==ag else 'A')
