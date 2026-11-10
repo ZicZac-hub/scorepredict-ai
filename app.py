@@ -1342,7 +1342,14 @@ with active_page_slot:
         home=match['homeTeam'].get('shortName') or match['homeTeam'].get('name','Home')
         away=match['awayTeam'].get('shortName') or match['awayTeam'].get('name','Away')
         import html
-        st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(sydney_kickoff(preview.get('kickoff','')))+'</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
+        # A modal exact score and the most likely 1X2 outcome are different
+        # statistics. Showing both avoids implying that a 1-1 forecast means
+        # the draw is the most likely outcome.
+        _outcomes=[('Home win',pred['home_win']),('Draw',pred['draw']),('Away win',pred['away_win'])]
+        _favourite=max(_outcomes,key=lambda pair:pair[1])
+        _alternatives=' · '.join(f'{h}–{a} {p:.1%}' for h,a,p in pred['scores'][:3])
+        _confidence_note='Limited historical evidence' if pred.get('data_quality')=='limited' else 'Model-based estimate'
+        st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(sydney_kickoff(preview.get('kickoff','')))+'</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Most likely exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div><div class="zz-match-meta" style="margin-top:9px;color:#e6ddff">Top 3 scores: '+html.escape(_alternatives)+'</div><div class="zz-match-meta" style="margin-top:7px">Most likely match outcome: '+html.escape(_favourite[0])+' '+f'{_favourite[1]:.0%}'+' · '+html.escape(_confidence_note)+'</div></div>',unsafe_allow_html=True)
     # Exactly one evidence-based daily feature, selected only from fixtures on today's Sydney date.
     if view == 'home':
         st.subheader('🏆 Tomorrow’s Game of the Day')
