@@ -47,7 +47,7 @@ def collect(key, codes, seasons, max_matches=2500):
             print(f"{code}/{season}: {len(items)} API fixtures returned", flush=True)
     ordered = sorted(fixtures.values(), key=lambda x: x["utcDate"])
     # Keep oldest-to-newest when capped, preserving historical training context.
-    return ordered[:max_matches], issues
+    return ordered[-max_matches:], issues
 
 
 def main():
@@ -55,14 +55,14 @@ def main():
     parser.add_argument("--leagues", default="PL,PD,BL1,SA,FL1")
     parser.add_argument("--seasons", default="")
     parser.add_argument("--output", default="data/backtest_finished_matches.json")
-    parser.add_argument("--max-matches", type=int, default=2500)
+    parser.add_argument("--max-matches", type=int, default=3500)
     args = parser.parse_args()
     key = os.getenv("API_FOOTBALL_KEY") or os.getenv("API_FOOTBALL_API_KEY")
     if not key:
         print("ERROR: Missing GitHub Actions secret API_FOOTBALL_KEY", file=sys.stderr)
         return 2
     now = datetime.now(timezone.utc)
-    seasons = [int(s.strip()) for s in args.seasons.split(",") if s.strip()] if args.seasons else [now.year-2, now.year-1]
+    seasons = [int(s.strip()) for s in args.seasons.split(",") if s.strip()] if args.seasons else [now.year-1, now.year]
     matches, issues = collect(key, [c.strip() for c in args.leagues.split(",") if c.strip()], seasons, args.max_matches)
     for issue in issues:
         print("Provider warning:", issue, file=sys.stderr)
