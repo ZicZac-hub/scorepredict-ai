@@ -592,7 +592,9 @@ if discoverable:
     st.dataframe(pd.DataFrame(_all_fixtures),hide_index=True,use_container_width=True,
                  column_config={'Home':st.column_config.TextColumn(width='medium'),
                                 'Away':st.column_config.TextColumn(width='medium'),
-                                'Predicted score':st.column_config.TextColumn(width='small'),
+                                'Home team':st.column_config.TextColumn(width='medium'),
+                                            'Away team':st.column_config.TextColumn(width='medium'),
+                                            'Predicted score':st.column_config.TextColumn(width='small'),
                                 'Score probability':st.column_config.TextColumn(width='small')},
                  height=min(560,80+len(_all_fixtures)*35))
     st.caption(f"{len(_all_fixtures)} available fixtures · {_ready} with verified score estimates. Scroll horizontally to see all columns.")
@@ -1167,7 +1169,9 @@ with active_page_slot:
                 predicted=str(saved.get('predicted_score') or '')
                 hit=predicted==str(actual)
                 completed.append({'Status':'🟢 HIT' if hit else '🔴 ✕',
-                                  'Match':str(saved['home'])+' vs '+str(saved['away']),
+                                  'Home team':str(saved.get('home') or 'Unknown home team'),
+                                  'Away team':str(saved.get('away') or 'Unknown away team'),
+                                  'Match':str(saved.get('home') or 'Unknown home team')+' vs '+str(saved.get('away') or 'Unknown away team'),
                                   'Predicted score':predicted,'Actual score':str(actual),
                                   'League':saved.get('league',''),
                                   'Kickoff':saved.get('kickoff','')[:16]})
