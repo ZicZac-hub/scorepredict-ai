@@ -277,7 +277,7 @@ try:sportmonks_key=st.secrets.get('THIRD_FOOTBALL_API_KEY','') or os.environ.get
 except Exception:sportmonks_key=os.environ.get('THIRD_FOOTBALL_API_KEY','')
 st.subheader('🚀 ZicZac Pro · Tomorrow & worldwide predictions')
 if secondary_key:
-    st.success('API-Football key configured · Pro research enabled. Select Tomorrow, choose a match, then run Research selected matches.')
+    st.info('API-Football key found. Pro subscription status is not verified here. Select Tomorrow, choose a match, then run Pro analysis to check actual data access.')
 else:
     st.warning('API_FOOTBALL_KEY is missing. Configure the existing key in Streamlit Secrets.')
 st.subheader('🌍 Worldwide fixtures by Sydney date')
@@ -620,7 +620,8 @@ if st.session_state.get('worldwide_model_version') != 'pro-history-v5':
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
-    if st.button('🔎 Research selected matches · form, H2H and probabilities',help='Use API-Football Pro last-30 team form, last-10 H2H and historical date-range fallback. Consumes API requests.'):
+    st.caption('Research each selected match using API-Football Pro. The results below show verified data or the exact reason research could not finish.')
+    if st.button('🔎 Run Pro analysis for selected matches',type='primary',help='Fetch completed team matches and H2H. Uses API requests.'):
         st.session_state['worldwide_models']={k:v for k,v in st.session_state['worldwide_models'].items() if k not in selected_worldwide}
         for name in selected_worldwide[:8]:
             item=worldwide_options[name]
@@ -634,6 +635,8 @@ if selected_worldwide:
             st.session_state['worldwide_models'].pop(name,None)
             cached=None
         if cached:
+            if cached.get('error'):
+                st.error(f"Research unavailable for {name}: {cached['error']}")
             if cached['row']:
                 worldwide_options[name]['model']=cached['row']
                 histories[name]=cached['row']['past']
