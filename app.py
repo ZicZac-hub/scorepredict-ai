@@ -406,15 +406,81 @@ st.subheader('🌍 Worldwide Match Explorer')
 st.caption('Free worldwide discovery and modelled fixtures are combined below. A discovered match without verified historical data cannot receive a statistical exact-score prediction.')
 worldwide_options={item['name']:item for item in discoverable}
 # League-first explorer: choose a competition, then inspect its teams and fixtures.
-league_groups={}
+# The date-first provider returns only competitions playing in its narrow date
+# window. Keep a stable catalogue of major competitions even during breaks.
+major_leagues={
+    '🇪🇺 UEFA Champions League':['champions league','uefa champions','champions league (cl)'],
+    '🇪🇺 UEFA Europa League':['europa league'],
+    '🇪🇺 UEFA Conference League':['conference league'],
+    '🏴 English Premier League':['premier league','premier league (pl)'],
+    '🏴 English Championship':['championship','championship (elc)'],
+    '🇪🇸 La Liga':['la liga','laliga','primera division','primera división'],
+    '🇪🇸 Copa del Rey':['copa del rey'],
+    '🇩🇪 Bundesliga':['bundesliga','bundesliga (bl1)'],
+    '🇮🇹 Serie A':['serie a','serie a (sa)'],
+    '🇫🇷 Ligue 1':['ligue 1','ligue 1 (fl1)'],
+    '🇵🇹 Primeira Liga':['primeira liga','primeira liga (ppl)'],
+    '🇳🇱 Eredivisie':['eredivisie'],
+    '🇹🇷 Süper Lig':['super lig','süper lig'],
+    '🇧🇷 Brasileirão Série A':['brasileiro serie a','brasileirão','serie a brazil'],
+    '🇦🇷 Argentine Primera División':['argentine primera','liga profesional argentina'],
+    '🇺🇸 Major League Soccer':['major league soccer','mls'],
+    '🇸🇦 Saudi Pro League':['saudi pro league','pro league saudi'],
+    '🇲🇽 Liga MX':['liga mx'],
+    '🇦🇺 A-League Men':['a-league','a league men'],
+    '🇯🇵 J1 League':['j1 league','j league'],
+    '🌍 FIFA World Cup':['world cup','fifa world cup'],
+    '🇪🇺 UEFA European Championship':['european championship','euro 2028'],
+    '🌍 Copa Libertadores':['copa libertadores'],
+}
+def _league_group(name):
+    lower=str(name).casefold()
+    for title,aliases in major_leagues.items():
+        if any(alias in lower for alias in aliases):
+            return title
+    return None
+league_groups={title:[] for title in major_leagues}
+other_groups={}
 for item in discoverable:
     event=item['event']
-    league_label=f"{event.get('league','Unknown league')} ({event.get('country','World')})"
-    league_groups.setdefault(league_label,[]).append(item)
+    label=_league_group(event.get('league',''))
+    if label:
+        league_groups[label].append(item)
+    else:
+        other_label=f"{event.get('league','Unknown league')} ({event.get('country','World')})"
+        other_groups.setdefault(other_label,[]).append(item)
+# Add the separately monitored football-data.org fixtures to the explorer.
+# They may be available even when worldwide date-first discovery has no games.
+for r in rows:
+    fixture=r['fixture']
+    label=_league_group(r.get('league',''))
+    if not label:
+        continue
+    try:
+        kickoff_dt=datetime.fromisoformat(r['kickoff'].replace('Z','+00:00'))
+        home=fixture['homeTeam'].get('name','Home')
+        away=fixture['awayTeam'].get('name','Away')
+        if any(normalized_team(x['event'].get('home'))==normalized_team(home)
+               and normalized_team(x['event'].get('away'))==normalized_team(away)
+               and abs((x['event']['kickoff']-kickoff_dt).total_seconds())<7200
+               for x in league_groups[label]):
+            continue
+        event={'home':home,'away':away,'league':label,'country':'',
+               'local':kickoff_dt.astimezone(SYDNEY),'kickoff':kickoff_dt,
+               'source':'football-data.org','id':fixture.get('id')}
+        league_groups[label].append({'name':f"{home} vs {away} · {event['local']:%d %b %I:%M %p} Sydney · {label}",
+                                      'model':r,'event':event})
+    except (KeyError,TypeError,ValueError,AttributeError):
+        continue
+league_groups.update(other_groups)
 st.markdown('**🏆 Step 1 · Choose a league**')
-selected_league=st.selectbox('League / competition',['All leagues']+sorted(league_groups),
-                              key='worldwide_league_filter')
+st.caption('Major world leagues stay listed even when no matches are scheduled in the selected dates.')
+league_names=['All leagues']+list(major_leagues)+sorted(other_groups)
+selected_league=st.selectbox('League / competition',league_names,key='worldwide_league_filter')
 league_items=(discoverable if selected_league=='All leagues' else league_groups[selected_league])
+if selected_league=='All leagues':
+    league_items=list(discoverable)+[item for title in major_leagues for item in league_groups[title]
+                                  if item['event'].get('source')=='football-data.org']
 league_teams=sorted({str(team) for item in league_items
                      for team in (item['event'].get('home'),item['event'].get('away')) if team})
 st.caption(f'{len(league_items)} upcoming fixtures · {len(league_teams)} teams in the available fixture feed')
