@@ -1599,17 +1599,7 @@ with active_page_slot:
                                 columns+=['exact_hit','result_hit','top5_hit']
                             display=details[columns].copy()
                             display.columns=['Kickoff (UTC)','League','Home','Away','Predicted score','Final score']+(['Exact score correct','Result correct','Top-five correct'] if accuracy_filter!='⏳ Awaiting results' else [])
-                            st.markdown('##### 📱 Five ranked doubles · all details without sideways scrolling')
-                for _rank,_o in enumerate(best,1):
-                    with st.container(border=True):
-                        st.markdown(f'**Double {_rank}**')
-                        st.markdown('**Match 1:** '+_o['Match 1'])
-                        st.markdown(f"**Predicted score:** {_o['Score 1']} · **Score probability:** {_o['Match 1 probability']:.2%}")
-                        st.markdown('**Match 2:** '+_o['Match 2'])
-                        st.markdown(f"**Predicted score:** {_o['Score 2']} · **Score probability:** {_o['Match 2 probability']:.2%}")
-                        st.metric('Combined probability',f"{_o['Joint probability']:.3%}")
-                with st.expander('Full doubles table · swipe to inspect'):
-                    st.dataframe(display,hide_index=True,use_container_width=True)
+                            st.dataframe(display,hide_index=True,use_container_width=True)
                             st.download_button('Download selected predictions CSV',display.to_csv(index=False).encode(),'ziczac_prediction_results.csv','text/csv')
                         st.caption('Results are automatically classified only after a verified final score is stored. Unverified or missing results remain pending.')
                     else:
@@ -1843,7 +1833,17 @@ with active_page_slot:
                     'Score 1 probability':f"{o['Match 1 probability']:.2%}",
                     'Score 2 probability':f"{o['Match 2 probability']:.2%}",
                     'Combined probability':f"{o['Joint probability']:.3%}"} for i,o in enumerate(best)])
-                st.dataframe(display,hide_index=True,use_container_width=True)
+                st.markdown('##### 📱 Five ranked doubles · no sideways scrolling')
+                for _rank,_o in enumerate(best,1):
+                    with st.container(border=True):
+                        st.markdown(f'**Double {_rank}**')
+                        st.markdown('**Match 1:** '+_o['Match 1'])
+                        st.markdown(f"**Predicted score:** {_o['Score 1']} · **Score probability:** {_o['Match 1 probability']:.2%}")
+                        st.markdown('**Match 2:** '+_o['Match 2'])
+                        st.markdown(f"**Predicted score:** {_o['Score 2']} · **Score probability:** {_o['Match 2 probability']:.2%}")
+                        st.metric('Combined probability',f"{_o['Joint probability']:.3%}")
+                with st.expander('Full doubles table · swipe to inspect'):
+                    st.dataframe(display,hide_index=True,use_container_width=True)
                 st.download_button('Download my five score doubles',display.to_csv(index=False).encode(),'exact_score_doubles.csv','text/csv')
                 st.caption('Joint probabilities multiply two modelled score probabilities assuming independence. Matches may be correlated, and the model may be miscalibrated.')
             st.subheader('Detailed home/away form and head-to-head')
