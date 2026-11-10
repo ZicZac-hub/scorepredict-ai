@@ -21,6 +21,7 @@ def evaluate(matches, min_history=30):
     )
     stats = {name: defaultdict(float) for name in ('regularized', 'baseline')}
     details = []
+    segments = defaultdict(lambda: {name: defaultdict(float) for name in ('regularized', 'baseline')})
     for index, fixture in enumerate(ordered):
         if index < min_history:
             continue
@@ -46,30 +47,40 @@ def evaluate(matches, min_history=30):
             winner = 0 if hg > ag else 1 if hg == ag else 2
             probs = [forecast['home_win'], forecast['draw'], forecast['away_win']]
             row = stats[label]
+            segment_key = f"{(fixture.get('competition') or {}).get('code', 'unknown')}|{fixture['utcDate'][:4]}"
+            segment = segments[segment_key][label]
             row['matches'] += 1
+            segment['matches'] += 1
             row['exact_hits'] += int((top[0], top[1]) == (hg, ag))
+            segment['exact_hits'] += int((top[0], top[1]) == (hg, ag))
             row['top3_hits'] += int(any((h, a) == (hg, ag) for h, a, _ in forecast['scores'][:3]))
+            segment['top3_hits'] += int(any((h, a) == (hg, ag) for h, a, _ in forecast['scores'][:3]))
             row['score_log_loss'] += -math.log(max(probability, EPS))
+            segment['score_log_loss'] += -math.log(max(probability, EPS))
             row['outcome_brier'] += sum((p - int(i == winner)) ** 2 for i, p in enumerate(probs))
+            segment['outcome_brier'] += sum((p - int(i == winner)) ** 2 for i, p in enumerate(probs))
             row['outcome_hits'] += int(max(range(3), key=lambda i: probs[i]) == winner)
+            segment['outcome_hits'] += int(max(range(3), key=lambda i: probs[i]) == winner)
             outcomes[label] = f'{top[0]}-{top[1]}'
         if outcomes:
             details.append({'date': fixture['utcDate'],
                             'home': fixture['homeTeam'].get('name', ''),
                             'away': fixture['awayTeam'].get('name', ''),
                             'actual': f'{hg}-{ag}', **outcomes})
+    def metrics(row):
+        n = row['matches']
+        return {'evaluated': int(n),
+                'exact_hit_rate': row['exact_hits']/n if n else None,
+                'top3_hit_rate': row['top3_hits']/n if n else None,
+                'outcome_accuracy': row['outcome_hits']/n if n else None,
+                'outcome_brier': row['outcome_brier']/n if n else None,
+                'score_log_loss': row['score_log_loss']/n if n else None}
     summary = {}
     for label, row in stats.items():
-        n = row['matches']
-        summary[label] = {
-            'evaluated': int(n),
-            'exact_hit_rate': row['exact_hits'] / n if n else None,
-            'top3_hit_rate': row['top3_hits'] / n if n else None,
-            'outcome_accuracy': row['outcome_hits'] / n if n else None,
-            'outcome_brier': row['outcome_brier'] / n if n else None,
-            'score_log_loss': row['score_log_loss'] / n if n else None,
-        }
-    return {'summary': summary, 'details': details,
+        summary[label] = metrics(row)
+    by_league_year = {key: {label: metrics(row) for label, row in group.items()}
+                      for key, group in sorted(segments.items())}
+    return {'summary': summary, 'by_league_year': by_league_year, 'details': details,
             'note': 'Baseline is the unregularized venue-form estimator, not a saved v4 model. Lower Brier/log-loss is better. No future results are used.'}
 
 if __name__ == '__main__':
