@@ -472,6 +472,32 @@ for _item in discoverable:
         x['fixture'].get('id')==_model['fixture'].get('id') for x in rows):
         rows.append(_model)
 rows.sort(key=lambda r:r['kickoff'])
+# Home's tomorrow feature must not depend on the currently selected Today
+# filter. Fetch tomorrow's Pro fixtures independently (API request cached).
+if secondary_key and st.session_state.get('ziczac_active_page','home')=='home':
+    try:
+        _feature_events,_feature_errors=global_fixtures(secondary_key,today+timedelta(days=1),1)
+        _feature_attempts=0
+        for _event in _feature_events:
+            _fixture=_event.get('fixture') or {}
+            _id=_fixture.get('id')
+            if any(r['fixture'].get('provider')=='API-Football' and
+                   r['fixture'].get('id')==_id and r.get('result') for r in rows):
+                continue
+            _feature_key='featured:'+str(_id)
+            if _feature_key not in _auto_cache and _feature_attempts<8:
+                with st.spinner('Finding tomorrow’s best Pro prediction…'):
+                    _r,_err=_cached_pro_worldwide(secondary_key,_event)
+                _auto_cache[_feature_key]={'row':_r,'error':_err}
+                _feature_attempts+=1
+            _r=_auto_cache.get(_feature_key,{}).get('row')
+            if _r and _r.get('result'):
+                rows.append(_r)
+        if _feature_errors:
+            st.caption('Tomorrow fixture feed: '+str(_feature_errors[0])[:170])
+    except Exception as _feature_exc:
+        st.caption('Tomorrow Pro fixture research unavailable: '+str(_feature_exc)[:170])
+rows.sort(key=lambda r:r['kickoff'])
 eligible=[r for r in rows if r.get('result')]
 # Populate the large stadium hero with tomorrow's highest-probability
 # verified exact-score estimate. This is the same live data used throughout.
@@ -1113,7 +1139,7 @@ with active_page_slot:
     if view == 'home':
         st.subheader('🏆 Tomorrow’s Game of the Day')
         st.caption('One match for tomorrow in Sydney time, ranked by model evidence and probability. Exact scores are estimates, not guaranteed results.')
-        st.caption(f'Available tomorrow: {len(_tomorrow_events) if not _tomorrow_ready else len(_tomorrow_ready)} fixtures checked for the featured model. Modelled fixtures from other dates do not qualify.')
+        st.caption(f'Tomorrow: {len(_tomorrow_ready)} prediction-ready fixtures. The homepage checks tomorrow independently of the Today filter.')
         def _sydney_day(row):
             try:
                 return datetime.fromisoformat(row['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY).date()
@@ -1168,7 +1194,7 @@ with active_page_slot:
                 st.bar_chart(pd.DataFrame({'Probability (%)':[round(q*100,2) for _,_,q in dp['scores']]},index=[f'{h}–{a}' for h,a,_ in dp['scores']]))
             st.caption('Selection prioritises venue-specific sample size, recent form and H2H coverage. This is not a guarantee of accuracy. Injuries and confirmed lineups are not verified.')
         else:
-            st.info('No match with sufficient verified historical data is available for today (Sydney time). The daily pick will not be fabricated or replaced with a match from a later date.')
+            st.info('No match with sufficient verified historical data is available for tomorrow (Sydney time). The featured score will appear when Pro research finds an eligible match.')
     st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
     st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
     st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','more':'☰ More · Model information'}[view])
