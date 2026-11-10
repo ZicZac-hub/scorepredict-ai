@@ -562,7 +562,7 @@ if discoverable:
             if scores:
                 h,a,p=scores[0]
                 return f"{h}–{a}",f"{p:.1%}",'Model ready'
-        return '—','—',('History unavailable' if cached.get('error') else 'Not researched')
+        return '—','—',(str(cached['error'])[:160] if cached.get('error') else ('Provider unsupported' if item['event'].get('source')!='API-Football' else 'Not researched'))
     if secondary_key:
         st.caption('Pro research starts automatically for available API-Football fixtures. Use the button below to continue any remaining fixtures; provider coverage and quota may limit results.')
         _max_batch=st.select_slider('Fixtures per research batch',options=[5,10,20,40,80],value=10,
@@ -589,15 +589,33 @@ if discoverable:
                     'Research':_status,
                     'League':item['event'].get('league',''),
                     'Country':item['event'].get('country','')})
-    st.dataframe(pd.DataFrame(_all_fixtures),hide_index=True,use_container_width=True,
-                 column_config={'Home':st.column_config.TextColumn(width='medium'),
-                                'Away':st.column_config.TextColumn(width='medium'),
-                                'Home team':st.column_config.TextColumn(width='medium'),
-                                            'Away team':st.column_config.TextColumn(width='medium'),
-                                            'Predicted score':st.column_config.TextColumn(width='small'),
-                                'Score probability':st.column_config.TextColumn(width='small')},
-                 height=min(560,80+len(_all_fixtures)*35))
-    st.caption(f"{len(_all_fixtures)} available fixtures · {_ready} with verified score estimates. Scroll horizontally to see all columns.")
+    st.markdown('**📱 Match predictions · mobile-friendly view**')
+    st.caption('Scores and research status are shown directly below each match without horizontal scrolling.')
+    for _entry in _all_fixtures:
+        _state=_entry['Research']
+        _has_score=_state=='Model ready'
+        with st.container(border=True):
+            st.markdown('**'+str(_entry['Home'])+' vs '+str(_entry['Away'])+'**')
+            st.caption(str(_entry['Kickoff (Sydney)'])+' · '+str(_entry['League']))
+            _cscore,_cprob=st.columns(2)
+            _cscore.metric('Predicted score',_entry['Predicted score'])
+            _cprob.metric('Probability',_entry['Score probability'])
+            if _has_score:
+                st.success('✓ Verified history · model estimate ready')
+            elif _state=='Not researched':
+                st.info('⏳ Pro research not yet attempted')
+            else:
+                st.warning('Research: '+str(_state))
+    with st.expander('📊 Full fixtures table · additional details',expanded=False):
+        st.dataframe(pd.DataFrame(_all_fixtures),hide_index=True,use_container_width=True,
+                     column_order=['Home','Away','Predicted score','Score probability','Research','Kickoff (Sydney)','League','Country'],
+                     column_config={'Home':st.column_config.TextColumn(width='medium'),
+                                    'Away':st.column_config.TextColumn(width='medium'),
+                                    'Predicted score':st.column_config.TextColumn(width='small'),
+                                    'Score probability':st.column_config.TextColumn(width='small'),
+                                    'Research':st.column_config.TextColumn(width='large')},
+                     height=min(560,80+len(_all_fixtures)*35))
+    st.caption(f"{len(_all_fixtures)} available fixtures · {_ready} with verified score estimates.")
     st.caption('A dash means no modelled score is available yet, not a 0–0 prediction.')
 else:
     st.info('No fixtures were returned for the selected date. Check the provider warnings and date range.')
