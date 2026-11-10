@@ -4,6 +4,7 @@ from itertools import combinations
 import os
 import json
 import pandas as pd
+import pycountry
 import streamlit as st
 from data import competitions, fixtures, history
 from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
@@ -295,11 +296,28 @@ with st.expander('🌍 Worldwide Match Finder · Tap to search',expanded=False):
             known={(m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) for m in global_matches}
             global_matches += [m for m in sm_matches if (m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) not in known]
             global_matches.sort(key=lambda m:m['kickoff'])
-        country_options=sorted({m['country'] for m in global_matches})
-        country=st.selectbox('Country', ['All countries']+country_options)
+        # Full ISO 3166 country/territory directory, independent of today's
+        # fixture API coverage. Keep provider labels that are not ISO countries.
+        country_options=sorted({c.name for c in pycountry.countries} |
+                               {str(m.get('country','')).strip() for m in global_matches if m.get('country')},
+                               key=str.casefold)
+        country=st.selectbox('Country', ['All countries']+country_options,
+                             key='finder_country',help='All countries and territories are listed. Matches appear only where the connected providers have fixtures.')
         term=st.text_input('Search team or league',placeholder='Type a team or competition')
-        filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc) and (country=='All countries' or m['country']==country)
+        def _country_matches(provider_country, selected_country):
+            if selected_country=='All countries':return True
+            if str(provider_country).casefold()==selected_country.casefold():return True
+            try:
+                a=pycountry.countries.lookup(str(provider_country))
+                b=pycountry.countries.lookup(selected_country)
+                return a.alpha_2==b.alpha_2
+            except LookupError:
+                return False
+        filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc)
+                  and _country_matches(m.get('country',''),country)
                   and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
+        if country!='All countries' and not any(_country_matches(m.get('country',''),country) for m in global_matches):
+            st.caption('No fixtures from this country in the current provider response and date range. Try Next 7 days or Next 14 days.')
         st.caption(f'{len(filtered)} returned matches · Sydney time · Results depend on free-plan coverage and API quotas.')
         st.caption('Use Search matches to reveal the fixture list. Select any match to add it to analysis.')
         show_fixtures=st.toggle('🔎 Search matches · Show fixture list',value=False,key='finder_show_results')
