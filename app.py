@@ -9,6 +9,17 @@ import streamlit as st
 from data import competitions, fixtures, history
 from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
 from worldwide import worldwide, SYDNEY
+
+def sydney_kickoff(value, fmt='%d %b %Y, %I:%M %p'):
+    """Display UTC kickoff in Australia/Sydney with automatic daylight savings."""
+    try:
+        parsed=datetime.fromisoformat(str(value).replace('Z','+00:00'))
+        if parsed.tzinfo is None:
+            parsed=parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(SYDNEY).strftime(fmt)+' Sydney'
+    except (ValueError,TypeError):
+        return 'Kickoff unavailable'
+
 from global_fixtures import global_fixtures
 from sportmonks import sportmonks_fixtures
 from engine import predict
@@ -548,7 +559,7 @@ else:
 _hero_slot.markdown(_hero_html.replace("Today's Football<br>Predictions",_hero_title),unsafe_allow_html=True)
 def fixture_label(r):
     m=r['fixture']
-    return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
+    return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {sydney_kickoff(r['kickoff'])}"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 st.subheader('📅 All available fixtures for the selected date')
 st.caption('Includes every fixture returned by the connected worldwide feeds, even if no prediction is ready. API coverage is not the same as every football match in existence.')
@@ -926,7 +937,7 @@ for e in errors:st.warning(e)
 with st.expander('Why are some matches missing? · API coverage diagnostics'):
     st.caption('API-Football backup is used when primary fixture/history data is missing. Both providers have free-plan limits. Backup snapshots may be outdated.')
     if fixture_counts:st.dataframe(pd.DataFrame(fixture_counts),hide_index=True,use_container_width=True)
-    st.caption('Times are shown in UTC. Matches without sufficient history appear without predictions. Provider team IDs are never mixed in score modelling.')
+    st.caption('All kickoffs are shown in Sydney local time (AEDT/AEST). Matches without sufficient history appear without predictions. Provider team IDs are never mixed in score modelling.')
 conn=None
 try:
     conn=connect()
@@ -1219,7 +1230,7 @@ with active_page_slot:
                                   'Match':str(saved.get('home') or 'Unknown home team')+' vs '+str(saved.get('away') or 'Unknown away team'),
                                   'Predicted score':predicted,'Actual score':str(actual),
                                   'League':saved.get('league',''),
-                                  'Kickoff':saved.get('kickoff','')[:16]})
+                                  'Kickoff (Sydney)':sydney_kickoff(saved.get('kickoff',''))})
             hits=sum(x['Status']=='🟢 HIT' for x in completed)
             a,b,c=st.columns(3)
             a.metric('Finished forecasts',len(completed))
@@ -1350,7 +1361,7 @@ with active_page_slot:
             for r in visible_predictions[:max_games]:
                 m,p=r['fixture'],r['result']
                 with st.container(border=True):
-                    st.caption(f"{r['league']} · {r['kickoff']} UTC")
+                    st.caption(f"{r['league']} · {sydney_kickoff(r['kickoff'])}")
                     st.subheader(match_name(m))
                     if p is None:st.info('Insufficient historical results for this fixture.');continue
                     best=p['scores'][0]
@@ -1391,7 +1402,7 @@ with active_page_slot:
             picks=ranked_double_chance(rows,min_prob)
             if not picks:st.info('Not enough eligible fixtures at the selected probability threshold. Reduce the threshold or extend the date range.')
             else:
-                st.dataframe(pd.DataFrame([{'Fixture':match_name(x['fixture']),'Market':x['selection'],'Model probability':f"{x['probability']:.1%}",'Kickoff UTC':x['kickoff'],'Competition':x['league']} for x in picks]),hide_index=True,use_container_width=True)
+                st.dataframe(pd.DataFrame([{'Fixture':match_name(x['fixture']),'Market':x['selection'],'Model probability':f"{x['probability']:.1%}",'Kickoff (Sydney)':sydney_kickoff(x['kickoff']),'Competition':x['league']} for x in picks]),hide_index=True,use_container_width=True)
                 st.caption('Selections are ranked by the model, not verified bookmaker odds or guaranteed wins.')
     if view in ['doubles']:
         with tabs[2]:
