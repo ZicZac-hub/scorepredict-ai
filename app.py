@@ -154,6 +154,69 @@ st.markdown("""<style>
 .zz-feature-icon{font-size:25px}
 [data-testid="stMarkdownContainer"] p{font-size:15px}
 }
+/* ZicZac premium mobile fixture finder — visual-only enhancement */
+:root{--zz-ink:#eaf2ff;--zz-muted:#b4c8e9;--zz-stroke:#5377b3}
+[data-testid="stAppViewContainer"] .block-container{max-width:1080px}
+[data-testid="stMarkdownContainer"] h2,[data-testid="stMarkdownContainer"] h3{
+  color:#f7faff;letter-spacing:-.025em;line-height:1.25;
+  text-wrap:balance;text-shadow:0 3px 18px #02081988
+}
+[data-testid="stMarkdownContainer"] h2{font-weight:850;margin-top:1.15rem}
+[data-testid="stMarkdownContainer"] h3{font-weight:820}
+[data-testid="stCaptionContainer"] p{color:#bfd0ed!important;line-height:1.5!important}
+[data-testid="stWidgetLabel"] p{color:#f4f7ff!important;font-weight:750!important;letter-spacing:.005em}
+[data-testid="stMultiSelect"] [data-baseweb="select"]>div,
+[data-testid="stSelectbox"] [data-baseweb="select"]>div{
+  background:linear-gradient(145deg,#192d55,#172446)!important;
+  border:1px solid #6686c5!important;border-radius:15px!important;
+  min-height:55px;box-shadow:0 7px 22px #0003,inset 0 1px #ffffff0b
+}
+[data-testid="stMultiSelect"] [data-baseweb="tag"]{
+  background:linear-gradient(115deg,#825cf5,#5f4fe6)!important;
+  border:1px solid #b7a1ff!important;border-radius:10px!important;
+  box-shadow:0 3px 10px #2a1e6e55;
+  padding:5px 7px;max-width:100%
+}
+[data-testid="stMultiSelect"] [data-baseweb="tag"] span{
+  color:#fff!important;font-size:13px!important;font-weight:700!important;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+[data-testid="stMultiSelect"] [data-baseweb="tag"] svg{fill:#fff}
+[data-testid="stCheckbox"]{
+  background:linear-gradient(130deg,#1b3157,#172646);
+  border:1px solid #395a8b;border-radius:14px;
+  padding:11px 12px;margin:4px 0 8px;
+  box-shadow:0 5px 15px #0002;transition:border-color .15s,background .15s
+}
+[data-testid="stCheckbox"]:hover{border-color:#a0baff;background:#243b67}
+[data-testid="stCheckbox"] label{align-items:flex-start;gap:9px}
+[data-testid="stCheckbox"] label p{
+  color:#f0f5ff!important;font-size:14px!important;font-weight:650;
+  line-height:1.55!important;overflow-wrap:anywhere
+}
+[data-testid="stCheckbox"] [data-baseweb="checkbox"]{margin-top:3px}
+[data-testid="stExpander"]{
+  background:linear-gradient(125deg,#1a3057,#172342)!important;
+  border:1px solid #6888c2!important;border-radius:16px!important;
+  box-shadow:0 8px 24px #0003
+}
+[data-testid="stExpander"] summary{padding:13px 15px!important}
+[data-testid="stExpander"] summary p{font-weight:750!important;color:#eaf3ff!important}
+[data-testid="stTextInput"] input{
+  min-height:51px;border-radius:13px!important;
+  background:#1b2e52!important;border:1px solid #6584b9!important
+}
+[data-testid="stAlert"]{border-radius:14px!important}
+hr{border-color:#46618a!important;margin:1.5rem 0!important}
+@media(max-width:680px){
+  [data-testid="stAppViewContainer"] .block-container{padding-left:13px;padding-right:13px}
+  [data-testid="stMarkdownContainer"] h2{font-size:clamp(22px,6vw,28px)!important}
+  [data-testid="stMarkdownContainer"] h3{font-size:clamp(19px,5vw,24px)!important}
+  [data-testid="stMultiSelect"] [data-baseweb="tag"]{max-width:calc(100vw - 105px)}
+  [data-testid="stCheckbox"]{padding:11px 10px}
+  [data-testid="stCheckbox"] label p{font-size:13px!important}
+  [data-testid="stWidgetLabel"] p{font-size:15px!important}
+}
 </style>
 <div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
 
@@ -339,7 +402,7 @@ def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
-st.subheader('🌐 Choose matches from worldwide discovery')
+st.subheader('🌍 Worldwide Match Explorer')
 st.caption('Free worldwide discovery and modelled fixtures are combined below. A discovered match without verified historical data cannot receive a statistical exact-score prediction.')
 worldwide_options={item['name']:item for item in discoverable}
 picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
@@ -380,7 +443,7 @@ rows.sort(key=lambda r:r['kickoff'])
 unmodelled=[worldwide_options[name] for name in selected_worldwide if not worldwide_options[name]['model'] or not worldwide_options[name]['model'].get('result')]
 if unmodelled:
     st.info(f"{len(unmodelled)} selected worldwide match(es) do not have sufficient compatible historical data for exact-score predictions. They are displayed for discovery only.")
-st.subheader('🎯 Choose your matches for detailed analysis')
+st.subheader('🎯 Match Analysis Studio')
 chosen_labels=st.multiselect('Select fixtures to analyse and combine',list(labels),default=list(labels)[:min(8,len(labels))],help='Select at least two fixtures for exact-score doubles. The available fixtures depend on your API plan and chosen competitions.')
 chosen_rows=[labels[k] for k in chosen_labels]
 for name in selected_worldwide:
