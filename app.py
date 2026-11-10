@@ -226,7 +226,7 @@ hr{border-color:#46618a!important;margin:1.5rem 0!important}
 _hero_slot=st.empty()
 # Native button navigation: each tap changes a single session-state route.
 # Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
-nav_items=[('🏠','Home','home'),('🎯','Predict','predict'),('🔗','Doubles','doubles'),('📊','Archive','archive'),('☰','More','more')]
+nav_items=[('🏠','Home','home'),('🎯','Predict','predict'),('🔗','Doubles','doubles'),('📊','Archive','archive'),('✅','Finished','finished'),('☰','More','more')]
 if 'ziczac_active_page' not in st.session_state:
     initial=st.query_params.get('view','home')
     st.session_state['ziczac_active_page']=initial if initial in {x[2] for x in nav_items} else 'home'
@@ -240,7 +240,7 @@ div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
     padding:6px 2px;white-space:normal;
 }
 </style>""",unsafe_allow_html=True)
-nav_cols=st.columns(5,gap='small')
+nav_cols=st.columns(len(nav_items),gap='small')
 for col,(emoji,label,page) in zip(nav_cols,nav_items):
     with col:
         active=st.session_state['ziczac_active_page']==page
@@ -1112,6 +1112,80 @@ st.markdown("""<style>
 </style>""",unsafe_allow_html=True)
 
 with active_page_slot:
+    if view=='finished':
+        st.subheader('🏁 Finished matches · Prediction results')
+        st.caption('🟢 HIT = the predicted exact score matches the verified full-time score. 🔴 ✕ = a different final score. Only forecasts saved before kickoff are evaluated.')
+        if conn is None:
+            st.error('Prediction archive storage is unavailable.')
+        else:
+            from api_football import _request as _finished_api_request, _convert as _finished_convert
+            archived=load(conn)
+            now_utc=datetime.now(timezone.utc)
+            due=[]
+            for saved in archived:
+                try:
+                    kickoff_dt=datetime.fromisoformat(saved['kickoff'].replace('Z','+00:00'))
+                    saved_dt=datetime.fromisoformat(saved['saved_at'].replace('Z','+00:00'))
+                except (ValueError,TypeError,AttributeError):
+                    continue
+                if saved_dt < kickoff_dt and kickoff_dt < now_utc and saved['actual_score'] is None:
+                    due.append(saved)
+            if st.button('🔄 Check completed results',key='finished_refresh',type='primary'):
+                if not secondary_key:
+                    st.warning('API_FOOTBALL_KEY is required to verify finished scores.')
+                else:
+                    verified=[]
+                    errors=[]
+                    for saved in due[:40]:
+                        try:
+                            payload=_finished_api_request(secondary_key,'/fixtures',{'id':saved['fixture_id']})
+                            for raw in payload:
+                                match=_finished_convert(raw,'WORLD')
+                                if match.get('status')=='FINISHED':
+                                    verified.append(match)
+                        except Exception as exc:
+                            errors.append(str(exc)[:140])
+                    updated=reconcile(conn,verified)
+                    st.success(f'Updated {updated} finished results from verified API responses.')
+                    if errors:
+                        st.warning('Some results could not be verified: '+errors[0])
+                    archived=load(conn)
+            completed=[]
+            pending=0
+            for saved in archived:
+                try:
+                    kickoff_dt=datetime.fromisoformat(saved['kickoff'].replace('Z','+00:00'))
+                    saved_dt=datetime.fromisoformat(saved['saved_at'].replace('Z','+00:00'))
+                except (ValueError,TypeError,AttributeError):
+                    continue
+                if saved_dt>=kickoff_dt:
+                    continue
+                actual=saved.get('actual_score')
+                if not actual:
+                    pending+=1
+                    continue
+                predicted=str(saved.get('predicted_score') or '')
+                hit=predicted==str(actual)
+                completed.append({'Status':'🟢 HIT' if hit else '🔴 ✕',
+                                  'Match':str(saved['home'])+' vs '+str(saved['away']),
+                                  'Predicted score':predicted,'Actual score':str(actual),
+                                  'League':saved.get('league',''),
+                                  'Kickoff':saved.get('kickoff','')[:16]})
+            hits=sum(x['Status']=='🟢 HIT' for x in completed)
+            a,b,c=st.columns(3)
+            a.metric('Finished forecasts',len(completed))
+            b.metric('Exact-score hits',hits)
+            c.metric('Hit rate',f'{hits/len(completed):.1%}' if completed else '—')
+            st.caption(f'{pending} saved pre-match predictions still awaiting verified final scores. API-Football results are checked on request.')
+            if completed:
+                status_filter=st.selectbox('Show results',['All','🟢 HIT','🔴 ✕'],key='finished_filter')
+                shown=[x for x in completed if status_filter=='All' or x['Status']==status_filter]
+                st.dataframe(pd.DataFrame(shown),hide_index=True,use_container_width=True,
+                             column_config={'Status':st.column_config.TextColumn(width='small'),
+                                            'Predicted score':st.column_config.TextColumn(width='small'),
+                                            'Actual score':st.column_config.TextColumn(width='small')})
+            else:
+                st.info('No verified finished predictions are stored yet. Results will appear after a pre-match prediction is saved and the final score is checked.')
     c1,c2,c3,c4=st.columns(4)
     c1.metric('Upcoming fixtures',len(rows));c2.metric('Modelled fixtures',sum(bool(r['result']) for r in rows))
     c3.metric('Competitions loaded',len(histories));c4.metric('Saved forecasts',len(load(conn)) if conn else 'N/A')
