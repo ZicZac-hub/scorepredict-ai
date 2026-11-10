@@ -267,7 +267,7 @@ with st.sidebar:
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
     min_prob=st.slider('Minimum double-chance probability',0.50,0.95,0.65,0.01)
-    use_secondary=st.checkbox('Use API-Football backup',value=True,help='Uses a separate free daily quota. Requests are cached for six hours.')
+    use_secondary=st.checkbox('Use API-Football Pro for fixtures and historical results',value=True,help='Prioritise your API-Football subscription for supported leagues; requests are cached.')
     if st.button('Refresh football data'):
         st.rerun()
     st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
@@ -275,6 +275,11 @@ try:secondary_key=st.secrets.get('API_FOOTBALL_KEY','') or os.environ.get('API_F
 except Exception:secondary_key=os.environ.get('API_FOOTBALL_KEY','')
 try:sportmonks_key=st.secrets.get('THIRD_FOOTBALL_API_KEY','') or os.environ.get('THIRD_FOOTBALL_API_KEY','')
 except Exception:sportmonks_key=os.environ.get('THIRD_FOOTBALL_API_KEY','')
+st.subheader('🚀 ZicZac Pro · Tomorrow & worldwide predictions')
+if secondary_key:
+    st.success('API-Football key configured · Pro research enabled. Select Tomorrow, choose a match, then run Research selected matches.')
+else:
+    st.warning('API_FOOTBALL_KEY is missing. Configure the existing key in Streamlit Secrets.')
 st.subheader('🌍 Worldwide fixtures by Sydney date')
 st.caption('Date-first discovery combines API-Football, TheSportsDB and Sportmonks (when configured). Each provider is limited to its subscription coverage.')
 choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True)
@@ -368,16 +373,18 @@ with st.spinner('Collecting fixtures and completed results...'):
             past=history(key,code)
         except Exception as e:
             errors.append(f'{name}: primary historical data unavailable ({e})')
-        # The backup is queried only when primary coverage is missing.
-        if use_secondary and secondary_key and code in supported_codes() and (not upcoming or not past):
+        # Prefer API-Football Pro data over the older provider.
+        if use_secondary and secondary_key and code in supported_codes():
             try:
-                if not upcoming:
-                    upcoming=secondary_fixtures(secondary_key,code,now,14)
-                    if upcoming:source='API-Football backup'
-                if not past:
-                    past=secondary_history(secondary_key,code,now)
+                pro_upcoming=secondary_fixtures(secondary_key,code,now,14)
+                pro_past=secondary_history(secondary_key,code,now)
+                if pro_upcoming:
+                    upcoming=pro_upcoming
+                    source='API-Football Pro'
+                if pro_past and (source=='API-Football Pro' or not past):
+                    past=pro_past
             except Exception as e:
-                errors.append(f'{name}: API-Football backup unavailable ({e})')
+                errors.append(f'{name}: API-Football Pro unavailable ({e})')
         histories[name]=past
         visible=0
         for m in upcoming:
@@ -605,7 +612,7 @@ st.session_state['worldwide_fixture_selection']=[name for name in st.session_sta
                                                   if name in visible_options]
 selected_worldwide=st.multiselect('Matches in selected league',visible_options,
                                    key='worldwide_fixture_selection',
-                                   help='Choose fixtures from this league to request verified historical analysis. Free API coverage varies.')
+                                   help='Choose fixtures from this league to research with API-Football Pro when supported.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
 if st.session_state.get('worldwide_model_version') != 'pro-history-v5':
     st.session_state['worldwide_models']={}
