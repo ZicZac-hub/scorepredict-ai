@@ -1275,7 +1275,7 @@ with active_page_slot:
             st.info('No match with sufficient verified historical data is available for tomorrow (Sydney time). The featured score will appear when Pro research finds an eligible match.')
     st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
     st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
-    st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','more':'☰ More · Model information'}[view])
+    st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','finished':'🏁 Finished · Verified final scores and prediction accuracy','more':'☰ More · Model information'}[view])
     tabs=[st.container() for _ in range(7)]
 
     def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
