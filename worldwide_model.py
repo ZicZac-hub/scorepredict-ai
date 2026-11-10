@@ -131,8 +131,7 @@ def model_worldwide(key, event):
             context["injuries"] = [
                 {"team": (i.get("team") or {}).get("name"),
                  "player": (i.get("player") or {}).get("name"),
-                 "reason": (i.get("player") or {}).get("reason") or
-                           (i.get("fixture") or {}).get("status",{}).get("long")}
+                 "reason": (i.get("player") or {}).get("reason") or "Reason not provided"}
                 for i in injuries[:30]]
         lineups = optional("fixture lineups", "/fixtures/lineups",
                            {"fixture": fixture.get("id")})
