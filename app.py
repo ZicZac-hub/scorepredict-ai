@@ -1232,6 +1232,41 @@ with active_page_slot:
                                   'League':saved.get('league',''),
                                   'Kickoff (Sydney)':sydney_kickoff(saved.get('kickoff',''))})
             hits=sum(x['Status']=='🟢 HIT' for x in completed)
+            # Score-distribution diagnostics: the expected number of top-score
+            # hits is the sum of probabilities saved before each match.
+            # A single observed hit rate must not be mistaken for proof that
+            # the model is worse than its stated 8–12% exact-score chances.
+            _expected_hits=0.0
+            _expected_count=0
+            _top3_hits=0
+            _top3_count=0
+            _score_log_losses=[]
+            _league_quality={}
+            for _saved in archived:
+                if not _saved.get('actual_score') or not _saved.get('scores_json'):
+                    continue
+                try:
+                    _kick=datetime.fromisoformat(_saved['kickoff'].replace('Z','+00:00'))
+                    _saved_at=datetime.fromisoformat(_saved['saved_at'].replace('Z','+00:00'))
+                    if _saved_at>=_kick:continue
+                    _sc=json.loads(_saved['scores_json'])
+                    if not isinstance(_sc,list) or not _sc:continue
+                    _top=float(_sc[0][2])
+                    if not 0<=_top<=1:continue
+                    _expected_hits+=_top
+                    _expected_count+=1
+                    _league=str(_saved.get('league') or 'Unknown')
+                    _league_quality.setdefault(_league,{'matches':0,'hits':0,'expected':0.0})
+                    _league_quality[_league]['matches']+=1
+                    _league_quality[_league]['hits']+=int(str(_saved.get('predicted_score'))==str(_saved['actual_score']))
+                    _league_quality[_league]['expected']+=_top
+                    _actual_pair=tuple(int(v) for v in str(_saved['actual_score']).split('-'))
+                    _top3_count+=1
+                    _top3_hits+=int(any((int(row[0]),int(row[1]))==_actual_pair for row in _sc[:3]))
+                    # Only top scores were archived, so a full score-grid
+                    # log loss cannot be reconstructed without inventing tails.
+                except (ValueError,TypeError,IndexError,KeyError,AttributeError,json.JSONDecodeError):
+                    continue
             # Evaluate the separately important match-outcome prediction.
             _outcome_count=0
             _outcome_hits=0
@@ -1256,6 +1291,21 @@ with active_page_slot:
             a.metric('Finished forecasts',len(completed))
             b.metric('Exact-score hits',hits)
             c.metric('Hit rate',f'{hits/len(completed):.1%}' if completed else '—')
+            if _expected_count:
+                _d1,_d2,_d3=st.columns(3)
+                _d1.metric('Expected exact-score hits',f'{_expected_hits:.1f}')
+                _d2.metric('Top-3 score coverage',f'{_top3_hits}/{_top3_count}' if _top3_count else '—')
+                _d3.metric('Expected top-score rate',f'{_expected_hits/_expected_count:.1%}')
+                st.caption(f'Among {_expected_count} saved forecasts with probability data, the model expected about {_expected_hits:.1f} exact-score hits. Compare this with observed hits over the SAME sample; a small sample is noisy.')
+                _league_rows=[{'Competition':name,'Completed':v['matches'],
+                               'Exact hits':v['hits'],
+                               'Expected hits':round(v['expected'],2),
+                               'Observed hit rate':f"{v['hits']/v['matches']:.1%}"}
+                              for name,v in _league_quality.items()]
+                with st.expander('🔬 Accuracy audit by competition · actual vs expected'):
+                    st.dataframe(pd.DataFrame(sorted(_league_rows,key=lambda x:-x['Completed'])),
+                                 hide_index=True,use_container_width=True)
+                    st.caption('A league with only a few completed predictions is not enough to establish which model performs better.')
             _oc1,_oc2=st.columns(2)
             _oc1.metric('Match outcome accuracy (1X2)',f'{_outcome_hits/_outcome_count:.1%}' if _outcome_count else '—')
             _oc2.metric('1X2 Brier score · lower better',f'{sum(_brier_values)/len(_brier_values):.3f}' if _brier_values else '—')
