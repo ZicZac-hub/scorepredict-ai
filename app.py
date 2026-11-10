@@ -8,6 +8,7 @@ from data import competitions, fixtures, history
 from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
 from worldwide import worldwide, SYDNEY
 from global_fixtures import global_fixtures
+from sportmonks import sportmonks_fixtures
 from engine import predict
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
@@ -39,8 +40,10 @@ with st.sidebar:
     st.caption('Data cached for 1 hour. Refresh reruns the page without bypassing API cooldowns. Saved snapshots may be older.')
 try:secondary_key=st.secrets.get('API_FOOTBALL_KEY','') or os.environ.get('API_FOOTBALL_KEY','')
 except Exception:secondary_key=os.environ.get('API_FOOTBALL_KEY','')
+try:sportmonks_key=st.secrets.get('THIRD_FOOTBALL_API_KEY','') or os.environ.get('THIRD_FOOTBALL_API_KEY','')
+except Exception:sportmonks_key=os.environ.get('THIRD_FOOTBALL_API_KEY','')
 st.subheader('🌍 Worldwide fixtures by Sydney date')
-st.caption('Date-first discovery combines cached API-Football results (if supported by your plan) and limited TheSportsDB fixtures. Coverage is not complete worldwide.')
+st.caption('Date-first discovery combines API-Football, TheSportsDB and Sportmonks (when configured). Each provider is limited to its subscription coverage.')
 choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True)
 today=datetime.now(SYDNEY).date()
 start_day=today+timedelta(days=1) if choice=='Tomorrow' else today
@@ -53,6 +56,12 @@ with st.expander('Worldwide match finder',expanded=True):
             global_errors+=api_errors
             seen={(m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) for m in api_matches}
             global_matches=api_matches+[m for m in global_matches if (m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) not in seen]
+            global_matches.sort(key=lambda m:m['kickoff'])
+        if sportmonks_key:
+            sm_matches,sm_errors=sportmonks_fixtures(sportmonks_key,start_day,span)
+            global_errors+=sm_errors
+            known={(m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) for m in global_matches}
+            global_matches += [m for m in sm_matches if (m['kickoff'].strftime('%Y-%m-%dT%H:%M'),m['home'].casefold(),m['away'].casefold()) not in known]
             global_matches.sort(key=lambda m:m['kickoff'])
         country_options=sorted({m['country'] for m in global_matches})
         country=st.selectbox('Country', ['All countries']+country_options)
