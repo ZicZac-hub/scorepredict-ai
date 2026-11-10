@@ -728,29 +728,63 @@ with active_page_slot:
             st.subheader('Choose the two matches for your exact-score double')
             st.caption('Choose two different matches with verified historical results. Worldwide fixtures without sufficient model data cannot be assigned invented probabilities.')
             if len(chosen_rows)>=2:
-                pair_options={fixture_label(r):r for r in chosen_rows}
+                # Show future fixtures in Sydney time, nearest first; do not default
+                # to arbitrary previously selected games several weeks away.
+                def _double_local_time(r):
+                    try:
+                        return datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
+                    except (ValueError,TypeError,KeyError):
+                        return datetime.max.replace(tzinfo=SYDNEY)
+                tomorrow=today+timedelta(days=1)
+                st.markdown('**📅 Upcoming matches — Sydney time**')
+                double_window=st.selectbox('Show matches for',[
+                    'Tomorrow','Next 3 days','Next 7 days','Next 14 days','All upcoming'
+                ],index=0,key='manual_double_window')
+                window_days={'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}.get(double_window)
+                # Include all available prediction-ready fixtures, not just the
+                # initial eight preselected by the general analysis selector.
+                all_pair_rows={str(r['fixture'].get('provider',''))+':'+str(r['fixture'].get('id','')):r
+                               for r in rows if r.get('result')}
+                pair_candidates=sorted(all_pair_rows.values(),key=_double_local_time)
+                pair_candidates=[r for r in pair_candidates
+                                 if _double_local_time(r).date()>=tomorrow
+                                 and (window_days is None or _double_local_time(r).date()<tomorrow+timedelta(days=window_days))]
+                st.caption(f'{len(pair_candidates)} prediction-ready matches in this period. Only verified historical data is used.')
+                if len(pair_candidates)<2:
+                    st.info('Fewer than two prediction-ready matches are available in this date range. Try a longer range or add more competitions. Unverified predictions are not invented.')
+                pair_options={fixture_label(r):r for r in pair_candidates}
                 pair_names=list(pair_options)
-                first_name=st.selectbox('Match 1',pair_names,key='manual_double_first')
+                first_name=st.selectbox('Match 1',pair_names,key='manual_double_first',
+                                        index=0 if pair_names else None,
+                                        placeholder='Choose an upcoming match')
                 second_names=[name for name in pair_names if name!=first_name]
-                second_name=st.selectbox('Match 2',second_names,key='manual_double_second')
-                first=pair_options[first_name]
-                second=pair_options[second_name]
+                second_name=st.selectbox('Match 2',second_names,key='manual_double_second',
+                                         index=0 if second_names else None,
+                                         placeholder='Choose a different match')
+                if first_name is None or second_name is None:
+                    st.caption('Select two available matches to calculate exact-score doubles.')
+                else:
+                    st.caption('Match 1: '+_double_local_time(pair_options[first_name]).strftime('%a %d %b, %I:%M %p')+' Sydney · Match 2: '+_double_local_time(pair_options[second_name]).strftime('%a %d %b, %I:%M %p')+' Sydney')
                 manual_options=[]
-                for h1,a1,p1 in first['result']['scores'][:10]:
-                    for h2,a2,p2 in second['result']['scores'][:10]:
-                        manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
-                            'P1':p1,'P2':p2,'Joint':p1*p2})
-                manual_options.sort(key=lambda o:o['Joint'],reverse=True)
-                st.markdown('**Top five exact-score doubles for your two chosen matches**')
-                st.write(f"**Match 1:** {first_name}")
-                st.write(f"**Match 2:** {second_name}")
-                manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
-                    'Match 2 score':o['Score 2'],'Match 1 probability':f"{o['P1']:.2%}",
-                    'Match 2 probability':f"{o['P2']:.2%}",
-                    'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
-                st.dataframe(manual_df,hide_index=True,use_container_width=True)
-                st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
-                                   'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
+                if first_name is not None and second_name is not None:
+                    first=pair_options[first_name]
+                    second=pair_options[second_name]
+                    for h1,a1,p1 in first['result']['scores'][:10]:
+                        for h2,a2,p2 in second['result']['scores'][:10]:
+                            manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
+                                'P1':p1,'P2':p2,'Joint':p1*p2})
+                if manual_options:
+                        manual_options.sort(key=lambda o:o['Joint'],reverse=True)
+                    st.markdown('**Top five exact-score doubles for your two chosen matches**')
+                    st.write(f"**Match 1:** {first_name}")
+                    st.write(f"**Match 2:** {second_name}")
+                    manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
+                        'Match 2 score':o['Score 2'],'Match 1 probability':f"{o['P1']:.2%}",
+                        'Match 2 probability':f"{o['P2']:.2%}",
+                        'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
+                    st.dataframe(manual_df,hide_index=True,use_container_width=True)
+                    st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
+                                       'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
             else:
                 st.info('Select at least two fixtures in the match selector above to choose your own double.')
             st.divider()
