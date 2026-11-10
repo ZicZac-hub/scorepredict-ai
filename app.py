@@ -156,9 +156,26 @@ st.markdown("""<style>
 }
 </style>
 <div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
-<div class="zz-nav"><a class="zz-nav-item" href="?view=home"><span class="zz-ico">⌂</span>Home</a><a class="zz-nav-item" href="?view=predict"><span class="zz-ico">🎯</span>Predict</a><a class="zz-nav-item" href="?view=doubles"><span class="zz-ico">🔗</span>Doubles</a><a class="zz-nav-item" href="?view=archive"><span class="zz-ico">📊</span>Archive</a><a class="zz-nav-item" href="?view=more"><span class="zz-ico">☰</span>More</a></div>
+
 <div class="zz-stadium"><div class="zz-stadium-copy"><div class="zz-stadium-title">Today's Football<br>Predictions</div><div class="zz-stadium-desc">⚡ Data-driven analysis · Exact scores · Worldwide matches</div><div style="font-size:28px;margin-top:9px">⚽</div></div></div></div>
 """,unsafe_allow_html=True)
+# Native Streamlit navigation: widget state updates without full browser navigation.
+# This avoids the flashing caused by the previous href="?view=..." links.
+nav_labels=['🏠 Home','🎯 Predict','🔗 Doubles','📊 Archive','☰ More']
+if 'ziczac_navigation' not in st.session_state:
+    initial_view=st.query_params.get('view','home')
+    st.session_state['ziczac_navigation']={'home':nav_labels[0],'predict':nav_labels[1],'doubles':nav_labels[2],'archive':nav_labels[3],'more':nav_labels[4]}.get(initial_view,nav_labels[0])
+st.markdown("""<style>
+/* Accessible, touch-friendly native navigation; no browser page reloads. */
+div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) {margin:-4px 0 12px}
+div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) [role="radiogroup"] {display:flex;flex-wrap:nowrap;gap:5px;width:100%}
+div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label {flex:1;min-width:0;background:#1b2c53;border:1px solid #6380ba;border-radius:12px;padding:12px 2px;justify-content:center;cursor:pointer}
+div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label:has(input:checked){background:#6549df;border-color:#c0a9ff}
+div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label p{font-size:12px!important;font-weight:750;white-space:nowrap}
+div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label>div:first-child{display:none}
+</style>""",unsafe_allow_html=True)
+selected_nav=st.radio('Dashboard navigation',nav_labels,horizontal=True,key='ziczac_navigation',label_visibility='collapsed')
+view={nav_labels[0]:'home',nav_labels[1]:'predict',nav_labels[2]:'doubles',nav_labels[3]:'archive',nav_labels[4]:'more'}[selected_nav]
 
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
@@ -394,11 +411,6 @@ for preview in dashboard_rows:
     st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
 st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
 st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
-# The header links change the URL view; only the corresponding sections are rendered.
-view=st.query_params.get('view','home')
-if view not in ('home','predict','doubles','archive','more'):
-    view='home'
-st.markdown("""<style>.zz-nav-item{text-decoration:none!important;display:block;cursor:pointer;transition:background .15s,border-color .15s}.zz-nav-item:hover{background:#31477b;border-color:#a7c5ff}.zz-nav-item:first-child{background:#1d315c;border-color:#6481bc}.zz-nav-item[href="?view="""+view+""""]{background:linear-gradient(130deg,#6549ef,#9944dd)!important;border-color:#c1aaff!important;box-shadow:0 0 18px #7856ff77}</style>""",unsafe_allow_html=True)
 st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','more':'☰ More · Model information'}[view])
 tabs=[st.container() for _ in range(7)]
 
