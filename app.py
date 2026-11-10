@@ -120,6 +120,40 @@ st.markdown("""<style>
 .zz-match-score{display:inline-block;background:linear-gradient(135deg,#0f756a,#1a9b70);border-radius:10px;padding:6px 14px;font-size:20px;margin:9px auto;color:white}
 .zz-match-meta{text-align:center;font-size:12px;color:#aabde5}
 @media(max-width:600px){.zz-head{padding:14px 10px}.zz-nav{gap:5px}.zz-nav-item{font-size:10px;padding:9px 2px}.zz-nav-item .zz-ico{font-size:19px}.zz-stadium{min-height:155px}.zz-feature{padding:11px 9px;gap:7px}.zz-feature strong{font-size:12px}.zz-feature-icon{font-size:21px}}
+/* Readability upgrade for iPhone: stronger hierarchy, contrast and spacing. */
+.zz-head{background:linear-gradient(155deg,#13254c 0%,#14254c 58%,#211c53 100%);border:2px solid #6e87cb;box-shadow:0 16px 38px #0009}
+.zz-logo{font-size:46px}
+.zz-name{font-size:clamp(29px,6.5vw,40px);text-shadow:0 2px 8px #0008}
+.zz-sub{font-size:clamp(15px,3.5vw,18px);color:#f0f5ff;font-weight:600}
+.zz-by{font-size:14px;color:#c7e7ff;letter-spacing:.09em}
+.zz-nav{gap:9px}
+.zz-nav-item{background:#1d315c;border:2px solid #6481bc;color:#fff;font-size:13px;padding:15px 4px 13px;box-shadow:inset 0 1px #ffffff1a}
+.zz-nav-item:first-child{background:linear-gradient(130deg,#6549ef,#9944dd);border-color:#ac8bff}
+.zz-nav-item .zz-ico{font-size:27px}
+.zz-stadium{border:2px solid #7999dc;background:linear-gradient(180deg,#132c59 0%,#193b6c 58%,#086244 100%);min-height:205px}
+.zz-stadium-copy{padding:24px 12px 48px;background:linear-gradient(180deg,#07142b65,#07142b20)}
+.zz-stadium-title{font-size:clamp(26px,6vw,37px);text-shadow:0 3px 7px #000,0 0 14px #0009}
+.zz-stadium-desc{font-size:clamp(14px,3.2vw,17px);font-weight:650;color:#fff;text-shadow:0 2px 7px #000}
+.zz-section-title{font-size:clamp(24px,5vw,30px)}
+.zz-feature{background:#1a2c55;border-color:#6c86bd}
+.zz-feature strong{font-size:16px}.zz-feature small{font-size:13px;color:#e0eaff}
+.zz-match-card{background:#192c55;border-color:#6f8dcb}
+.zz-match-top,.zz-match-meta{font-size:14px;color:#e2ecff}
+.zz-match-teams{font-size:20px}
+[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li{line-height:1.65}
+[data-testid="stWidgetLabel"] p{font-size:16px!important;font-weight:650;color:#f2f6ff!important}
+[data-testid="stExpander"]{background:#142443!important;border:1px solid #536fa5!important}
+[data-baseweb="select"]>div,[data-testid="stTextInput"] input{background:#1a2b4b!important;border-color:#6786b8!important;color:#fff!important}
+@media(max-width:680px){
+.zz-head{padding:18px 12px}
+.zz-nav{gap:6px}
+.zz-nav-item{font-size:12px;padding:13px 2px;min-height:86px}
+.zz-nav-item .zz-ico{font-size:24px;margin-bottom:8px}
+.zz-stadium{min-height:190px}
+.zz-feature strong{font-size:14px}
+.zz-feature-icon{font-size:25px}
+[data-testid="stMarkdownContainer"] p{font-size:15px}
+}
 </style>
 <div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
 <div class="zz-nav"><div class="zz-nav-item"><span class="zz-ico">⌂</span>Home</div><div class="zz-nav-item"><span class="zz-ico">🎯</span>Predict</div><div class="zz-nav-item"><span class="zz-ico">🔗</span>Doubles</div><div class="zz-nav-item"><span class="zz-ico">📊</span>Archive</div><div class="zz-nav-item"><span class="zz-ico">☰</span>More</div></div>
