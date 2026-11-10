@@ -774,7 +774,7 @@ with active_page_slot:
                             manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
                                 'P1':p1,'P2':p2,'Joint':p1*p2})
                 if manual_options:
-                        manual_options.sort(key=lambda o:o['Joint'],reverse=True)
+                    manual_options.sort(key=lambda o:o['Joint'],reverse=True)
                     st.markdown('**Top five exact-score doubles for your two chosen matches**')
                     st.write(f"**Match 1:** {first_name}")
                     st.write(f"**Match 2:** {second_name}")
