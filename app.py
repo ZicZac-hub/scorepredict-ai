@@ -1717,6 +1717,25 @@ with active_page_slot:
                     st.caption('Select two available matches to calculate exact-score doubles.')
                 else:
                     st.caption('Match 1: '+_double_local_time(pair_options[first_name]).strftime('%a %d %b, %I:%M %p')+' Sydney · Match 2: '+_double_local_time(pair_options[second_name]).strftime('%a %d %b, %I:%M %p')+' Sydney')
+                # Reuse the cached Pro research across navigation and reruns.
+                # Automatically prepare a small bounded set of fixtures for
+                # five doubles; never call the provider for every global match.
+                if secondary_key:
+                    _research_attempts=0
+                    for _name,_candidate in list(pair_options.items()):
+                        if _research_attempts>=4:
+                            break
+                        if _candidate.get('result') or not _candidate.get('_worldwide_event'):
+                            continue
+                        _event=_candidate['_worldwide_event']
+                        if _event.get('source')!='API-Football':
+                            continue
+                        _research_attempts+=1
+                        _researched,_research_error=_cached_pro_worldwide(secondary_key,_event)
+                        if _researched:
+                            pair_options[_name]=_researched
+                        elif _research_error:
+                            st.caption('Research unavailable for '+_name+': '+str(_research_error)[:120])
                 # Model selected worldwide fixtures on demand; do not hide them beforehand.
                 if first_name is not None and second_name is not None and secondary_key:
                     for selected_name in (first_name,second_name):
@@ -1727,7 +1746,7 @@ with active_page_slot:
                         if ev.get('source')!='API-Football':
                             continue
                         with st.spinner('Pro researching '+selected_name+'…'):
-                            researched,error=model_worldwide(secondary_key,ev)
+                            researched,error=_cached_pro_worldwide(secondary_key,ev)
                         st.session_state.setdefault('worldwide_models',{})[selected_row['_worldwide_name']]={'row':researched,'error':error}
                         if researched:
                             pair_options[selected_name]=researched
@@ -1758,10 +1777,14 @@ with active_page_slot:
             else:
                 st.info('Select at least two fixtures in the match selector above to choose your own double.')
             st.divider()
+            # The five-double generator uses the SAME future date window and
+            # league/team filters as the match selector, not the unrelated
+            # analysis-studio default selection (which may be weeks away).
+            chosen_rows=[r for r in pair_options.values() if r.get('result') and r.get('result',{}).get('scores')]
             st.subheader('Five model-ranked exact-score doubles from your selected fixtures')
             st.caption('An exact-score double requires BOTH matches to finish at the specified scores. These probabilities are usually low; they are estimates, not guarantees.')
             if len(chosen_rows)<2:
-                st.info('Select at least two upcoming modelled matches above. Increase Upcoming days or choose more competitions if necessary.')
+                st.info('At least two researched fixtures are required. Choose Next 7 or Next 14 days, All leagues and All teams, or select two API-Football fixtures for Pro research.')
             else:
                 options=[]
                 for a,b in combinations(chosen_rows,2):
