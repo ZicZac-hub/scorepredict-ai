@@ -24,6 +24,25 @@ class RecencyTests(unittest.TestCase):
         self.assertAlmostEqual(rates['scored'],2.0)
         self.assertAlmostEqual(rates['conceded'],1.0)
 
+    def test_outlier_goal_counts_are_capped_in_rate_estimate(self):
+        games=[
+            {'date':'2026-10-30T12:00:00Z','gf':15,'ga':0,'result':'W'},
+            {'date':'2026-10-30T12:00:00Z','gf':1,'ga':1,'result':'D'},
+        ]
+        rates=_stats(games,'2026-11-01T12:00:00Z')
+        self.assertAlmostEqual(rates['scored'],3.0)
+        self.assertEqual(rates['wins'],1)
+        self.assertEqual(rates['draws'],1)
+
+    def test_effective_sample_falls_with_unequal_recency(self):
+        games=[
+            {'date':'2026-10-30T12:00:00Z','gf':1,'ga':0,'result':'W'},
+            {'date':'2024-01-01T12:00:00Z','gf':1,'ga':0,'result':'W'},
+        ]
+        rates=_stats(games,'2026-11-01T12:00:00Z')
+        self.assertLess(rates['effective_played'],2.0)
+        self.assertGreaterEqual(rates['effective_played'],1.0)
+
     def test_future_results_cannot_enter_forecast(self):
         history=[]
         for idx in range(12):
