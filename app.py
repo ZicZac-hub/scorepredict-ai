@@ -403,7 +403,7 @@ def fixture_label(r):
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 st.subheader('🌍 Worldwide Match Explorer')
-st.caption('Research combines football APIs with independent public-web historical match datasets where available. Each modelled result must have verified scores; missing coverage is never fabricated.')
+st.caption('Research checks available authorised football results feeds. When history is insufficient, the app offers public-web research links. External results are not silently treated as verified model data.')
 worldwide_options={item['name']:item for item in discoverable}
 # League-first explorer: choose a competition, then inspect its teams and fixtures.
 # The date-first provider returns only competitions playing in its narrow date
@@ -574,9 +574,9 @@ selected_worldwide=st.multiselect('Matches in selected league',visible_options,
                                    key='worldwide_fixture_selection',
                                    help='Choose fixtures from this league to request verified historical analysis. Free API coverage varies.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
-if st.session_state.get('worldwide_model_version') != 'date-range-v3':
+if st.session_state.get('worldwide_model_version') != 'team-history-v4':
     st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='date-range-v3'
+    st.session_state['worldwide_model_version']='team-history-v4'
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
@@ -627,7 +627,12 @@ if selected_worldwide:
                         st.warning('Fewer than 10 verified results exist in at least one split. This is a limited-sample estimate, not a fully researched 10-match comparison.')
                     st.caption('Mathematical conclusion: most likely result = '+max([('Home win',research['home_win']),('Draw',research['draw']),('Away win',research['away_win'])],key=lambda x:x[1])[0]+'. This is the highest model probability, not a guaranteed outcome.')
             elif cached['error']:
-                st.info(f"{name}: {cached['error']}")
+                st.warning(f"Verified statistical model not ready: {name}. {cached['error']}")
+                from urllib.parse import quote_plus
+                ev=worldwide_options[name]['event']
+                query=quote_plus(f"{ev.get('home','')} {ev.get('away','')} football last 10 results head to head")
+                st.markdown(f"[🔎 Research match history across public websites](https://www.google.com/search?q={query})")
+                st.caption("External search results are references only, not automatically verified or used in the probability model.")
 for name in selected_worldwide:
     candidate=worldwide_options[name]['model']
     if candidate and candidate.get('result') and not any(str(r['fixture'].get('provider'))+':'+str(r['fixture'].get('id'))==str(candidate['fixture'].get('provider'))+':'+str(candidate['fixture'].get('id')) for r in rows):
