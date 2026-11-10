@@ -1629,14 +1629,46 @@ with active_page_slot:
                 st.markdown('**📅 Upcoming matches — Sydney time**')
                 double_window=st.selectbox('Show matches for',[
                     'Tomorrow','Next 3 days','Next 7 days','Next 14 days','All upcoming'
-                ],index=0,key='manual_double_window')
+                ],index=2,key='manual_double_window')
                 window_days={'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}.get(double_window)
                 # Include all available prediction-ready fixtures, not just the
                 # initial eight preselected by the general analysis selector.
                 all_pair_rows={str(r['fixture'].get('provider',''))+':'+str(r['fixture'].get('id','')):r
                                for r in rows if r.get('result')}
-                # Include ALL discovered worldwide fixtures, even before Pro modelling.
-                for item in discoverable:
+                # Doubles must NOT depend on the unrelated Worldwide Finder
+                # date filter. Fetch the doubles window independently; otherwise
+                # Tomorrow can be empty even while future games exist.
+                _double_start=tomorrow
+                _double_span=window_days if window_days is not None else 14
+                @st.cache_data(ttl=3600,show_spinner=False)
+                def _double_discovery(start,days,pro_key,sm_key):
+                    found,warnings=worldwide(start,days)
+                    if pro_key:
+                        api_found,api_warnings=global_fixtures(pro_key,start,days)
+                        found+=api_found
+                        warnings+=api_warnings
+                    if sm_key:
+                        sm_found,sm_warnings=sportmonks_fixtures(sm_key,start,days)
+                        found+=sm_found
+                        warnings+=sm_warnings
+                    unique={}
+                    for ev in found:
+                        identity=(str(ev.get('kickoff')),normalized_team(ev.get('home')),
+                                  normalized_team(ev.get('away')))
+                        # Prefer the API-Football event with a model-ready fixture.
+                        if identity not in unique or ev.get('fixture'):
+                            unique[identity]=ev
+                    return list(unique.values()),warnings
+                _double_events,_double_errors=_double_discovery(_double_start,_double_span,secondary_key if use_secondary else None,sportmonks_key)
+                if _double_errors:
+                    with st.expander('Fixture provider diagnostics'):
+                        for _issue in _double_errors[:8]:
+                            st.caption(str(_issue))
+                # Include all independently discovered future fixtures, even
+                # when the main worldwide finder is set to Today.
+                _double_items=[{'event':ev,'name':f"{ev.get('home')} vs {ev.get('away')} · {ev.get('local')} · {ev.get('league')}",
+                                'model':None} for ev in _double_events]
+                for item in _double_items:
                     ev=item['event']
                     fixture=ev.get('fixture')
                     if not fixture or not fixture.get('utcDate'):
@@ -1650,9 +1682,12 @@ with active_page_slot:
                     all_pair_rows[key_id]=row
                 pair_candidates=sorted(all_pair_rows.values(),key=_double_local_time)
                 pair_candidates=[r for r in pair_candidates
-                                 if _double_local_time(r).date()>=tomorrow
+                                 if _double_local_time(r)>=datetime.now(SYDNEY)
+                                 and _double_local_time(r).date()>=tomorrow
                                  and (window_days is None or _double_local_time(r).date()<tomorrow+timedelta(days=window_days))]
                 st.markdown('**🏆 Choose your league and teams for the double**')
+                if not pair_candidates:
+                    st.warning('No upcoming fixtures returned for this date range. Check the provider diagnostics above or choose Next 14 days.')
                 leagues=sorted({str(r.get('league','Unknown competition')) for r in pair_candidates})
                 selected_double_league=st.selectbox('League',['All leagues']+leagues,key='double_league_filter')
                 if selected_double_league!='All leagues':
