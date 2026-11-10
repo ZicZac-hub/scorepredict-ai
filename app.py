@@ -408,36 +408,94 @@ worldwide_options={item['name']:item for item in discoverable}
 # League-first explorer: choose a competition, then inspect its teams and fixtures.
 # The date-first provider returns only competitions playing in its narrow date
 # window. Keep a stable catalogue of major competitions even during breaks.
+# Broad football competition catalogue inspired by the competition categories
+# publicly displayed by bet365. This is NOT a live bet365 feed.
 major_leagues={
-    '🇪🇺 UEFA Champions League':['champions league','uefa champions','champions league (cl)'],
-    '🇪🇺 UEFA Europa League':['europa league'],
-    '🇪🇺 UEFA Conference League':['conference league'],
-    '🏴 English Premier League':['premier league','premier league (pl)'],
-    '🏴 English Championship':['championship','championship (elc)'],
+    '🇪🇺 UEFA Champions League':['uefa champions league','champions league','champions league (cl)'],
+    '🇪🇺 UEFA Europa League':['uefa europa league','europa league'],
+    '🇪🇺 UEFA Conference League':['uefa conference league','conference league'],
+    '🇪🇺 UEFA Nations League':['uefa nations league','nations league'],
+    '🇪🇺 UEFA European Championship':['uefa euro','european championship','euros'],
+    '🌍 FIFA World Cup':['fifa world cup','world cup'],
+    '🌍 FIFA Club World Cup':['club world cup'],
+    '🌍 World Cup Qualifiers':['world cup qualification','world cup qualifiers','wc qualification'],
+    '🌍 Africa Cup of Nations':['africa cup of nations','afcon'],
+    '🌎 Copa América':['copa america','copa américa'],
+    '🌎 CONCACAF Gold Cup':['gold cup'],
+    '🇪🇺 UEFA Women’s Champions League':['womens champions league',"women's champions league",'uwcl'],
+    '🏴 English Premier League':['english premier league','premier league','premier league (pl)'],
+    '🏴 English Championship':['efl championship','championship','championship (elc)'],
+    '🏴 English League One':['league one','efl league one'],
+    '🏴 English League Two':['league two','efl league two'],
+    '🏴 FA Cup':['fa cup'],
+    '🏴 EFL Cup':['efl cup','carabao cup','league cup'],
+    '🏴 Women’s Super League':['womens super league',"women's super league",'wsl'],
+    '🏴 Scottish Premiership':['scottish premiership','scottish premier league'],
+    '🏴 Scottish Championship':['scottish championship'],
+    '🏴 Scottish Cup':['scottish cup'],
     '🇪🇸 La Liga':['la liga','laliga','primera division','primera división'],
+    '🇪🇸 Segunda División':['segunda division','segunda división','laliga 2','la liga 2'],
     '🇪🇸 Copa del Rey':['copa del rey'],
     '🇩🇪 Bundesliga':['bundesliga','bundesliga (bl1)'],
+    '🇩🇪 2. Bundesliga':['2. bundesliga','bundesliga 2','2 bundesliga'],
+    '🇩🇪 DFB-Pokal':['dfb pokal','dfb-pokal'],
     '🇮🇹 Serie A':['serie a','serie a (sa)'],
+    '🇮🇹 Serie B':['serie b'],
+    '🇮🇹 Coppa Italia':['coppa italia'],
     '🇫🇷 Ligue 1':['ligue 1','ligue 1 (fl1)'],
-    '🇵🇹 Primeira Liga':['primeira liga','primeira liga (ppl)'],
+    '🇫🇷 Ligue 2':['ligue 2'],
+    '🇫🇷 Coupe de France':['coupe de france'],
+    '🇵🇹 Primeira Liga':['primeira liga','liga portugal'],
+    '🇵🇹 Liga Portugal 2':['liga portugal 2','segunda liga portugal'],
     '🇳🇱 Eredivisie':['eredivisie'],
+    '🇳🇱 Eerste Divisie':['eerste divisie'],
+    '🇧🇪 Belgian Pro League':['belgian pro league','jupiler pro league'],
     '🇹🇷 Süper Lig':['super lig','süper lig'],
-    '🇧🇷 Brasileirão Série A':['brasileiro serie a','brasileirão','serie a brazil'],
-    '🇦🇷 Argentine Primera División':['argentine primera','liga profesional argentina'],
+    '🇬🇷 Greek Super League':['super league greece','greek super league'],
+    '🇨🇭 Swiss Super League':['swiss super league'],
+    '🇦🇹 Austrian Bundesliga':['austrian bundesliga'],
+    '🇩🇰 Danish Superliga':['danish superliga'],
+    '🇳🇴 Eliteserien':['eliteserien'],
+    '🇸🇪 Allsvenskan':['allsvenskan'],
+    '🇵🇱 Ekstraklasa':['ekstraklasa'],
+    '🇨🇿 Czech First League':['czech first league','czech liga'],
+    '🇧🇷 Brasileirão Série A':['brasileiro serie a','brasileirão','brazil serie a','serie a brazil'],
+    '🇧🇷 Brasileirão Série B':['brasileiro serie b','brazil serie b'],
+    '🇧🇷 Copa do Brasil':['copa do brasil'],
+    '🇦🇷 Argentine Primera División':['argentine primera','liga profesional argentina','primera division argentina'],
+    '🇦🇷 Copa Argentina':['copa argentina'],
+    '🌎 Copa Libertadores':['copa libertadores','libertadores'],
+    '🌎 Copa Sudamericana':['copa sudamericana','sudamericana'],
     '🇺🇸 Major League Soccer':['major league soccer','mls'],
-    '🇸🇦 Saudi Pro League':['saudi pro league','pro league saudi'],
+    '🇺🇸 US Open Cup':['us open cup'],
     '🇲🇽 Liga MX':['liga mx'],
-    '🇦🇺 A-League Men':['a-league','a league men'],
+    '🇲🇽 Liga de Expansión MX':['liga de expansion','liga de expansión'],
+    '🇨🇴 Categoría Primera A':['primera a colombia','categoria primera a'],
+    '🇨🇱 Chilean Primera División':['primera division chile','chilean primera'],
+    '🇺🇾 Uruguayan Primera División':['primera division uruguay','uruguayan primera'],
+    '🇸🇦 Saudi Pro League':['saudi pro league','pro league saudi','saudi professional league'],
+    '🇦🇪 UAE Pro League':['uae pro league','arabian gulf league'],
+    '🇶🇦 Qatar Stars League':['qatar stars league'],
     '🇯🇵 J1 League':['j1 league','j league'],
-    '🌍 FIFA World Cup':['world cup','fifa world cup'],
-    '🇪🇺 UEFA European Championship':['european championship','euro 2028'],
-    '🌍 Copa Libertadores':['copa libertadores'],
+    '🇯🇵 J2 League':['j2 league'],
+    '🇰🇷 K League 1':['k league 1','k-league 1'],
+    '🇨🇳 Chinese Super League':['chinese super league'],
+    '🇮🇳 Indian Super League':['indian super league'],
+    '🇦🇺 A-League Men':['a-league men','a league men','a-league'],
+    '🇦🇺 A-League Women':['a-league women','a league women'],
+    '🌍 CAF Champions League':['caf champions league'],
+    '🌏 AFC Champions League Elite':['afc champions league','afc champions league elite'],
+    '🌎 CONCACAF Champions Cup':['concacaf champions cup','concacaf champions league'],
 }
+
 def _league_group(name):
     lower=str(name).casefold()
-    for title,aliases in major_leagues.items():
-        if any(alias in lower for alias in aliases):
-            return title
+    # Prefer longer, specific names: 'Club World Cup' before 'World Cup',
+    # '2. Bundesliga' before 'Bundesliga', and women's before men's.
+    matches=[(len(alias),title) for title,aliases in major_leagues.items()
+             for alias in aliases if alias in lower]
+    if matches:
+        return max(matches,key=lambda x:x[0])[1]
     return None
 league_groups={title:[] for title in major_leagues}
 other_groups={}
@@ -474,7 +532,7 @@ for r in rows:
         continue
 league_groups.update(other_groups)
 st.markdown('**🏆 Step 1 · Choose a league**')
-st.caption('Major world leagues stay listed even when no matches are scheduled in the selected dates.')
+st.caption('Broad competition directory inspired by bet365 football categories (not affiliated or synchronised). Fixtures and teams appear only where your connected football data providers return them.')
 league_names=['All leagues']+list(major_leagues)+sorted(other_groups)
 selected_league=st.selectbox('League / competition',league_names,key='worldwide_league_filter')
 league_items=(discoverable if selected_league=='All leagues' else league_groups[selected_league])
