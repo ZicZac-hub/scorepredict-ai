@@ -696,6 +696,78 @@ try:
     for past in histories.values():reconcile(conn,past)
 except Exception as e:st.warning(f'Local prediction snapshot storage unavailable: {e}')
 
+# Corner assistant: works with live loaded fixtures and modelled results.
+# Optional OPENAI_API_KEY enables conversational responses; the local fallback
+# remains functional without any additional paid service.
+def _assistant_reply(question):
+    import re
+    q=question.casefold().strip()
+    future=sorted([r for r in rows if r.get('result') and r.get('kickoff','')>=datetime.now(timezone.utc).isoformat()[:10]],key=lambda r:r.get('kickoff',''))
+    def _name(r):
+        f=r['fixture']
+        return f"{f['homeTeam'].get('name','Home')} vs {f['awayTeam'].get('name','Away')}"
+    def _local(r):
+        return datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
+    tomorrow_day=datetime.now(SYDNEY).date()+timedelta(days=1)
+    if any(w in q for w in ['double','accumulator','acca','parlay','5 prediction','five prediction']):
+        from advanced import five_two_leg_doubles
+        pairs=five_two_leg_doubles(future)
+        if not pairs:
+            return 'I cannot produce five verified doubles from the currently loaded fixtures. Select more leagues and a wider date range, then try again. I will not invent probabilities.'
+        lines=['**Top available two-leg doubles (model estimates):**']
+        for i,p in enumerate(pairs[:5],1):
+            lines.append(f"{i}. {_name(p['leg1'])} — {p['leg1']['selection']} + {_name(p['leg2'])} — {p['leg2']['selection']} · estimated joint chance {p['joint_probability_independent']:.1%}")
+        return '\\n\\n'.join(lines)+'\\n\\nThese are not guaranteed outcomes; combinations can share matches and are not independent opportunities. Open **Doubles** to choose your own league and teams.'
+    if any(w in q for w in ['tomorrow','today','upcoming','fixture','next match','schedule']):
+        filtered=future
+        if 'tomorrow' in q:filtered=[r for r in future if _local(r).date()==tomorrow_day]
+        elif 'today' in q:filtered=[r for r in future if _local(r).date()==datetime.now(SYDNEY).date()]
+        if not filtered:
+            return 'No prediction-ready matches are loaded for that period. Use **Worldwide Match Finder** to discover more fixtures. Discovery-only matches may lack verified historical data.'
+        return '**Available prediction-ready fixtures (Sydney time):**\\n\\n'+'\\n\\n'.join(f"- {_name(r)} · {_local(r):%d %b, %I:%M %p} · {r.get('league','')}" for r in filtered[:12])
+    candidates=[r for r in future if any(token in (_name(r)+' '+str(r.get('league',''))).casefold() for token in re.findall(r'[a-z]{4,}',q) if token not in {'score','match','predict','prediction','about','details','analysis','league','team','football','correct'})]
+    if candidates:
+        r=candidates[0];p=r['result']
+        scores=p.get('scores',[])
+        top=', '.join(f"{h}-{a} ({prob:.1%})" for h,a,prob in scores[:5])
+        return f"**{_name(r)}** · {_local(r):%d %b, %I:%M %p} Sydney\\n\\nHome {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}.\\n\\n**Five most likely exact scores:** {top}.\\n\\nThese are mathematical estimates based on available verified results, not guaranteed scores."
+    if any(w in q for w in ['how','help','website','navigate','league','country','accuracy']):
+        return 'Use **Worldwide Match Finder** for dates, countries and teams; **Predict** for exact-score probabilities; **Doubles** for five two-leg combinations and manual match selection; **Archive** for recorded prediction accuracy. Ask me about a team, tomorrow’s matches or five doubles.'
+    return 'I can help with upcoming fixtures, team predictions, five exact-score candidates and five doubles from the verified matches currently loaded. Try: “Tomorrow’s matches”, “Five doubles”, or “Chelsea prediction”. I do not search the whole internet in real time.'
+
+with st.container(key='ziczac_assistant_corner'):
+    with st.popover('🤖 Ask ZicZac AI',use_container_width=False):
+        st.markdown('**⚽ ZicZac Football Assistant**')
+        st.caption('Ask about upcoming games, teams, exact scores or five doubles. Answers use the website’s currently loaded match data.')
+        if 'zz_chat_messages' not in st.session_state:
+            st.session_state.zz_chat_messages=[]
+        for msg in st.session_state.zz_chat_messages[-10:]:
+            with st.chat_message(msg['role']):
+                st.markdown(msg['content'])
+        question=st.chat_input('Ask about a match or five doubles…',key='zz_corner_chat')
+        if question:
+            st.session_state.zz_chat_messages.append({'role':'user','content':question})
+            answer=_assistant_reply(question)
+            st.session_state.zz_chat_messages.append({'role':'assistant','content':answer})
+            with st.chat_message('user'):st.markdown(question)
+            with st.chat_message('assistant'):st.markdown(answer)
+        if st.button('Clear chat',key='zz_chat_clear'):
+            st.session_state.zz_chat_messages=[]
+            st.rerun()
+st.markdown("""<style>
+.st-key-ziczac_assistant_corner {
+    position:fixed!important;bottom:88px;right:14px;z-index:999!important;
+    width:auto!important;max-width:calc(100vw - 28px);
+}
+.st-key-ziczac_assistant_corner [data-testid="stPopover"] > button {
+    border-radius:999px!important;background:linear-gradient(125deg,#6845e8,#963ee4)!important;
+    border:2px solid #b39aff!important;color:white!important;
+    box-shadow:0 8px 26px #0009!important;font-weight:800!important;
+    padding:11px 16px!important;min-height:49px!important;
+}
+@media(max-width:600px){.st-key-ziczac_assistant_corner{right:12px;bottom:90px}}
+</style>""",unsafe_allow_html=True)
+
 with active_page_slot:
     c1,c2,c3,c4=st.columns(4)
     c1.metric('Upcoming fixtures',len(rows));c2.metric('Modelled fixtures',sum(bool(r['result']) for r in rows))
