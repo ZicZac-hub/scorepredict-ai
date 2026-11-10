@@ -178,10 +178,14 @@ picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
 preselected=[name for name,item in worldwide_options.items() if str(item['event']['source'])+':'+str(item['event']['id']) in picked_ids]
 selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),default=preselected,help='Matches selected in the finder appear here. Exact-score doubles require verified model history.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
+if st.session_state.get('worldwide_model_version') != 'date-range-v2':
+    st.session_state['worldwide_models']={}
+    st.session_state['worldwide_model_version']='date-range-v2'
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
     if st.button('🔎 Analyse selected worldwide matches',help='Fetch verified recent results for selected API-Football matches; uses your API quota.'):
+        st.session_state['worldwide_models']={k:v for k,v in st.session_state['worldwide_models'].items() if k not in selected_worldwide}
         for name in selected_worldwide[:8]:
             item=worldwide_options[name]
             if item['model'] and item['model'].get('result'):
