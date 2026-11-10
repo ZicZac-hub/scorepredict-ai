@@ -34,6 +34,22 @@ h2{font-size:1.3rem!important}
 [data-testid="stTabs"] [role="tablist"]{overflow-x:auto}
 .stDataFrame{max-width:100%;overflow-x:auto}
 }
+/* Illustrated football stadium, floodlights and pitch behind the dashboard. */
+[data-testid="stAppViewContainer"]{
+ background-image:linear-gradient(180deg,rgba(4,10,25,.63),rgba(5,10,22,.84) 52%,rgba(5,10,22,.91)),url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201440%201000%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22sky%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23071226%22%2F%3E%3Cstop%20offset%3D%22.68%22%20stop-color%3D%22%230b1930%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23071422%22%2F%3E%3C%2FlinearGradient%3E%0A%3CradialGradient%20id%3D%22light%22%3E%3Cstop%20stop-color%3D%22%23d5ecff%22%20stop-opacity%3D%22.75%22%2F%3E%3Cstop%20offset%3D%22.15%22%20stop-color%3D%22%236bb8ff%22%20stop-opacity%3D%22.23%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%234b9dff%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%0A%3ClinearGradient%20id%3D%22pitch%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%230a3b3e%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23071c2c%22%2F%3E%3C%2FlinearGradient%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D%221440%22%20height%3D%221000%22%20fill%3D%22url(%23sky)%22%2F%3E%0A%3Cpath%20d%3D%22M0%20390%20Q720%20110%201440%20390%20L1440%20750%20Q720%20570%200%20750Z%22%20fill%3D%22%230c1b35%22%20stroke%3D%22%2328466b%22%20stroke-width%3D%228%22%2F%3E%0A%3Cpath%20d%3D%22M0%20475%20Q720%20225%201440%20475%20M0%20545%20Q720%20305%201440%20545%20M0%20615%20Q720%20395%201440%20615%22%20fill%3D%22none%22%20stroke%3D%22%235476a1%22%20stroke-opacity%3D%22.24%22%20stroke-width%3D%2215%22%20stroke-dasharray%3D%228%2016%22%2F%3E%0A%3Cpath%20d%3D%22M0%20710%20Q720%20580%201440%20710%20L1440%201000%20H0Z%22%20fill%3D%22url(%23pitch)%22%2F%3E%0A%3Cpath%20d%3D%22M0%20800%20Q720%20690%201440%20800%20M720%20745%20V1000%20M510%20840%20Q720%20780%20930%20840%20Q1000%20885%20930%20930%20Q720%20980%20510%20930%20Q440%20885%20510%20840%22%20fill%3D%22none%22%20stroke%3D%22%238ee7dd%22%20stroke-opacity%3D%22.23%22%20stroke-width%3D%225%22%2F%3E%0A%3Cpath%20d%3D%22M0%20980%20Q720%20835%201440%20980%22%20fill%3D%22none%22%20stroke%3D%22%238ee7dd%22%20stroke-opacity%3D%22.16%22%20stroke-width%3D%226%22%2F%3E%0A%3Ccircle%20cx%3D%22125%22%20cy%3D%22205%22%20r%3D%22350%22%20fill%3D%22url(%23light)%22%2F%3E%3Ccircle%20cx%3D%221315%22%20cy%3D%22205%22%20r%3D%22350%22%20fill%3D%22url(%23light)%22%2F%3E%0A%3Cg%20fill%3D%22%23d9efff%22%20opacity%3D%22.55%22%3E%3Crect%20x%3D%2270%22%20y%3D%22165%22%20width%3D%22110%22%20height%3D%2217%22%20rx%3D%225%22%2F%3E%3Crect%20x%3D%221260%22%20y%3D%22165%22%20width%3D%22110%22%20height%3D%2217%22%20rx%3D%225%22%2F%3E%3C%2Fg%3E%0A%3Cg%20stroke%3D%22%2392c9ff%22%20stroke-opacity%3D%22.13%22%20stroke-width%3D%223%22%3E%3Cpath%20d%3D%22M110%20185%20L0%20770%20M150%20185%20L460%20840%20M1280%20185%20L980%20840%20M1340%20185%20L1440%20770%22%2F%3E%3C%2Fg%3E%0A%3C%2Fsvg%3E")!important;
+ background-position:center top!important;
+ background-size:cover!important;
+ background-repeat:no-repeat!important;
+ background-attachment:fixed!important;
+}
+[data-testid="stAppViewContainer"]::before{
+ background:linear-gradient(90deg,transparent,rgba(45,108,170,.045) 50%,transparent)!important;
+}
+[data-testid="stMainBlockContainer"]{position:relative;z-index:1}
+@media(max-width:680px){
+ [data-testid="stAppViewContainer"]{background-position:center top!important;background-attachment:scroll!important;background-size:auto 100vh!important}
+}
+
 /* Football stadium atmosphere: CSS-only, fast and readable on phones. */
 [data-testid="stAppViewContainer"]{
  background-color:#070e1e;
