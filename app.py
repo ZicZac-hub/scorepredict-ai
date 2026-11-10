@@ -492,10 +492,35 @@ with tabs[4]:
                 cols[2].metric('1X2 result accuracy',f"{completed['result_hit'].mean():.1%}")
                 cols[3].metric('Top-five score hit rate',f"{completed['top5_hit'].mean():.1%}")
                 st.caption(f'{total-resolved} forecasts awaiting results. Rates are based only on {resolved} completed matches.')
-                details=completed[['kickoff','league','home','away','predicted_score','actual_score','exact_hit','result_hit','top5_hit']].copy()
-                details.columns=['Kickoff (UTC)','League','Home','Away','Predicted','Final','Exact hit','1X2 hit','Top-five hit']
-                st.dataframe(details,hide_index=True,use_container_width=True)
-                st.download_button('Download verified accuracy CSV',details.to_csv(index=False).encode(),'prediction_accuracy.csv','text/csv')
+                st.subheader('✅ Correct predictions · ❌ Wrong predictions')
+                st.caption('Exact score means both teams’ predicted goals matched the verified final score. Match result (1X2) means only the winner/draw was correct.')
+                accuracy_type=st.radio('What should count as correct?', ['Exact score','Match result (1X2)','Top 5 exact scores'],horizontal=True,key='accuracy_type')
+                hit_column={'Exact score':'exact_hit','Match result (1X2)':'result_hit','Top 5 exact scores':'top5_hit'}[accuracy_type]
+                correct_count=int(completed[hit_column].sum())
+                wrong_count=resolved-correct_count
+                c_ok,c_bad,c_pending=st.columns(3)
+                c_ok.metric('✅ Correct',correct_count)
+                c_bad.metric('❌ Wrong',wrong_count)
+                c_pending.metric('⏳ Pending',total-resolved)
+                accuracy_filter=st.radio('Show predictions', ['All completed','✅ Correct predictions','❌ Wrong predictions','⏳ Awaiting results'],horizontal=True,key='accuracy_filter')
+                details=archive.copy() if accuracy_filter=='⏳ Awaiting results' else completed.copy()
+                if accuracy_filter=='⏳ Awaiting results':
+                    details=details[details['actual_score'].isna()].copy()
+                elif accuracy_filter=='✅ Correct predictions':
+                    details=details[details[hit_column]].copy()
+                elif accuracy_filter=='❌ Wrong predictions':
+                    details=details[~details[hit_column]].copy()
+                if details.empty:
+                    st.info('No predictions found for this filter.')
+                else:
+                    columns=['kickoff','league','home','away','predicted_score','actual_score']
+                    if accuracy_filter!='⏳ Awaiting results':
+                        columns+=['exact_hit','result_hit','top5_hit']
+                    display=details[columns].copy()
+                    display.columns=['Kickoff (UTC)','League','Home','Away','Predicted score','Final score']+(['Exact score correct','Result correct','Top-five correct'] if accuracy_filter!='⏳ Awaiting results' else [])
+                    st.dataframe(display,hide_index=True,use_container_width=True)
+                    st.download_button('Download selected predictions CSV',display.to_csv(index=False).encode(),'ziczac_prediction_results.csv','text/csv')
+                st.caption('Results are automatically classified only after a verified final score is stored. Unverified or missing results remain pending.')
             else:
                 st.info(f'{total} forecasts saved; none has a verified final result yet. Accuracy is not available.')
             st.caption('Exact-score doubles are not yet archived, so double accuracy is not included.')
