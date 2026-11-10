@@ -607,13 +607,13 @@ selected_worldwide=st.multiselect('Matches in selected league',visible_options,
                                    key='worldwide_fixture_selection',
                                    help='Choose fixtures from this league to request verified historical analysis. Free API coverage varies.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
-if st.session_state.get('worldwide_model_version') != 'team-history-v4':
+if st.session_state.get('worldwide_model_version') != 'pro-history-v5':
     st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='team-history-v4'
+    st.session_state['worldwide_model_version']='pro-history-v5'
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
-    if st.button('🔎 Research selected matches · form, H2H and probabilities',help='Retrieve verified historical results from available authorised sources; may use an API quota.'):
+    if st.button('🔎 Research selected matches · form, H2H and probabilities',help='Use API-Football Pro last-30 team form, last-10 H2H and historical date-range fallback. Consumes API requests.'):
         st.session_state['worldwide_models']={k:v for k,v in st.session_state['worldwide_models'].items() if k not in selected_worldwide}
         for name in selected_worldwide[:8]:
             item=worldwide_options[name]
@@ -632,6 +632,13 @@ if selected_worldwide:
                 histories[name]=cached['row']['past']
                 st.success(f"Prediction ready: {name}")
                 st.caption('Verified research source: '+', '.join(cached['row'].get('research_sources',['Football match data provider'])))
+                details=cached['row'].get('history_counts',{})
+                if details:
+                    st.caption(f"Pro research coverage: {details.get('home',0)} completed home-team games, {details.get('away',0)} completed away-team games. H2H and venue splits are displayed below when available.")
+                with st.expander('🔍 Research requests and provenance'):
+                    for detail in cached['row'].get('research_details',[]):
+                        st.write('• '+detail)
+                    st.caption('Only verified completed matches enter the mathematical model; Pro access does not guarantee a correct score.')
                 research=cached['row']['result']
                 with st.expander('📊 Full mathematical research · '+name,expanded=True):
                     st.markdown('**Home win / Draw / Away win — probability model**')
