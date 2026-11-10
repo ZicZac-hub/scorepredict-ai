@@ -15,14 +15,31 @@ from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
 
-st.set_page_config(page_title='ScorePredict AI · Worldwide Pro',page_icon='⚽',layout='wide')
-st.markdown('''<style>
-.block-container{max-width:1450px;padding-top:1.6rem}
+st.set_page_config(page_title='ScorePredict AI',page_icon='⚽',layout='wide',initial_sidebar_state='collapsed')
+st.markdown("""<style>
+:root{color-scheme:dark}
+.block-container{max-width:1200px;padding-top:1rem;padding-bottom:5rem}
 h1,h2,h3{letter-spacing:-.035em}
-[data-testid="stMetric"]{background:rgba(110,130,160,.10);padding:16px;border:1px solid rgba(140,150,170,.15);border-radius:14px}
-</style>''',unsafe_allow_html=True)
-st.title('⚽ ScorePredict AI | Worldwide Pro')
-st.caption('Live fixtures · Statistical score probabilities · Five double-chance picks · Two-leg doubles · Walk-forward backtesting')
+[data-testid="stMetric"]{background:linear-gradient(135deg,#101c39,#1d1940);padding:15px;border:1px solid #36486b;border-radius:18px}
+.stButton button,.stDownloadButton button{border-radius:14px;min-height:44px}
+[data-testid="stTabs"] button{white-space:nowrap}
+@media(max-width:680px){
+.block-container{padding-left:.75rem;padding-right:.75rem;padding-top:.7rem}
+h1{font-size:1.7rem!important}
+h2{font-size:1.3rem!important}
+[data-testid="stHorizontalBlock"]{flex-wrap:wrap;gap:.5rem}
+[data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{min-width:135px;flex:1 1 45%}
+[data-testid="stMetric"]{padding:12px}
+[data-testid="stMetricValue"]{font-size:1.45rem}
+[data-testid="stTabs"] [role="tablist"]{overflow-x:auto}
+.stDataFrame{max-width:100%;overflow-x:auto}
+}
+</style>""",unsafe_allow_html=True)
+st.markdown('''<div style="background:linear-gradient(120deg,#0b1d3b,#24154b);padding:18px 20px;border:1px solid #354b79;border-radius:22px;margin-bottom:14px">
+<div style="font-size:12px;color:#93c5fd;letter-spacing:.16em;font-weight:700">FOOTBALL INTELLIGENCE</div>
+<div style="font-size:clamp(24px,5vw,38px);font-weight:850;color:#f8fafc">⚽ ScorePredict <span style="color:#fb4c79">AI</span></div>
+<div style="color:#cbd5e1;font-size:14px">Worldwide fixtures · Exact-score probabilities · Five doubles · Prediction accuracy</div>
+</div>''',unsafe_allow_html=True)
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
 key=key or os.environ.get('FOOTBALL_DATA_API_KEY','')
