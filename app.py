@@ -69,8 +69,14 @@ with st.expander('Worldwide match finder',expanded=True):
         filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc) and (country=='All countries' or m['country']==country)
                   and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
         st.caption(f'{len(filtered)} returned matches · Sydney time · Results depend on free-plan coverage and API quotas.')
+        st.caption('Tick any match to select it for analysis below. Matches without sufficient history can still be selected.')
+        picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
         for m in filtered:
-            st.write(f"**{m['home']} vs {m['away']}** · {m['local']:%a %d %b, %I:%M %p} AEDT/AEST · {m['league']} ({m['country']})")
+            event_id=str(m['source'])+':'+str(m['id'])
+            selected_now=st.checkbox(f"{m['home']} vs {m['away']} · {m['local']:%a %d %b, %I:%M %p} Sydney · {m['league']} ({m['country']})", value=event_id in picked_ids, key='finder_'+event_id)
+            if selected_now:picked_ids.add(event_id)
+            else:picked_ids.discard(event_id)
+        st.session_state['worldwide_picked_ids']=list(picked_ids)
         if not filtered:st.info('No matches returned for these filters. This does not mean no games are scheduled.')
         if global_errors:st.warning('Some date requests failed: '+'; '.join(global_errors[:3]))
     except Exception as exc:
@@ -167,7 +173,9 @@ labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 st.subheader('🌐 Choose matches from worldwide discovery')
 st.caption('Free worldwide discovery and modelled fixtures are combined below. A discovered match without verified historical data cannot receive a statistical exact-score prediction.')
 worldwide_options={item['name']:item for item in discoverable}
-selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),help='Only matches matched to verified model history can be used for exact-score doubles.')
+picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
+preselected=[name for name,item in worldwide_options.items() if str(item['event']['source'])+':'+str(item['event']['id']) in picked_ids]
+selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),default=preselected,help='Matches selected in the finder appear here. Exact-score doubles require verified model history.')
 unmodelled=[worldwide_options[name] for name in selected_worldwide if not worldwide_options[name]['model'] or not worldwide_options[name]['model'].get('result')]
 if unmodelled:
     st.info(f"{len(unmodelled)} selected worldwide match(es) do not have sufficient compatible historical data for exact-score predictions. They are displayed for discovery only.")
