@@ -159,23 +159,31 @@ st.markdown("""<style>
 
 <div class="zz-stadium"><div class="zz-stadium-copy"><div class="zz-stadium-title">Today's Football<br>Predictions</div><div class="zz-stadium-desc">⚡ Data-driven analysis · Exact scores · Worldwide matches</div><div style="font-size:28px;margin-top:9px">⚽</div></div></div></div>
 """,unsafe_allow_html=True)
-# Native Streamlit navigation: widget state updates without full browser navigation.
-# This avoids the flashing caused by the previous href="?view=..." links.
-nav_labels=['🏠 Home','🎯 Predict','🔗 Doubles','📊 Archive','☰ More']
-if 'ziczac_navigation' not in st.session_state:
-    initial_view=st.query_params.get('view','home')
-    st.session_state['ziczac_navigation']={'home':nav_labels[0],'predict':nav_labels[1],'doubles':nav_labels[2],'archive':nav_labels[3],'more':nav_labels[4]}.get(initial_view,nav_labels[0])
+# Native button navigation: each tap changes a single session-state route.
+# Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
+nav_items=[('🏠','Home','home'),('🎯','Predict','predict'),('🔗','Doubles','doubles'),('📊','Archive','archive'),('☰','More','more')]
+if 'ziczac_active_page' not in st.session_state:
+    initial=st.query_params.get('view','home')
+    st.session_state['ziczac_active_page']=initial if initial in {x[2] for x in nav_items} else 'home'
+def _navigate_to(page):
+    st.session_state['ziczac_active_page']=page
 st.markdown("""<style>
-/* Accessible, touch-friendly native navigation; no browser page reloads. */
-div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) {margin:-4px 0 12px}
-div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) [role="radiogroup"] {display:flex;flex-wrap:nowrap;gap:5px;width:100%}
-div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label {flex:1;min-width:0;background:#1b2c53;border:1px solid #6380ba;border-radius:12px;padding:12px 2px;justify-content:center;cursor:pointer}
-div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label:has(input:checked){background:#6549df;border-color:#c0a9ff}
-div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label p{font-size:12px!important;font-weight:750;white-space:nowrap}
-div[data-testid="stRadio"]:has(input[name="ziczac_navigation"]) label>div:first-child{display:none}
+/* Large native buttons with clear selected state on mobile. */
+div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+    width:100%;min-height:54px;border-radius:13px;
+    font-size:clamp(10px,2.5vw,14px);font-weight:750;
+    padding:6px 2px;white-space:normal;
+}
 </style>""",unsafe_allow_html=True)
-selected_nav=st.radio('Dashboard navigation',nav_labels,horizontal=True,key='ziczac_navigation',label_visibility='collapsed')
-view={nav_labels[0]:'home',nav_labels[1]:'predict',nav_labels[2]:'doubles',nav_labels[3]:'archive',nav_labels[4]:'more'}[selected_nav]
+nav_cols=st.columns(5,gap='small')
+for col,(emoji,label,page) in zip(nav_cols,nav_items):
+    with col:
+        active=st.session_state['ziczac_active_page']==page
+        st.button(emoji+' '+label,key='zz_route_'+page,
+                  type='primary' if active else 'secondary',
+                  use_container_width=True,
+                  on_click=_navigate_to,args=(page,))
+view=st.session_state['ziczac_active_page']
 
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
