@@ -436,6 +436,29 @@ for m in worldwide_rows:
     discoverable.append({'name':f"{m['home']} vs {m['away']} · {m['local']:%d %b %I:%M %p} Sydney · {m['league']}",
                          'model':match,'event':m})
 
+# Automatically research all provider-compatible discovered fixtures for the
+# selected date. Cached per fixture across reruns and sessions to limit API use.
+@st.cache_data(ttl=21600,show_spinner=False)
+def _cached_pro_worldwide(key, event):
+    return model_worldwide(key,event)
+
+_auto_cache=st.session_state.setdefault('worldwide_models',{})
+_auto_pending=[item for item in discoverable
+               if item['name'] not in _auto_cache
+               and not (item.get('model') and item['model'].get('result'))
+               and item['event'].get('source')=='API-Football']
+if secondary_key and _auto_pending:
+    # Avoid unbounded work on each Streamlit rerun. Continue automatically on
+    # subsequent interactions; allow an explicit button for the remaining batch.
+    _auto_limit=12
+    with st.spinner(f'Automatically researching {min(len(_auto_pending),_auto_limit)} worldwide matches using Pro…'):
+        for _item in _auto_pending[:_auto_limit]:
+            _row,_error=_cached_pro_worldwide(secondary_key,_item['event'])
+            _auto_cache[_item['name']]={'row':_row,'error':_error}
+    if len(_auto_pending)>_auto_limit:
+        st.caption(f'Pro research completed its first batch; {len(_auto_pending)-_auto_limit} fixtures remain for the next batch to protect response time and API quota.')
+elif not secondary_key:
+    st.warning('Automatic Pro research requires API_FOOTBALL_KEY in Streamlit Secrets.')
 # Allow the user to select fixtures explicitly; no match is invented.
 # Add every successfully researched worldwide fixture to the shared prediction pool.
 # This makes Pro results available to prediction cards and doubles, not just the explorer.
@@ -470,7 +493,7 @@ if discoverable:
                 return f"{h}–{a}",f"{p:.1%}",'Model ready'
         return '—','—',('History unavailable' if cached.get('error') else 'Not researched')
     if secondary_key:
-        st.caption('Run Pro research for the displayed fixtures to fill the score and probability columns. Results are cached; only completed historical matches are used.')
+        st.caption('Pro research starts automatically for available API-Football fixtures. Use the button below to continue any remaining fixtures; provider coverage and quota may limit results.')
         _max_batch=st.select_slider('Fixtures per research batch',options=[5,10,20,40,80],value=10,
                                     key='pro_fixture_batch_size')
         if st.button('⚡ Research scores for available fixtures',key='pro_fixture_batch',type='primary'):
@@ -479,7 +502,7 @@ if discoverable:
                       and item['event'].get('source')=='API-Football']
             with st.spinner(f'Researching up to {min(_max_batch,len(_pending))} fixtures using Pro…'):
                 for item in _pending[:_max_batch]:
-                    row,error=model_worldwide(secondary_key,item['event'])
+                    row,error=_cached_pro_worldwide(secondary_key,item['event'])
                     _research_cache[item['name']]={'row':row,'error':error}
             if not _pending:
                 st.info('No additional compatible unresearched fixtures in this date range.')
@@ -691,7 +714,7 @@ if selected_worldwide:
                 if item.get('model') and item['model'].get('result'):
                     continue
                 with st.spinner('Pro analysing '+name+'…'):
-                    row,error=model_worldwide(secondary_key,item['event'])
+                    row,error=_cached_pro_worldwide(secondary_key,item['event'])
                 st.session_state['worldwide_models'][name]={'row':row,'error':error}
     else:
         st.warning('API_FOOTBALL_KEY is missing; Pro history cannot run.')
@@ -701,7 +724,7 @@ if selected_worldwide:
             item=worldwide_options[name]
             if item['model'] and item['model'].get('result'):
                 continue
-            row,error=model_worldwide(secondary_key,item['event'])
+            row,error=_cached_pro_worldwide(secondary_key,item['event'])
             st.session_state['worldwide_models'][name]={'row':row,'error':error}
     for name in selected_worldwide:
         cached=st.session_state['worldwide_models'].get(name)
@@ -1043,14 +1066,14 @@ with active_page_slot:
         st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
     # Exactly one evidence-based daily feature, selected only from fixtures on today's Sydney date.
     if view == 'home':
-        st.subheader('🏆 Prediction of the Day')
-        st.caption('One featured match per Sydney calendar day, selected from fixtures with verified historical results. Mathematical probabilities are estimates, not proven exact outcomes.')
+        st.subheader('🏆 Tomorrow’s Game of the Day')
+        st.caption('One match for tomorrow in Sydney time, ranked by model evidence and probability. Exact scores are estimates, not guaranteed results.')
         def _sydney_day(row):
             try:
                 return datetime.fromisoformat(row['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY).date()
             except (KeyError,ValueError,TypeError):
                 return None
-        daily_candidates=[r for r in rows if r.get('result') and _sydney_day(r)==today]
+        daily_candidates=[r for r in rows if r.get('result') and _sydney_day(r)==today+timedelta(days=1)]
         def _daily_rank(row):
             p=row['result']
             venue=min(len(p.get('home_home10',[])),len(p.get('away_away10',[])))
