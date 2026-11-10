@@ -298,11 +298,18 @@ with st.expander('🌍 Worldwide Match Finder · Tap to search',expanded=False):
             global_matches.sort(key=lambda m:m['kickoff'])
         # Full ISO 3166 country/territory directory, independent of today's
         # fixture API coverage. Keep provider labels that are not ISO countries.
+        # Include football-specific national associations and regional
+        # competition categories often shown separately in sportsbook menus.
+        football_regions={'England','Scotland','Wales','Northern Ireland',
+                          'Kosovo','World','International','Europe','Asia',
+                          'Africa','North America','South America','Oceania',
+                          'CONCACAF','CONMEBOL','AFC','CAF','UEFA'}
         country_options=sorted({c.name for c in pycountry.countries} |
+                               football_regions |
                                {str(m.get('country','')).strip() for m in global_matches if m.get('country')},
                                key=str.casefold)
         country=st.selectbox('Country', ['All countries']+country_options,
-                             key='finder_country',help='All countries and territories are listed. Matches appear only where the connected providers have fixtures.')
+                             key='finder_country',help='Worldwide country/territory and football-association directory, similar to football competition country menus. This is not a live bet365 feed; fixtures depend on connected providers.')
         term=st.text_input('Search team or league',placeholder='Type a team or competition')
         def _country_matches(provider_country, selected_country):
             if selected_country=='All countries':return True
@@ -316,6 +323,7 @@ with st.expander('🌍 Worldwide Match Finder · Tap to search',expanded=False):
         filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc)
                   and _country_matches(m.get('country',''),country)
                   and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
+        st.caption(f'🌍 {len(country_options)} countries, territories and football regions in directory. Fixture availability depends on data coverage.')
         if country!='All countries' and not any(_country_matches(m.get('country',''),country) for m in global_matches):
             st.caption('No fixtures from this country in the current provider response and date range. Try Next 7 days or Next 14 days.')
         st.caption(f'{len(filtered)} returned matches · Sydney time · Results depend on free-plan coverage and API quotas.')
