@@ -31,13 +31,14 @@ jobs:
         run: |
           python fetch_backtest_history.py \
             --leagues PL,PD,BL1,SA,FL1 \
-            --max-matches 2500 \
+            --seasons 2025,2026 \
+            --max-matches 3500 \
             --output data/backtest_finished_matches.json
       - name: Run historical backtest
         run: |
           python backtest.py data/backtest_finished_matches.json --output backtest_results.json
       - name: Print model comparison
-        run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps(r['summary'],indent=2))"
+        run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps({'summary':r['summary'],'by_league_year':r['by_league_year']},indent=2))"
       - uses: actions/upload-artifact@v4
         with:
           name: ziczac-backtest-results
