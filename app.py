@@ -1232,10 +1232,34 @@ with active_page_slot:
                                   'League':saved.get('league',''),
                                   'Kickoff (Sydney)':sydney_kickoff(saved.get('kickoff',''))})
             hits=sum(x['Status']=='🟢 HIT' for x in completed)
+            # Evaluate the separately important match-outcome prediction.
+            _outcome_count=0
+            _outcome_hits=0
+            _brier_values=[]
+            for _saved in archived:
+                _actual=_saved.get('actual_score')
+                if not _actual:continue
+                try:
+                    _kick=datetime.fromisoformat(_saved['kickoff'].replace('Z','+00:00'))
+                    _saved_at=datetime.fromisoformat(_saved['saved_at'].replace('Z','+00:00'))
+                    if _saved_at>=_kick:continue
+                    _gh,_ga=(int(x) for x in _actual.split('-'))
+                    _p=[float(_saved['home_prob']),float(_saved['draw_prob']),float(_saved['away_prob'])]
+                    if any(not (0<=v<=1) for v in _p):continue
+                    _actual_outcome=0 if _gh>_ga else 1 if _gh==_ga else 2
+                    _outcome_count+=1
+                    _outcome_hits+=int(max(range(3),key=lambda i:_p[i])==_actual_outcome)
+                    _brier_values.append(sum((v-int(i==_actual_outcome))**2 for i,v in enumerate(_p))/3)
+                except (ValueError,TypeError,KeyError,AttributeError):
+                    continue
             a,b,c=st.columns(3)
             a.metric('Finished forecasts',len(completed))
             b.metric('Exact-score hits',hits)
             c.metric('Hit rate',f'{hits/len(completed):.1%}' if completed else '—')
+            _oc1,_oc2=st.columns(2)
+            _oc1.metric('Match outcome accuracy (1X2)',f'{_outcome_hits/_outcome_count:.1%}' if _outcome_count else '—')
+            _oc2.metric('1X2 Brier score · lower better',f'{sum(_brier_values)/len(_brier_values):.3f}' if _brier_values else '—')
+            st.caption('Exact-score hits, winner/draw accuracy and probability calibration measure different things. Predictions are evaluated as saved before kickoff.')
             st.caption(f'{pending} saved pre-match predictions still awaiting verified final scores. API-Football results are checked on request.')
             if completed:
                 status_filter=st.selectbox('Show results',['All','🟢 HIT','🔴 ✕'],key='finished_filter')
@@ -1421,9 +1445,31 @@ with active_page_slot:
             st.write('For each completed match, the model uses only results strictly earlier than kickoff. This avoids using future results to predict past games.')
             league=st.selectbox('Backtest competition',list(histories),key='bt_league') if histories else None
             if league and st.button('Run backtest'):
-                with st.spinner('Running historical predictions...'):
-                    records=backtest(histories[league],min_prior=35,max_tests=120)
+                with st.spinner('Comparing original and uncertainty-regularized models on identical past fixtures...'):
+                    records=backtest(histories[league],min_prior=35,max_tests=120,variant='regularized')
+                    baseline_records=backtest(histories[league],min_prior=35,max_tests=120,variant='baseline')
                 summary=summarize_backtest(records)
+                baseline_summary=summarize_backtest(baseline_records)
+                if summary and baseline_summary:
+                    st.markdown('**Model comparison · lower Brier and goals MAE are better**')
+                    st.dataframe(pd.DataFrame([
+                        {'Model':'Original baseline','Matches':baseline_summary['matches'],
+                         'Exact-score hit rate':f"{baseline_summary['exact_score_accuracy']:.1%}",
+                         '1X2 accuracy':f"{baseline_summary['result_accuracy']:.1%}",
+                         'Brier':round(baseline_summary['mean_brier'],4),
+                         'Goals MAE':round(baseline_summary['mean_absolute_goal_error'],3)},
+                        {'Model':'Regularized candidate','Matches':summary['matches'],
+                         'Exact-score hit rate':f"{summary['exact_score_accuracy']:.1%}",
+                         '1X2 accuracy':f"{summary['result_accuracy']:.1%}",
+                         'Brier':round(summary['mean_brier'],4),
+                         'Goals MAE':round(summary['mean_absolute_goal_error'],3)}]),
+                        hide_index=True,use_container_width=True)
+                    if summary['mean_brier']>=baseline_summary['mean_brier']:
+                        st.warning('The regularized candidate did not improve the 1X2 Brier score on this test. Do not interpret it as an accuracy improvement.')
+                    else:
+                        st.info('The regularized candidate had a lower Brier score on this historical sample. This does not establish future improvement.')
+                    if summary['matches']<50:
+                        st.warning('Small backtest sample. Avoid choosing a model based on these results alone.')
                 if not summary:st.warning('Not enough accessible completed matches with prior team history for a valid backtest.')
                 else:
                     st.caption(f"Tested {summary['matches']} historical matches from the accessible API history. Not an independent future guarantee.")
