@@ -314,15 +314,47 @@ with tabs[3]:
             st.dataframe(df,hide_index=True,use_container_width=True)
             st.download_button('Download backtest CSV',df.to_csv(index=False).encode(),'backtest.csv','text/csv')
 with tabs[4]:
-    st.subheader('Saved forecasts versus final scores')
-    st.caption('Forecasts are saved only once per fixture. Refreshes cannot rewrite an existing prediction. Local SQLite storage can reset on free cloud hosts; download the CSV regularly or connect a persistent database.')
+    st.subheader('📊 Prediction Accuracy Dashboard')
+    st.caption('Only saved forecasts with verified final scores count. Pending matches are excluded. Local storage on free Streamlit hosting can reset.')
     if conn:
         archive=pd.DataFrame(load(conn))
-        if archive.empty:st.info('No predictions saved yet.')
+        if archive.empty:
+            st.info('No saved predictions yet.')
         else:
-            archive['exact_hit']=archive.apply(lambda r: r['predicted_score']==r['actual_score'] if pd.notna(r['actual_score']) else None,axis=1)
-            # Only verified final scores count towards accuracy. Pending fixtures are excluded.
-            completed=archive[archive['actual_score'].notna() & (archive['actual_score'].astype(str).str.match(r'^\\d+-\\d+
+            def score_outcome(score):
+                try:
+                    h,a=map(int,str(score).split('-'))
+                    return 'Home' if h>a else 'Away' if a>h else 'Draw'
+                except (ValueError,TypeError):
+                    return None
+            completed=archive[archive['actual_score'].notna()].copy()
+            completed=completed[completed['actual_score'].apply(score_outcome).notna()].copy()
+            total=len(archive)
+            resolved=len(completed)
+            if resolved:
+                completed['exact_hit']=completed['predicted_score']==completed['actual_score']
+                completed['result_hit']=completed['predicted_score'].apply(score_outcome)==completed['actual_score'].apply(score_outcome)
+                def top_five_hit(r):
+                    try:
+                        scores=json.loads(r['scores_json'] or '[]')
+                        return r['actual_score'] in {f"{int(x[0])}-{int(x[1])}" for x in scores[:5]}
+                    except (ValueError,TypeError,IndexError):
+                        return False
+                completed['top5_hit']=completed.apply(top_five_hit,axis=1)
+                cols=st.columns(4)
+                cols[0].metric('Completed matches',resolved)
+                cols[1].metric('Exact-score hit rate',f"{completed['exact_hit'].mean():.1%}")
+                cols[2].metric('1X2 result accuracy',f"{completed['result_hit'].mean():.1%}")
+                cols[3].metric('Top-five score hit rate',f"{completed['top5_hit'].mean():.1%}")
+                st.caption(f'{total-resolved} forecasts awaiting results. Rates are based only on {resolved} completed matches.')
+                details=completed[['kickoff','league','home','away','predicted_score','actual_score','exact_hit','result_hit','top5_hit']].copy()
+                details.columns=['Kickoff (UTC)','League','Home','Away','Predicted','Final','Exact hit','1X2 hit','Top-five hit']
+                st.dataframe(details,hide_index=True,use_container_width=True)
+                st.download_button('Download verified accuracy CSV',details.to_csv(index=False).encode(),'prediction_accuracy.csv','text/csv')
+            else:
+                st.info(f'{total} forecasts saved; none has a verified final result yet. Accuracy is not available.')
+            st.caption('Exact-score doubles are not yet archived, so double accuracy is not included.')
+            st.dataframe(archive.drop(columns=['scores_json']),hide_index=True,use_container_width=True)
             st.download_button('Download prediction archive CSV',archive.to_csv(index=False).encode(),'prediction_archive.csv','text/csv')
 with tabs[5]:
     st.markdown('''**Mathematical model:** Recency-weighted goals scored/conceded, venue-specific shrinkage, league home/away baselines, regularized expected-goal estimates and a normalized independent Poisson score matrix.\n\n**Human-style analysis:** Transparent rule-based commentary on relative strengths, sample sizes and uncertainty. It does **not** use an LLM, live injuries, verified lineups, bookmaker odds or premium xG data.\n\n**Backtesting:** Walk-forward evaluation of exact scores, match outcomes, Brier score and goal error. In-sample tuning on these same matches would overstate performance.\n\n**Limitations:** Data availability varies by league, free plan and season. Small samples, lineup changes, correlated matches and model miscalibration can make predictions inaccurate. No score can be guaranteed.''')
