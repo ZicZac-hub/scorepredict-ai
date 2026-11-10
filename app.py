@@ -280,7 +280,7 @@ choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days',
 today=datetime.now(SYDNEY).date()
 start_day=today+timedelta(days=1) if choice=='Tomorrow' else today
 span=3 if choice=='Next 3 days' else 7 if choice=='Next 7 days' else 14 if choice=='Next 14 days' else 1
-with st.expander('Worldwide match finder',expanded=True):
+with st.expander('🌍 Worldwide Match Finder · Tap to search',expanded=False):
     try:
         global_matches,global_errors=worldwide(start_day,span)
         if use_secondary and secondary_key:
@@ -301,15 +301,22 @@ with st.expander('Worldwide match finder',expanded=True):
         filtered=[m for m in global_matches if m['kickoff']>datetime.now(timezone.utc) and (country=='All countries' or m['country']==country)
                   and (not term or term.lower() in (m['home']+' '+m['away']+' '+m['league']).lower())]
         st.caption(f'{len(filtered)} returned matches · Sydney time · Results depend on free-plan coverage and API quotas.')
-        st.caption('Tick any match to select it for analysis below. Matches without sufficient history can still be selected.')
+        st.caption('Use Search matches to reveal the fixture list. Select any match to add it to analysis.')
+        show_fixtures=st.toggle('🔎 Search matches · Show fixture list',value=False,key='finder_show_results')
         picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
-        for m in filtered:
-            event_id=str(m['source'])+':'+str(m['id'])
-            selected_now=st.checkbox(f"{m['home']} vs {m['away']} · {m['local']:%a %d %b, %I:%M %p} Sydney · {m['league']} ({m['country']})", value=event_id in picked_ids, key='finder_'+event_id)
-            if selected_now:picked_ids.add(event_id)
-            else:picked_ids.discard(event_id)
+        if show_fixtures:
+            if filtered:
+                st.caption('Tap a fixture checkbox to select it. Narrow by country or team above.')
+                for m in filtered:
+                    event_id=str(m['source'])+':'+str(m['id'])
+                    selected_now=st.checkbox(f"{m['home']} vs {m['away']} · {m['local']:%a %d %b, %I:%M %p} Sydney · {m['league']} ({m['country']})",value=event_id in picked_ids,key='finder_'+event_id)
+                    if selected_now:picked_ids.add(event_id)
+                    else:picked_ids.discard(event_id)
+            else:
+                st.info('No matches returned for these filters. Try another date or search term.')
+        else:
+            st.info('Match list hidden. Turn on Search matches to browse upcoming fixtures.')
         st.session_state['worldwide_picked_ids']=list(picked_ids)
-        if not filtered:st.info('No matches returned for these filters. This does not mean no games are scheduled.')
         if global_errors:st.warning('Some date requests failed: '+'; '.join(global_errors[:3]))
     except Exception as exc:
         st.warning(f'Worldwide free fixture source unavailable: {exc}')
