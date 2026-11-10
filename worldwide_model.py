@@ -1,57 +1,101 @@
-"""On-demand, quota-aware historical modelling for API-Football fixtures."""
+"""Verified API-Football Pro history for worldwide fixture forecasting.
+
+Only completed fixtures are modelled. Uses team-specific recent form and H2H,
+with date-range fallbacks for providers that do not support 'last'.
+"""
 from datetime import datetime, timedelta, timezone
 from api_football import _request, _convert
-from engine import predict
+from engine import predict, finished
+
 
 def model_worldwide(key, event):
-    """Retrieve permitted historical results; explain coverage gaps precisely."""
-    fixture=event.get("fixture")
+    fixture = event.get("fixture")
     if not fixture:
-        return None,"Fixture has no provider identifiers. Search independent results links below."
-    if not key or fixture.get("provider")!="API-Football":
-        return None,"No compatible historical-results provider for this fixture."
-    home=(fixture.get("homeTeam") or {}).get("id")
-    away=(fixture.get("awayTeam") or {}).get("id")
-    if not home or not away:
-        return None,"Provider team IDs are missing."
-    kickoff=datetime.fromisoformat(fixture["utcDate"].replace("Z","+00:00"))
-    league_id=event.get("league_id")
-    season=event.get("season")
-    if not league_id or not season:
-        return None,"League or season ID missing from the fixture feed."
-    end=(min(kickoff,datetime.now(timezone.utc))-timedelta(days=1)).date()
-    start=end-timedelta(days=125)
-    past=[]
-    errors=[]
-    # The league-wide endpoint may be unavailable on the free tier.
-    # Team-specific date-range requests can return matches from multiple
-    # competitions, improving form and venue coverage.
-    attempts=[
-        ("league",{"league":league_id,"season":season,"from":start.isoformat(),"to":end.isoformat()}),
-        ("home team",{"team":home,"season":season,"from":start.isoformat(),"to":end.isoformat()}),
-        ("away team",{"team":away,"season":season,"from":start.isoformat(),"to":end.isoformat()})
-    ]
-    seen=set()
-    for label,params in attempts:
+        return None, "Fixture has no compatible API-Football identifiers."
+    if not key or fixture.get("provider") != "API-Football":
+        return None, "API-Football key or compatible fixture identifiers are missing."
+    home = (fixture.get("homeTeam") or {}).get("id")
+    away = (fixture.get("awayTeam") or {}).get("id")
+    if home is None or away is None or home == away:
+        return None, "Both API-Football team IDs are required."
+    try:
+        kickoff = datetime.fromisoformat(fixture["utcDate"].replace("Z", "+00:00"))
+    except (KeyError, ValueError, TypeError):
+        return None, "Fixture kickoff date is missing or invalid."
+    cutoff = min(kickoff, datetime.now(timezone.utc))
+    if cutoff <= datetime(2020, 1, 1, tzinfo=timezone.utc):
+        return None, "Fixture date is outside the supported research window."
+    season = event.get("season")
+    league = event.get("league_id")
+    past = {}
+    errors = []
+    sources = []
+
+    def collect(label, params):
         try:
-            for raw in _request(key,"/fixtures",params):
-                match=_convert(raw,"WORLD")
-                ids=((match.get("homeTeam") or {}).get("id"),(match.get("awayTeam") or {}).get("id"))
-                if match.get("status")!="FINISHED" or not (home in ids or away in ids):
+            raw_matches = _request(key, "/fixtures", params)
+            added = 0
+            for raw in raw_matches:
+                m = _convert(raw, "WORLD")
+                if not finished(m):
                     continue
-                ident=(match.get("utcDate"),match.get("homeTeam",{}).get("id"),match.get("awayTeam",{}).get("id"))
-                if ident not in seen:
-                    seen.add(ident)
-                    past.append(match)
+                try:
+                    date = datetime.fromisoformat(m["utcDate"].replace("Z", "+00:00"))
+                except (ValueError, TypeError, KeyError):
+                    continue
+                if date >= kickoff or date > datetime.now(timezone.utc):
+                    continue
+                ids = ((m.get("homeTeam") or {}).get("id"), (m.get("awayTeam") or {}).get("id"))
+                if home not in ids and away not in ids:
+                    continue
+                identifier = m.get("id") or (m.get("utcDate"), *ids)
+                if identifier not in past:
+                    past[identifier] = m
+                    added += 1
+            sources.append(f"{label} ({added} additional results)")
         except Exception as exc:
-            errors.append(label+": "+str(exc)[:110])
-        result=predict(fixture,past)
-        if result is not None:
-            return {"league":event.get("league","Unknown"),"fixture":fixture,
-                    "result":result,"kickoff":fixture["utcDate"],"past":past,
-                    "research_sources":["API-Football · verified completed matches"]},None
-    home_count=sum(home in (m["homeTeam"]["id"],m["awayTeam"]["id"]) for m in past)
-    away_count=sum(away in (m["homeTeam"]["id"],m["awayTeam"]["id"]) for m in past)
-    reason=f"Verified results found: {home_count} home-team matches, {away_count} away-team matches; at least 5 each required for this model."
-    if errors:reason+=" Provider restrictions: "+" | ".join(errors[:2])
-    return None,reason
+            errors.append(f"{label}: {str(exc)[:125]}")
+
+    # Pro plans may support 'last' and head-to-head; the free tier often does not.
+    # Fetch BOTH teams before modelling, so the result is not biased by an
+    # incomplete first successful response.
+    for label, tid in (("Home last 30", home), ("Away last 30", away)):
+        collect(label, {"team": tid, "last": 30})
+
+    # Include actual H2H fixtures (up to 10), which may be older than form data.
+    collect("Head-to-head last 10", {"h2h": f"{home}-{away}", "last": 10})
+
+    # Fallback across two football seasons when last/H2H endpoints are restricted.
+    def count(tid):
+        return sum(tid in ((m.get("homeTeam") or {}).get("id"),
+                           (m.get("awayTeam") or {}).get("id")) for m in past.values())
+
+    if count(home) < 10 or count(away) < 10:
+        end = (cutoff - timedelta(days=1)).date()
+        start = end - timedelta(days=365)
+        for label, tid in (("Home date-range", home), ("Away date-range", away)):
+            if count(tid) >= 10:
+                continue
+            collect(label, {"team": tid, "from": start.isoformat(), "to": end.isoformat()})
+
+    # Last fallback: league-wide season data can fill missing home/away splits.
+    if (count(home) < 5 or count(away) < 5) and league and season:
+        collect("League season", {"league": league, "season": season,
+                                  "from": (cutoff - timedelta(days=365)).date().isoformat(),
+                                  "to": (cutoff - timedelta(days=1)).date().isoformat()})
+
+    history = sorted(past.values(), key=lambda m: m.get("utcDate", ""), reverse=True)
+    result = predict(fixture, history)
+    if result is not None:
+        return {"league": event.get("league", "Unknown"),
+                "fixture": fixture, "result": result,
+                "kickoff": fixture["utcDate"], "past": history,
+                "research_sources": ["API-Football (verified completed results)"],
+                "research_details": sources,
+                "history_counts": {"home": count(home), "away": count(away)}}, None
+
+    reason = (f"Verified completed matches: home team {count(home)}, "
+              f"away team {count(away)}. At least 5 each are required.")
+    if errors:
+        reason += " Data access details: " + " | ".join(errors[:3])
+    return None, reason
