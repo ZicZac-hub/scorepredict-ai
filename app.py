@@ -675,6 +675,12 @@ if selected_worldwide:
                 worldwide_options[name]['model']=cached['row']
                 histories[name]=cached['row']['past']
                 st.success(f"Prediction ready: {name}")
+                _top=cached['row']['result'].get('scores',[])
+                if _top:
+                    st.markdown('### 🎯 Pro predicted exact scores')
+                    st.dataframe(pd.DataFrame([{'Score':f'{h}–{a}','Model probability':f'{p:.1%}'}
+                                               for h,a,p in _top[:5]]),hide_index=True,use_container_width=True)
+                    st.caption('Estimated score probabilities, not guaranteed outcomes.')
                 st.caption('Verified research source: '+', '.join(cached['row'].get('research_sources',['Football match data provider'])))
                 details=cached['row'].get('history_counts',{})
                 if details:
