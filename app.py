@@ -10,6 +10,7 @@ from worldwide import worldwide, SYDNEY
 from global_fixtures import global_fixtures
 from sportmonks import sportmonks_fixtures
 from engine import predict
+from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
 
@@ -176,6 +177,26 @@ worldwide_options={item['name']:item for item in discoverable}
 picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
 preselected=[name for name,item in worldwide_options.items() if str(item['event']['source'])+':'+str(item['event']['id']) in picked_ids]
 selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),default=preselected,help='Matches selected in the finder appear here. Exact-score doubles require verified model history.')
+# Model selected API-Football worldwide fixtures on demand to conserve quota.
+if 'worldwide_models' not in st.session_state:
+    st.session_state['worldwide_models']={}
+if selected_worldwide:
+    if st.button('🔎 Analyse selected worldwide matches',help='Fetch verified recent results for selected API-Football matches; uses your API quota.'):
+        for name in selected_worldwide[:8]:
+            item=worldwide_options[name]
+            if item['model'] and item['model'].get('result'):
+                continue
+            row,error=model_worldwide(secondary_key,item['event'])
+            st.session_state['worldwide_models'][name]={'row':row,'error':error}
+    for name in selected_worldwide:
+        cached=st.session_state['worldwide_models'].get(name)
+        if cached:
+            if cached['row']:
+                worldwide_options[name]['model']=cached['row']
+                histories[name]=cached['row']['past']
+                st.success(f"Prediction ready: {name}")
+            elif cached['error']:
+                st.info(f"{name}: {cached['error']}")
 unmodelled=[worldwide_options[name] for name in selected_worldwide if not worldwide_options[name]['model'] or not worldwide_options[name]['model'].get('result')]
 if unmodelled:
     st.info(f"{len(unmodelled)} selected worldwide match(es) do not have sufficient compatible historical data for exact-score predictions. They are displayed for discovery only.")
@@ -342,7 +363,7 @@ with tabs[6]:
     st.subheader('Detailed home/away form and head-to-head')
     for r in chosen_rows:
         m,p=r['fixture'],r['result']
-        past=histories[r['league']]
+        past=r.get('past',histories.get(r['league'],[]))
         hid=m['homeTeam']['id'];aid=m['awayTeam']['id']
         def form(team_id,venue=None,n=10):
             games=[]
