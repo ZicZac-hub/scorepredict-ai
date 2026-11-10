@@ -43,6 +43,25 @@ class RecencyTests(unittest.TestCase):
         self.assertLess(rates['effective_played'],2.0)
         self.assertGreaterEqual(rates['effective_played'],1.0)
 
+    def test_upcoming_default_uses_backtested_baseline(self):
+        history = []
+        for idx in range(30):
+            history.append({
+                'id': idx+1, 'utcDate': f'2026-09-{idx+1:02d}T12:00:00Z',
+                'status': 'FINISHED',
+                'homeTeam': {'id': 1, 'name': 'Home'} if idx % 2 == 0 else {'id': 2, 'name': 'Away'},
+                'awayTeam': {'id': 2, 'name': 'Away'} if idx % 2 == 0 else {'id': 1, 'name': 'Home'},
+                'score': {'fullTime': {'home': idx % 4, 'away': (idx+1) % 3}}
+            })
+        fixture = {'utcDate': '2026-11-01T12:00:00Z',
+                   'homeTeam': {'id': 1}, 'awayTeam': {'id': 2}}
+        live = predict(fixture, history)
+        baseline = predict(fixture, history, variant='baseline')
+        self.assertIsNotNone(live)
+        self.assertAlmostEqual(live['home_xg'], baseline['home_xg'])
+        self.assertAlmostEqual(live['away_xg'], baseline['away_xg'])
+        self.assertEqual(live['model_version'], baseline['model_version'])
+
     def test_future_results_cannot_enter_forecast(self):
         history=[]
         for idx in range(12):
