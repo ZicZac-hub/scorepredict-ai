@@ -403,7 +403,7 @@ def fixture_label(r):
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 st.subheader('🌍 Worldwide Match Explorer')
-st.caption('Free worldwide discovery and modelled fixtures are combined below. A discovered match without verified historical data cannot receive a statistical exact-score prediction.')
+st.caption('Research combines football APIs with independent public-web historical match datasets where available. Each modelled result must have verified scores; missing coverage is never fabricated.')
 worldwide_options={item['name']:item for item in discoverable}
 # League-first explorer: choose a competition, then inspect its teams and fixtures.
 # The date-first provider returns only competitions playing in its narrow date
@@ -597,6 +597,7 @@ if selected_worldwide:
                 worldwide_options[name]['model']=cached['row']
                 histories[name]=cached['row']['past']
                 st.success(f"Prediction ready: {name}")
+                st.caption('Verified research source: '+', '.join(cached['row'].get('research_sources',['Football match data provider'])))
             elif cached['error']:
                 st.info(f"{name}: {cached['error']}")
 for name in selected_worldwide:
