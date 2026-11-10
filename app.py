@@ -122,6 +122,32 @@ st.markdown('''<style>
 .football-hero .photo-credit{position:relative;z-index:3;text-align:center;padding:0 8px 10px;font-size:10px;color:#d0e5f0}
 .football-hero .photo-credit a{color:#b5dcff}
 @media(max-width:600px){.football-hero .player-photo{height:128px}.football-hero .main-star .player-photo{height:148px}.football-hero .photo-player{width:31%}.football-hero .photo-player.main-star{width:36%}}
+/* iPhone readability and spacing refinements */
+.football-hero{overflow:hidden}
+.football-hero .headline{padding:35px 18px 18px;background:linear-gradient(180deg,rgba(4,14,34,.90),rgba(7,21,42,.75) 75%,rgba(7,21,42,.2));border-radius:22px 22px 0 0}
+.football-hero .eyebrow{font-size:11px;line-height:1.6;letter-spacing:.10em;overflow-wrap:anywhere}
+.football-hero .brand{font-size:clamp(25px,5vw,40px);line-height:1.25;margin:9px 0}
+.football-hero .subtitle{line-height:1.55;max-width:440px;margin:0 auto}
+.football-hero .lineup{align-items:flex-end;padding:18px 12px 26px;gap:12px}
+.football-hero .photo-player{animation:none!important;filter:none;min-width:0}
+.football-hero .photo-player.main-star{animation:none!important}
+.football-hero .name{font-size:14px;line-height:1.5;margin-top:9px;text-shadow:0 2px 7px #000}
+.football-hero .legend{font-size:11px;line-height:1.5;margin-top:3px;text-shadow:0 2px 6px #000}
+.football-hero .ball{bottom:10px;left:12%;font-size:21px;opacity:.75;z-index:1;animation:ball-dribble 7s ease-in-out infinite}
+.football-hero .photo-credit{background:rgba(3,16,27,.82);padding:11px 14px 14px;line-height:1.6;font-size:10px;overflow-wrap:anywhere}
+@media(max-width:600px){
+ .football-hero .headline{padding:32px 13px 20px}
+ .football-hero .eyebrow{font-size:9px;letter-spacing:.05em}
+ .football-hero .brand{font-size:clamp(24px,6vw,32px)}
+ .football-hero .subtitle{font-size:12px;line-height:1.5}
+ .football-hero .lineup{gap:7px;padding:18px 9px 24px}
+ .football-hero .player-photo{height:130px}
+ .football-hero .main-star .player-photo{height:151px}
+ .football-hero .name{font-size:12px;margin-top:7px}
+ .football-hero .legend{font-size:10px;line-height:1.4}
+ .football-hero .ball{bottom:6px;left:7%;font-size:16px;opacity:.55}
+ .football-hero .photo-credit{font-size:9px;padding:10px 12px 13px}
+}
 </style>
 <div class="football-hero">
 <div class="stands"></div><div class="spot left"></div><div class="spot right"></div><div class="pitch"></div>
