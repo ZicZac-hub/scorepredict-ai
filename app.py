@@ -1599,7 +1599,17 @@ with active_page_slot:
                                 columns+=['exact_hit','result_hit','top5_hit']
                             display=details[columns].copy()
                             display.columns=['Kickoff (UTC)','League','Home','Away','Predicted score','Final score']+(['Exact score correct','Result correct','Top-five correct'] if accuracy_filter!='⏳ Awaiting results' else [])
-                            st.dataframe(display,hide_index=True,use_container_width=True)
+                            st.markdown('##### 📱 Five ranked doubles · all details without sideways scrolling')
+                for _rank,_o in enumerate(best,1):
+                    with st.container(border=True):
+                        st.markdown(f'**Double {_rank}**')
+                        st.markdown('**Match 1:** '+_o['Match 1'])
+                        st.markdown(f"**Predicted score:** {_o['Score 1']} · **Score probability:** {_o['Match 1 probability']:.2%}")
+                        st.markdown('**Match 2:** '+_o['Match 2'])
+                        st.markdown(f"**Predicted score:** {_o['Score 2']} · **Score probability:** {_o['Match 2 probability']:.2%}")
+                        st.metric('Combined probability',f"{_o['Joint probability']:.3%}")
+                with st.expander('Full doubles table · swipe to inspect'):
+                    st.dataframe(display,hide_index=True,use_container_width=True)
                             st.download_button('Download selected predictions CSV',display.to_csv(index=False).encode(),'ziczac_prediction_results.csv','text/csv')
                         st.caption('Results are automatically classified only after a verified final score is stored. Unverified or missing results remain pending.')
                     else:
@@ -1783,7 +1793,16 @@ with active_page_slot:
                         'Match 2 score':o['Score 2'],'Match 1 probability':f"{o['P1']:.2%}",
                         'Match 2 probability':f"{o['P2']:.2%}",
                         'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
-                    st.dataframe(manual_df,hide_index=True,use_container_width=True)
+                    st.markdown('##### 📱 Your five doubles · mobile-friendly')
+                    for _i,_o in enumerate(manual_options[:5],1):
+                        with st.container(border=True):
+                            st.markdown(f'**Double {_i}**')
+                            _c1,_c2=st.columns(2)
+                            _c1.metric('Match 1 score',_o['Score 1'])
+                            _c2.metric('Match 2 score',_o['Score 2'])
+                            st.caption(f"Match 1: {_o['P1']:.2%} · Match 2: {_o['P2']:.2%} · Combined: {_o['Joint']:.3%}")
+                    with st.expander('Full doubles comparison table · swipe to inspect'):
+                        st.dataframe(manual_df,hide_index=True,use_container_width=True)
                     st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
                                        'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
             else:
