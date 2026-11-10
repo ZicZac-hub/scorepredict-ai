@@ -5,8 +5,19 @@ from engine import predict
 
 def model_worldwide(key, event):
     fixture=event.get("fixture")
-    if not key or not fixture or fixture.get("provider")!="API-Football":
-        return None, "This match needs API-Football fixture IDs and accessible team history."
+    if not fixture:
+        return None, "Fixture details are unavailable."
+    if not key or fixture.get("provider")!="API-Football":
+        try:
+            past,error=public_web_history(event)
+            result=predict(fixture,past) if past else None
+            if result:
+                return {"league":event["league"],"fixture":fixture,"result":result,
+                        "kickoff":fixture["utcDate"],"past":past,
+                        "research_sources":["football-data.co.uk (public historical CSV)"]},None
+            return None,error or "Not enough verified public historical results for both teams"
+        except Exception as exc:
+            return None,f"Public web history unavailable: {str(exc)[:130]}"
     home=(fixture.get("homeTeam") or {}).get("id")
     away=(fixture.get("awayTeam") or {}).get("id")
     if not home or not away:
