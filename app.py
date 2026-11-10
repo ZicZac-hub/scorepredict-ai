@@ -282,7 +282,7 @@ else:
     st.warning('API_FOOTBALL_KEY is missing. Configure the existing key in Streamlit Secrets.')
 st.subheader('🌍 Worldwide fixtures by Sydney date')
 st.caption('Date-first discovery combines API-Football, TheSportsDB and Sportmonks (when configured). Each provider is limited to its subscription coverage.')
-choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True)
+choice=st.radio('Fixture date', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True,key='prediction_window')
 today=datetime.now(SYDNEY).date()
 start_day=today+timedelta(days=1) if choice=='Tomorrow' else today
 span=3 if choice=='Next 3 days' else 7 if choice=='Next 7 days' else 14 if choice=='Next 14 days' else 1
@@ -614,13 +614,24 @@ selected_worldwide=st.multiselect('Matches in selected league',visible_options,
                                    key='worldwide_fixture_selection',
                                    help='Choose fixtures from this league to research with API-Football Pro when supported.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
-if st.session_state.get('worldwide_model_version') != 'pro-history-v5':
+if st.session_state.get('worldwide_model_version') != 'pro-auto-v6':
     st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='pro-history-v5'
+    st.session_state['worldwide_model_version']='pro-auto-v6'
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
-    st.caption('Research each selected match using API-Football Pro. The results below show verified data or the exact reason research could not finish.')
+    st.caption('⚡ Automatic Pro analysis: selecting a match starts verified history research. Cached results avoid repeating requests.')
+    if secondary_key:
+        for name in selected_worldwide[:8]:
+            if name not in st.session_state['worldwide_models']:
+                item=worldwide_options[name]
+                if item.get('model') and item['model'].get('result'):
+                    continue
+                with st.spinner('Pro analysing '+name+'…'):
+                    row,error=model_worldwide(secondary_key,item['event'])
+                st.session_state['worldwide_models'][name]={'row':row,'error':error}
+    else:
+        st.warning('API_FOOTBALL_KEY is missing; Pro history cannot run.')
     if st.button('🔎 Run Pro analysis for selected matches',type='primary',help='Fetch completed team matches and H2H. Uses API requests.'):
         st.session_state['worldwide_models']={k:v for k,v in st.session_state['worldwide_models'].items() if k not in selected_worldwide}
         for name in selected_worldwide[:8]:
@@ -1027,7 +1038,8 @@ with active_page_slot:
     if view in ['home','predict']:
         with tabs[0]:
             st.caption('Prediction dates use Sydney local time. Worldwide selected matches appear here after successful history analysis.')
-            pred_window=st.radio('Show predictions for', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True,key='prediction_window')
+            pred_window=st.session_state.get('prediction_window','Tomorrow')
+            st.caption('Date selection is shared with Worldwide Match Finder above.')
             pred_start=today+timedelta(days=1) if pred_window=='Tomorrow' else today
             pred_span={'Today':1,'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}[pred_window]
             def in_prediction_window(r):
