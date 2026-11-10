@@ -456,13 +456,53 @@ labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 st.subheader('📅 All available fixtures for the selected date')
 st.caption('Includes every fixture returned by the connected worldwide feeds, even if no prediction is ready. API coverage is not the same as every football match in existence.')
 if discoverable:
-    _all_fixtures=[{'Kickoff (Sydney)':item['event']['local'].strftime('%d %b %I:%M %p'),
+    # The compact score columns stay beside the teams, including on mobile.
+    # Never show an invented score when verified research has not completed.
+    _research_cache=st.session_state.setdefault('worldwide_models',{})
+    _ready=0
+    def _score_for_fixture(item):
+        cached=_research_cache.get(item['name'],{})
+        model=cached.get('row') or item.get('model')
+        if model and model.get('result'):
+            scores=model['result'].get('scores',[])
+            if scores:
+                h,a,p=scores[0]
+                return f"{h}–{a}",f"{p:.1%}",'Model ready'
+        return '—','—',('History unavailable' if cached.get('error') else 'Not researched')
+    if secondary_key:
+        st.caption('Run Pro research for the displayed fixtures to fill the score and probability columns. Results are cached; only completed historical matches are used.')
+        _max_batch=st.select_slider('Fixtures per research batch',options=[5,10,20,40,80],value=10,
+                                    key='pro_fixture_batch_size')
+        if st.button('⚡ Research scores for available fixtures',key='pro_fixture_batch',type='primary'):
+            _pending=[item for item in discoverable if item['name'] not in _research_cache
+                      and not (item.get('model') and item['model'].get('result'))
+                      and item['event'].get('source')=='API-Football']
+            with st.spinner(f'Researching up to {min(_max_batch,len(_pending))} fixtures using Pro…'):
+                for item in _pending[:_max_batch]:
+                    row,error=model_worldwide(secondary_key,item['event'])
+                    _research_cache[item['name']]={'row':row,'error':error}
+            if not _pending:
+                st.info('No additional compatible unresearched fixtures in this date range.')
+            else:
+                st.success(f'Research attempted for {min(_max_batch,len(_pending))} fixtures. Scores appear only when sufficient verified history is available.')
+    _all_fixtures=[]
+    for item in discoverable:
+        _score,_prob,_status=_score_for_fixture(item)
+        if _status=='Model ready': _ready+=1
+        _all_fixtures.append({'Kickoff (Sydney)':item['event']['local'].strftime('%d %b %I:%M %p'),
                     'Home':item['event']['home'],'Away':item['event']['away'],
+                    'Predicted score':_score,'Score probability':_prob,
+                    'Research':_status,
                     'League':item['event'].get('league',''),
-                    'Country':item['event'].get('country','')} for item in discoverable]
+                    'Country':item['event'].get('country','')})
     st.dataframe(pd.DataFrame(_all_fixtures),hide_index=True,use_container_width=True,
+                 column_config={'Home':st.column_config.TextColumn(width='medium'),
+                                'Away':st.column_config.TextColumn(width='medium'),
+                                'Predicted score':st.column_config.TextColumn(width='small'),
+                                'Score probability':st.column_config.TextColumn(width='small')},
                  height=min(560,80+len(_all_fixtures)*35))
-    st.caption(f'{len(_all_fixtures)} available worldwide fixtures · Select a match below for automatic Pro analysis.')
+    st.caption(f"{len(_all_fixtures)} available fixtures · {_ready} with verified score estimates. Scroll horizontally to see all columns.")
+    st.caption('A dash means no modelled score is available yet, not a 0–0 prediction.')
 else:
     st.info('No fixtures were returned for the selected date. Check the provider warnings and date range.')
 st.subheader('🌍 Worldwide Match Explorer')
