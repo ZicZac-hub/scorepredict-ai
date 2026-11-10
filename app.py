@@ -700,12 +700,15 @@ with active_page_slot:
     c1,c2,c3,c4=st.columns(4)
     c1.metric('Upcoming fixtures',len(rows));c2.metric('Modelled fixtures',sum(bool(r['result']) for r in rows))
     c3.metric('Competitions loaded',len(histories));c4.metric('Saved forecasts',len(load(conn)) if conn else 'N/A')
-    st.markdown("""<div class="zz-feature-grid">
-    <div class="zz-feature"><div class="zz-feature-icon">🎯</div><div><strong>Exact Scores</strong><small>Model probabilities</small></div></div>
-    <div class="zz-feature"><div class="zz-feature-icon">🔗</div><div><strong>Five Doubles</strong><small>Two-leg combinations</small></div></div>
-    <div class="zz-feature"><div class="zz-feature-icon">📈</div><div><strong>Live Form</strong><small>Team stats &amp; H2H</small></div></div>
-    <div class="zz-feature"><div class="zz-feature-icon">🏆</div><div><strong>Accuracy</strong><small>Backtesting &amp; archive</small></div></div>
-    </div><div class="zz-section-title">⚽ Upcoming match previews</div>""",unsafe_allow_html=True)
+    # Native navigation buttons: decorative HTML cards were not clickable.
+    feature_cols=st.columns(2,gap='small')
+    with feature_cols[0]:
+        st.button('🎯 Exact Scores\\nModel probabilities',key='feature_exact',use_container_width=True,on_click=_navigate_to,args=('predict',))
+        st.button('📈 Live Form\\nTeam stats & H2H',key='feature_form',use_container_width=True,on_click=_navigate_to,args=('predict',))
+    with feature_cols[1]:
+        st.button('🔗 Five Doubles\\nChoose league & teams',key='feature_doubles',use_container_width=True,on_click=_navigate_to,args=('doubles',))
+        st.button('🏆 Accuracy\\nBacktesting & archive',key='feature_accuracy',use_container_width=True,on_click=_navigate_to,args=('archive',))
+    st.markdown('<div class="zz-section-title">⚽ Upcoming match previews</div>',unsafe_allow_html=True)
     dashboard_rows=[r for r in rows if r.get('result') and r.get('kickoff','') >= datetime.now(timezone.utc).isoformat()[:10]][:3]
     if not dashboard_rows:
         st.caption('No prediction-ready fixtures available right now. Check the worldwide finder or upcoming predictions below.')
@@ -980,16 +983,30 @@ with active_page_slot:
                 pair_candidates=[r for r in pair_candidates
                                  if _double_local_time(r).date()>=tomorrow
                                  and (window_days is None or _double_local_time(r).date()<tomorrow+timedelta(days=window_days))]
-                st.caption(f'{len(pair_candidates)} prediction-ready matches in this period. Only verified historical data is used.')
+                st.markdown('**🏆 Choose your league and teams for the double**')
+                leagues=sorted({str(r.get('league','Unknown competition')) for r in pair_candidates})
+                selected_double_league=st.selectbox('League',['All leagues']+leagues,key='double_league_filter')
+                if selected_double_league!='All leagues':
+                    pair_candidates=[r for r in pair_candidates if str(r.get('league','Unknown competition'))==selected_double_league]
+                def _double_team_names(r):
+                    fixture=r['fixture']
+                    return (str(fixture.get('homeTeam',{}).get('name','')),str(fixture.get('awayTeam',{}).get('name','')))
+                teams=sorted({team for r in pair_candidates for team in _double_team_names(r) if team})
+                selected_double_team=st.selectbox('Team',['All teams']+teams,key='double_team_filter')
+                if selected_double_team!='All teams':
+                    pair_candidates=[r for r in pair_candidates if selected_double_team in _double_team_names(r)]
+                st.caption(f'{len(pair_candidates)} prediction-ready matches match your date, league and team filters.')
+                if len(pair_candidates)<2:
+                    st.info('To build a two-match double, choose All teams or All leagues if this filter has fewer than two eligible fixtures.')
                 if len(pair_candidates)<2:
                     st.info('Fewer than two prediction-ready matches are available in this date range. Try a longer range or add more competitions. Unverified predictions are not invented.')
                 pair_options={fixture_label(r):r for r in pair_candidates}
                 pair_names=list(pair_options)
-                first_name=st.selectbox('Match 1',pair_names,key='manual_double_first',
+                first_name=st.selectbox('Match 1',pair_names,key='manual_double_first_'+str(selected_double_league)+'_'+str(selected_double_team),
                                         index=0 if pair_names else None,
                                         placeholder='Choose an upcoming match')
                 second_names=[name for name in pair_names if name!=first_name]
-                second_name=st.selectbox('Match 2',second_names,key='manual_double_second',
+                second_name=st.selectbox('Match 2',second_names,key='manual_double_second_'+str(selected_double_league)+'_'+str(selected_double_team),
                                          index=0 if second_names else None,
                                          placeholder='Choose a different match')
                 if first_name is None or second_name is None:
