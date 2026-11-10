@@ -359,6 +359,7 @@ for preview in dashboard_rows:
     import html
     st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
 st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
+st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
 tabs=st.tabs(['📅 Upcoming predictions','🛡️ Five double-chance picks','🔗 Five two-leg doubles','📈 Backtesting','🗂️ Prediction archive','🧠 Methodology','🎯 My five exact-score doubles'])
 
 def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
@@ -396,7 +397,30 @@ with tabs[0]:
             with st.expander('Top 10 exact scores · human-style reasoning · recent form'):
                 st.dataframe(pd.DataFrame([{'Score':f'{h}-{a}','Probability %':round(q*100,2)} for h,a,q in p['scores']]),hide_index=True,use_container_width=True)
                 for note in context_review(m,p,r.get('past',histories.get(r['league'],[]))):st.write('• '+note)
-                st.dataframe(pd.DataFrame([{'Team':'Home',**p['home_stats']},{'Team':'Away',**p['away_stats']}]),hide_index=True,use_container_width=True)
+                st.dataframe(pd.DataFrame([{'Team':'Home · last 10 overall',**p['home_stats']},{'Team':'Away · last 10 overall',**p['away_stats']},{'Team':'Home · last 10 at home',**(p.get('home_venue_stats') or {})},{'Team':'Away · last 10 away',**(p.get('away_venue_stats') or {})}]),hide_index=True,use_container_width=True)
+                st.caption('Last 10 is the maximum available per team and venue. Results are shown newest first. Venue averages are shrunk toward overall form for smaller samples.')
+                col_h,col_a=st.columns(2)
+                with col_h:
+                    st.markdown('**Home team — previous 10 matches**')
+                    st.dataframe(pd.DataFrame(p.get('home_last10',[])),hide_index=True,use_container_width=True)
+                    st.markdown('**Home team — previous 10 home matches**')
+                    st.dataframe(pd.DataFrame(p.get('home_home10',[])),hide_index=True,use_container_width=True)
+                with col_a:
+                    st.markdown('**Away team — previous 10 matches**')
+                    st.dataframe(pd.DataFrame(p.get('away_last10',[])),hide_index=True,use_container_width=True)
+                    st.markdown('**Away team — previous 10 away matches**')
+                    st.dataframe(pd.DataFrame(p.get('away_away10',[])),hide_index=True,use_container_width=True)
+                st.markdown('**Last 10 head-to-head meetings (if available)**')
+                if p.get('h2h_last10'):
+                    st.dataframe(pd.DataFrame(p['h2h_last10']),hide_index=True,use_container_width=True)
+                    st.caption('H2H goals are oriented to the upcoming home/away teams, even if prior meetings used the opposite venue.')
+                else:
+                    st.caption('No verified head-to-head matches in the accessible history.')
+                st.markdown('**Mathematical model comparison**')
+                methods=p.get('methods',{})
+                if methods:
+                    st.dataframe(pd.DataFrame([{'Estimator':name,'Expected home goals':round(vals[0],2),'Expected away goals':round(vals[1],2)} for name,vals in methods.items()]+[{'Estimator':'Blended forecast','Expected home goals':round(p['home_xg'],2),'Expected away goals':round(p['away_xg'],2)}]),hide_index=True,use_container_width=True)
+                st.caption('Data quality: '+str(p.get('data_quality','unknown'))+' · Model: '+str(p.get('model_version','legacy'))+'. H2H is descriptive, not an extra goal multiplier. Injuries and lineups are not independently verified.')
 with tabs[1]:
     st.subheader('Five highest-probability double-chance selections')
     st.caption('1X = home or draw · X2 = away or draw · 12 = either team wins. These are NOT exact-score doubles.')
