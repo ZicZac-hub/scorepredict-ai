@@ -1283,7 +1283,7 @@ with active_page_slot:
         with tabs[6]:
             st.subheader('Choose the two matches for your exact-score double')
             st.caption('Choose two different matches with verified historical results. Worldwide fixtures without sufficient model data cannot be assigned invented probabilities.')
-            if len(chosen_rows)>=2:
+            if True:
                 # Show future fixtures in Sydney time, nearest first; do not default
                 # to arbitrary previously selected games several weeks away.
                 def _double_local_time(r):
@@ -1301,6 +1301,19 @@ with active_page_slot:
                 # initial eight preselected by the general analysis selector.
                 all_pair_rows={str(r['fixture'].get('provider',''))+':'+str(r['fixture'].get('id','')):r
                                for r in rows if r.get('result')}
+                # Include ALL discovered worldwide fixtures, even before Pro modelling.
+                for item in discoverable:
+                    ev=item['event']
+                    fixture=ev.get('fixture')
+                    if not fixture or not fixture.get('utcDate'):
+                        continue
+                    row=st.session_state.get('worldwide_models',{}).get(item['name'],{}).get('row') or item.get('model')
+                    if not row:
+                        row={'fixture':fixture,'kickoff':fixture['utcDate'],
+                             'league':ev.get('league','Unknown competition'),'result':None,
+                             '_worldwide_event':ev,'_worldwide_name':item['name']}
+                    key_id=str(fixture.get('provider',''))+':'+str(fixture.get('id',''))
+                    all_pair_rows[key_id]=row
                 pair_candidates=sorted(all_pair_rows.values(),key=_double_local_time)
                 pair_candidates=[r for r in pair_candidates
                                  if _double_local_time(r).date()>=tomorrow
@@ -1317,11 +1330,11 @@ with active_page_slot:
                 selected_double_team=st.selectbox('Team',['All teams']+teams,key='double_team_filter')
                 if selected_double_team!='All teams':
                     pair_candidates=[r for r in pair_candidates if selected_double_team in _double_team_names(r)]
-                st.caption(f'{len(pair_candidates)} prediction-ready matches match your date, league and team filters.')
+                st.caption(f'{len(pair_candidates)} available fixtures match your filters · {sum(bool(r.get("result")) for r in pair_candidates)} prediction-ready. Select two to run Pro research.')
                 if len(pair_candidates)<2:
                     st.info('To build a two-match double, choose All teams or All leagues if this filter has fewer than two eligible fixtures.')
                 if len(pair_candidates)<2:
-                    st.info('Fewer than two prediction-ready matches are available in this date range. Try a longer range or add more competitions. Unverified predictions are not invented.')
+                    st.info('Fewer than two fixtures were returned for this range. Try a longer range.')
                 pair_options={fixture_label(r):r for r in pair_candidates}
                 pair_names=list(pair_options)
                 first_name=st.selectbox('Match 1',pair_names,key='manual_double_first_'+str(selected_double_league)+'_'+str(selected_double_team),
@@ -1335,14 +1348,32 @@ with active_page_slot:
                     st.caption('Select two available matches to calculate exact-score doubles.')
                 else:
                     st.caption('Match 1: '+_double_local_time(pair_options[first_name]).strftime('%a %d %b, %I:%M %p')+' Sydney · Match 2: '+_double_local_time(pair_options[second_name]).strftime('%a %d %b, %I:%M %p')+' Sydney')
+                # Model selected worldwide fixtures on demand; do not hide them beforehand.
+                if first_name is not None and second_name is not None and secondary_key:
+                    for selected_name in (first_name,second_name):
+                        selected_row=pair_options[selected_name]
+                        if selected_row.get('result') or not selected_row.get('_worldwide_event'):
+                            continue
+                        ev=selected_row['_worldwide_event']
+                        if ev.get('source')!='API-Football':
+                            continue
+                        with st.spinner('Pro researching '+selected_name+'…'):
+                            researched,error=model_worldwide(secondary_key,ev)
+                        st.session_state.setdefault('worldwide_models',{})[selected_row['_worldwide_name']]={'row':researched,'error':error}
+                        if researched:
+                            pair_options[selected_name]=researched
+                        else:
+                            st.warning(f"{selected_name}: {error}")
                 manual_options=[]
-                if first_name is not None and second_name is not None:
+                if first_name is not None and second_name is not None and pair_options[first_name].get('result') and pair_options[second_name].get('result'):
                     first=pair_options[first_name]
                     second=pair_options[second_name]
                     for h1,a1,p1 in first['result']['scores'][:10]:
                         for h2,a2,p2 in second['result']['scores'][:10]:
                             manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
                                 'P1':p1,'P2':p2,'Joint':p1*p2})
+                if first_name is not None and second_name is not None and not manual_options:
+                    st.info('Both matches must have verified history before five exact-score doubles can be calculated. Choose another match or check the Pro research warning above.')
                 if manual_options:
                     manual_options.sort(key=lambda o:o['Joint'],reverse=True)
                     st.markdown('**Top five exact-score doubles for your two chosen matches**')
