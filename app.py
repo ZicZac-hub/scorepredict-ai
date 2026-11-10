@@ -1,4 +1,4 @@
-"""ScorePredict AI Worldwide: free Streamlit UI, live API, walk-forward validation."""
+"""ZicZac Predict AI Worldwide: free Streamlit UI, live API, walk-forward validation."""
 from datetime import datetime, timedelta, timezone
 from itertools import combinations
 import os
@@ -15,7 +15,7 @@ from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
 
-st.set_page_config(page_title='ScorePredict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
+st.set_page_config(page_title='ZicZac Predict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
 st.markdown("""<style>
 :root{color-scheme:dark}
 .block-container{max-width:1200px;padding-top:1rem;padding-bottom:5rem}
@@ -151,7 +151,7 @@ st.markdown('''<style>
 </style>
 <div class="football-hero">
 <div class="stands"></div><div class="spot left"></div><div class="spot right"></div><div class="pitch"></div>
-<div class="headline"><div class="eyebrow">⚡ THE BEAUTIFUL GAME · DATA & PREDICTIONS</div><div class="brand">⚽ ScorePredict <span style="color:#ff698d">AI</span></div><div class="subtitle">Worldwide fixtures · Exact scores · Doubles · Accuracy</div><div style="margin-top:9px;color:#b8dfff;font-size:14px;font-weight:700;letter-spacing:.06em;text-shadow:0 2px 8px rgba(0,0,0,.65)">Prediction by ZicZac</div></div>
+<div class="headline"><div class="eyebrow">⚡ THE BEAUTIFUL GAME · DATA & PREDICTIONS</div><div class="brand">⚽ ZicZac Predict <span style="color:#ff698d">AI</span></div><div class="subtitle">Worldwide fixtures · Exact scores · Doubles · Accuracy</div><div style="margin-top:9px;color:#b8dfff;font-size:14px;font-weight:700;letter-spacing:.06em;text-shadow:0 2px 8px rgba(0,0,0,.65)">Prediction by ZicZac</div></div>
 <div class="lineup"><div class="player photo-player"><div class="player-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cristiano_Ronaldo_2018.jpg" alt="Photograph of RONALDO" loading="lazy" referrerpolicy="no-referrer"></div><div class="name">RONALDO</div><div class="legend">Portugal · Forward</div></div><div class="player photo-player main-star"><div class="player-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lionel-Messi-Argentina-2022-FIFA-World-Cup.jpg" alt="Photograph of MESSI" loading="lazy" referrerpolicy="no-referrer"></div><div class="name">MESSI</div><div class="legend">Argentina · Playmaker</div></div><div class="player photo-player"><div class="player-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/2022_FIFA_World_Cup_France_4%E2%80%931_Australia_-_%287%29_%28cropped%29.jpg" alt="Photograph of MBAPPÉ" loading="lazy" referrerpolicy="no-referrer"></div><div class="name">MBAPPÉ</div><div class="legend">France · Forward</div></div></div><div class="ball" aria-hidden="true">⚽</div><div class="photo-credit">Player photos: <a href="https://commons.wikimedia.org/wiki/File:Cristiano_Ronaldo_2018.jpg">Ronaldo (CC BY-SA 3.0)</a> · <a href="https://commons.wikimedia.org/wiki/File:Lionel-Messi-Argentina-2022-FIFA-World-Cup.jpg">Messi (Hossein Zohrevand/Tasnim, CC BY 4.0)</a> · <a href="https://commons.wikimedia.org/wiki/File:2022_FIFA_World_Cup_France_4%E2%80%931_Australia_-_(7)_(cropped).jpg">Mbappé (Hossein Zohrevand/Tasnim, CC BY 4.0)</a></div>
 </div>''',unsafe_allow_html=True)
 
