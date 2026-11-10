@@ -98,7 +98,7 @@ def _h2h(matches,home_id,away_id,limit=10):
         if len(meetings)>=limit:break
     return meetings
 
-def predict(fixture,history,max_goals=10):
+def predict(fixture,history,max_goals=10,variant='regularized'):
     home_id=(fixture.get('homeTeam') or {}).get('id')
     away_id=(fixture.get('awayTeam') or {}).get('id')
     if home_id is None or away_id is None or home_id==away_id:return None
@@ -131,7 +131,7 @@ def predict(fixture,history,max_goals=10):
     # Conservative uncertainty regularization for thin historical samples.
     # This is a candidate change requiring walk-forward validation.
     evidence=min(len(hg),len(ag),len(hv)+2,len(av)+2)
-    weight=evidence/(evidence+8.0)
+    weight=evidence/(evidence+8.0) if variant=='regularized' else 1.0
     lam_h=clamp(weight*lam_h+(1-weight)*base_h)
     lam_a=clamp(weight*lam_a+(1-weight)*base_a)
     # Recent form / venue / H2H are visible evidence, not arbitrarily
@@ -150,7 +150,7 @@ def predict(fixture,history,max_goals=10):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':MODEL_VERSION,
+            'history_count':len(past),'model_version':MODEL_VERSION if variant=='regularized' else 'venue-form-ensemble-v2-baseline',
             'evidence_weight':round(weight,3),
             'uncertainty_note':'Sparse-sample estimates are shrunk toward league scoring averages; improvement not yet validated.',
             'methods':{'strength':(round(lam_h_strength,3),round(lam_a_strength,3)),
