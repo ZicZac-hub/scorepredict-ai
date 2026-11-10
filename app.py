@@ -91,13 +91,40 @@ div[data-testid="stTabs"] [role="tablist"]{border-bottom-color:rgba(123,151,216,
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
 </style>""",unsafe_allow_html=True)
-st.markdown('''<div style="position:relative;overflow:hidden;background:radial-gradient(ellipse at 75% 12%,rgba(56,189,248,.28),transparent 40%),linear-gradient(130deg,#0b1d3b,#21154b 65%,#0b2440);padding:22px 22px 25px;border:1px solid #425b91;border-radius:24px;margin-bottom:18px;box-shadow:0 16px 38px rgba(0,0,0,.25)">
-<div style="position:absolute;right:-42px;top:-42px;width:190px;height:190px;border-radius:50%;border:2px solid rgba(126,179,255,.13);box-shadow:0 0 0 25px rgba(126,179,255,.035),0 0 0 50px rgba(126,179,255,.025)"></div>
-<div style="position:relative;font-size:11px;color:#9bd9ff;letter-spacing:.18em;font-weight:800">⚡ FOOTBALL INTELLIGENCE</div>
-<div style="position:relative;font-size:clamp(27px,5vw,42px);font-weight:850;color:#f8fafc;line-height:1.3;margin-top:5px">⚽ ScorePredict <span style="color:#fb668a">AI</span></div>
-<div style="position:relative;color:#d5e2f8;font-size:14px;margin-top:8px">Worldwide fixtures · Exact-score probabilities · Five doubles · Prediction accuracy</div>
-<div style="position:relative;display:flex;flex-wrap:wrap;gap:7px;margin-top:16px"><span style="border:1px solid #44659b;background:#112b53;border-radius:20px;padding:5px 11px;color:#dbeafe;font-size:12px">🌍 Worldwide</span><span style="border:1px solid #654fa4;background:#251d55;border-radius:20px;padding:5px 11px;color:#e9ddff;font-size:12px">🎯 Exact scores</span><span style="border:1px solid #356c84;background:#10394c;border-radius:20px;padding:5px 11px;color:#d5faff;font-size:12px">📈 Accuracy</span></div>
+st.markdown('''<style>
+.football-hero{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;border:1px solid #4a668c;background:linear-gradient(180deg,#07132d 0%,#112a45 56%,#0b483b 100%);box-shadow:0 16px 42px #0007;margin-bottom:20px;min-height:370px}
+.football-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 12% 14%,#b4e7ff44,transparent 35%),radial-gradient(ellipse at 89% 12%,#b4e7ff44,transparent 35%),repeating-linear-gradient(0deg,transparent 0 34px,#ffffff09 35px 36px);pointer-events:none}
+.football-hero .stands{position:absolute;top:25%;width:100%;height:45%;border-radius:50% 50% 0 0;background:repeating-linear-gradient(0deg,#15233e 0 9px,#283e5c 10px 12px);opacity:.65}
+.football-hero .pitch{position:absolute;left:-10%;right:-10%;bottom:-18%;height:52%;border:2px solid #b0f9dd55;border-radius:50% 50% 0 0;background:repeating-linear-gradient(90deg,#0a4839 0 16%,#0c523e 16% 32%);transform:perspective(450px) rotateX(33deg)}
+.football-hero .pitch:after{content:"";position:absolute;left:43%;top:5%;height:100%;border-left:2px solid #d0ffe155}
+.football-hero .spot{position:absolute;top:14px;width:88px;height:8px;border-radius:12px;background:#e0f4ff;box-shadow:0 0 18px 9px #7ac7ff77,0 0 90px 55px #8cc9ff33}
+.football-hero .spot.left{left:8%}.football-hero .spot.right{right:8%}
+.football-hero .headline{position:relative;z-index:3;padding:22px 22px 8px;text-align:center;text-shadow:0 3px 12px #000}
+.football-hero .eyebrow{font-size:11px;letter-spacing:.2em;color:#a4dfff;font-weight:800}
+.football-hero .brand{font-size:clamp(27px,5vw,42px);font-weight:900;color:#fff}
+.football-hero .subtitle{font-size:13px;color:#d5e9f8}
+.football-hero .lineup{position:relative;z-index:2;display:flex;align-items:end;justify-content:space-around;gap:6px;padding:12px 10px 18px;min-height:218px}
+.football-hero .player{width:30%;max-width:150px;text-align:center;animation:player-bob 2.8s ease-in-out infinite;filter:drop-shadow(0 7px 12px #0009)}
+.football-hero .player:nth-child(2){animation-delay:-.9s}.football-hero .player:nth-child(3){animation-delay:-1.7s}
+.football-hero .player svg{width:100%;height:160px;overflow:visible}
+.football-hero .name{color:#fff;font-size:12px;font-weight:800;text-shadow:0 2px 5px #000;letter-spacing:.04em}
+.football-hero .legend{font-size:10px;color:#c2e3ee}
+.football-hero .ball{position:absolute;bottom:49px;left:46%;font-size:25px;z-index:3;animation:ball-dribble 3.2s ease-in-out infinite;filter:drop-shadow(0 4px 4px #0009)}
+@keyframes player-bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-9px) rotate(1deg)}}
+@keyframes ball-dribble{0%,100%{transform:translate(-45px,0) rotate(0)}25%{transform:translate(0,-23px) rotate(100deg)}50%{transform:translate(48px,0) rotate(200deg)}75%{transform:translate(0,-17px) rotate(300deg)}}
+@media(max-width:600px){.football-hero{min-height:335px}.football-hero .lineup{min-height:190px;padding:4px 5px 18px}.football-hero .player svg{height:132px}.football-hero .name{font-size:11px}.football-hero .subtitle{font-size:11px}.football-hero .ball{bottom:45px}}
+@media(prefers-reduced-motion:reduce){.football-hero .player,.football-hero .ball{animation:none!important}}
+</style>
+<div class="football-hero">
+<div class="stands"></div><div class="spot left"></div><div class="spot right"></div><div class="pitch"></div>
+<div class="headline"><div class="eyebrow">⚡ THE BEAUTIFUL GAME · DATA & PREDICTIONS</div><div class="brand">⚽ ScorePredict <span style="color:#ff698d">AI</span></div><div class="subtitle">Worldwide fixtures · Exact scores · Doubles · Accuracy</div></div>
+<div class="lineup">
+<div class="player"><svg viewBox="0 0 110 170" aria-label="Illustrated footballer in number 10 shirt"><circle cx="55" cy="23" r="17" fill="#d9a37d"/><path d="M38 17 Q40 -2 61 6 Q75 10 72 22 L64 14 L43 16Z" fill="#211a1d"/><path d="M33 43 Q55 36 77 43 L83 96 H27Z" fill="#75c9f7"/><path d="M33 43 L19 83 M77 43 L90 83" stroke="#d9a37d" stroke-width="13" stroke-linecap="round"/><path d="M42 95 L39 142 M69 95 L74 142" stroke="#d9a37d" stroke-width="17" stroke-linecap="round"/><path d="M27 90 H83 V108 H27Z" fill="#f6f7fc"/><path d="M39 141 L36 160 H17 M74 141 L77 160 H95" stroke="#eaf6ff" stroke-width="13" stroke-linecap="round" fill="none"/><text x="55" y="78" fill="#123b68" font-size="26" text-anchor="middle" font-weight="900">10</text></svg><div class="name">MESSI</div><div class="legend">No. 10 · Playmaker</div></div>
+<div class="player"><svg viewBox="0 0 110 170" aria-label="Illustrated footballer in number 7 shirt"><circle cx="55" cy="23" r="17" fill="#d3a07c"/><path d="M38 16 Q38 2 57 4 Q72 3 73 19 L61 13 L42 17Z" fill="#251b17"/><path d="M32 43 Q55 35 78 43 L83 96 H27Z" fill="#e9edf3"/><path d="M32 43 L18 82 M78 43 L93 82" stroke="#d3a07c" stroke-width="13" stroke-linecap="round"/><path d="M41 96 L38 141 M70 96 L75 141" stroke="#d3a07c" stroke-width="17" stroke-linecap="round"/><path d="M27 90 H83 V108 H27Z" fill="#172b44"/><path d="M38 141 L35 160 H15 M75 141 L78 160 H96" stroke="#f6f7fc" stroke-width="13" stroke-linecap="round" fill="none"/><text x="55" y="78" fill="#182c47" font-size="26" text-anchor="middle" font-weight="900">7</text></svg><div class="name">RONALDO</div><div class="legend">No. 7 · Forward</div></div>
+<div class="player"><svg viewBox="0 0 110 170" aria-label="Illustrated footballer in number 10 navy shirt"><circle cx="55" cy="23" r="17" fill="#956a52"/><path d="M38 16 Q40 2 58 4 Q71 5 73 20 L63 14 L42 16Z" fill="#16171b"/><path d="M32 43 Q55 35 78 43 L83 96 H27Z" fill="#162a69"/><path d="M32 43 L18 82 M78 43 L93 82" stroke="#956a52" stroke-width="13" stroke-linecap="round"/><path d="M41 96 L38 141 M70 96 L75 141" stroke="#956a52" stroke-width="17" stroke-linecap="round"/><path d="M27 90 H83 V108 H27Z" fill="#f8fafc"/><path d="M38 141 L35 160 H15 M75 141 L78 160 H96" stroke="#eaf6ff" stroke-width="13" stroke-linecap="round" fill="none"/><text x="55" y="78" fill="#fff" font-size="26" text-anchor="middle" font-weight="900">10</text></svg><div class="name">MBAPPÉ</div><div class="legend">No. 10 · Striker</div></div>
+</div><div class="ball" aria-hidden="true">⚽</div>
 </div>''',unsafe_allow_html=True)
+
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
 key=key or os.environ.get('FOOTBALL_DATA_API_KEY','')
