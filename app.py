@@ -553,8 +553,9 @@ if visible_worldwide:
         team_rows.append({'Home team':ev.get('home',''), 'Away team':ev.get('away',''),
                           'Kickoff (Sydney)':ev['local'].strftime('%d %b, %I:%M %p'),
                           'League':ev.get('league',''),'Country':ev.get('country',''),
-                          'Model': 'Ready' if item.get('model') and item['model'].get('result') else 'History needed'})
+                          'Research status': 'Model ready' if item.get('model') and item['model'].get('result') else 'Select to research'})
     st.dataframe(pd.DataFrame(team_rows),hide_index=True,use_container_width=True)
+    st.caption('Select a fixture below and tap Research. Historical results are checked against available authorised sources; unavailable records are never invented.')
 else:
     st.info('No upcoming fixtures found for this league and team in the current date range. Try another league or date.')
 picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
@@ -579,7 +580,7 @@ if st.session_state.get('worldwide_model_version') != 'date-range-v3':
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
-    if st.button('🔎 Analyse selected worldwide matches',help='Fetch verified recent results for selected API-Football matches; uses your API quota.'):
+    if st.button('🔎 Research selected matches · form, H2H and probabilities',help='Retrieve verified historical results from available authorised sources; may use an API quota.'):
         st.session_state['worldwide_models']={k:v for k,v in st.session_state['worldwide_models'].items() if k not in selected_worldwide}
         for name in selected_worldwide[:8]:
             item=worldwide_options[name]
@@ -598,6 +599,33 @@ if selected_worldwide:
                 histories[name]=cached['row']['past']
                 st.success(f"Prediction ready: {name}")
                 st.caption('Verified research source: '+', '.join(cached['row'].get('research_sources',['Football match data provider'])))
+                research=cached['row']['result']
+                with st.expander('📊 Full mathematical research · '+name,expanded=True):
+                    st.markdown('**Home win / Draw / Away win — probability model**')
+                    st.bar_chart(pd.DataFrame({'Probability (%)':[round(research['home_win']*100,2),round(research['draw']*100,2),round(research['away_win']*100,2)]},index=['Home win','Draw','Away win']))
+                    st.markdown('**Expected goals (Poisson goal model)**')
+                    st.bar_chart(pd.DataFrame({'Expected goals':[research['home_xg'],research['away_xg']]},index=['Home','Away']))
+                    st.markdown('**Recent form: overall and venue-specific**')
+                    stats_rows=[]
+                    for title,key in [('Home · overall','home_stats'),('Home · home only','home_venue_stats'),('Away · overall','away_stats'),('Away · away only','away_venue_stats')]:
+                        x=research.get(key)
+                        if x:stats_rows.append({'Team / split':title,'Matches':x['played'],'Wins':x['wins'],'Draws':x['draws'],'Losses':x['losses'],'Goals scored / game':round(x['scored'],2),'Goals conceded / game':round(x['conceded'],2)})
+                    if stats_rows:st.dataframe(pd.DataFrame(stats_rows),hide_index=True,use_container_width=True)
+                    for title,key in [('Home · last 10 overall','home_last10'),('Home · last 10 at home','home_home10'),('Away · last 10 overall','away_last10'),('Away · last 10 away','away_away10')]:
+                        games=research.get(key,[])
+                        st.markdown('**'+title+' ('+str(len(games))+'/10 available)**')
+                        if games:
+                            st.line_chart(pd.DataFrame([{'Match':str(i+1),'Scored':g['gf'],'Conceded':g['ga']} for i,g in enumerate(reversed(games))]).set_index('Match'))
+                        else:st.caption('No verified matches available for this split.')
+                    h2h=research.get('h2h_last10',[])
+                    st.markdown('**Head-to-head — '+str(len(h2h))+'/10 available**')
+                    if h2h:st.dataframe(pd.DataFrame(h2h),hide_index=True,use_container_width=True)
+                    else:st.caption('No verified previous meetings available.')
+                    st.markdown('**Top exact-score probabilities**')
+                    st.bar_chart(pd.DataFrame({'Probability (%)':[round(p*100,2) for h,a,p in research['scores']]},index=[f'{h}-{a}' for h,a,p in research['scores']]))
+                    if min(len(research.get('home_last10',[])),len(research.get('away_last10',[])),len(research.get('home_home10',[])),len(research.get('away_away10',[])))<10:
+                        st.warning('Fewer than 10 verified results exist in at least one split. This is a limited-sample estimate, not a fully researched 10-match comparison.')
+                    st.caption('Mathematical conclusion: most likely result = '+max([('Home win',research['home_win']),('Draw',research['draw']),('Away win',research['away_win'])],key=lambda x:x[1])[0]+'. This is the highest model probability, not a guaranteed outcome.')
             elif cached['error']:
                 st.info(f"{name}: {cached['error']}")
 for name in selected_worldwide:
