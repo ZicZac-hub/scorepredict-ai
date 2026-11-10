@@ -404,184 +404,178 @@ tabs=[st.container() for _ in range(7)]
 
 def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
 if view in ['home','predict']:
-    with tabs[0]:if view in ['home','predict']:
     with tabs[0]:
-    st.caption('Prediction dates use Sydney local time. Worldwide selected matches appear here after successful history analysis.')
-    pred_window=st.radio('Show predictions for', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True,key='prediction_window')
-    pred_start=today+timedelta(days=1) if pred_window=='Tomorrow' else today
-    pred_span={'Today':1,'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}[pred_window]
-    def in_prediction_window(r):
-        try:
-            dt=datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
-            return pred_start<=dt.date()<pred_start+timedelta(days=pred_span)
-        except (ValueError,KeyError,TypeError):return False
-    visible_predictions=[r for r in rows if r.get('result') and in_prediction_window(r)]
-    visible_fixtures=[r for r in rows if in_prediction_window(r)]
-    st.caption(f'{len(visible_fixtures)} fixtures in monitored/modelled competitions · {len(visible_predictions)} prediction-ready matches for {pred_window.lower()}.')
-    if visible_fixtures and not visible_predictions:
-        st.warning('Fixtures exist for this date, but the available historical data is insufficient for the prediction model.')
-    if not visible_predictions:st.info('No prediction-ready matches for this period from the available API history. Try another date or analyse a worldwide fixture above; this does not mean no football is scheduled.')
-    if visible_fixtures:
-        with st.expander('Show scheduled fixtures without predictions'):
-            for r in visible_fixtures:
-                if not r.get('result'):
-                    st.write(f"{fixture_label(r)} — insufficient verified history")
-    for r in visible_predictions[:max_games]:
-        m,p=r['fixture'],r['result']
-        with st.container(border=True):
-            st.caption(f"{r['league']} · {r['kickoff']} UTC")
-            st.subheader(match_name(m))
-            if p is None:st.info('Insufficient historical results for this fixture.');continue
-            best=p['scores'][0]
-            cols=st.columns(5)
-            for col,label,val in zip(cols,['Top exact score','Home win','Draw','Away win','Expected goals'],
-                                     [f'{best[0]}–{best[1]} ({best[2]:.1%})',f"{p['home_win']:.1%}",f"{p['draw']:.1%}",f"{p['away_win']:.1%}",f"{p['home_xg']:.2f} / {p['away_xg']:.2f}"]):col.metric(label,val)
-            with st.expander('Top 10 exact scores · human-style reasoning · recent form'):
-                st.dataframe(pd.DataFrame([{'Score':f'{h}-{a}','Probability %':round(q*100,2)} for h,a,q in p['scores']]),hide_index=True,use_container_width=True)
-                for note in context_review(m,p,r.get('past',histories.get(r['league'],[]))):st.write('• '+note)
-                st.dataframe(pd.DataFrame([{'Team':'Home · last 10 overall',**p['home_stats']},{'Team':'Away · last 10 overall',**p['away_stats']},{'Team':'Home · last 10 at home',**(p.get('home_venue_stats') or {})},{'Team':'Away · last 10 away',**(p.get('away_venue_stats') or {})}]),hide_index=True,use_container_width=True)
-                st.caption('Last 10 is the maximum available per team and venue. Results are shown newest first. Venue averages are shrunk toward overall form for smaller samples.')
-                col_h,col_a=st.columns(2)
-                with col_h:
-                    st.markdown('**Home team — previous 10 matches**')
-                    st.dataframe(pd.DataFrame(p.get('home_last10',[])),hide_index=True,use_container_width=True)
-                    st.markdown('**Home team — previous 10 home matches**')
-                    st.dataframe(pd.DataFrame(p.get('home_home10',[])),hide_index=True,use_container_width=True)
-                with col_a:
-                    st.markdown('**Away team — previous 10 matches**')
-                    st.dataframe(pd.DataFrame(p.get('away_last10',[])),hide_index=True,use_container_width=True)
-                    st.markdown('**Away team — previous 10 away matches**')
-                    st.dataframe(pd.DataFrame(p.get('away_away10',[])),hide_index=True,use_container_width=True)
-                st.markdown('**Last 10 head-to-head meetings (if available)**')
-                if p.get('h2h_last10'):
-                    st.dataframe(pd.DataFrame(p['h2h_last10']),hide_index=True,use_container_width=True)
-                    st.caption('H2H goals are oriented to the upcoming home/away teams, even if prior meetings used the opposite venue.')
-                else:
-                    st.caption('No verified head-to-head matches in the accessible history.')
-                st.markdown('**Mathematical model comparison**')
-                methods=p.get('methods',{})
-                if methods:
-                    st.dataframe(pd.DataFrame([{'Estimator':name,'Expected home goals':round(vals[0],2),'Expected away goals':round(vals[1],2)} for name,vals in methods.items()]+[{'Estimator':'Blended forecast','Expected home goals':round(p['home_xg'],2),'Expected away goals':round(p['away_xg'],2)}]),hide_index=True,use_container_width=True)
-                st.caption('Data quality: '+str(p.get('data_quality','unknown'))+' · Model: '+str(p.get('model_version','legacy'))+'. H2H is descriptive, not an extra goal multiplier. Injuries and lineups are not independently verified.')
+        st.caption('Prediction dates use Sydney local time. Worldwide selected matches appear here after successful history analysis.')
+        pred_window=st.radio('Show predictions for', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True,key='prediction_window')
+        pred_start=today+timedelta(days=1) if pred_window=='Tomorrow' else today
+        pred_span={'Today':1,'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}[pred_window]
+        def in_prediction_window(r):
+            try:
+                dt=datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
+                return pred_start<=dt.date()<pred_start+timedelta(days=pred_span)
+            except (ValueError,KeyError,TypeError):return False
+        visible_predictions=[r for r in rows if r.get('result') and in_prediction_window(r)]
+        visible_fixtures=[r for r in rows if in_prediction_window(r)]
+        st.caption(f'{len(visible_fixtures)} fixtures in monitored/modelled competitions · {len(visible_predictions)} prediction-ready matches for {pred_window.lower()}.')
+        if visible_fixtures and not visible_predictions:
+            st.warning('Fixtures exist for this date, but the available historical data is insufficient for the prediction model.')
+        if not visible_predictions:st.info('No prediction-ready matches for this period from the available API history. Try another date or analyse a worldwide fixture above; this does not mean no football is scheduled.')
+        if visible_fixtures:
+            with st.expander('Show scheduled fixtures without predictions'):
+                for r in visible_fixtures:
+                    if not r.get('result'):
+                        st.write(f"{fixture_label(r)} — insufficient verified history")
+        for r in visible_predictions[:max_games]:
+            m,p=r['fixture'],r['result']
+            with st.container(border=True):
+                st.caption(f"{r['league']} · {r['kickoff']} UTC")
+                st.subheader(match_name(m))
+                if p is None:st.info('Insufficient historical results for this fixture.');continue
+                best=p['scores'][0]
+                cols=st.columns(5)
+                for col,label,val in zip(cols,['Top exact score','Home win','Draw','Away win','Expected goals'],
+                                         [f'{best[0]}–{best[1]} ({best[2]:.1%})',f"{p['home_win']:.1%}",f"{p['draw']:.1%}",f"{p['away_win']:.1%}",f"{p['home_xg']:.2f} / {p['away_xg']:.2f}"]):col.metric(label,val)
+                with st.expander('Top 10 exact scores · human-style reasoning · recent form'):
+                    st.dataframe(pd.DataFrame([{'Score':f'{h}-{a}','Probability %':round(q*100,2)} for h,a,q in p['scores']]),hide_index=True,use_container_width=True)
+                    for note in context_review(m,p,r.get('past',histories.get(r['league'],[]))):st.write('• '+note)
+                    st.dataframe(pd.DataFrame([{'Team':'Home · last 10 overall',**p['home_stats']},{'Team':'Away · last 10 overall',**p['away_stats']},{'Team':'Home · last 10 at home',**(p.get('home_venue_stats') or {})},{'Team':'Away · last 10 away',**(p.get('away_venue_stats') or {})}]),hide_index=True,use_container_width=True)
+                    st.caption('Last 10 is the maximum available per team and venue. Results are shown newest first. Venue averages are shrunk toward overall form for smaller samples.')
+                    col_h,col_a=st.columns(2)
+                    with col_h:
+                        st.markdown('**Home team — previous 10 matches**')
+                        st.dataframe(pd.DataFrame(p.get('home_last10',[])),hide_index=True,use_container_width=True)
+                        st.markdown('**Home team — previous 10 home matches**')
+                        st.dataframe(pd.DataFrame(p.get('home_home10',[])),hide_index=True,use_container_width=True)
+                    with col_a:
+                        st.markdown('**Away team — previous 10 matches**')
+                        st.dataframe(pd.DataFrame(p.get('away_last10',[])),hide_index=True,use_container_width=True)
+                        st.markdown('**Away team — previous 10 away matches**')
+                        st.dataframe(pd.DataFrame(p.get('away_away10',[])),hide_index=True,use_container_width=True)
+                    st.markdown('**Last 10 head-to-head meetings (if available)**')
+                    if p.get('h2h_last10'):
+                        st.dataframe(pd.DataFrame(p['h2h_last10']),hide_index=True,use_container_width=True)
+                        st.caption('H2H goals are oriented to the upcoming home/away teams, even if prior meetings used the opposite venue.')
+                    else:
+                        st.caption('No verified head-to-head matches in the accessible history.')
+                    st.markdown('**Mathematical model comparison**')
+                    methods=p.get('methods',{})
+                    if methods:
+                        st.dataframe(pd.DataFrame([{'Estimator':name,'Expected home goals':round(vals[0],2),'Expected away goals':round(vals[1],2)} for name,vals in methods.items()]+[{'Estimator':'Blended forecast','Expected home goals':round(p['home_xg'],2),'Expected away goals':round(p['away_xg'],2)}]),hide_index=True,use_container_width=True)
+                    st.caption('Data quality: '+str(p.get('data_quality','unknown'))+' · Model: '+str(p.get('model_version','legacy'))+'. H2H is descriptive, not an extra goal multiplier. Injuries and lineups are not independently verified.')
 if view in ['doubles']:
-    with tabs[1]:if view in ['doubles']:
     with tabs[1]:
-    st.subheader('Five highest-probability double-chance selections')
-    st.caption('1X = home or draw · X2 = away or draw · 12 = either team wins. These are NOT exact-score doubles.')
-    picks=ranked_double_chance(rows,min_prob)
-    if not picks:st.info('Not enough eligible fixtures at the selected probability threshold. Reduce the threshold or extend the date range.')
-    else:
-        st.dataframe(pd.DataFrame([{'Fixture':match_name(x['fixture']),'Market':x['selection'],'Model probability':f"{x['probability']:.1%}",'Kickoff UTC':x['kickoff'],'Competition':x['league']} for x in picks]),hide_index=True,use_container_width=True)
-        st.caption('Selections are ranked by the model, not verified bookmaker odds or guaranteed wins.')
+        st.subheader('Five highest-probability double-chance selections')
+        st.caption('1X = home or draw · X2 = away or draw · 12 = either team wins. These are NOT exact-score doubles.')
+        picks=ranked_double_chance(rows,min_prob)
+        if not picks:st.info('Not enough eligible fixtures at the selected probability threshold. Reduce the threshold or extend the date range.')
+        else:
+            st.dataframe(pd.DataFrame([{'Fixture':match_name(x['fixture']),'Market':x['selection'],'Model probability':f"{x['probability']:.1%}",'Kickoff UTC':x['kickoff'],'Competition':x['league']} for x in picks]),hide_index=True,use_container_width=True)
+            st.caption('Selections are ranked by the model, not verified bookmaker odds or guaranteed wins.')
 if view in ['doubles']:
-    with tabs[2]:if view in ['doubles']:
     with tabs[2]:
-    st.subheader('Five two-leg double combinations')
-    st.caption('Each double combines two different matches. The displayed joint probability multiplies model probabilities and assumes independence; real outcomes may be correlated.')
-    pairs=five_two_leg_doubles(rows)
-    if not pairs:st.info('At least two eligible upcoming fixtures are required.')
-    else:
-        st.dataframe(pd.DataFrame([{'Double':i+1,'Leg 1':f"{match_name(x['leg1']['fixture'])} · {x['leg1']['selection']}",
-          'Leg 2':f"{match_name(x['leg2']['fixture'])} · {x['leg2']['selection']}",
-          'Estimated joint probability':f"{x['joint_probability_independent']:.1%}"} for i,x in enumerate(pairs)]),hide_index=True,use_container_width=True)
-        st.caption('The top combinations may reuse individual fixtures across different doubles. These are not five independent opportunities.')
+        st.subheader('Five two-leg double combinations')
+        st.caption('Each double combines two different matches. The displayed joint probability multiplies model probabilities and assumes independence; real outcomes may be correlated.')
+        pairs=five_two_leg_doubles(rows)
+        if not pairs:st.info('At least two eligible upcoming fixtures are required.')
+        else:
+            st.dataframe(pd.DataFrame([{'Double':i+1,'Leg 1':f"{match_name(x['leg1']['fixture'])} · {x['leg1']['selection']}",
+              'Leg 2':f"{match_name(x['leg2']['fixture'])} · {x['leg2']['selection']}",
+              'Estimated joint probability':f"{x['joint_probability_independent']:.1%}"} for i,x in enumerate(pairs)]),hide_index=True,use_container_width=True)
+            st.caption('The top combinations may reuse individual fixtures across different doubles. These are not five independent opportunities.')
 if view in ['archive']:
-    with tabs[3]:if view in ['archive']:
     with tabs[3]:
-    st.subheader('Historical walk-forward validation')
-    st.write('For each completed match, the model uses only results strictly earlier than kickoff. This avoids using future results to predict past games.')
-    league=st.selectbox('Backtest competition',list(histories),key='bt_league') if histories else None
-    if league and st.button('Run backtest'):
-        with st.spinner('Running historical predictions...'):
-            records=backtest(histories[league],min_prior=35,max_tests=120)
-        summary=summarize_backtest(records)
-        if not summary:st.warning('Not enough accessible completed matches with prior team history for a valid backtest.')
-        else:
-            st.caption(f"Tested {summary['matches']} historical matches from the accessible API history. Not an independent future guarantee.")
-            cols=st.columns(4)
-            cols[0].metric('Exact-score hit rate',f"{summary['exact_score_accuracy']:.1%}")
-            cols[1].metric('1X2 result accuracy',f"{summary['result_accuracy']:.1%}")
-            cols[2].metric('Brier score (lower better)',f"{summary['mean_brier']:.3f}")
-            cols[3].metric('Goals MAE (lower better)',f"{summary['mean_absolute_goal_error']:.2f}")
-            df=pd.DataFrame(records)
-            st.dataframe(df,hide_index=True,use_container_width=True)
-            st.download_button('Download backtest CSV',df.to_csv(index=False).encode(),'backtest.csv','text/csv')
-if view in ['archive']:
-    with tabs[4]:if view in ['archive']:
-    with tabs[4]:
-    st.subheader('📊 Prediction Accuracy Dashboard')
-    st.caption('Only saved forecasts with verified final scores count. Pending matches are excluded. Local storage on free Streamlit hosting can reset.')
-    if conn:
-        archive=pd.DataFrame(load(conn))
-        if archive.empty:
-            st.info('No saved predictions yet.')
-        else:
-            def score_outcome(score):
-                try:
-                    h,a=map(int,str(score).split('-'))
-                    return 'Home' if h>a else 'Away' if a>h else 'Draw'
-                except (ValueError,TypeError):
-                    return None
-            completed=archive[archive['actual_score'].notna()].copy()
-            completed=completed[completed['actual_score'].apply(score_outcome).notna()].copy()
-            total=len(archive)
-            resolved=len(completed)
-            if resolved:
-                completed['exact_hit']=completed['predicted_score']==completed['actual_score']
-                completed['result_hit']=completed['predicted_score'].apply(score_outcome)==completed['actual_score'].apply(score_outcome)
-                def top_five_hit(r):
-                    try:
-                        scores=json.loads(r['scores_json'] or '[]')
-                        return r['actual_score'] in {f"{int(x[0])}-{int(x[1])}" for x in scores[:5]}
-                    except (ValueError,TypeError,IndexError):
-                        return False
-                completed['top5_hit']=completed.apply(top_five_hit,axis=1)
-                cols=st.columns(4)
-                cols[0].metric('Completed matches',resolved)
-                cols[1].metric('Exact-score hit rate',f"{completed['exact_hit'].mean():.1%}")
-                cols[2].metric('1X2 result accuracy',f"{completed['result_hit'].mean():.1%}")
-                cols[3].metric('Top-five score hit rate',f"{completed['top5_hit'].mean():.1%}")
-                st.caption(f'{total-resolved} forecasts awaiting results. Rates are based only on {resolved} completed matches.')
-                st.subheader('✅ Correct predictions · ❌ Wrong predictions')
-                st.caption('Exact score means both teams’ predicted goals matched the verified final score. Match result (1X2) means only the winner/draw was correct.')
-                accuracy_type=st.radio('What should count as correct?', ['Exact score','Match result (1X2)','Top 5 exact scores'],horizontal=True,key='accuracy_type')
-                hit_column={'Exact score':'exact_hit','Match result (1X2)':'result_hit','Top 5 exact scores':'top5_hit'}[accuracy_type]
-                correct_count=int(completed[hit_column].sum())
-                wrong_count=resolved-correct_count
-                c_ok,c_bad,c_pending=st.columns(3)
-                c_ok.metric('✅ Correct',correct_count)
-                c_bad.metric('❌ Wrong',wrong_count)
-                c_pending.metric('⏳ Pending',total-resolved)
-                accuracy_filter=st.radio('Show predictions', ['All completed','✅ Correct predictions','❌ Wrong predictions','⏳ Awaiting results'],horizontal=True,key='accuracy_filter')
-                details=archive.copy() if accuracy_filter=='⏳ Awaiting results' else completed.copy()
-                if accuracy_filter=='⏳ Awaiting results':
-                    details=details[details['actual_score'].isna()].copy()
-                elif accuracy_filter=='✅ Correct predictions':
-                    details=details[details[hit_column]].copy()
-                elif accuracy_filter=='❌ Wrong predictions':
-                    details=details[~details[hit_column]].copy()
-                if details.empty:
-                    st.info('No predictions found for this filter.')
-                else:
-                    columns=['kickoff','league','home','away','predicted_score','actual_score']
-                    if accuracy_filter!='⏳ Awaiting results':
-                        columns+=['exact_hit','result_hit','top5_hit']
-                    display=details[columns].copy()
-                    display.columns=['Kickoff (UTC)','League','Home','Away','Predicted score','Final score']+(['Exact score correct','Result correct','Top-five correct'] if accuracy_filter!='⏳ Awaiting results' else [])
-                    st.dataframe(display,hide_index=True,use_container_width=True)
-                    st.download_button('Download selected predictions CSV',display.to_csv(index=False).encode(),'ziczac_prediction_results.csv','text/csv')
-                st.caption('Results are automatically classified only after a verified final score is stored. Unverified or missing results remain pending.')
+        st.subheader('Historical walk-forward validation')
+        st.write('For each completed match, the model uses only results strictly earlier than kickoff. This avoids using future results to predict past games.')
+        league=st.selectbox('Backtest competition',list(histories),key='bt_league') if histories else None
+        if league and st.button('Run backtest'):
+            with st.spinner('Running historical predictions...'):
+                records=backtest(histories[league],min_prior=35,max_tests=120)
+            summary=summarize_backtest(records)
+            if not summary:st.warning('Not enough accessible completed matches with prior team history for a valid backtest.')
             else:
-                st.info(f'{total} forecasts saved; none has a verified final result yet. Accuracy is not available.')
-            st.caption('Exact-score doubles are not yet archived, so double accuracy is not included.')
-            st.dataframe(archive.drop(columns=['scores_json']),hide_index=True,use_container_width=True)
-            st.download_button('Download prediction archive CSV',archive.to_csv(index=False).encode(),'prediction_archive.csv','text/csv')
+                st.caption(f"Tested {summary['matches']} historical matches from the accessible API history. Not an independent future guarantee.")
+                cols=st.columns(4)
+                cols[0].metric('Exact-score hit rate',f"{summary['exact_score_accuracy']:.1%}")
+                cols[1].metric('1X2 result accuracy',f"{summary['result_accuracy']:.1%}")
+                cols[2].metric('Brier score (lower better)',f"{summary['mean_brier']:.3f}")
+                cols[3].metric('Goals MAE (lower better)',f"{summary['mean_absolute_goal_error']:.2f}")
+                df=pd.DataFrame(records)
+                st.dataframe(df,hide_index=True,use_container_width=True)
+                st.download_button('Download backtest CSV',df.to_csv(index=False).encode(),'backtest.csv','text/csv')
+if view in ['archive']:
+    with tabs[4]:
+        st.subheader('📊 Prediction Accuracy Dashboard')
+        st.caption('Only saved forecasts with verified final scores count. Pending matches are excluded. Local storage on free Streamlit hosting can reset.')
+        if conn:
+            archive=pd.DataFrame(load(conn))
+            if archive.empty:
+                st.info('No saved predictions yet.')
+            else:
+                def score_outcome(score):
+                    try:
+                        h,a=map(int,str(score).split('-'))
+                        return 'Home' if h>a else 'Away' if a>h else 'Draw'
+                    except (ValueError,TypeError):
+                        return None
+                completed=archive[archive['actual_score'].notna()].copy()
+                completed=completed[completed['actual_score'].apply(score_outcome).notna()].copy()
+                total=len(archive)
+                resolved=len(completed)
+                if resolved:
+                    completed['exact_hit']=completed['predicted_score']==completed['actual_score']
+                    completed['result_hit']=completed['predicted_score'].apply(score_outcome)==completed['actual_score'].apply(score_outcome)
+                    def top_five_hit(r):
+                        try:
+                            scores=json.loads(r['scores_json'] or '[]')
+                            return r['actual_score'] in {f"{int(x[0])}-{int(x[1])}" for x in scores[:5]}
+                        except (ValueError,TypeError,IndexError):
+                            return False
+                    completed['top5_hit']=completed.apply(top_five_hit,axis=1)
+                    cols=st.columns(4)
+                    cols[0].metric('Completed matches',resolved)
+                    cols[1].metric('Exact-score hit rate',f"{completed['exact_hit'].mean():.1%}")
+                    cols[2].metric('1X2 result accuracy',f"{completed['result_hit'].mean():.1%}")
+                    cols[3].metric('Top-five score hit rate',f"{completed['top5_hit'].mean():.1%}")
+                    st.caption(f'{total-resolved} forecasts awaiting results. Rates are based only on {resolved} completed matches.')
+                    st.subheader('✅ Correct predictions · ❌ Wrong predictions')
+                    st.caption('Exact score means both teams’ predicted goals matched the verified final score. Match result (1X2) means only the winner/draw was correct.')
+                    accuracy_type=st.radio('What should count as correct?', ['Exact score','Match result (1X2)','Top 5 exact scores'],horizontal=True,key='accuracy_type')
+                    hit_column={'Exact score':'exact_hit','Match result (1X2)':'result_hit','Top 5 exact scores':'top5_hit'}[accuracy_type]
+                    correct_count=int(completed[hit_column].sum())
+                    wrong_count=resolved-correct_count
+                    c_ok,c_bad,c_pending=st.columns(3)
+                    c_ok.metric('✅ Correct',correct_count)
+                    c_bad.metric('❌ Wrong',wrong_count)
+                    c_pending.metric('⏳ Pending',total-resolved)
+                    accuracy_filter=st.radio('Show predictions', ['All completed','✅ Correct predictions','❌ Wrong predictions','⏳ Awaiting results'],horizontal=True,key='accuracy_filter')
+                    details=archive.copy() if accuracy_filter=='⏳ Awaiting results' else completed.copy()
+                    if accuracy_filter=='⏳ Awaiting results':
+                        details=details[details['actual_score'].isna()].copy()
+                    elif accuracy_filter=='✅ Correct predictions':
+                        details=details[details[hit_column]].copy()
+                    elif accuracy_filter=='❌ Wrong predictions':
+                        details=details[~details[hit_column]].copy()
+                    if details.empty:
+                        st.info('No predictions found for this filter.')
+                    else:
+                        columns=['kickoff','league','home','away','predicted_score','actual_score']
+                        if accuracy_filter!='⏳ Awaiting results':
+                            columns+=['exact_hit','result_hit','top5_hit']
+                        display=details[columns].copy()
+                        display.columns=['Kickoff (UTC)','League','Home','Away','Predicted score','Final score']+(['Exact score correct','Result correct','Top-five correct'] if accuracy_filter!='⏳ Awaiting results' else [])
+                        st.dataframe(display,hide_index=True,use_container_width=True)
+                        st.download_button('Download selected predictions CSV',display.to_csv(index=False).encode(),'ziczac_prediction_results.csv','text/csv')
+                    st.caption('Results are automatically classified only after a verified final score is stored. Unverified or missing results remain pending.')
+                else:
+                    st.info(f'{total} forecasts saved; none has a verified final result yet. Accuracy is not available.')
+                st.caption('Exact-score doubles are not yet archived, so double accuracy is not included.')
+                st.dataframe(archive.drop(columns=['scores_json']),hide_index=True,use_container_width=True)
+                st.download_button('Download prediction archive CSV',archive.to_csv(index=False).encode(),'prediction_archive.csv','text/csv')
 if view in ['more']:
-    with tabs[5]:if view in ['more']:
     with tabs[5]:
-    st.markdown('''**Mathematical model:** Recency-weighted goals scored/conceded, venue-specific shrinkage, league home/away baselines, regularized expected-goal estimates and a normalized independent Poisson score matrix.\n\n**Human-style analysis:** Transparent rule-based commentary on relative strengths, sample sizes and uncertainty. It does **not** use an LLM, live injuries, verified lineups, bookmaker odds or premium xG data.\n\n**Backtesting:** Walk-forward evaluation of exact scores, match outcomes, Brier score and goal error. In-sample tuning on these same matches would overstate performance.\n\n**Limitations:** Data availability varies by league, free plan and season. Small samples, lineup changes, correlated matches and model miscalibration can make predictions inaccurate. No score can be guaranteed.''')
-st.divider()
-st.caption('For information and research only. Probabilities are model estimates, not betting advice or guaranteed results.')
+        st.markdown('''**Mathematical model:** Recency-weighted goals scored/conceded, venue-specific shrinkage, league home/away baselines, regularized expected-goal estimates and a normalized independent Poisson score matrix.\n\n**Human-style analysis:** Transparent rule-based commentary on relative strengths, sample sizes and uncertainty. It does **not** use an LLM, live injuries, verified lineups, bookmaker odds or premium xG data.\n\n**Backtesting:** Walk-forward evaluation of exact scores, match outcomes, Brier score and goal error. In-sample tuning on these same matches would overstate performance.\n\n**Limitations:** Data availability varies by league, free plan and season. Small samples, lineup changes, correlated matches and model miscalibration can make predictions inaccurate. No score can be guaranteed.''')
+    st.divider()
+    st.caption('For information and research only. Probabilities are model estimates, not betting advice or guaranteed results.')
 
 if view in ['doubles']:
     with tabs[6]:
