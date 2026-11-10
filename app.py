@@ -23,6 +23,7 @@ def sydney_kickoff(value, fmt='%d %b %Y, %I:%M %p'):
 from global_fixtures import global_fixtures
 from sportmonks import sportmonks_fixtures
 from engine import predict
+from live_scores import live_predicted_scores
 from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
@@ -1418,6 +1419,34 @@ with active_page_slot:
     def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
     if view in ['home','predict']:
         with tabs[0]:
+            st.subheader('🔴 Live scores · Your predicted matches')
+            st.caption('Live API-Football scores are matched only to fixtures predicted by ZicZac. Scores are not predictions.')
+            if st.button('🔄 Refresh live scores', key='refresh_predicted_live_scores'):
+                st.session_state.pop('ziczac_live_snapshot', None)
+            if not secondary_key:
+                st.info('Set API_FOOTBALL_KEY in Streamlit secrets to enable verified live scores.')
+            else:
+                from time import time as _live_now
+                snapshot=st.session_state.get('ziczac_live_snapshot')
+                if snapshot is None or _live_now()-snapshot['checked_at'] >= 60:
+                    try:
+                        live_matches, tracked=live_predicted_scores(secondary_key, rows)
+                        snapshot={'checked_at':_live_now(), 'matches':live_matches, 'tracked':tracked, 'error':None}
+                        st.session_state['ziczac_live_snapshot']=snapshot
+                    except Exception as exc:
+                        snapshot={'checked_at':_live_now(), 'matches':[], 'tracked':0, 'error':str(exc)}
+                        st.session_state['ziczac_live_snapshot']=snapshot
+                if snapshot['error']:
+                    st.warning('Live score service unavailable: '+snapshot['error'])
+                elif snapshot['matches']:
+                    for game in snapshot['matches']:
+                        st.markdown(f"**{game['home']} vs {game['away']}** · 🔴 {game['status']}")
+                        st.markdown(f"**Live {game['live']}** · ZicZac predicted **{game['predicted']}**")
+                else:
+                    st.info('No predicted API-Football matches are currently live. Other providers are not covered by this live scoreboard.')
+                st.caption(f"Checked {datetime.fromtimestamp(snapshot['checked_at'], SYDNEY).strftime('%I:%M:%S %p')} Sydney · Refresh for latest scores · {snapshot['tracked']} API-Football predictions tracked.")
+            st.divider()
+
             st.caption('Prediction dates use Sydney local time. Worldwide selected matches appear here after successful history analysis.')
             pred_window=st.session_state.get('prediction_window','Tomorrow')
             st.caption('Date selection is shared with Worldwide Match Finder above.')
