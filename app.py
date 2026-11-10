@@ -409,6 +409,63 @@ for preview in dashboard_rows:
     away=match['awayTeam'].get('shortName') or match['awayTeam'].get('name','Away')
     import html
     st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
+# Exactly one evidence-based daily feature, selected only from fixtures on today's Sydney date.
+if view == 'home':
+    st.subheader('🏆 Prediction of the Day')
+    st.caption('One featured match per Sydney calendar day, selected from fixtures with verified historical results. Mathematical probabilities are estimates, not proven exact outcomes.')
+    def _sydney_day(row):
+        try:
+            return datetime.fromisoformat(row['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY).date()
+        except (KeyError,ValueError,TypeError):
+            return None
+    daily_candidates=[r for r in rows if r.get('result') and _sydney_day(r)==today]
+    def _daily_rank(row):
+        p=row['result']
+        venue=min(len(p.get('home_home10',[])),len(p.get('away_away10',[])))
+        recent=min(len(p.get('home_last10',[])),len(p.get('away_last10',[])))
+        return (min(venue,10),min(recent,10),min(len(p.get('h2h_last10',[])),5),
+                max(p['home_win'],p['draw'],p['away_win']),str(row['fixture'].get('id','')))
+    if daily_candidates:
+        daily=max(daily_candidates,key=_daily_rank)
+        dm,dp=daily['fixture'],daily['result']
+        top=dp['scores'][0]
+        st.markdown('### '+match_name(dm) if 'match_name' in globals() else '### '+str(dm['homeTeam'].get('name','Home'))+' vs '+str(dm['awayTeam'].get('name','Away')))
+        st.caption(str(daily.get('league','Football'))+' · '+datetime.fromisoformat(daily['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY).strftime('%d %b %Y, %I:%M %p Sydney'))
+        dcols=st.columns(3)
+        dcols[0].metric('Most likely exact score',f"{top[0]}–{top[1]}")
+        dcols[1].metric('Exact-score probability',f"{top[2]:.1%}")
+        dcols[2].metric('Historical data quality',dp.get('data_quality','unknown').title())
+        st.markdown('**Full-time result probabilities**')
+        st.bar_chart(pd.DataFrame({'Probability (%)':[round(dp['home_win']*100,1),round(dp['draw']*100,1),round(dp['away_win']*100,1)]},index=['Home win','Draw','Away win']))
+        st.markdown('**Expected goals and model comparison**')
+        st.bar_chart(pd.DataFrame({'Expected goals':[dp['home_xg'],dp['away_xg']]},index=['Home','Away']))
+        methods=dp.get('methods',{})
+        if methods:
+            st.dataframe(pd.DataFrame([{'Estimator':label,'Home expected goals':round(values[0],2),'Away expected goals':round(values[1],2)} for label,values in methods.items()]),hide_index=True,use_container_width=True)
+        st.markdown('**Last 10 matches: overall and venue-specific form**')
+        summary=[]
+        for title,stats in [('Home · overall',dp.get('home_stats')),('Home · at home',dp.get('home_venue_stats')),('Away · overall',dp.get('away_stats')),('Away · away',dp.get('away_venue_stats'))]:
+            if stats:
+                summary.append({'Sample':title,'Matches':stats['played'],'Wins':stats['wins'],'Draws':stats['draws'],'Losses':stats['losses'],'Goals scored / match':round(stats['scored'],2),'Goals conceded / match':round(stats['conceded'],2)})
+        if summary:st.dataframe(pd.DataFrame(summary),hide_index=True,use_container_width=True)
+        with st.expander('📈 Recent goal trends, H2H and top 10 score probabilities',expanded=False):
+            for title,games in [('Home · last 10 overall',dp.get('home_last10',[])),('Home · last 10 home',dp.get('home_home10',[])),('Away · last 10 overall',dp.get('away_last10',[])),('Away · last 10 away',dp.get('away_away10',[]))]:
+                st.markdown('**'+title+'**')
+                if games:
+                    chart=pd.DataFrame([{'Game':str(i+1),'Scored':g['gf'],'Conceded':g['ga']} for i,g in enumerate(reversed(games))]).set_index('Game')
+                    st.line_chart(chart)
+                    st.caption('Oldest to newest · '+str(len(games))+' verified matches')
+                else:st.caption('No verified results available for this split.')
+            meetings=dp.get('h2h_last10',[])
+            st.markdown('**Head-to-head · available last 10**')
+            if meetings:
+                st.dataframe(pd.DataFrame([{'Date':h['date'][:10],'Featured home team goals':h['home_goals'],'Featured away team goals':h['away_goals'],'Result':h['result']} for h in meetings]),hide_index=True,use_container_width=True)
+            else:st.caption('No verified H2H meetings in available historical data.')
+            st.markdown('**Top 10 exact-score probabilities**')
+            st.bar_chart(pd.DataFrame({'Probability (%)':[round(q*100,2) for _,_,q in dp['scores']]},index=[f'{h}–{a}' for h,a,_ in dp['scores']]))
+        st.caption('Selection prioritises venue-specific sample size, recent form and H2H coverage. This is not a guarantee of accuracy. Injuries and confirmed lineups are not verified.')
+    else:
+        st.info('No match with sufficient verified historical data is available for today (Sydney time). The daily pick will not be fabricated or replaced with a match from a later date.')
 st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
 st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
 st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','more':'☰ More · Model information'}[view])
