@@ -197,6 +197,11 @@ if selected_worldwide:
                 st.success(f"Prediction ready: {name}")
             elif cached['error']:
                 st.info(f"{name}: {cached['error']}")
+for name in selected_worldwide:
+    candidate=worldwide_options[name]['model']
+    if candidate and candidate.get('result') and not any(str(r['fixture'].get('provider'))+':'+str(r['fixture'].get('id'))==str(candidate['fixture'].get('provider'))+':'+str(candidate['fixture'].get('id')) for r in rows):
+        rows.append(candidate)
+rows.sort(key=lambda r:r['kickoff'])
 unmodelled=[worldwide_options[name] for name in selected_worldwide if not worldwide_options[name]['model'] or not worldwide_options[name]['model'].get('result')]
 if unmodelled:
     st.info(f"{len(unmodelled)} selected worldwide match(es) do not have sufficient compatible historical data for exact-score predictions. They are displayed for discovery only.")
@@ -229,8 +234,19 @@ tabs=st.tabs(['📅 Upcoming predictions','🛡️ Five double-chance picks','�
 
 def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
 with tabs[0]:
-    if not rows:st.info('No upcoming fixtures returned for the selected competitions/date range. This does not mean there are no matches scheduled.')
-    for r in rows[:max_games]:
+    st.caption('Prediction dates use Sydney local time. Worldwide selected matches appear here after successful history analysis.')
+    pred_window=st.radio('Show predictions for', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True,key='prediction_window')
+    pred_start=today+timedelta(days=1) if pred_window=='Tomorrow' else today
+    pred_span={'Today':1,'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}[pred_window]
+    def in_prediction_window(r):
+        try:
+            dt=datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
+            return pred_start<=dt.date()<pred_start+timedelta(days=pred_span)
+        except (ValueError,KeyError,TypeError):return False
+    visible_predictions=[r for r in rows if r.get('result') and in_prediction_window(r)]
+    st.caption(f'{len(visible_predictions)} prediction-ready matches for {pred_window.lower()}.')
+    if not visible_predictions:st.info('No prediction-ready matches for this period from the available API history. Try another date or analyse a worldwide fixture above; this does not mean no football is scheduled.')
+    for r in visible_predictions[:max_games]:
         m,p=r['fixture'],r['result']
         with st.container(border=True):
             st.caption(f"{r['league']} · {r['kickoff']} UTC")
@@ -242,7 +258,7 @@ with tabs[0]:
                                      [f'{best[0]}–{best[1]} ({best[2]:.1%})',f"{p['home_win']:.1%}",f"{p['draw']:.1%}",f"{p['away_win']:.1%}",f"{p['home_xg']:.2f} / {p['away_xg']:.2f}"]):col.metric(label,val)
             with st.expander('Top 10 exact scores · human-style reasoning · recent form'):
                 st.dataframe(pd.DataFrame([{'Score':f'{h}-{a}','Probability %':round(q*100,2)} for h,a,q in p['scores']]),hide_index=True,use_container_width=True)
-                for note in context_review(m,p,histories[r['league']]):st.write('• '+note)
+                for note in context_review(m,p,r.get('past',histories.get(r['league'],[]))):st.write('• '+note)
                 st.dataframe(pd.DataFrame([{'Team':'Home',**p['home_stats']},{'Team':'Away',**p['away_stats']}]),hide_index=True,use_container_width=True)
 with tabs[1]:
     st.subheader('Five highest-probability double-chance selections')
