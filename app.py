@@ -91,69 +91,40 @@ div[data-testid="stTabs"] [role="tablist"]{border-bottom-color:rgba(123,151,216,
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
 </style>""",unsafe_allow_html=True)
-st.markdown('''<style>
-.football-hero{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;border:1px solid #4a668c;background:linear-gradient(180deg,#07132d 0%,#112a45 56%,#0b483b 100%);box-shadow:0 16px 42px #0007;margin-bottom:20px;min-height:370px}
-.football-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 12% 14%,#b4e7ff44,transparent 35%),radial-gradient(ellipse at 89% 12%,#b4e7ff44,transparent 35%),repeating-linear-gradient(0deg,transparent 0 34px,#ffffff09 35px 36px);pointer-events:none}
-.football-hero .stands{position:absolute;top:25%;width:100%;height:45%;border-radius:50% 50% 0 0;background:repeating-linear-gradient(0deg,#15233e 0 9px,#283e5c 10px 12px);opacity:.65}
-.football-hero .pitch{position:absolute;left:-10%;right:-10%;bottom:-18%;height:52%;border:2px solid #b0f9dd55;border-radius:50% 50% 0 0;background:repeating-linear-gradient(90deg,#0a4839 0 16%,#0c523e 16% 32%);transform:perspective(450px) rotateX(33deg)}
-.football-hero .pitch:after{content:"";position:absolute;left:43%;top:5%;height:100%;border-left:2px solid #d0ffe155}
-.football-hero .spot{position:absolute;top:14px;width:88px;height:8px;border-radius:12px;background:#e0f4ff;box-shadow:0 0 18px 9px #7ac7ff77,0 0 90px 55px #8cc9ff33}
-.football-hero .spot.left{left:8%}.football-hero .spot.right{right:8%}
-.football-hero .headline{position:relative;z-index:3;padding:22px 22px 8px;text-align:center;text-shadow:0 3px 12px #000}
-.football-hero .eyebrow{font-size:11px;letter-spacing:.2em;color:#a4dfff;font-weight:800}
-.football-hero .brand{font-size:clamp(27px,5vw,42px);font-weight:900;color:#fff}
-.football-hero .subtitle{font-size:13px;color:#d5e9f8}
-.football-hero .lineup{position:relative;z-index:2;display:flex;align-items:end;justify-content:space-around;gap:6px;padding:12px 10px 18px;min-height:218px}
-.football-hero .player{width:30%;max-width:150px;text-align:center;animation:player-bob 2.8s ease-in-out infinite;filter:drop-shadow(0 7px 12px #0009)}
-.football-hero .player:nth-child(2){animation-delay:-.9s}.football-hero .player:nth-child(3){animation-delay:-1.7s}
-.football-hero .player svg{width:100%;height:160px;overflow:visible}
-.football-hero .name{color:#fff;font-size:12px;font-weight:800;text-shadow:0 2px 5px #000;letter-spacing:.04em}
-.football-hero .legend{font-size:10px;color:#c2e3ee}
-.football-hero .ball{position:absolute;bottom:49px;left:46%;font-size:25px;z-index:3;animation:ball-dribble 3.2s ease-in-out infinite;filter:drop-shadow(0 4px 4px #0009)}
-@keyframes player-bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-9px) rotate(1deg)}}
-@keyframes ball-dribble{0%,100%{transform:translate(-45px,0) rotate(0)}25%{transform:translate(0,-23px) rotate(100deg)}50%{transform:translate(48px,0) rotate(200deg)}75%{transform:translate(0,-17px) rotate(300deg)}}
-@media(max-width:600px){.football-hero{min-height:335px}.football-hero .lineup{min-height:190px;padding:4px 5px 18px}.football-hero .player svg{height:132px}.football-hero .name{font-size:11px}.football-hero .subtitle{font-size:11px}.football-hero .ball{bottom:45px}}
-@media(prefers-reduced-motion:reduce){.football-hero .player,.football-hero .ball{animation:none!important}}
-.football-hero .photo-player{max-width:180px;width:31%;animation:player-bob 4s ease-in-out infinite}
-.football-hero .photo-player.main-star{max-width:220px;width:36%;z-index:3;animation-delay:-1.3s}
-.football-hero .player-photo{height:180px;border-radius:16px 16px 6px 6px;overflow:hidden;border:1px solid #9cceff66;background:linear-gradient(135deg,#163452,#1e3c58);box-shadow:0 9px 24px #0009}
-.football-hero .main-star .player-photo{height:205px;border-color:#8acbff;box-shadow:0 0 26px #6fc7ff44,0 10px 24px #000a}
-.football-hero .player-photo img{width:100%;height:100%;object-fit:cover;object-position:center 23%;display:block}
-.football-hero .photo-credit{position:relative;z-index:3;text-align:center;padding:0 8px 10px;font-size:10px;color:#d0e5f0}
-.football-hero .photo-credit a{color:#b5dcff}
-@media(max-width:600px){.football-hero .player-photo{height:128px}.football-hero .main-star .player-photo{height:148px}.football-hero .photo-player{width:31%}.football-hero .photo-player.main-star{width:36%}}
-/* iPhone readability and spacing refinements */
-.football-hero{overflow:hidden}
-.football-hero .headline{padding:35px 18px 18px;background:linear-gradient(180deg,rgba(4,14,34,.90),rgba(7,21,42,.75) 75%,rgba(7,21,42,.2));border-radius:22px 22px 0 0}
-.football-hero .eyebrow{font-size:11px;line-height:1.6;letter-spacing:.10em;overflow-wrap:anywhere}
-.football-hero .brand{font-size:clamp(25px,5vw,40px);line-height:1.25;margin:9px 0}
-.football-hero .subtitle{line-height:1.55;max-width:440px;margin:0 auto}
-.football-hero .lineup{align-items:flex-end;padding:18px 12px 26px;gap:12px}
-.football-hero .photo-player{animation:none!important;filter:none;min-width:0}
-.football-hero .photo-player.main-star{animation:none!important}
-.football-hero .name{font-size:14px;line-height:1.5;margin-top:9px;text-shadow:0 2px 7px #000}
-.football-hero .legend{font-size:11px;line-height:1.5;margin-top:3px;text-shadow:0 2px 6px #000}
-.football-hero .ball{bottom:10px;left:12%;font-size:21px;opacity:.75;z-index:1;animation:ball-dribble 7s ease-in-out infinite}
-.football-hero .photo-credit{background:rgba(3,16,27,.82);padding:11px 14px 14px;line-height:1.6;font-size:10px;overflow-wrap:anywhere}
-@media(max-width:600px){
- .football-hero .headline{padding:32px 13px 20px}
- .football-hero .eyebrow{font-size:9px;letter-spacing:.05em}
- .football-hero .brand{font-size:clamp(24px,6vw,32px)}
- .football-hero .subtitle{font-size:12px;line-height:1.5}
- .football-hero .lineup{gap:7px;padding:18px 9px 24px}
- .football-hero .player-photo{height:130px}
- .football-hero .main-star .player-photo{height:151px}
- .football-hero .name{font-size:12px;margin-top:7px}
- .football-hero .legend{font-size:10px;line-height:1.4}
- .football-hero .ball{bottom:6px;left:7%;font-size:16px;opacity:.55}
- .football-hero .photo-credit{font-size:9px;padding:10px 12px 13px}
-}
+st.markdown("""<style>
+/* ZicZac Predict AI — compact, mobile-first dashboard */
+.zz-head{background:linear-gradient(145deg,#0a1634,#101b41 58%,#181340);border:1px solid #3e4c84;border-radius:22px;padding:18px 16px 16px;text-align:center;box-shadow:0 12px 30px #0005;margin-bottom:16px}
+.zz-logo{font-size:37px;line-height:1.15;filter:drop-shadow(0 0 14px #5f82ff70)}
+.zz-name{font-weight:900;font-size:clamp(25px,5vw,36px);line-height:1.25;color:#f9fbff;letter-spacing:-.045em}
+.zz-name span{color:#ff547f}
+.zz-sub{color:#b6c6e8;font-size:13px;margin-top:4px}
+.zz-by{color:#9fd6ff;font-weight:700;font-size:12px;letter-spacing:.08em;margin-top:8px}
+.zz-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:18px}
+.zz-nav-item{background:linear-gradient(150deg,#172449,#101a38);border:1px solid #344573;border-radius:13px;padding:11px 3px 9px;color:#f1f5ff;font-size:11px;font-weight:700}
+.zz-nav-item:first-child{background:linear-gradient(130deg,#5744f2,#8737d6);box-shadow:0 0 16px #7551ff55}
+.zz-nav-item .zz-ico{display:block;font-size:21px;margin-bottom:4px}
+.zz-stadium{position:relative;overflow:hidden;border-radius:19px;min-height:165px;margin:14px 0 0;background:radial-gradient(ellipse at 15% 18%,#90d8ff70,transparent 18%),radial-gradient(ellipse at 85% 18%,#90d8ff70,transparent 18%),linear-gradient(180deg,#0a1640 0%,#152f60 51%,#075039 88%,#093322);border:1px solid #425da0}
+.zz-stadium:before{content:"";position:absolute;inset:42% 0 15%;background:repeating-linear-gradient(0deg,#182a4c 0 7px,#30466a 8px 10px);clip-path:polygon(0 25%,50% 0,100% 25%,100% 100%,0 100%);opacity:.75}
+.zz-stadium:after{content:"";position:absolute;bottom:-40px;left:-8%;width:116%;height:85px;border:2px solid #c4f9d060;border-radius:50%;background:repeating-linear-gradient(90deg,#116044 0 16%,#0e533e 16% 32%)}
+.zz-stadium-copy{position:relative;z-index:1;padding:20px 10px 35px;text-align:center;text-shadow:0 3px 12px #000}
+.zz-stadium-title{font-size:clamp(22px,5vw,30px);font-weight:900;color:white;line-height:1.25}
+.zz-stadium-desc{color:#e6eeff;font-size:12px;margin-top:7px}
+.zz-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 18px}
+.zz-feature{background:linear-gradient(135deg,#192750,#111b38);border:1px solid #364d86;border-radius:15px;padding:14px 12px;color:#fff;min-height:74px;display:flex;align-items:center;gap:10px}
+.zz-feature-icon{font-size:26px}
+.zz-feature strong{display:block;font-size:14px}.zz-feature small{color:#b6c7e6;font-size:11px}
+.zz-section-title{font-size:22px;font-weight:850;color:#f8faff;margin:15px 0 9px}
+.zz-match-card{border:1px solid #42538a;border-radius:17px;background:linear-gradient(140deg,#19234a,#111a35);padding:15px;margin-bottom:11px;color:#f6f7ff}
+.zz-match-top{font-size:12px;color:#c0d2ff;margin-bottom:10px}
+.zz-match-teams{font-weight:800;font-size:17px;line-height:1.45;text-align:center}
+.zz-match-score{display:inline-block;background:linear-gradient(135deg,#0f756a,#1a9b70);border-radius:10px;padding:6px 14px;font-size:20px;margin:9px auto;color:white}
+.zz-match-meta{text-align:center;font-size:12px;color:#aabde5}
+@media(max-width:600px){.zz-head{padding:14px 10px}.zz-nav{gap:5px}.zz-nav-item{font-size:10px;padding:9px 2px}.zz-nav-item .zz-ico{font-size:19px}.zz-stadium{min-height:155px}.zz-feature{padding:11px 9px;gap:7px}.zz-feature strong{font-size:12px}.zz-feature-icon{font-size:21px}}
 </style>
-<div class="football-hero">
-<div class="stands"></div><div class="spot left"></div><div class="spot right"></div><div class="pitch"></div>
-<div class="headline"><div class="eyebrow">⚡ THE BEAUTIFUL GAME · DATA & PREDICTIONS</div><div class="brand">⚽ ZicZac Predict <span style="color:#ff698d">AI</span></div><div class="subtitle">Worldwide fixtures · Exact scores · Doubles · Accuracy</div><div style="margin-top:9px;color:#b8dfff;font-size:14px;font-weight:700;letter-spacing:.06em;text-shadow:0 2px 8px rgba(0,0,0,.65)">Prediction by ZicZac</div></div>
-<div class="lineup"><div class="player photo-player"><div class="player-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cristiano_Ronaldo_2018.jpg" alt="Photograph of RONALDO" loading="lazy" referrerpolicy="no-referrer"></div><div class="name">RONALDO</div><div class="legend">Portugal · Forward</div></div><div class="player photo-player main-star"><div class="player-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lionel-Messi-Argentina-2022-FIFA-World-Cup.jpg" alt="Photograph of MESSI" loading="lazy" referrerpolicy="no-referrer"></div><div class="name">MESSI</div><div class="legend">Argentina · Playmaker</div></div><div class="player photo-player"><div class="player-photo"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/2022_FIFA_World_Cup_France_4%E2%80%931_Australia_-_%287%29_%28cropped%29.jpg" alt="Photograph of MBAPPÉ" loading="lazy" referrerpolicy="no-referrer"></div><div class="name">MBAPPÉ</div><div class="legend">France · Forward</div></div></div><div class="ball" aria-hidden="true">⚽</div><div class="photo-credit">Player photos: <a href="https://commons.wikimedia.org/wiki/File:Cristiano_Ronaldo_2018.jpg">Ronaldo (CC BY-SA 3.0)</a> · <a href="https://commons.wikimedia.org/wiki/File:Lionel-Messi-Argentina-2022-FIFA-World-Cup.jpg">Messi (Hossein Zohrevand/Tasnim, CC BY 4.0)</a> · <a href="https://commons.wikimedia.org/wiki/File:2022_FIFA_World_Cup_France_4%E2%80%931_Australia_-_(7)_(cropped).jpg">Mbappé (Hossein Zohrevand/Tasnim, CC BY 4.0)</a></div>
-</div>''',unsafe_allow_html=True)
+<div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
+<div class="zz-nav"><div class="zz-nav-item"><span class="zz-ico">⌂</span>Home</div><div class="zz-nav-item"><span class="zz-ico">🎯</span>Predict</div><div class="zz-nav-item"><span class="zz-ico">🔗</span>Doubles</div><div class="zz-nav-item"><span class="zz-ico">📊</span>Archive</div><div class="zz-nav-item"><span class="zz-ico">☰</span>More</div></div>
+<div class="zz-stadium"><div class="zz-stadium-copy"><div class="zz-stadium-title">Today's Football<br>Predictions</div><div class="zz-stadium-desc">⚡ Data-driven analysis · Exact scores · Worldwide matches</div><div style="font-size:28px;margin-top:9px">⚽</div></div></div></div>
+""",unsafe_allow_html=True)
 
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
@@ -370,6 +341,24 @@ except Exception as e:st.warning(f'Local prediction snapshot storage unavailable
 c1,c2,c3,c4=st.columns(4)
 c1.metric('Upcoming fixtures',len(rows));c2.metric('Modelled fixtures',sum(bool(r['result']) for r in rows))
 c3.metric('Competitions loaded',len(histories));c4.metric('Saved forecasts',len(load(conn)) if conn else 'N/A')
+st.markdown("""<div class="zz-feature-grid">
+<div class="zz-feature"><div class="zz-feature-icon">🎯</div><div><strong>Exact Scores</strong><small>Model probabilities</small></div></div>
+<div class="zz-feature"><div class="zz-feature-icon">🔗</div><div><strong>Five Doubles</strong><small>Two-leg combinations</small></div></div>
+<div class="zz-feature"><div class="zz-feature-icon">📈</div><div><strong>Live Form</strong><small>Team stats &amp; H2H</small></div></div>
+<div class="zz-feature"><div class="zz-feature-icon">🏆</div><div><strong>Accuracy</strong><small>Backtesting &amp; archive</small></div></div>
+</div><div class="zz-section-title">⚽ Upcoming match previews</div>""",unsafe_allow_html=True)
+dashboard_rows=[r for r in rows if r.get('result') and r.get('kickoff','') >= datetime.now(timezone.utc).isoformat()[:10]][:3]
+if not dashboard_rows:
+    st.caption('No prediction-ready fixtures available right now. Check the worldwide finder or upcoming predictions below.')
+for preview in dashboard_rows:
+    match=preview['fixture']
+    pred=preview['result']
+    best=pred['scores'][0]
+    home=match['homeTeam'].get('shortName') or match['homeTeam'].get('name','Home')
+    away=match['awayTeam'].get('shortName') or match['awayTeam'].get('name','Away')
+    import html
+    st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
+st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
 tabs=st.tabs(['📅 Upcoming predictions','🛡️ Five double-chance picks','🔗 Five two-leg doubles','📈 Backtesting','🗂️ Prediction archive','🧠 Methodology','🎯 My five exact-score doubles'])
 
 def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
