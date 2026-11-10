@@ -1258,7 +1258,7 @@ with active_page_slot:
         st.button('🔗 Five Doubles\\nChoose league & teams',key='feature_doubles',use_container_width=True,on_click=_navigate_to,args=('doubles',))
         st.button('🏆 Accuracy\\nBacktesting & archive',key='feature_accuracy',use_container_width=True,on_click=_navigate_to,args=('archive',))
     st.markdown('<div class="zz-section-title">⚽ Upcoming match previews</div>',unsafe_allow_html=True)
-    dashboard_rows=[r for r in rows if r.get('result') and r.get('kickoff','') >= datetime.now(timezone.utc).isoformat()[:10]][:3]
+    dashboard_rows=[r for r in rows if r.get('result') and r.get('kickoff') and datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(timezone.utc) >= datetime.now(timezone.utc)][:3]
     if not dashboard_rows:
         st.caption('No prediction-ready fixtures available right now. Check the worldwide finder or upcoming predictions below.')
     for preview in dashboard_rows:
@@ -1268,7 +1268,7 @@ with active_page_slot:
         home=match['homeTeam'].get('shortName') or match['homeTeam'].get('name','Home')
         away=match['awayTeam'].get('shortName') or match['awayTeam'].get('name','Away')
         import html
-        st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
+        st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(sydney_kickoff(preview.get('kickoff','')))+'</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
     # Exactly one evidence-based daily feature, selected only from fixtures on today's Sydney date.
     if view == 'home':
         st.subheader('🏆 Tomorrow’s Game of the Day')
