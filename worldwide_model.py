@@ -87,11 +87,75 @@ def model_worldwide(key, event):
     history = sorted(past.values(), key=lambda m: m.get("utcDate", ""), reverse=True)
     result = predict(fixture, history)
     if result is not None:
+        # Research extra independent evidence. Missing provider data is reported,
+        # never converted into made-up injuries, formations or probabilities.
+        context = {}
+        context_errors = []
+        def optional(label, endpoint, params):
+            try:
+                return _request(key, endpoint, params)
+            except Exception as exc:
+                context_errors.append(f"{label}: {str(exc)[:120]}")
+                return []
+        if league and season:
+            for label, tid in (("home", home), ("away", away)):
+                stats = optional(f"{label} season statistics", "/teams/statistics",
+                                 {"league": league, "season": season, "team": tid})
+                # API-Sports returns a dict for this endpoint, unlike fixture lists.
+                if isinstance(stats, dict) and stats:
+                    context[label+"_season"] = {
+                        "form": stats.get("form"),
+                        "fixtures": stats.get("fixtures"),
+                        "goals": stats.get("goals"),
+                        "lineups": (stats.get("lineups") or [])[:3],
+                        "clean_sheet": stats.get("clean_sheet"),
+                        "failed_to_score": stats.get("failed_to_score")}
+            standings = optional("league standings", "/standings",
+                                 {"league": league, "season": season})
+            try:
+                groups = standings[0]["league"]["standings"]
+                table = [entry for group in groups for entry in group]
+                context["standings"] = [
+                    {"team": row.get("team",{}).get("name"),
+                     "rank": row.get("rank"),
+                     "points": row.get("points"),
+                     "goal_difference": row.get("goalsDiff"),
+                     "form": row.get("form")}
+                    for row in table if row.get("team",{}).get("id") in (home,away)]
+            except (IndexError,KeyError,TypeError):
+                pass
+        # Fixture injuries and pre-match lineups may be absent, especially for
+        # lower divisions and fixtures many days ahead.
+        injuries = optional("fixture injuries", "/injuries", {"fixture": fixture.get("id")})
+        if isinstance(injuries, list):
+            context["injuries"] = [
+                {"team": (i.get("team") or {}).get("name"),
+                 "player": (i.get("player") or {}).get("name"),
+                 "reason": (i.get("player") or {}).get("reason") or
+                           (i.get("fixture") or {}).get("status",{}).get("long")}
+                for i in injuries[:30]]
+        lineups = optional("fixture lineups", "/fixtures/lineups",
+                           {"fixture": fixture.get("id")})
+        if isinstance(lineups, list) and lineups:
+            context["confirmed_lineups"] = [
+                {"team": (i.get("team") or {}).get("name"),
+                 "formation": i.get("formation"),
+                 "coach": (i.get("coach") or {}).get("name")}
+                for i in lineups]
+        context["limitations"] = (
+            "Team statistics, standings, injury reports and formations are provider "
+            "context only; they are not yet fitted as numerical adjustments to the "
+            "Poisson score model. Missing records do not mean no injuries.")
+        sources.extend(["Season statistics, standings, injuries and lineups checked where available"])
+        errors.extend(context_errors)
+    if result is not None:
         return {"league": event.get("league", "Unknown"),
                 "fixture": fixture, "result": result,
                 "kickoff": fixture["utcDate"], "past": history,
                 "research_sources": ["API-Football (verified completed results)"],
                 "research_details": sources,
+                "research_context": context,
+                "research_warnings": errors,
                 "history_counts": {"home": count(home), "away": count(away)}}, None
 
     reason = (f"Verified completed matches: home team {count(home)}, "
