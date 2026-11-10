@@ -178,9 +178,9 @@ picked_ids=set(st.session_state.get('worldwide_picked_ids', []))
 preselected=[name for name,item in worldwide_options.items() if str(item['event']['source'])+':'+str(item['event']['id']) in picked_ids]
 selected_worldwide=st.multiselect('Search and select worldwide fixtures',list(worldwide_options),default=preselected,help='Matches selected in the finder appear here. Exact-score doubles require verified model history.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
-if st.session_state.get('worldwide_model_version') != 'date-range-v2':
+if st.session_state.get('worldwide_model_version') != 'date-range-v3':
     st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='date-range-v2'
+    st.session_state['worldwide_model_version']='date-range-v3'
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
@@ -194,6 +194,9 @@ if selected_worldwide:
             st.session_state['worldwide_models'][name]={'row':row,'error':error}
     for name in selected_worldwide:
         cached=st.session_state['worldwide_models'].get(name)
+        if cached and 'Last parameter' in str(cached.get('error','')):
+            st.session_state['worldwide_models'].pop(name,None)
+            cached=None
         if cached:
             if cached['row']:
                 worldwide_options[name]['model']=cached['row']
@@ -248,8 +251,16 @@ with tabs[0]:
             return pred_start<=dt.date()<pred_start+timedelta(days=pred_span)
         except (ValueError,KeyError,TypeError):return False
     visible_predictions=[r for r in rows if r.get('result') and in_prediction_window(r)]
-    st.caption(f'{len(visible_predictions)} prediction-ready matches for {pred_window.lower()}.')
+    visible_fixtures=[r for r in rows if in_prediction_window(r)]
+    st.caption(f'{len(visible_fixtures)} fixtures in monitored/modelled competitions · {len(visible_predictions)} prediction-ready matches for {pred_window.lower()}.')
+    if visible_fixtures and not visible_predictions:
+        st.warning('Fixtures exist for this date, but the available historical data is insufficient for the prediction model.')
     if not visible_predictions:st.info('No prediction-ready matches for this period from the available API history. Try another date or analyse a worldwide fixture above; this does not mean no football is scheduled.')
+    if visible_fixtures:
+        with st.expander('Show scheduled fixtures without predictions'):
+            for r in visible_fixtures:
+                if not r.get('result'):
+                    st.write(f"{fixture_label(r)} — insufficient verified history")
     for r in visible_predictions[:max_games]:
         m,p=r['fixture'],r['result']
         with st.container(border=True):
