@@ -92,7 +92,7 @@ div[data-testid="stTabs"] [role="tablist"]{border-bottom-color:rgba(123,151,216,
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
 </style>""",unsafe_allow_html=True)
-st.markdown("""<style>
+_hero_html="""<style>
 /* ZicZac Predict AI — compact, mobile-first dashboard */
 .zz-head{background:linear-gradient(145deg,#0a1634,#101b41 58%,#181340);border:1px solid #3e4c84;border-radius:22px;padding:18px 16px 16px;text-align:center;box-shadow:0 12px 30px #0005;margin-bottom:16px}
 .zz-logo{font-size:37px;line-height:1.15;filter:drop-shadow(0 0 14px #5f82ff70)}
@@ -222,7 +222,8 @@ hr{border-color:#46618a!important;margin:1.5rem 0!important}
 <div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
 
 <div class="zz-stadium"><div class="zz-stadium-copy"><div class="zz-stadium-title">Today's Football<br>Predictions</div><div class="zz-stadium-desc">⚡ Data-driven analysis · Exact scores · Worldwide matches</div><div style="font-size:28px;margin-top:9px">⚽</div></div></div></div>
-""",unsafe_allow_html=True)
+"""
+_hero_slot=st.empty()
 # Native button navigation: each tap changes a single session-state route.
 # Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
 nav_items=[('🏠','Home','home'),('🎯','Predict','predict'),('🔗','Doubles','doubles'),('📊','Archive','archive'),('☰','More','more')]
@@ -472,6 +473,34 @@ for _item in discoverable:
         rows.append(_model)
 rows.sort(key=lambda r:r['kickoff'])
 eligible=[r for r in rows if r.get('result')]
+# Populate the large stadium hero with tomorrow's highest-probability
+# verified exact-score estimate. This is the same live data used throughout.
+import html as _hero_escape
+_tomorrow_date=today+timedelta(days=1)
+_tomorrow_ready=[]
+for _r in eligible:
+    try:
+        _local=datetime.fromisoformat(_r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
+        if _local.date()==_tomorrow_date and _r['result'].get('scores'):
+            _tomorrow_ready.append(_r)
+    except (ValueError,TypeError,KeyError):
+        pass
+_hero_title="Tomorrow’s Game of the Day"
+if _tomorrow_ready:
+    _featured=max(_tomorrow_ready,key=lambda _r:(
+        min(len(_r['result'].get('home_last10',[])),len(_r['result'].get('away_last10',[])))>=5,
+        _r['result']['scores'][0][2]))
+    _ff=_featured['fixture']
+    _hh,_aa,_pp=_featured['result']['scores'][0]
+    _home=_hero_escape.escape(str(_ff['homeTeam'].get('name','Home')))
+    _away=_hero_escape.escape(str(_ff['awayTeam'].get('name','Away')))
+    _hero_title=f"""Tomorrow’s Game of the Day
+<div style="font-size:clamp(16px,4vw,25px);font-weight:750;line-height:1.3;margin:12px 0 8px">{_home} <span style="color:#d7a7ff">vs</span> {_away}</div>
+<div style="font-size:clamp(32px,9vw,52px);font-weight:900;color:#fff;line-height:1.1">{_hh} – {_aa}</div>
+<div style="font-size:15px;color:#e2d6ff;margin-top:8px">Exact-score estimate: {_pp:.1%} · {_hero_escape.escape(str(_featured.get('league','Football')))}</div>"""
+else:
+    _hero_title="Tomorrow’s Game of the Day<div style='font-size:17px;font-weight:500;margin-top:12px'>Awaiting verified Pro score analysis</div>"
+_hero_slot.markdown(_hero_html.replace("Today's Football<br>Predictions",_hero_title),unsafe_allow_html=True)
 def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
