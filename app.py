@@ -1671,7 +1671,17 @@ with active_page_slot:
                 for item in _double_items:
                     ev=item['event']
                     fixture=ev.get('fixture')
-                    if not fixture or not fixture.get('utcDate'):
+                    if not fixture:
+                        # Discovery-only providers may not supply a compatible
+                        # model fixture, but the user should still see teams.
+                        _dt=ev.get('kickoff')
+                        if not _dt:
+                            continue
+                        fixture={'id':ev.get('id'),'provider':ev.get('source','discovery'),
+                                 'utcDate':_dt.astimezone(timezone.utc).isoformat(),
+                                 'homeTeam':{'name':ev.get('home','Unknown home')},
+                                 'awayTeam':{'name':ev.get('away','Unknown away')}}
+                    if not fixture.get('utcDate'):
                         continue
                     row=st.session_state.get('worldwide_models',{}).get(item['name'],{}).get('row') or item.get('model')
                     if not row:
@@ -1679,7 +1689,8 @@ with active_page_slot:
                              'league':ev.get('league','Unknown competition'),'result':None,
                              '_worldwide_event':ev,'_worldwide_name':item['name']}
                     key_id=str(fixture.get('provider',''))+':'+str(fixture.get('id',''))
-                    all_pair_rows[key_id]=row
+                    if key_id not in all_pair_rows or (row.get('result') and not all_pair_rows[key_id].get('result')):
+                        all_pair_rows[key_id]=row
                 pair_candidates=sorted(all_pair_rows.values(),key=_double_local_time)
                 pair_candidates=[r for r in pair_candidates
                                  if _double_local_time(r)>=datetime.now(SYDNEY)
