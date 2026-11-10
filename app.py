@@ -34,11 +34,53 @@ h2{font-size:1.3rem!important}
 [data-testid="stTabs"] [role="tablist"]{overflow-x:auto}
 .stDataFrame{max-width:100%;overflow-x:auto}
 }
+/* Football stadium atmosphere: CSS-only, fast and readable on phones. */
+[data-testid="stAppViewContainer"]{
+ background-color:#070e1e;
+ background-image:
+ radial-gradient(ellipse 68% 25% at 50% 0%,rgba(40,126,255,.28),transparent 85%),
+ radial-gradient(ellipse 42% 30% at 95% 24%,rgba(131,56,232,.16),transparent 90%),
+ radial-gradient(ellipse 44% 30% at 0% 55%,rgba(13,157,170,.10),transparent 90%),
+ linear-gradient(180deg,#08152d 0%,#080d1b 48%,#090e1d 100%);
+ background-attachment:fixed;
+}
+[data-testid="stAppViewContainer"]::before{
+ content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+ background:repeating-linear-gradient(110deg,transparent 0 110px,rgba(100,167,255,.025) 111px,transparent 113px);
+}
+[data-testid="stHeader"]{background:rgba(7,14,30,.78);backdrop-filter:blur(14px)}
+[data-testid="stSidebar"]{background:linear-gradient(180deg,#101c36,#101326)}
+[data-testid="stVerticalBlockBorderWrapper"]{border-radius:18px}
+[data-testid="stMetric"]{
+ background:linear-gradient(140deg,rgba(22,46,86,.95),rgba(29,20,62,.95))!important;
+ box-shadow:0 8px 26px rgba(0,0,0,.18),inset 0 1px rgba(152,191,255,.12);
+ border:1px solid rgba(107,140,213,.30)!important;
+}
+div[data-testid="stExpander"],div[data-testid="stForm"]{
+ border-radius:18px;border-color:rgba(102,139,210,.3);
+ background:rgba(11,21,43,.55);
+}
+div[data-testid="stTabs"] [role="tab"][aria-selected="true"]{color:#b7a2ff}
+div[data-testid="stTabs"] [role="tablist"]{border-bottom-color:rgba(123,151,216,.25)}
+.stButton button[kind="primary"],.stDownloadButton button{
+ background:linear-gradient(120deg,#5145d9,#7d37d7);
+ border:1px solid rgba(176,160,255,.35);color:white;
+ box-shadow:0 5px 18px rgba(88,68,214,.18);
+}
+[data-testid="stMarkdownContainer"] a{color:#8fcaff}
+@media(max-width:680px){
+ [data-testid="stAppViewContainer"]{background-attachment:scroll}
+ [data-testid="stMetric"]{box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
 </style>""",unsafe_allow_html=True)
-st.markdown('''<div style="background:linear-gradient(120deg,#0b1d3b,#24154b);padding:18px 20px;border:1px solid #354b79;border-radius:22px;margin-bottom:14px">
-<div style="font-size:12px;color:#93c5fd;letter-spacing:.16em;font-weight:700">FOOTBALL INTELLIGENCE</div>
-<div style="font-size:clamp(24px,5vw,38px);font-weight:850;color:#f8fafc">⚽ ScorePredict <span style="color:#fb4c79">AI</span></div>
-<div style="color:#cbd5e1;font-size:14px">Worldwide fixtures · Exact-score probabilities · Five doubles · Prediction accuracy</div>
+st.markdown('''<div style="position:relative;overflow:hidden;background:radial-gradient(ellipse at 75% 12%,rgba(56,189,248,.28),transparent 40%),linear-gradient(130deg,#0b1d3b,#21154b 65%,#0b2440);padding:22px 22px 25px;border:1px solid #425b91;border-radius:24px;margin-bottom:18px;box-shadow:0 16px 38px rgba(0,0,0,.25)">
+<div style="position:absolute;right:-42px;top:-42px;width:190px;height:190px;border-radius:50%;border:2px solid rgba(126,179,255,.13);box-shadow:0 0 0 25px rgba(126,179,255,.035),0 0 0 50px rgba(126,179,255,.025)"></div>
+<div style="position:relative;font-size:11px;color:#9bd9ff;letter-spacing:.18em;font-weight:800">⚡ FOOTBALL INTELLIGENCE</div>
+<div style="position:relative;font-size:clamp(27px,5vw,42px);font-weight:850;color:#f8fafc;line-height:1.3;margin-top:5px">⚽ ScorePredict <span style="color:#fb668a">AI</span></div>
+<div style="position:relative;color:#d5e2f8;font-size:14px;margin-top:8px">Worldwide fixtures · Exact-score probabilities · Five doubles · Prediction accuracy</div>
+<div style="position:relative;display:flex;flex-wrap:wrap;gap:7px;margin-top:16px"><span style="border:1px solid #44659b;background:#112b53;border-radius:20px;padding:5px 11px;color:#dbeafe;font-size:12px">🌍 Worldwide</span><span style="border:1px solid #654fa4;background:#251d55;border-radius:20px;padding:5px 11px;color:#e9ddff;font-size:12px">🎯 Exact scores</span><span style="border:1px solid #356c84;background:#10394c;border-radius:20px;padding:5px 11px;color:#d5faff;font-size:12px">📈 Accuracy</span></div>
 </div>''',unsafe_allow_html=True)
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
