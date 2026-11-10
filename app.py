@@ -15,7 +15,7 @@ from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
 
-st.set_page_config(page_title='ScorePredict AI',page_icon='⚽',layout='wide',initial_sidebar_state='collapsed')
+st.set_page_config(page_title='ScorePredict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
 st.markdown("""<style>
 :root{color-scheme:dark}
 .block-container{max-width:1200px;padding-top:1rem;padding-bottom:5rem}
