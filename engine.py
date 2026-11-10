@@ -3,7 +3,7 @@ import math
 from datetime import datetime, timezone
 import numpy as np
 
-MODEL_VERSION = "venue-form-ensemble-v3-quality-shrink"
+MODEL_VERSION = "venue-form-ensemble-v4-calendar-decay"
 
 def finished(match):
     score = match.get('score') or {}
@@ -48,9 +48,12 @@ def _games(matches, team_id, venue=None, limit=10):
         if len(out) >= limit: break
     return out
 
-def _stats(games):
+def _stats(games, as_of=None):
     if not games:return None
-    weights = np.array([2 ** (-i/5) for i in range(len(games))], dtype=float)
+    # Weight by elapsed calendar days, not by game index.
+    reference = _date(as_of) if as_of else _date(games[0]['date'])
+    ages = [max(0.0, (reference - _date(g['date'])).total_seconds()/86400.0) for g in games]
+    weights = np.array([2 ** (-age/180.0) for age in ages], dtype=float)
     gf = np.array([g['gf'] for g in games],dtype=float)
     ga = np.array([g['ga'] for g in games],dtype=float)
     return {'played':len(games),'scored':float(np.average(gf,weights=weights)),
@@ -107,8 +110,8 @@ def predict(fixture,history,max_goals=10,variant='regularized'):
     hg=_games(past,home_id,limit=10);ag=_games(past,away_id,limit=10)
     hv=_games(past,home_id,'home',limit=10);av=_games(past,away_id,'away',limit=10)
     if min(len(hg),len(ag))<5:return None
-    hs,as_=_stats(hg),_stats(ag)
-    hvs,avs=_stats(hv),_stats(av)
+    hs,as_=_stats(hg,fixture.get('utcDate')),_stats(ag,fixture.get('utcDate'))
+    hvs,avs=_stats(hv,fixture.get('utcDate')),_stats(av,fixture.get('utcDate'))
     base_h,base_a=league_baselines(past)
     # Venue-specific rates shrink to overall form, then to league averages.
     def shrink(venue,overall,field,prior=5):
@@ -130,7 +133,13 @@ def predict(fixture,history,max_goals=10,variant='regularized'):
     lam_a=clamp(.55*lam_a_strength+.45*lam_a_simple)
     # Conservative uncertainty regularization for thin historical samples.
     # This is a candidate change requiring walk-forward validation.
-    evidence=min(len(hg),len(ag),len(hv)+2,len(av)+2)
+    kickoff=_date(fixture.get('utcDate'))
+    latest_home=_date(hg[0]['date'])
+    latest_away=_date(ag[0]['date'])
+    age_home=max(0.0,(kickoff-latest_home).total_seconds()/86400.0) if kickoff and latest_home else 365.0
+    age_away=max(0.0,(kickoff-latest_away).total_seconds()/86400.0) if kickoff and latest_away else 365.0
+    freshness=2**(-max(age_home,age_away)/180.0)
+    evidence=min(len(hg),len(ag),len(hv)+2,len(av)+2)*freshness
     weight=evidence/(evidence+8.0) if variant=='regularized' else 1.0
     lam_h=clamp(weight*lam_h+(1-weight)*base_h)
     lam_a=clamp(weight*lam_a+(1-weight)*base_a)
@@ -152,7 +161,8 @@ def predict(fixture,history,max_goals=10,variant='regularized'):
             'h2h_last10':h2h,
             'history_count':len(past),'model_version':MODEL_VERSION if variant=='regularized' else 'venue-form-ensemble-v2-baseline',
             'evidence_weight':round(weight,3),
-            'uncertainty_note':'Sparse-sample estimates are shrunk toward league scoring averages; improvement not yet validated.',
+            'history_freshness':round(freshness,3),
+            'uncertainty_note':'Sparse and stale histories are shrunk toward league scoring averages; improvement not yet validated.',
             'methods':{'strength':(round(lam_h_strength,3),round(lam_a_strength,3)),
                        'attack_defence':(round(lam_h_simple,3),round(lam_a_simple,3))},
             'data_quality':'moderate' if min(len(hg),len(ag),len(hv),len(av))>=8 else 'limited'}
