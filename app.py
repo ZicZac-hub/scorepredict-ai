@@ -853,6 +853,71 @@ st.markdown("""<style>
     padding:11px 16px!important;min-height:49px!important;
 }
 @media(max-width:600px){.st-key-ziczac_assistant_corner{right:12px;bottom:90px}}
+
+/* Bright, accessible chat composer and larger expanded panel on iPhone. */
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) {
+    width:min(540px,calc(100vw - 22px))!important;
+    max-width:calc(100vw - 22px)!important;
+    background:linear-gradient(160deg,#1b315d,#122044)!important;
+    border:2px solid #8d75ff!important;
+    border-radius:20px!important;
+    box-shadow:0 16px 48px #000b,0 0 0 3px #a28aff25!important;
+    padding:18px!important;
+}
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"] {
+    border:2px solid #9c82ff!important;
+    border-radius:17px!important;
+    background:#233a6d!important;
+    min-height:76px!important;
+    box-shadow:0 0 0 3px #9275ff28,0 8px 20px #0004!important;
+    transition:border-color .15s,box-shadow .15s,background .15s;
+}
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"]:focus-within {
+    border:3px solid #e2b7ff!important;
+    background:#2c437d!important;
+    box-shadow:0 0 0 5px #ac83ff50,0 0 25px #9671ff70!important;
+}
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"] textarea {
+    min-height:54px!important;
+    font-size:17px!important;
+    line-height:1.5!important;
+    color:#fff!important;
+    caret-color:#fff!important;
+    padding:15px 12px!important;
+}
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"] textarea::placeholder {
+    color:#d3dcff!important;
+    opacity:1!important;
+}
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"] button {
+    background:#7655e9!important;
+    border-radius:12px!important;
+    min-width:44px!important;
+    min-height:44px!important;
+}
+[data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatMessage"] {
+    background:#1b3159!important;
+    border:1px solid #4d69a2!important;
+    border-radius:14px!important;
+    margin-bottom:8px;
+}
+@media(max-width:600px){
+  [data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) {
+    width:calc(100vw - 18px)!important;
+    max-width:calc(100vw - 18px)!important;
+    max-height:65dvh!important;
+    overflow-y:auto!important;
+    padding:14px!important;
+  }
+  [data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"] {
+    min-height:84px!important;
+  }
+  [data-testid="stPopoverBody"]:has([data-testid="stChatInput"]) [data-testid="stChatInput"] textarea {
+    font-size:18px!important;
+    min-height:60px!important;
+  }
+}
+
 </style>""",unsafe_allow_html=True)
 
 with active_page_slot:
