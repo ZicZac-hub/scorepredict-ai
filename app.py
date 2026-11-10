@@ -1628,9 +1628,10 @@ with active_page_slot:
                 tomorrow=today+timedelta(days=1)
                 st.markdown('**📅 Upcoming matches — Sydney time**')
                 double_window=st.selectbox('Show matches for',[
-                    'Tomorrow','Next 3 days','Next 7 days','Next 14 days','All upcoming'
-                ],index=2,key='manual_double_window')
-                window_days={'Tomorrow':1,'Next 3 days':3,'Next 7 days':7,'Next 14 days':14}.get(double_window)
+                    'Today','Tomorrow','Today + next 3 days','Today + next 7 days','Today + next 14 days','All upcoming'
+                ],index=3,key='manual_double_window')
+                window_days={'Today':1,'Tomorrow':1,'Today + next 3 days':4,'Today + next 7 days':8,'Today + next 14 days':15}.get(double_window)
+                _window_start=tomorrow if double_window=='Tomorrow' else today
                 # Include all available prediction-ready fixtures, not just the
                 # initial eight preselected by the general analysis selector.
                 all_pair_rows={str(r['fixture'].get('provider',''))+':'+str(r['fixture'].get('id','')):r
@@ -1638,8 +1639,8 @@ with active_page_slot:
                 # Doubles must NOT depend on the unrelated Worldwide Finder
                 # date filter. Fetch the doubles window independently; otherwise
                 # Tomorrow can be empty even while future games exist.
-                _double_start=tomorrow
-                _double_span=window_days if window_days is not None else 14
+                _double_start=_window_start
+                _double_span=min(window_days if window_days is not None else 15,16)
                 @st.cache_data(ttl=3600,show_spinner=False)
                 def _double_discovery(start,days,pro_key,sm_key):
                     found,warnings=worldwide(start,days)
@@ -1694,8 +1695,8 @@ with active_page_slot:
                 pair_candidates=sorted(all_pair_rows.values(),key=_double_local_time)
                 pair_candidates=[r for r in pair_candidates
                                  if _double_local_time(r)>=datetime.now(SYDNEY)
-                                 and _double_local_time(r).date()>=tomorrow
-                                 and (window_days is None or _double_local_time(r).date()<tomorrow+timedelta(days=window_days))]
+                                 and _double_local_time(r).date()>=_window_start
+                                 and (window_days is None or _double_local_time(r).date()<_window_start+timedelta(days=window_days))]
                 st.markdown('**🏆 Choose your league and teams for the double**')
                 if not pair_candidates:
                     st.warning('No upcoming fixtures returned for this date range. Check the provider diagnostics above or choose Next 14 days.')
@@ -1795,7 +1796,7 @@ with active_page_slot:
             st.subheader('Five model-ranked exact-score doubles from your selected fixtures')
             st.caption('An exact-score double requires BOTH matches to finish at the specified scores. These probabilities are usually low; they are estimates, not guarantees.')
             if len(chosen_rows)<2:
-                st.info('At least two researched fixtures are required. Choose Next 7 or Next 14 days, All leagues and All teams, or select two API-Football fixtures for Pro research.')
+                st.info('At least two researched fixtures are required. Choose Today + next 7 days, All leagues and All teams, or select two API-Football fixtures for Pro research.')
             else:
                 options=[]
                 for a,b in combinations(chosen_rows,2):
