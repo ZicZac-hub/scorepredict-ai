@@ -25,7 +25,14 @@ def evaluate(matches, min_history=30):
         if index < min_history:
             continue
         # Same-kickoff games must not leak each other's final results.
-        past = [m for m in ordered[:index] if _date(m['utcDate']) < _date(fixture['utcDate'])]
+        # Keep league scoring baselines and opponent histories within the
+        # same competition; unrelated leagues must not affect goal rates.
+        code=(fixture.get('competition') or {}).get('code')
+        past = [m for m in ordered[:index]
+                if (m.get('competition') or {}).get('code') == code
+                and _date(m['utcDate']) < _date(fixture['utcDate'])]
+        if len(past) < min_history:
+            continue
         actual = fixture['score']['fullTime']
         hg, ag = actual['home'], actual['away']
         outcomes = {}
