@@ -253,7 +253,7 @@ view=st.session_state['ziczac_active_page']
 # worldwide finder and API settings. This is what makes taps feel responsive.
 active_page_slot=st.container()
 with active_page_slot:
-    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','doubles':'🔗 Doubles and exact-score combinations','archive':'📊 Prediction accuracy and archive','more':'☰ Model methodology and settings'}[view])
+    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','doubles':'🔗 Doubles and exact-score combinations','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','more':'☰ Model methodology and settings'}[view])
 
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
