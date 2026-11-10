@@ -3,7 +3,7 @@ import math
 from datetime import datetime, timezone
 import numpy as np
 
-MODEL_VERSION = "venue-form-ensemble-v4-calendar-decay"
+MODEL_VERSION = "venue-form-ensemble-v5-robust-effective-sample"
 
 def finished(match):
     score = match.get('score') or {}
@@ -54,9 +54,14 @@ def _stats(games, as_of=None):
     reference = _date(as_of) if as_of else _date(games[0]['date'])
     ages = [max(0.0, (reference - _date(g['date'])).total_seconds()/86400.0) for g in games]
     weights = np.array([2 ** (-age/180.0) for age in ages], dtype=float)
-    gf = np.array([g['gf'] for g in games],dtype=float)
-    ga = np.array([g['ga'] for g in games],dtype=float)
-    return {'played':len(games),'scored':float(np.average(gf,weights=weights)),
+    # Extreme one-off scorelines can dominate a small 5-10 game sample.
+    # Robustify the goal-rate estimator while keeping actual results intact
+    # for win/draw/loss reporting and historical accuracy evaluation.
+    gf = np.array([min(float(g['gf']),5.0) for g in games],dtype=float)
+    ga = np.array([min(float(g['ga']),5.0) for g in games],dtype=float)
+    effective_n=float(weights.sum()**2/np.square(weights).sum())
+    return {'played':len(games),'effective_played':round(effective_n,2),
+            'scored':float(np.average(gf,weights=weights)),
             'conceded':float(np.average(ga,weights=weights)),
             'wins':sum(g['result']=='W' for g in games),
             'draws':sum(g['result']=='D' for g in games),
@@ -139,7 +144,11 @@ def predict(fixture,history,max_goals=10,variant='regularized'):
     age_home=max(0.0,(kickoff-latest_home).total_seconds()/86400.0) if kickoff and latest_home else 365.0
     age_away=max(0.0,(kickoff-latest_away).total_seconds()/86400.0) if kickoff and latest_away else 365.0
     freshness=2**(-max(age_home,age_away)/180.0)
-    evidence=min(len(hg),len(ag),len(hv)+2,len(av)+2)*freshness
+    # Effective sample size accounts for calendar-decay concentration:
+    # ten stale games should not look as informative as ten recent games.
+    evidence=min(hs['effective_played'],as_['effective_played'],
+                 (hvs['effective_played'] if hvs else 0)+2,
+                 (avs['effective_played'] if avs else 0)+2)*freshness
     weight=evidence/(evidence+8.0) if variant=='regularized' else 1.0
     lam_h=clamp(weight*lam_h+(1-weight)*base_h)
     lam_a=clamp(weight*lam_a+(1-weight)*base_a)
