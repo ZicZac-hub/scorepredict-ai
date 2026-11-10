@@ -443,6 +443,9 @@ for m in worldwide_rows:
 def _cached_pro_worldwide(key, event):
     return model_worldwide(key,event)
 
+if st.session_state.get('worldwide_model_version') != 'pro-deep-v7':
+    st.session_state['worldwide_models']={}
+    st.session_state['worldwide_model_version']='pro-deep-v7'
 _auto_cache=st.session_state.setdefault('worldwide_models',{})
 _auto_pending=[item for item in discoverable
                if item['name'] not in _auto_cache
@@ -791,9 +794,6 @@ selected_worldwide=st.multiselect('Matches in selected league',visible_options,
                                    key='worldwide_fixture_selection',
                                    help='Choose fixtures from this league to research with API-Football Pro when supported.')
 # Model selected API-Football worldwide fixtures on demand to conserve quota.
-if st.session_state.get('worldwide_model_version') != 'pro-auto-v6':
-    st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='pro-auto-v6'
 if 'worldwide_models' not in st.session_state:
     st.session_state['worldwide_models']={}
 if selected_worldwide:
@@ -843,6 +843,33 @@ if selected_worldwide:
                     for detail in cached['row'].get('research_details',[]):
                         st.write('• '+detail)
                     st.caption('Only verified completed matches enter the mathematical model; Pro access does not guarantee a correct score.')
+                _ctx=cached['row'].get('research_context',{})
+                with st.expander('🧠 Deep Pro research · player availability, tactics, standings',expanded=True):
+                    st.caption('Verified API-Football data only. Missing data is unknown, not a clean bill of health. External internet-wide research requires a separately configured licensed news/search source.')
+                    for _side in ('home','away'):
+                        _season=_ctx.get(_side+'_season')
+                        if _season:
+                            st.markdown('**'+_side.title()+' team · season form and tactics**')
+                            st.write('Recent league form:',_season.get('form') or 'Not provided')
+                            st.write('Season goals:',_season.get('goals') or 'Not provided')
+                            st.write('Common formations:',_season.get('lineups') or 'Not provided')
+                            st.write('Clean sheets:',_season.get('clean_sheet') or 'Not provided')
+                    if _ctx.get('standings'):
+                        st.markdown('**League standings**')
+                        st.dataframe(pd.DataFrame(_ctx['standings']),hide_index=True,use_container_width=True)
+                    if _ctx.get('injuries'):
+                        st.markdown('**Reported player injuries / availability concerns**')
+                        st.dataframe(pd.DataFrame(_ctx['injuries']),hide_index=True,use_container_width=True)
+                    else:
+                        st.caption('No injury records returned. This does not prove that all players are fit.')
+                    if _ctx.get('confirmed_lineups'):
+                        st.markdown('**Provider-reported lineups and formations**')
+                        st.dataframe(pd.DataFrame(_ctx['confirmed_lineups']),hide_index=True,use_container_width=True)
+                    else:
+                        st.caption('Confirmed formations are not available yet.')
+                    st.caption(_ctx.get('limitations','Contextual factors are not automatically calibrated as score multipliers.'))
+                    for _warn in cached['row'].get('research_warnings',[])[:5]:
+                        st.caption('Data limitation: '+str(_warn))
                 research=cached['row']['result']
                 with st.expander('📊 Full mathematical research · '+name,expanded=True):
                     st.markdown('**Home win / Draw / Away win — probability model**')
