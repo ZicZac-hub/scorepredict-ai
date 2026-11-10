@@ -746,19 +746,19 @@ def _assistant_reply(question):
         scores=p.get('scores',[])[:5]
         top=', '.join(f"{h}-{a} ({prob:.1%})" for h,a,prob in scores) or 'unavailable'
         sources=', '.join(r.get('research_sources') or ['connected verified football data'])
-        text=(f"**{name(r)}** · {local(r):%d %b %Y, %I:%M %p} Sydney · {r.get('league','')}\\n\\n"
-              f"**Last 10 available:**\\n\\n"
-              f"- Home team, overall: {summary(h_all,home_id)}\\n"
-              f"- Home team, home fixtures: {summary(h_venue,home_id)}\\n"
-              f"- Away team, overall: {summary(a_all,away_id)}\\n"
-              f"- Away team, away fixtures: {summary(a_venue,away_id)}\\n"
-              f"- Verified H2H: {len(h2h)} previous meetings in accessible history\\n\\n"
-              f"**Model (1X2):** Home {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}\\n\\n"
-              f"**Expected goals:** Home {p['home_xg']:.2f}, Away {p['away_xg']:.2f}\\n\\n"
-              f"**Five most likely exact scores:** {top}\\n\\n"
+        text=(f"**{name(r)}** · {local(r):%d %b %Y, %I:%M %p} Sydney · {r.get('league','')}\n\n"
+              f"**Last 10 available:**\n\n"
+              f"- Home team, overall: {summary(h_all,home_id)}\n"
+              f"- Home team, home fixtures: {summary(h_venue,home_id)}\n"
+              f"- Away team, overall: {summary(a_all,away_id)}\n"
+              f"- Away team, away fixtures: {summary(a_venue,away_id)}\n"
+              f"- Verified H2H: {len(h2h)} previous meetings in accessible history\n\n"
+              f"**Model (1X2):** Home {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}\n\n"
+              f"**Expected goals:** Home {p['home_xg']:.2f}, Away {p['away_xg']:.2f}\n\n"
+              f"**Five most likely exact scores:** {top}\n\n"
               f"**Source:** {sources}.")
         if len(h_all)<10 or len(a_all)<10 or len(h_venue)<10 or len(a_venue)<10:
-            text+='\\n\\n⚠️ At least one form split has fewer than 10 verified matches. Treat this as limited-sample analysis.'
+            text+='\n\n⚠️ At least one form split has fewer than 10 verified matches. Treat this as limited-sample analysis.'
         return text
     # Respond to requests about the website itself.
     if any(x in q for x in ['how to','how do','website','navigation','where is','settings','accuracy','help']):
@@ -792,12 +792,12 @@ def _assistant_reply(question):
                      'The five suggestions may reuse fixtures; they are not independent bets. '
                      'No score is certain, and the model does not verify injuries or confirmed lineups.')
         lines.append('For your own teams and leagues, open **Doubles → Choose your league and teams**.')
-        return '\\n\\n'.join(lines)
+        return '\n\n'.join(lines)
     if any(w in q for w in ['today','tomorrow','upcoming','fixture','schedule','next match']):
         day=today_local+timedelta(days=1) if 'tomorrow' in q else today_local if 'today' in q else None
         ready=[r for r in future if day is None or local(r).date()==day]
         if ready:
-            return '**Upcoming prediction-ready games (Sydney time):**\\n\\n'+'\\n\\n'.join(
+            return '**Upcoming prediction-ready games (Sydney time):**\n\n'+'\n\n'.join(
                 f"- **{name(r)}** · {local(r):%d %b, %I:%M %p} · {r.get('league','')} · "
                 f"top score {r['result']['scores'][0][0]}-{r['result']['scores'][0][1]} "
                 f"({r['result']['scores'][0][2]:.1%})"
@@ -806,17 +806,17 @@ def _assistant_reply(question):
                     x['event'].get('kickoff') and x['event']['kickoff']>=now_utc and
                     (day is None or x['event']['local'].date()==day)]
         if discovered:
-            return ('**Upcoming discovered fixtures (Sydney time; no verified score forecast):**\\n\\n'
-                    +'\\n\\n'.join(f"- {e['home']} vs {e['away']} · {e['local']:%d %b, %I:%M %p} · {e.get('league','')}"
+            return ('**Upcoming discovered fixtures (Sydney time; no verified score forecast):**\n\n'
+                    +'\n\n'.join(f"- {e['home']} vs {e['away']} · {e['local']:%d %b, %I:%M %p} · {e.get('league','')}"
                                      for e in discovered[:12])
-                    +'\\n\\nThese fixtures are not automatically prediction-ready.')
+                    +'\n\nThese fixtures are not automatically prediction-ready.')
         return 'No upcoming fixtures are currently loaded for that date. Try a wider fixture date range.'
     ignored={'score','scores','match','predict','prediction','about','details','analysis',
              'league','team','football','correct','research','deep','last','five','give','show'}
     tokens=[x for x in re.findall(r'[a-z]{4,}',q) if x not in ignored]
     matches=[r for r in future if any(token in (name(r)+' '+str(r.get('league',''))).casefold() for token in tokens)]
     if matches:
-        return evidence(matches[0])+'\\n\\n**Conclusion:** These are statistical estimates, not a mathematically proven result or a guaranteed bet.'
+        return evidence(matches[0])+'\n\n**Conclusion:** These are statistical estimates, not a mathematically proven result or a guaranteed bet.'
     return ('Ask for **“Tomorrow’s matches”**, **“Five exact-score doubles”**, or '
             '**“Chelsea deep analysis”**. I can report verified last-ten form, venue splits, '
             'H2H, expected goals and score probabilities when those records are loaded. '
