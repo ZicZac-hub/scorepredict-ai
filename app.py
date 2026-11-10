@@ -1784,12 +1784,29 @@ with active_page_slot:
                         'Match 2 probability':f"{o['P2']:.2%}",
                         'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
                     st.markdown('##### 📱 Your five doubles · mobile-friendly')
+                    def _short_match_label(match_name):
+                        # Fixture labels contain "Home vs Away · date"; retain
+                        # the teams and abbreviate long names for narrow phones.
+                        teams=str(match_name or '').split(' · ',1)[0].split(' vs ',1)
+                        if len(teams)!=2:
+                            return str(match_name or 'Match')[:28]
+                        def _short_team(name):
+                            name=name.strip()
+                            if len(name)<=14:
+                                return name
+                            words=name.split()
+                            shortened=' '.join(w for w in words if w.lower() not in
+                                ('fc','cf','afc','football','club','united','athletic','sporting'))
+                            return (shortened if 0<len(shortened)<=14 else name[:13]+'…')
+                        return _short_team(teams[0])+' vs '+_short_team(teams[1])
+                    _first_label=_short_match_label(first_name)
+                    _second_label=_short_match_label(second_name)
                     for _i,_o in enumerate(manual_options[:5],1):
                         with st.container(border=True):
                             st.markdown(f'**Double {_i}**')
                             _c1,_c2=st.columns(2)
-                            _c1.metric('Match 1 score',_o['Score 1'])
-                            _c2.metric('Match 2 score',_o['Score 2'])
+                            _c1.metric(_first_label,_o['Score 1'])
+                            _c2.metric(_second_label,_o['Score 2'])
                             st.caption(f"Match 1: {_o['P1']:.2%} · Match 2: {_o['P2']:.2%} · Combined: {_o['Joint']:.3%}")
                     with st.expander('Full doubles comparison table · swipe to inspect'):
                         st.dataframe(manual_df,hide_index=True,use_container_width=True)
