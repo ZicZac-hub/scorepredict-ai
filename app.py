@@ -700,40 +700,127 @@ except Exception as e:st.warning(f'Local prediction snapshot storage unavailable
 # Optional OPENAI_API_KEY enables conversational responses; the local fallback
 # remains functional without any additional paid service.
 def _assistant_reply(question):
+    """Evidence-grounded on-site research assistant; no invented results."""
     import re
     q=question.casefold().strip()
-    future=sorted([r for r in rows if r.get('result') and r.get('kickoff','')>=datetime.now(timezone.utc).isoformat()[:10]],key=lambda r:r.get('kickoff',''))
-    def _name(r):
+    now_utc=datetime.now(timezone.utc)
+    today_local=datetime.now(SYDNEY).date()
+    future=sorted(
+        [r for r in rows if r.get('result') and
+         datetime.fromisoformat(r['kickoff'].replace('Z','+00:00'))>=now_utc],
+        key=lambda r:r['kickoff'])
+    def name(r):
         f=r['fixture']
         return f"{f['homeTeam'].get('name','Home')} vs {f['awayTeam'].get('name','Away')}"
-    def _local(r):
+    def local(r):
         return datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY)
-    tomorrow_day=datetime.now(SYDNEY).date()+timedelta(days=1)
-    if any(w in q for w in ['double','accumulator','acca','parlay','5 prediction','five prediction']):
-        from advanced import five_two_leg_doubles
-        pairs=five_two_leg_doubles(future)
-        if not pairs:
-            return 'I cannot produce five verified doubles from the currently loaded fixtures. Select more leagues and a wider date range, then try again. I will not invent probabilities.'
-        lines=['**Top available two-leg doubles (model estimates):**']
-        for i,p in enumerate(pairs[:5],1):
-            lines.append(f"{i}. {_name(p['leg1'])} — {p['leg1']['selection']} + {_name(p['leg2'])} — {p['leg2']['selection']} · estimated joint chance {p['joint_probability_independent']:.1%}")
-        return '\\n\\n'.join(lines)+'\\n\\nThese are not guaranteed outcomes; combinations can share matches and are not independent opportunities. Open **Doubles** to choose your own league and teams.'
-    if any(w in q for w in ['tomorrow','today','upcoming','fixture','next match','schedule']):
-        filtered=future
-        if 'tomorrow' in q:filtered=[r for r in future if _local(r).date()==tomorrow_day]
-        elif 'today' in q:filtered=[r for r in future if _local(r).date()==datetime.now(SYDNEY).date()]
-        if not filtered:
-            return 'No prediction-ready matches are loaded for that period. Use **Worldwide Match Finder** to discover more fixtures. Discovery-only matches may lack verified historical data.'
-        return '**Available prediction-ready fixtures (Sydney time):**\\n\\n'+'\\n\\n'.join(f"- {_name(r)} · {_local(r):%d %b, %I:%M %p} · {r.get('league','')}" for r in filtered[:12])
-    candidates=[r for r in future if any(token in (_name(r)+' '+str(r.get('league',''))).casefold() for token in re.findall(r'[a-z]{4,}',q) if token not in {'score','match','predict','prediction','about','details','analysis','league','team','football','correct'})]
-    if candidates:
-        r=candidates[0];p=r['result']
-        scores=p.get('scores',[])
-        top=', '.join(f"{h}-{a} ({prob:.1%})" for h,a,prob in scores[:5])
-        return f"**{_name(r)}** · {_local(r):%d %b, %I:%M %p} Sydney\\n\\nHome {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}.\\n\\n**Five most likely exact scores:** {top}.\\n\\nThese are mathematical estimates based on available verified results, not guaranteed scores."
-    if any(w in q for w in ['how','help','website','navigate','league','country','accuracy']):
-        return 'Use **Worldwide Match Finder** for dates, countries and teams; **Predict** for exact-score probabilities; **Doubles** for five two-leg combinations and manual match selection; **Archive** for recorded prediction accuracy. Ask me about a team, tomorrow’s matches or five doubles.'
-    return 'I can help with upcoming fixtures, team predictions, five exact-score candidates and five doubles from the verified matches currently loaded. Try: “Tomorrow’s matches”, “Five doubles”, or “Chelsea prediction”. I do not search the whole internet in real time.'
+    def evidence(r):
+        p=r['result']
+        past=r.get('past') or []
+        home_id=r['fixture']['homeTeam'].get('id')
+        away_id=r['fixture']['awayTeam'].get('id')
+        def team_games(tid,venue=None):
+            games=[g for g in past if g.get('status')=='FINISHED' and
+                   (g.get('homeTeam',{}).get('id')==tid or g.get('awayTeam',{}).get('id')==tid)]
+            if venue=='home':games=[g for g in games if g['homeTeam'].get('id')==tid]
+            if venue=='away':games=[g for g in games if g['awayTeam'].get('id')==tid]
+            return sorted(games,key=lambda g:g.get('utcDate',''),reverse=True)[:10]
+        def summary(games,tid):
+            w=d=l=gf=ga=0
+            for g in games:
+                sc=g.get('score',{}).get('fullTime',{})
+                if not isinstance(sc.get('home'),int) or not isinstance(sc.get('away'),int):continue
+                is_home=g['homeTeam'].get('id')==tid
+                x,y=(sc['home'],sc['away']) if is_home else (sc['away'],sc['home'])
+                gf+=x;ga+=y
+                if x>y:w+=1
+                elif x==y:d+=1
+                else:l+=1
+            return f"{len(games)} games · W{w} D{d} L{l} · GF {gf} GA {ga}"
+        h_all=team_games(home_id);a_all=team_games(away_id)
+        h_venue=team_games(home_id,'home');a_venue=team_games(away_id,'away')
+        h2h=[g for g in past if
+             {g.get('homeTeam',{}).get('id'),g.get('awayTeam',{}).get('id')}=={home_id,away_id}
+             and g.get('status')=='FINISHED']
+        h2h=sorted(h2h,key=lambda g:g.get('utcDate',''),reverse=True)[:10]
+        scores=p.get('scores',[])[:5]
+        top=', '.join(f"{h}-{a} ({prob:.1%})" for h,a,prob in scores) or 'unavailable'
+        sources=', '.join(r.get('research_sources') or ['connected verified football data'])
+        text=(f"**{name(r)}** · {local(r):%d %b %Y, %I:%M %p} Sydney · {r.get('league','')}\\n\\n"
+              f"**Last 10 available:**\\n\\n"
+              f"- Home team, overall: {summary(h_all,home_id)}\\n"
+              f"- Home team, home fixtures: {summary(h_venue,home_id)}\\n"
+              f"- Away team, overall: {summary(a_all,away_id)}\\n"
+              f"- Away team, away fixtures: {summary(a_venue,away_id)}\\n"
+              f"- Verified H2H: {len(h2h)} previous meetings in accessible history\\n\\n"
+              f"**Model (1X2):** Home {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}\\n\\n"
+              f"**Expected goals:** Home {p['home_xg']:.2f}, Away {p['away_xg']:.2f}\\n\\n"
+              f"**Five most likely exact scores:** {top}\\n\\n"
+              f"**Source:** {sources}.")
+        if len(h_all)<10 or len(a_all)<10 or len(h_venue)<10 or len(a_venue)<10:
+            text+='\\n\\n⚠️ At least one form split has fewer than 10 verified matches. Treat this as limited-sample analysis.'
+        return text
+    # Respond to requests about the website itself.
+    if any(x in q for x in ['how to','how do','website','navigation','where is','settings','accuracy','help']):
+        return ('**ZicZac website guide:** Home shows match previews. Predict shows detailed '
+                'statistical forecasts. Doubles lets you filter by league and team and choose two '
+                'matches. Worldwide Match Finder lists discovery-only fixtures. Archive tracks '
+                'saved predictions. I use loaded data, not unrestricted live internet browsing.')
+    # A request for five exact-score doubles is different from five exact-score
+    # outcomes for a single game, and different from double-chance picks.
+    if any(x in q for x in ['double','accumulator','acca','parlay']):
+        if len(future)<2:
+            return ('I need at least two upcoming fixtures with verified model history to calculate '
+                    'exact-score doubles. Expand monitored competitions and date range, or select '
+                    'two matches under **Doubles**. I cannot responsibly invent missing data.')
+        from itertools import combinations as _combinations
+        candidates=[]
+        for first,second in _combinations(future[:30],2):
+            if not first['result'].get('scores') or not second['result'].get('scores'):continue
+            h1,a1,p1=first['result']['scores'][0]
+            h2,a2,p2=second['result']['scores'][0]
+            candidates.append((p1*p2,first,second,(h1,a1,p1),(h2,a2,p2)))
+        candidates.sort(key=lambda x:x[0],reverse=True)
+        if not candidates:return 'Not enough verified exact-score model outputs for two-leg doubles.'
+        lines=['**Top five two-match exact-score doubles (model-ranked, not guaranteed):**']
+        for i,(joint,first,second,sc1,sc2) in enumerate(candidates[:5],1):
+            lines.append(f"{i}. **{name(first)} {sc1[0]}-{sc1[1]}** ({sc1[2]:.1%}) + "
+                         f"**{name(second)} {sc2[0]}-{sc2[1]}** ({sc2[2]:.1%}) "
+                         f"· combined estimate **{joint:.2%}**")
+        lines.append('**Research basis:** Verified historical scores and the website’s goal model. '
+                     'Combined estimates multiply two model probabilities and assume independence. '
+                     'The five suggestions may reuse fixtures; they are not independent bets. '
+                     'No score is certain, and the model does not verify injuries or confirmed lineups.')
+        lines.append('For your own teams and leagues, open **Doubles → Choose your league and teams**.')
+        return '\\n\\n'.join(lines)
+    if any(w in q for w in ['today','tomorrow','upcoming','fixture','schedule','next match']):
+        day=today_local+timedelta(days=1) if 'tomorrow' in q else today_local if 'today' in q else None
+        ready=[r for r in future if day is None or local(r).date()==day]
+        if ready:
+            return '**Upcoming prediction-ready games (Sydney time):**\\n\\n'+'\\n\\n'.join(
+                f"- **{name(r)}** · {local(r):%d %b, %I:%M %p} · {r.get('league','')} · "
+                f"top score {r['result']['scores'][0][0]}-{r['result']['scores'][0][1]} "
+                f"({r['result']['scores'][0][2]:.1%})"
+                for r in ready[:12])
+        discovered=[x['event'] for x in discoverable if
+                    x['event'].get('kickoff') and x['event']['kickoff']>=now_utc and
+                    (day is None or x['event']['local'].date()==day)]
+        if discovered:
+            return ('**Upcoming discovered fixtures (Sydney time; no verified score forecast):**\\n\\n'
+                    +'\\n\\n'.join(f"- {e['home']} vs {e['away']} · {e['local']:%d %b, %I:%M %p} · {e.get('league','')}"
+                                     for e in discovered[:12])
+                    +'\\n\\nThese fixtures are not automatically prediction-ready.')
+        return 'No upcoming fixtures are currently loaded for that date. Try a wider fixture date range.'
+    ignored={'score','scores','match','predict','prediction','about','details','analysis',
+             'league','team','football','correct','research','deep','last','five','give','show'}
+    tokens=[x for x in re.findall(r'[a-z]{4,}',q) if x not in ignored]
+    matches=[r for r in future if any(token in (name(r)+' '+str(r.get('league',''))).casefold() for token in tokens)]
+    if matches:
+        return evidence(matches[0])+'\\n\\n**Conclusion:** These are statistical estimates, not a mathematically proven result or a guaranteed bet.'
+    return ('Ask for **“Tomorrow’s matches”**, **“Five exact-score doubles”**, or '
+            '**“Chelsea deep analysis”**. I can report verified last-ten form, venue splits, '
+            'H2H, expected goals and score probabilities when those records are loaded. '
+            'I cannot claim to have searched every website or guarantee a winning bet.')
 
 with st.container(key='ziczac_assistant_corner'):
     with st.popover('🤖 Ask ZicZac AI',use_container_width=False):
