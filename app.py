@@ -156,7 +156,7 @@ st.markdown("""<style>
 }
 </style>
 <div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
-<div class="zz-nav"><div class="zz-nav-item"><span class="zz-ico">⌂</span>Home</div><div class="zz-nav-item"><span class="zz-ico">🎯</span>Predict</div><div class="zz-nav-item"><span class="zz-ico">🔗</span>Doubles</div><div class="zz-nav-item"><span class="zz-ico">📊</span>Archive</div><div class="zz-nav-item"><span class="zz-ico">☰</span>More</div></div>
+<div class="zz-nav"><a class="zz-nav-item" href="?view=home"><span class="zz-ico">⌂</span>Home</a><a class="zz-nav-item" href="?view=predict"><span class="zz-ico">🎯</span>Predict</a><a class="zz-nav-item" href="?view=doubles"><span class="zz-ico">🔗</span>Doubles</a><a class="zz-nav-item" href="?view=archive"><span class="zz-ico">📊</span>Archive</a><a class="zz-nav-item" href="?view=more"><span class="zz-ico">☰</span>More</a></div>
 <div class="zz-stadium"><div class="zz-stadium-copy"><div class="zz-stadium-title">Today's Football<br>Predictions</div><div class="zz-stadium-desc">⚡ Data-driven analysis · Exact scores · Worldwide matches</div><div style="font-size:28px;margin-top:9px">⚽</div></div></div></div>
 """,unsafe_allow_html=True)
 
@@ -394,10 +394,18 @@ for preview in dashboard_rows:
     st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(str(preview.get('kickoff',''))[:16])+' UTC</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Top exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div></div>',unsafe_allow_html=True)
 st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
 st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
-tabs=st.tabs(['📅 Upcoming predictions','🛡️ Five double-chance picks','🔗 Five two-leg doubles','📈 Backtesting','🗂️ Prediction archive','🧠 Methodology','🎯 My five exact-score doubles'])
+# The header links change the URL view; only the corresponding sections are rendered.
+view=st.query_params.get('view','home')
+if view not in ('home','predict','doubles','archive','more'):
+    view='home'
+st.markdown("""<style>.zz-nav-item{text-decoration:none!important;display:block;cursor:pointer;transition:background .15s,border-color .15s}.zz-nav-item:hover{background:#31477b;border-color:#a7c5ff}.zz-nav-item:first-child{background:#1d315c;border-color:#6481bc}.zz-nav-item[href="?view="""+view+""""]{background:linear-gradient(130deg,#6549ef,#9944dd)!important;border-color:#c1aaff!important;box-shadow:0 0 18px #7856ff77}</style>""",unsafe_allow_html=True)
+st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','more':'☰ More · Model information'}[view])
+tabs=[st.container() for _ in range(7)]
 
 def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
-with tabs[0]:
+if view in ['home','predict']:
+    with tabs[0]:if view in ['home','predict']:
+    with tabs[0]:
     st.caption('Prediction dates use Sydney local time. Worldwide selected matches appear here after successful history analysis.')
     pred_window=st.radio('Show predictions for', ['Today','Tomorrow','Next 3 days','Next 7 days','Next 14 days'],horizontal=True,key='prediction_window')
     pred_start=today+timedelta(days=1) if pred_window=='Tomorrow' else today
@@ -455,7 +463,9 @@ with tabs[0]:
                 if methods:
                     st.dataframe(pd.DataFrame([{'Estimator':name,'Expected home goals':round(vals[0],2),'Expected away goals':round(vals[1],2)} for name,vals in methods.items()]+[{'Estimator':'Blended forecast','Expected home goals':round(p['home_xg'],2),'Expected away goals':round(p['away_xg'],2)}]),hide_index=True,use_container_width=True)
                 st.caption('Data quality: '+str(p.get('data_quality','unknown'))+' · Model: '+str(p.get('model_version','legacy'))+'. H2H is descriptive, not an extra goal multiplier. Injuries and lineups are not independently verified.')
-with tabs[1]:
+if view in ['doubles']:
+    with tabs[1]:if view in ['doubles']:
+    with tabs[1]:
     st.subheader('Five highest-probability double-chance selections')
     st.caption('1X = home or draw · X2 = away or draw · 12 = either team wins. These are NOT exact-score doubles.')
     picks=ranked_double_chance(rows,min_prob)
@@ -463,7 +473,9 @@ with tabs[1]:
     else:
         st.dataframe(pd.DataFrame([{'Fixture':match_name(x['fixture']),'Market':x['selection'],'Model probability':f"{x['probability']:.1%}",'Kickoff UTC':x['kickoff'],'Competition':x['league']} for x in picks]),hide_index=True,use_container_width=True)
         st.caption('Selections are ranked by the model, not verified bookmaker odds or guaranteed wins.')
-with tabs[2]:
+if view in ['doubles']:
+    with tabs[2]:if view in ['doubles']:
+    with tabs[2]:
     st.subheader('Five two-leg double combinations')
     st.caption('Each double combines two different matches. The displayed joint probability multiplies model probabilities and assumes independence; real outcomes may be correlated.')
     pairs=five_two_leg_doubles(rows)
@@ -473,7 +485,9 @@ with tabs[2]:
           'Leg 2':f"{match_name(x['leg2']['fixture'])} · {x['leg2']['selection']}",
           'Estimated joint probability':f"{x['joint_probability_independent']:.1%}"} for i,x in enumerate(pairs)]),hide_index=True,use_container_width=True)
         st.caption('The top combinations may reuse individual fixtures across different doubles. These are not five independent opportunities.')
-with tabs[3]:
+if view in ['archive']:
+    with tabs[3]:if view in ['archive']:
+    with tabs[3]:
     st.subheader('Historical walk-forward validation')
     st.write('For each completed match, the model uses only results strictly earlier than kickoff. This avoids using future results to predict past games.')
     league=st.selectbox('Backtest competition',list(histories),key='bt_league') if histories else None
@@ -492,7 +506,9 @@ with tabs[3]:
             df=pd.DataFrame(records)
             st.dataframe(df,hide_index=True,use_container_width=True)
             st.download_button('Download backtest CSV',df.to_csv(index=False).encode(),'backtest.csv','text/csv')
-with tabs[4]:
+if view in ['archive']:
+    with tabs[4]:if view in ['archive']:
+    with tabs[4]:
     st.subheader('📊 Prediction Accuracy Dashboard')
     st.caption('Only saved forecasts with verified final scores count. Pending matches are excluded. Local storage on free Streamlit hosting can reset.')
     if conn:
@@ -560,120 +576,123 @@ with tabs[4]:
             st.caption('Exact-score doubles are not yet archived, so double accuracy is not included.')
             st.dataframe(archive.drop(columns=['scores_json']),hide_index=True,use_container_width=True)
             st.download_button('Download prediction archive CSV',archive.to_csv(index=False).encode(),'prediction_archive.csv','text/csv')
-with tabs[5]:
+if view in ['more']:
+    with tabs[5]:if view in ['more']:
+    with tabs[5]:
     st.markdown('''**Mathematical model:** Recency-weighted goals scored/conceded, venue-specific shrinkage, league home/away baselines, regularized expected-goal estimates and a normalized independent Poisson score matrix.\n\n**Human-style analysis:** Transparent rule-based commentary on relative strengths, sample sizes and uncertainty. It does **not** use an LLM, live injuries, verified lineups, bookmaker odds or premium xG data.\n\n**Backtesting:** Walk-forward evaluation of exact scores, match outcomes, Brier score and goal error. In-sample tuning on these same matches would overstate performance.\n\n**Limitations:** Data availability varies by league, free plan and season. Small samples, lineup changes, correlated matches and model miscalibration can make predictions inaccurate. No score can be guaranteed.''')
 st.divider()
 st.caption('For information and research only. Probabilities are model estimates, not betting advice or guaranteed results.')
 
-with tabs[6]:
-    st.subheader('Choose the two matches for your exact-score double')
-    st.caption('Choose two different matches with verified historical results. Worldwide fixtures without sufficient model data cannot be assigned invented probabilities.')
-    if len(chosen_rows)>=2:
-        pair_options={fixture_label(r):r for r in chosen_rows}
-        pair_names=list(pair_options)
-        first_name=st.selectbox('Match 1',pair_names,key='manual_double_first')
-        second_names=[name for name in pair_names if name!=first_name]
-        second_name=st.selectbox('Match 2',second_names,key='manual_double_second')
-        first=pair_options[first_name]
-        second=pair_options[second_name]
-        manual_options=[]
-        for h1,a1,p1 in first['result']['scores'][:10]:
-            for h2,a2,p2 in second['result']['scores'][:10]:
-                manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
-                    'P1':p1,'P2':p2,'Joint':p1*p2})
-        manual_options.sort(key=lambda o:o['Joint'],reverse=True)
-        st.markdown('**Top five exact-score doubles for your two chosen matches**')
-        st.write(f"**Match 1:** {first_name}")
-        st.write(f"**Match 2:** {second_name}")
-        manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
-            'Match 2 score':o['Score 2'],'Match 1 probability':f"{o['P1']:.2%}",
-            'Match 2 probability':f"{o['P2']:.2%}",
-            'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
-        st.dataframe(manual_df,hide_index=True,use_container_width=True)
-        st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
-                           'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
-    else:
-        st.info('Select at least two fixtures in the match selector above to choose your own double.')
-    st.divider()
-    st.subheader('Five model-ranked exact-score doubles from your selected fixtures')
-    st.caption('An exact-score double requires BOTH matches to finish at the specified scores. These probabilities are usually low; they are estimates, not guarantees.')
-    if len(chosen_rows)<2:
-        st.info('Select at least two upcoming modelled matches above. Increase Upcoming days or choose more competitions if necessary.')
-    else:
-        options=[]
-        for a,b in combinations(chosen_rows,2):
-            # Explore the top five scorelines for each match rather than assuming the most likely score is certain.
-            for ha,aa,pa in a['result']['scores'][:5]:
-                for hb,ab,pb in b['result']['scores'][:5]:
-                    options.append({'Match 1':fixture_label(a),'Score 1':f'{ha}-{aa}',
-                                    'Match 2':fixture_label(b),'Score 2':f'{hb}-{ab}',
-                                    'Match 1 probability':pa,'Match 2 probability':pb,
-                                    'Joint probability':pa*pb})
-        options.sort(key=lambda x:x['Joint probability'],reverse=True)
-        # Prefer five distinct match pairs when available, not five variants of one pair.
-        best=[];seen=set()
-        for o in options:
-            pair=(o['Match 1'],o['Match 2'])
-            if pair not in seen:
-                best.append(o);seen.add(pair)
-            if len(best)==5:break
-        if len(best)<5:
+if view in ['doubles']:
+    with tabs[6]:
+        st.subheader('Choose the two matches for your exact-score double')
+        st.caption('Choose two different matches with verified historical results. Worldwide fixtures without sufficient model data cannot be assigned invented probabilities.')
+        if len(chosen_rows)>=2:
+            pair_options={fixture_label(r):r for r in chosen_rows}
+            pair_names=list(pair_options)
+            first_name=st.selectbox('Match 1',pair_names,key='manual_double_first')
+            second_names=[name for name in pair_names if name!=first_name]
+            second_name=st.selectbox('Match 2',second_names,key='manual_double_second')
+            first=pair_options[first_name]
+            second=pair_options[second_name]
+            manual_options=[]
+            for h1,a1,p1 in first['result']['scores'][:10]:
+                for h2,a2,p2 in second['result']['scores'][:10]:
+                    manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
+                        'P1':p1,'P2':p2,'Joint':p1*p2})
+            manual_options.sort(key=lambda o:o['Joint'],reverse=True)
+            st.markdown('**Top five exact-score doubles for your two chosen matches**')
+            st.write(f"**Match 1:** {first_name}")
+            st.write(f"**Match 2:** {second_name}")
+            manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
+                'Match 2 score':o['Score 2'],'Match 1 probability':f"{o['P1']:.2%}",
+                'Match 2 probability':f"{o['P2']:.2%}",
+                'Double probability':f"{o['Joint']:.3%}"} for i,o in enumerate(manual_options[:5])])
+            st.dataframe(manual_df,hide_index=True,use_container_width=True)
+            st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
+                               'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
+        else:
+            st.info('Select at least two fixtures in the match selector above to choose your own double.')
+        st.divider()
+        st.subheader('Five model-ranked exact-score doubles from your selected fixtures')
+        st.caption('An exact-score double requires BOTH matches to finish at the specified scores. These probabilities are usually low; they are estimates, not guarantees.')
+        if len(chosen_rows)<2:
+            st.info('Select at least two upcoming modelled matches above. Increase Upcoming days or choose more competitions if necessary.')
+        else:
+            options=[]
+            for a,b in combinations(chosen_rows,2):
+                # Explore the top five scorelines for each match rather than assuming the most likely score is certain.
+                for ha,aa,pa in a['result']['scores'][:5]:
+                    for hb,ab,pb in b['result']['scores'][:5]:
+                        options.append({'Match 1':fixture_label(a),'Score 1':f'{ha}-{aa}',
+                                        'Match 2':fixture_label(b),'Score 2':f'{hb}-{ab}',
+                                        'Match 1 probability':pa,'Match 2 probability':pb,
+                                        'Joint probability':pa*pb})
+            options.sort(key=lambda x:x['Joint probability'],reverse=True)
+            # Prefer five distinct match pairs when available, not five variants of one pair.
+            best=[];seen=set()
             for o in options:
-                if o not in best:best.append(o)
+                pair=(o['Match 1'],o['Match 2'])
+                if pair not in seen:
+                    best.append(o);seen.add(pair)
                 if len(best)==5:break
-        display=pd.DataFrame([{'Rank':i+1,'Match 1':o['Match 1'],'Exact score 1':o['Score 1'],
-            'Match 2':o['Match 2'],'Exact score 2':o['Score 2'],
-            'Score 1 probability':f"{o['Match 1 probability']:.2%}",
-            'Score 2 probability':f"{o['Match 2 probability']:.2%}",
-            'Combined probability':f"{o['Joint probability']:.3%}"} for i,o in enumerate(best)])
-        st.dataframe(display,hide_index=True,use_container_width=True)
-        st.download_button('Download my five score doubles',display.to_csv(index=False).encode(),'exact_score_doubles.csv','text/csv')
-        st.caption('Joint probabilities multiply two modelled score probabilities assuming independence. Matches may be correlated, and the model may be miscalibrated.')
-    st.subheader('Detailed home/away form and head-to-head')
-    for r in chosen_rows:
-        m,p=r['fixture'],r['result']
-        past=r.get('past',histories.get(r['league'],[]))
-        hid=m['homeTeam']['id'];aid=m['awayTeam']['id']
-        def form(team_id,venue=None,n=10):
-            games=[]
-            for g in past:
-                if g.get('status')!='FINISHED':continue
-                h=g.get('homeTeam') or {};a=g.get('awayTeam') or {}
-                if team_id not in (h.get('id'),a.get('id')):continue
-                ishome=h.get('id')==team_id
-                if venue=='home' and not ishome:continue
-                if venue=='away' and ishome:continue
-                sc=(g.get('score') or {}).get('fullTime') or {}
-                x=sc.get('home');y=sc.get('away')
-                if not isinstance(x,int) or not isinstance(y,int):continue
-                gf,ga=(x,y) if ishome else (y,x)
-                games.append((g.get('utcDate',''),gf,ga))
-            games.sort(reverse=True)
-            games=games[:n]
-            return {'Matches':len(games),'Wins':sum(x>y for _,x,y in games),
-                    'Draws':sum(x==y for _,x,y in games),'Losses':sum(x<y for _,x,y in games),
-                    'Goals for':sum(x for _,x,y in games),'Goals against':sum(y for _,x,y in games),
-                    'Last results':', '.join(f'{x}-{y}' for _,x,y in games)}
-        with st.expander(f"Research: {fixture_label(r)}"):
-            st.write('**Last 10 matches and venue-specific form**')
-            st.dataframe(pd.DataFrame([
-                {'Team':m['homeTeam'].get('name'),'Split':'Overall',**form(hid)},
-                {'Team':m['homeTeam'].get('name'),'Split':'Home',**form(hid,'home')},
-                {'Team':m['awayTeam'].get('name'),'Split':'Overall',**form(aid)},
-                {'Team':m['awayTeam'].get('name'),'Split':'Away',**form(aid,'away')}]),hide_index=True,use_container_width=True)
-            h2h=[]
-            for g in past:
-                gh=(g.get('homeTeam') or {}).get('id');ga=(g.get('awayTeam') or {}).get('id')
-                if {gh,ga}!={hid,aid} or g.get('status')!='FINISHED':continue
-                sc=(g.get('score') or {}).get('fullTime') or {}
-                if isinstance(sc.get('home'),int) and isinstance(sc.get('away'),int):
-                    h2h.append({'Date':g.get('utcDate','')[:10],
-                        'Home':g['homeTeam'].get('name'),'Away':g['awayTeam'].get('name'),
-                        'Final score':f"{sc['home']}-{sc['away']}"})
-            if h2h:st.dataframe(pd.DataFrame(sorted(h2h,key=lambda x:x['Date'],reverse=True)[:10]),hide_index=True,use_container_width=True)
-            else:st.info('No verified head-to-head games in the accessible competition history.')
-            st.write(f"**Modelled expected goals:** {p['home_xg']:.2f} home / {p['away_xg']:.2f} away")
-            st.write(f"**1X2:** Home {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}")
-            st.dataframe(pd.DataFrame([{'Exact score':f'{h}-{a}','Estimated probability':f'{q:.2%}'} for h,a,q in p['scores'][:10]]),hide_index=True,use_container_width=True)
-            for note in context_review(m,p,past):st.write('• '+note)
-    st.caption('Home/away and H2H use only accessible historical match data. Injuries, lineups, weather, travel and external scouting are NOT verified by this feature.')
+            if len(best)<5:
+                for o in options:
+                    if o not in best:best.append(o)
+                    if len(best)==5:break
+            display=pd.DataFrame([{'Rank':i+1,'Match 1':o['Match 1'],'Exact score 1':o['Score 1'],
+                'Match 2':o['Match 2'],'Exact score 2':o['Score 2'],
+                'Score 1 probability':f"{o['Match 1 probability']:.2%}",
+                'Score 2 probability':f"{o['Match 2 probability']:.2%}",
+                'Combined probability':f"{o['Joint probability']:.3%}"} for i,o in enumerate(best)])
+            st.dataframe(display,hide_index=True,use_container_width=True)
+            st.download_button('Download my five score doubles',display.to_csv(index=False).encode(),'exact_score_doubles.csv','text/csv')
+            st.caption('Joint probabilities multiply two modelled score probabilities assuming independence. Matches may be correlated, and the model may be miscalibrated.')
+        st.subheader('Detailed home/away form and head-to-head')
+        for r in chosen_rows:
+            m,p=r['fixture'],r['result']
+            past=r.get('past',histories.get(r['league'],[]))
+            hid=m['homeTeam']['id'];aid=m['awayTeam']['id']
+            def form(team_id,venue=None,n=10):
+                games=[]
+                for g in past:
+                    if g.get('status')!='FINISHED':continue
+                    h=g.get('homeTeam') or {};a=g.get('awayTeam') or {}
+                    if team_id not in (h.get('id'),a.get('id')):continue
+                    ishome=h.get('id')==team_id
+                    if venue=='home' and not ishome:continue
+                    if venue=='away' and ishome:continue
+                    sc=(g.get('score') or {}).get('fullTime') or {}
+                    x=sc.get('home');y=sc.get('away')
+                    if not isinstance(x,int) or not isinstance(y,int):continue
+                    gf,ga=(x,y) if ishome else (y,x)
+                    games.append((g.get('utcDate',''),gf,ga))
+                games.sort(reverse=True)
+                games=games[:n]
+                return {'Matches':len(games),'Wins':sum(x>y for _,x,y in games),
+                        'Draws':sum(x==y for _,x,y in games),'Losses':sum(x<y for _,x,y in games),
+                        'Goals for':sum(x for _,x,y in games),'Goals against':sum(y for _,x,y in games),
+                        'Last results':', '.join(f'{x}-{y}' for _,x,y in games)}
+            with st.expander(f"Research: {fixture_label(r)}"):
+                st.write('**Last 10 matches and venue-specific form**')
+                st.dataframe(pd.DataFrame([
+                    {'Team':m['homeTeam'].get('name'),'Split':'Overall',**form(hid)},
+                    {'Team':m['homeTeam'].get('name'),'Split':'Home',**form(hid,'home')},
+                    {'Team':m['awayTeam'].get('name'),'Split':'Overall',**form(aid)},
+                    {'Team':m['awayTeam'].get('name'),'Split':'Away',**form(aid,'away')}]),hide_index=True,use_container_width=True)
+                h2h=[]
+                for g in past:
+                    gh=(g.get('homeTeam') or {}).get('id');ga=(g.get('awayTeam') or {}).get('id')
+                    if {gh,ga}!={hid,aid} or g.get('status')!='FINISHED':continue
+                    sc=(g.get('score') or {}).get('fullTime') or {}
+                    if isinstance(sc.get('home'),int) and isinstance(sc.get('away'),int):
+                        h2h.append({'Date':g.get('utcDate','')[:10],
+                            'Home':g['homeTeam'].get('name'),'Away':g['awayTeam'].get('name'),
+                            'Final score':f"{sc['home']}-{sc['away']}"})
+                if h2h:st.dataframe(pd.DataFrame(sorted(h2h,key=lambda x:x['Date'],reverse=True)[:10]),hide_index=True,use_container_width=True)
+                else:st.info('No verified head-to-head games in the accessible competition history.')
+                st.write(f"**Modelled expected goals:** {p['home_xg']:.2f} home / {p['away_xg']:.2f} away")
+                st.write(f"**1X2:** Home {p['home_win']:.1%} · Draw {p['draw']:.1%} · Away {p['away_win']:.1%}")
+                st.dataframe(pd.DataFrame([{'Exact score':f'{h}-{a}','Estimated probability':f'{q:.2%}'} for h,a,q in p['scores'][:10]]),hide_index=True,use_container_width=True)
+                for note in context_review(m,p,past):st.write('• '+note)
+        st.caption('Home/away and H2H use only accessible historical match data. Injuries, lineups, weather, travel and external scouting are NOT verified by this feature.')
