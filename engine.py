@@ -3,7 +3,7 @@ import math
 from datetime import datetime, timezone
 import numpy as np
 
-MODEL_VERSION = "venue-form-ensemble-v2"
+MODEL_VERSION = "venue-form-ensemble-v3-quality-shrink"
 
 def finished(match):
     score = match.get('score') or {}
@@ -128,6 +128,12 @@ def predict(fixture,history,max_goals=10):
     lam_a_simple=.5*(away_for+home_against)
     lam_h=clamp(.55*lam_h_strength+.45*lam_h_simple)
     lam_a=clamp(.55*lam_a_strength+.45*lam_a_simple)
+    # Conservative uncertainty regularization for thin historical samples.
+    # This is a candidate change requiring walk-forward validation.
+    evidence=min(len(hg),len(ag),len(hv)+2,len(av)+2)
+    weight=evidence/(evidence+8.0)
+    lam_h=clamp(weight*lam_h+(1-weight)*base_h)
+    lam_a=clamp(weight*lam_a+(1-weight)*base_a)
     # Recent form / venue / H2H are visible evidence, not arbitrarily
     # applied extra multipliers that could double-count goals.
     matrix=_grid(lam_h,lam_a,max_goals)
@@ -145,6 +151,8 @@ def predict(fixture,history,max_goals=10):
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
             'history_count':len(past),'model_version':MODEL_VERSION,
+            'evidence_weight':round(weight,3),
+            'uncertainty_note':'Sparse-sample estimates are shrunk toward league scoring averages; improvement not yet validated.',
             'methods':{'strength':(round(lam_h_strength,3),round(lam_a_strength,3)),
                        'attack_defence':(round(lam_h_simple,3),round(lam_a_simple,3))},
             'data_quality':'moderate' if min(len(hg),len(ag),len(hv),len(av))>=8 else 'limited'}
