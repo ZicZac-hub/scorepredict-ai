@@ -437,11 +437,34 @@ for m in worldwide_rows:
                          'model':match,'event':m})
 
 # Allow the user to select fixtures explicitly; no match is invented.
+# Add every successfully researched worldwide fixture to the shared prediction pool.
+# This makes Pro results available to prediction cards and doubles, not just the explorer.
+for _item in discoverable:
+    _name=_item['name']
+    _cached=st.session_state.get('worldwide_models',{}).get(_name,{})
+    _model=_cached.get('row') or _item.get('model')
+    if _model and _model.get('result') and not any(
+        x['fixture'].get('provider')==_model['fixture'].get('provider') and
+        x['fixture'].get('id')==_model['fixture'].get('id') for x in rows):
+        rows.append(_model)
+rows.sort(key=lambda r:r['kickoff'])
 eligible=[r for r in rows if r.get('result')]
 def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {r['kickoff'][:16]} UTC"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
+st.subheader('📅 All available fixtures for the selected date')
+st.caption('Includes every fixture returned by the connected worldwide feeds, even if no prediction is ready. API coverage is not the same as every football match in existence.')
+if discoverable:
+    _all_fixtures=[{'Kickoff (Sydney)':item['event']['local'].strftime('%d %b %I:%M %p'),
+                    'Home':item['event']['home'],'Away':item['event']['away'],
+                    'League':item['event'].get('league',''),
+                    'Country':item['event'].get('country','')} for item in discoverable]
+    st.dataframe(pd.DataFrame(_all_fixtures),hide_index=True,use_container_width=True,
+                 height=min(560,80+len(_all_fixtures)*35))
+    st.caption(f'{len(_all_fixtures)} available worldwide fixtures · Select a match below for automatic Pro analysis.')
+else:
+    st.info('No fixtures were returned for the selected date. Check the provider warnings and date range.')
 st.subheader('🌍 Worldwide Match Explorer')
 st.caption('Research checks available authorised football results feeds. When history is insufficient, the app offers public-web research links. External results are not silently treated as verified model data.')
 worldwide_options={item['name']:item for item in discoverable}
