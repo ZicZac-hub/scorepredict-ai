@@ -499,7 +499,23 @@ if _tomorrow_ready:
 <div style="font-size:clamp(32px,9vw,52px);font-weight:900;color:#fff;line-height:1.1">{_hh} – {_aa}</div>
 <div style="font-size:15px;color:#e2d6ff;margin-top:8px">Exact-score estimate: {_pp:.1%} · {_hero_escape.escape(str(_featured.get('league','Football')))}</div>"""
 else:
-    _hero_title="Tomorrow’s Game of the Day<div style='font-size:17px;font-weight:500;margin-top:12px'>Awaiting verified Pro score analysis</div>"
+    _tomorrow_events=[item for item in discoverable
+                      if item['event']['local'].date()==_tomorrow_date]
+    _tomorrow_api=[item for item in _tomorrow_events
+                   if item['event'].get('source')=='API-Football']
+    _failures=[_auto_cache.get(item['name'],{}).get('error')
+               for item in _tomorrow_api if _auto_cache.get(item['name'],{}).get('error')]
+    if _tomorrow_api and _failures:
+        _reason='No verified score available for '+str(len(_tomorrow_api))+' API-Football fixtures'
+    elif _tomorrow_api:
+        _reason='Researching tomorrow’s fixtures · '+str(len(_tomorrow_api))+' available'
+    elif _tomorrow_events:
+        _reason=str(len(_tomorrow_events))+' fixtures found · No compatible Pro history yet'
+    else:
+        _reason='No tomorrow fixtures returned by connected feeds'
+    _hero_title="Tomorrow’s Game of the Day<div style='font-size:16px;font-weight:500;margin-top:12px'>"+_hero_escape.escape(_reason)+"</div>"
+    if _failures:
+        st.caption('Tomorrow Pro research diagnostics: '+str(_failures[0])[:230])
 _hero_slot.markdown(_hero_html.replace("Today's Football<br>Predictions",_hero_title),unsafe_allow_html=True)
 def fixture_label(r):
     m=r['fixture']
@@ -1097,6 +1113,7 @@ with active_page_slot:
     if view == 'home':
         st.subheader('🏆 Tomorrow’s Game of the Day')
         st.caption('One match for tomorrow in Sydney time, ranked by model evidence and probability. Exact scores are estimates, not guaranteed results.')
+        st.caption(f'Available tomorrow: {len(_tomorrow_events) if not _tomorrow_ready else len(_tomorrow_ready)} fixtures checked for the featured model. Modelled fixtures from other dates do not qualify.')
         def _sydney_day(row):
             try:
                 return datetime.fromisoformat(row['kickoff'].replace('Z','+00:00')).astimezone(SYDNEY).date()
