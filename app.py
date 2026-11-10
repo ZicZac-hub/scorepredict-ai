@@ -473,44 +473,6 @@ with tabs[6]:
             st.dataframe(pd.DataFrame([{'Exact score':f'{h}-{a}','Estimated probability':f'{q:.2%}'} for h,a,q in p['scores'][:10]]),hide_index=True,use_container_width=True)
             for note in context_review(m,p,past):st.write('• '+note)
     st.caption('Home/away and H2H use only accessible historical match data. Injuries, lineups, weather, travel and external scouting are NOT verified by this feature.')
-))].copy()
-            st.markdown('### 📊 Prediction Accuracy Dashboard')
-            total=len(archive)
-            resolved=len(completed)
-            if resolved:
-                def outcome(score):
-                    try:
-                        h,a=map(int,str(score).split('-'))
-                        return 'Home' if h>a else 'Away' if a>h else 'Draw'
-                    except (ValueError,TypeError):
-                        return None
-                completed['predicted_result']=completed['predicted_score'].apply(outcome)
-                completed['actual_result']=completed['actual_score'].apply(outcome)
-                completed['result_hit']=completed['predicted_result']==completed['actual_result']
-                def in_top_five(r):
-                    try:
-                        scores=json.loads(r['scores_json'] or '[]')
-                        top={f"{int(item[0])}-{int(item[1])}" for item in scores[:5]}
-                        return r['actual_score'] in top
-                    except (ValueError,TypeError,IndexError):
-                        return False
-                completed['top5_hit']=completed.apply(in_top_five,axis=1)
-                metrics=st.columns(4)
-                metrics[0].metric('Completed matches',resolved)
-                metrics[1].metric('Exact-score accuracy',f"{completed['exact_hit'].sum()/resolved:.1%}")
-                metrics[2].metric('1X2 result accuracy',f"{completed['result_hit'].sum()/resolved:.1%}")
-                metrics[3].metric('Top-five score hit rate',f"{completed['top5_hit'].sum()/resolved:.1%}")
-                st.caption(f"{total-resolved} saved forecasts awaiting verified results · Rates are calculated from {resolved} completed saved forecasts, not all {total} saved entries.")
-                st.markdown('**Verified match-by-match results**')
-                details=completed[['kickoff','league','home','away','predicted_score','actual_score','exact_hit','result_hit','top5_hit']].copy()
-                details.columns=['Kickoff (UTC)','League','Home','Away','Predicted','Final','Exact hit','1X2 hit','Top-5 hit']
-                st.dataframe(details,hide_index=True,use_container_width=True)
-                st.download_button('Download verified accuracy CSV',details.to_csv(index=False).encode(),'prediction_accuracy.csv','text/csv')
-            else:
-                st.info(f'{total} forecasts saved, but none has a verified final score yet. Accuracy cannot be calculated until results are reconciled.')
-            st.caption('Exact-score doubles are not tracked here yet: the current archive saves individual match predictions, not the selected two-match combinations.')
-            st.dataframe(archive.drop(columns=['scores_json']),hide_index=True,use_container_width=True)
-            st.download_button('Download prediction archive CSV',archive.to_csv(index=False).encode(),'prediction_archive.csv','text/csv')
 with tabs[5]:
     st.markdown('''**Mathematical model:** Recency-weighted goals scored/conceded, venue-specific shrinkage, league home/away baselines, regularized expected-goal estimates and a normalized independent Poisson score matrix.\n\n**Human-style analysis:** Transparent rule-based commentary on relative strengths, sample sizes and uncertainty. It does **not** use an LLM, live injuries, verified lineups, bookmaker odds or premium xG data.\n\n**Backtesting:** Walk-forward evaluation of exact scores, match outcomes, Brier score and goal error. In-sample tuning on these same matches would overstate performance.\n\n**Limitations:** Data availability varies by league, free plan and season. Small samples, lineup changes, correlated matches and model miscalibration can make predictions inaccurate. No score can be guaranteed.''')
 st.divider()
