@@ -24,3 +24,24 @@ def score_coverage(rows,score1="Score 1",score2="Score 2"):
     return {"match_1_scores":len({r[score1] for r in rows}),
             "match_2_scores":len({r[score2] for r in rows}),
             "distinct_exact_score_pairs":len({(r[score1],r[score2]) for r in rows})}
+
+def select_balanced(options,limit=5,diversity_weight=0.15,score1="Score 1",score2="Score 2",probability="Joint"):
+    """Greedy probability/diversity tradeoff. Zero weight equals top-probability ranking.
+
+    Each newly covered leg score receives a bonus relative to the maximum
+    joint probability in the candidate pool; values are fixed before testing.
+    """
+    ordered=sorted(options,key=lambda x:-float(x[probability]))
+    if not ordered or limit<=0:return []
+    maximum=max(float(x[probability]) for x in ordered)
+    selected=[];seen1=set();seen2=set()
+    while ordered and len(selected)<limit:
+        index=max(range(len(ordered)),key=lambda i:(
+            float(ordered[i][probability])/maximum
+            +float(diversity_weight)*(int(ordered[i][score1] not in seen1)
+                                    +int(ordered[i][score2] not in seen2)),
+            float(ordered[i][probability]),-i))
+        pick=ordered.pop(index)
+        selected.append(pick)
+        seen1.add(pick[score1]);seen2.add(pick[score2])
+    return selected
