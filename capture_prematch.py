@@ -11,6 +11,7 @@ from pathlib import Path
 import requests
 from api_football import LEAGUES, _convert, ROOT
 from engine import predict
+from prospective_ensemble import ensemble_prediction
 from team_news import pre_match_report
 
 CODES = ("PL", "PD", "BL1", "SA", "FL1", "CL", "EL", "DED", "PPL", "BSA", "ELC")
@@ -76,17 +77,18 @@ def main():
                 if not forecast:
                     diagnostics['prediction_unavailable'] += 1
                     continue
-                candidates.append((kickoff, fixture, forecast, code))
+                candidates.append((kickoff, fixture, forecast, code, history))
             except Exception as exc:
                 diagnostics['prediction_errors'].append({'fixture_id': fixture['id'], 'error': str(exc)[:200]})
     candidates.sort(key=lambda item: item[0])
     diagnostics["candidate_predictions"] = len(candidates)
     records = []
-    for kickoff, fixture, forecast, code in candidates[:MAX_FIXTURES]:
+    for kickoff, fixture, forecast, code, history in candidates[:MAX_FIXTURES]:
         try:
             report = pre_match_report(key, fixture, now=now)
         except Exception as exc:
             report = {"lineups": [], "injuries": [], "warnings": ["Team-news request failed: " + str(exc)[:180]]}
+        challenger = ensemble_prediction(fixture, history)
         records.append({
             "captured_at_utc": now.isoformat(),
             "fixture_id": fixture["id"], "competition": code,
@@ -94,6 +96,7 @@ def main():
             "home_team": fixture["homeTeam"]["name"],
             "away_team": fixture["awayTeam"]["name"],
             "forecast_model": forecast.get("model_version", "baseline"),
+            "prospective_challenger": challenger,
             "predicted_score": list(forecast["scores"][0][:2]),
             "predicted_score_probability": forecast["scores"][0][2],
             "predicted_outcome_probabilities": {
