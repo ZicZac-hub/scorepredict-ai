@@ -2,10 +2,19 @@
 Run: python -m unittest test_engine_recency.py
 """
 import unittest
-from engine import _stats, predict
+from engine import _stats, predict, _grid
 
 
 class RecencyTests(unittest.TestCase):
+    def test_dixon_coles_score_matrix_normalized_and_nonnegative(self):
+        baseline = _grid(1.4, 1.1, rho=0.0)
+        candidate = _grid(1.4, 1.1, rho=-0.08)
+        self.assertAlmostEqual(float(candidate.sum()), 1.0, places=10)
+        self.assertGreaterEqual(float(candidate.min()), 0.0)
+        self.assertGreater(float(candidate[0, 0]), float(baseline[0, 0]))
+        self.assertGreater(float(candidate[1, 1]), float(baseline[1, 1]))
+        self.assertLess(float(candidate[1, 0]), float(baseline[1, 0]))
+
     def test_calendar_gap_changes_weights(self):
         games=[
             {'date':'2026-10-30T12:00:00Z','gf':3,'ga':0,'result':'W'},
