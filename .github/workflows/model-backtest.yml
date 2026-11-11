@@ -6,6 +6,7 @@ on:
     paths:
       - 'engine.py'
       - 'backtest.py'
+      - 'calibration_backtest.py'
       - 'fetch_backtest_history.py'
       - 'test_engine_recency.py'
       - '.github/workflows/model-backtest.yml'
@@ -25,7 +26,7 @@ jobs:
       - name: Run model regression tests
         run: python -m unittest -v test_engine_recency.py
       - name: Validate backtest module
-        run: python -m py_compile engine.py backtest.py fetch_backtest_history.py
+        run: python -m py_compile engine.py backtest.py calibration_backtest.py fetch_backtest_history.py
       - name: Fetch verified multi-season results using API-Football Pro
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -38,6 +39,8 @@ jobs:
       - name: Run historical backtest
         run: |
           python backtest.py data/backtest_finished_matches.json --output backtest_results.json
+      - name: Calibrate score probabilities and evaluate untouched 2026 holdout
+        run: python calibration_backtest.py data/backtest_finished_matches.json --cutoff-year 2026 --output calibration_results.json
       - name: Print model comparison
         run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps({'summary':r['summary'],'by_league_year':r['by_league_year']},indent=2))"
       - uses: actions/upload-artifact@v4
@@ -45,4 +48,5 @@ jobs:
           name: ziczac-backtest-results
           path: |
             backtest_results.json
+            calibration_results.json
             data/backtest_finished_matches.json
