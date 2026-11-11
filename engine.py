@@ -157,6 +157,57 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
         ha = stabilized(home_against, base_a, hs['effective_played'])
         lam_h = clamp(base_h * math.sqrt((hf / base_h) * (aa / base_h)))
         lam_a = clamp(base_a * math.sqrt((af / base_a) * (ha / base_a)))
+    # Experimental opponent-adjusted estimator. For each recent match,
+    # normalize goals scored by the opponent's historical defensive rate,
+    # and goals conceded by its attacking rate. Opponent ratings are computed
+    # using only matches strictly BEFORE that historical match (no leakage).
+    # Shrink the adjustment towards 1 to avoid noisy small samples.
+    if variant == 'opponent_adjusted':
+        chronological = list(reversed(past))
+        def adjusted(team_id, venue, scored_prior, conceded_prior):
+            team_games = [m for m in chronological if
+                          (m.get('homeTeam') or {}).get('id') == team_id or
+                          (m.get('awayTeam') or {}).get('id') == team_id]
+            team_games = team_games[-10:]
+            weighted_for = []
+            weighted_against = []
+            for match in team_games:
+                d = _date(match['utcDate'])
+                home = (match.get('homeTeam') or {}).get('id') == team_id
+                opp = (match.get('awayTeam') if home else match.get('homeTeam') or {}).get('id')
+                prior = [m for m in chronological if _date(m['utcDate']) < d]
+                opp_games = _games(list(reversed(prior)), opp, limit=10)
+                if len(opp_games) < 5:
+                    continue
+                opp_stats = _stats(opp_games, match['utcDate'])
+                league_h, league_a = league_baselines(prior)
+                reference_for = league_h if home else league_a
+                reference_against = league_a if home else league_h
+                # Effective sample shrinks opponent ratios to neutral.
+                n = opp_stats['effective_played']
+                opp_def = (n * opp_stats['conceded'] + 8 * reference_for) / (n + 8)
+                opp_att = (n * opp_stats['scored'] + 8 * reference_against) / (n + 8)
+                goals = match['score']['fullTime']
+                gf, ga = (goals['home'], goals['away']) if home else (goals['away'], goals['home'])
+                age = max(0.0, (kickoff - d).total_seconds()/86400.0) if kickoff else 0
+                w = 2 ** (-age / 180.0)
+                weighted_for.append((min(gf,5) * reference_for / max(.4, opp_def), w))
+                weighted_against.append((min(ga,5) * reference_against / max(.4, opp_att), w))
+            if len(weighted_for) < 3:
+                return scored_prior, conceded_prior
+            def mean(pairs):
+                return sum(v*w for v,w in pairs) / sum(w for _,w in pairs)
+            n = len(weighted_for)
+            return ((n*mean(weighted_for)+8*scored_prior)/(n+8),
+                    (n*mean(weighted_against)+8*conceded_prior)/(n+8))
+        # Define kickoff here as this candidate needs it before regularization.
+        kickoff = _date(fixture.get('utcDate'))
+        hf, ha = adjusted(home_id, 'home', home_for, home_against)
+        af, aa = adjusted(away_id, 'away', away_for, away_against)
+        lam_h = clamp(.55 * base_h * (.65+.35*hf/base_h) * (.65+.35*aa/base_h)
+                      + .45 * (hf+aa)/2)
+        lam_a = clamp(.55 * base_a * (.65+.35*af/base_a) * (.65+.35*ha/base_a)
+                      + .45 * (af+ha)/2)
     # Conservative uncertainty regularization for thin historical samples.
     # This is a candidate change requiring walk-forward validation.
     kickoff=_date(fixture.get('utcDate'))
@@ -192,7 +243,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':('team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
+            'history_count':len(past),'model_version':('opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
             'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
