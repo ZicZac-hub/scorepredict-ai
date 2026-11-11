@@ -1203,6 +1203,8 @@ with active_page_slot:
                     continue
                 if saved_dt < kickoff_dt and kickoff_dt < now_utc and saved['actual_score'] is None:
                     due.append(saved)
+            # Check most recently completed fixtures first, not the oldest 40 pending rows.
+            due.sort(key=lambda item: item.get('kickoff') or '', reverse=True)
             if st.button('🔄 Check completed results',key='finished_refresh',type='primary'):
                 if not secondary_key:
                     st.warning('API_FOOTBALL_KEY is required to verify finished scores.')
@@ -1246,6 +1248,37 @@ with active_page_slot:
                                   'Predicted score':predicted,'Actual score':str(actual),
                                   'League':saved.get('league',''),
                                   'Kickoff (Sydney)':sydney_kickoff(saved.get('kickoff',''))})
+            # Permanent GitHub-backed pre-match evidence survives Streamlit restarts.
+            # Merge it with local SQLite results, deduplicating by fixture ID when possible.
+            try:
+                from persist_prematch import earliest_snapshots, load_json, RESULTS as _verified_path
+                _permanent_results=load_json(_verified_path,{})
+                _originals=earliest_snapshots()
+                _seen_ids={str(item['fixture_id']) for item in archived
+                           if item.get('actual_score') and item.get('fixture_id') is not None}
+                for _fid,_original in _originals.items():
+                    if str(_fid) in _seen_ids:
+                        continue
+                    _final=_permanent_results.get(str(_fid))
+                    if not _final:
+                        continue
+                    _pred=_original.get('predicted_score')
+                    if not isinstance(_pred,list) or len(_pred)!=2:
+                        continue
+                    _pred_text='-'.join(map(str,_pred))
+                    _actual_text=f"{_final['home_goals']}-{_final['away_goals']}"
+                    _home=str(_original.get('home_team') or 'Unknown home team')
+                    _away=str(_original.get('away_team') or 'Unknown away team')
+                    completed.append({'Status':'🟢 HIT' if _pred_text==_actual_text else '🔴 ✕',
+                        'Home team':_home,'Away team':_away,
+                        'Match':_home+' vs '+_away,'Predicted score':_pred_text,
+                        'Actual score':_actual_text,'League':_original.get('competition',''),
+                        'Kickoff (Sydney)':sydney_kickoff(_original.get('kickoff_utc','')),
+                        '_kickoff_sort':_original.get('kickoff_utc','')})
+            except (OSError,ValueError,TypeError,KeyError) as _archive_error:
+                st.caption('Permanent prediction archive temporarily unavailable: '+str(_archive_error)[:120])
+            # Show the newest completed matches at the top.
+            completed.sort(key=lambda item: item.get('_kickoff_sort') or '', reverse=True)
             hits=sum(x['Status']=='🟢 HIT' for x in completed)
             # Score-distribution diagnostics: the expected number of top-score
             # hits is the sum of probabilities saved before each match.
