@@ -137,6 +137,11 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
     lam_a_simple=.5*(away_for+home_against)
     lam_h=clamp(.55*lam_h_strength+.45*lam_h_simple)
     lam_a=clamp(.55*lam_a_strength+.45*lam_a_simple)
+    # Experimental venue-adjusted arithmetic estimator; retain existing
+    # baseline for production until the chronological holdout is reviewed.
+    if variant == 'venue_arithmetic':
+        lam_h=clamp(.70*lam_h_simple+.30*lam_h_strength)
+        lam_a=clamp(.70*lam_a_simple+.30*lam_a_strength)
     # Conservative uncertainty regularization for thin historical samples.
     # This is a candidate change requiring walk-forward validation.
     kickoff=_date(fixture.get('utcDate'))
@@ -172,7 +177,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':('venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
+            'history_count':len(past),'model_version':('venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
             'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
