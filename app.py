@@ -1809,7 +1809,7 @@ with active_page_slot:
                                     if _game.get('status')!='FINISHED': continue
                                     _sc=(_game.get('score') or {}).get('fullTime') or {}
                                     if isinstance(_sc.get('home'),int) and isinstance(_sc.get('away'),int):
-                                        _finished[(str(_game.get('provider','')),str(_game.get('id')))]=f"{_sc['home']}-{_sc['away']}"
+                                        _finished[(str(_game.get('provider') or ('API-Football' if _game.get('competition',{}).get('code') in supported_codes() else 'football-data.org')),str(_game.get('id')))]=f"{_sc['home']}-{_sc['away']}"
                             _records=settle_doubles(conn,_finished)
                             _done=[x for x in _records if x['Status']!='Pending']
                             _won=sum(x['Status']=='Won' for x in _done)
