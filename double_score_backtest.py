@@ -7,9 +7,9 @@ original top-five joint-probability ranking against diversified five picks.
 import argparse,json,math
 from collections import defaultdict
 from engine import predict,finished,_date
-from double_score_selection import select_diversified,score_coverage
+from double_score_selection import select_diversified,select_balanced,score_coverage
 
-def evaluate(matches,year=2026,min_history=30):
+def evaluate(matches,year=2026,min_history=30,balanced_weight=0.15):
     ordered=sorted((m for m in matches if finished(m) and _date(m.get("utcDate"))),
                    key=lambda m:_date(m["utcDate"]))
     leagues=defaultdict(list)
@@ -30,20 +30,24 @@ def evaluate(matches,year=2026,min_history=30):
                      for h,v,pa in p["scores"][:10] for x,y,pb in q["scores"][:10]]
             original=sorted(options,key=lambda o:-o["Joint"])[:5]
             diverse=select_diversified(options,5)
+            balanced=select_balanced(options,5,diversity_weight=balanced_weight)
             actual=(f"{a['score']['fullTime']['home']}-{a['score']['fullTime']['away']}",
                     f"{b['score']['fullTime']['home']}-{b['score']['fullTime']['away']}")
             def hit(picks):return any((o["Score 1"],o["Score 2"])==actual for o in picks)
             records.append({"league":league,"first_fixture_id":a["id"],"second_fixture_id":b["id"],
                             "first_kickoff":a["utcDate"],"second_kickoff":b["utcDate"],
                             "actual_scores":list(actual),"top5_hit":hit(original),
-                            "diversified_hit":hit(diverse),
+                            "diversified_hit":hit(diverse),"balanced_hit":hit(balanced),
                             "top5_joint_probability_sum":sum(o["Joint"] for o in original),
                             "diversified_joint_probability_sum":sum(o["Joint"] for o in diverse),
+                            "balanced_joint_probability_sum":sum(o["Joint"] for o in balanced),
                             "top5_coverage":score_coverage(original),
-                            "diversified_coverage":score_coverage(diverse)})
+                            "diversified_coverage":score_coverage(diverse),
+                            "balanced_coverage":score_coverage(balanced)})
     n=len(records)
     old=sum(r["top5_hit"] for r in records)
     new=sum(r["diversified_hit"] for r in records)
+    balanced_wins=sum(r["balanced_hit"] for r in records)
     win=sum(r["diversified_hit"] and not r["top5_hit"] for r in records)
     lose=sum(r["top5_hit"] and not r["diversified_hit"] for r in records)
     d=win+lose
@@ -54,19 +58,27 @@ def evaluate(matches,year=2026,min_history=30):
     return {"holdout_year":year,"pairing":"Consecutive same-league fixtures, each used at most once; common history cutoff before both kickoffs",
             "pairs_evaluated":n,"original_top5_winning_pairs":old,
             "diversified_top5_winning_pairs":new,
+            "balanced_top5_winning_pairs":balanced_wins,"balanced_weight":balanced_weight,
+            "balanced_win_rate":balanced_wins/n if n else None,
+            "balanced_only_vs_original":sum(r["balanced_hit"] and not r["top5_hit"] for r in records),
+            "original_only_vs_balanced":sum(r["top5_hit"] and not r["balanced_hit"] for r in records),
             "original_win_rate":old/n if n else None,
             "diversified_win_rate":new/n if n else None,
             "diversified_only_wins":win,"original_only_wins":lose,
             "paired_exact_mcnemar_p":pval,
             "original_mean_joint_probability_coverage":mean("top5_joint_probability_sum"),
             "diversified_mean_joint_probability_coverage":mean("diversified_joint_probability_sum"),
+            "balanced_mean_joint_probability_coverage":mean("balanced_joint_probability_sum"),
             "original_mean_distinct_first_scores":coverage_mean("top5_coverage","match_1_scores"),
             "diversified_mean_distinct_first_scores":coverage_mean("diversified_coverage","match_1_scores"),
+            "balanced_mean_distinct_first_scores":coverage_mean("balanced_coverage","match_1_scores"),
+            "balanced_mean_distinct_second_scores":coverage_mean("balanced_coverage","match_2_scores"),
             "original_mean_distinct_second_scores":coverage_mean("top5_coverage","match_2_scores"),
             "diversified_mean_distinct_second_scores":coverage_mean("diversified_coverage","match_2_scores"),
             "by_league":{league:{"pairs":sum(r["league"]==league for r in records),
                                 "original_wins":sum(r["league"]==league and r["top5_hit"] for r in records),
-                                "diversified_wins":sum(r["league"]==league and r["diversified_hit"] for r in records)}
+                                "diversified_wins":sum(r["league"]==league and r["diversified_hit"] for r in records),
+                                "balanced_wins":sum(r["league"]==league and r["balanced_hit"] for r in records)}
                          for league in sorted(leagues)},
             "records":records,
             "note":"Five diversified combinations can have greater marginal score coverage but lower total joint probability. No selection tuned to holdout; no past predictions altered."}
