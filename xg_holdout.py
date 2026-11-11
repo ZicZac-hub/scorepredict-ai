@@ -9,7 +9,7 @@ import math
 from collections import defaultdict
 from engine import predict, finished, _date
 
-VARIANTS = ("baseline", "venue_arithmetic")
+VARIANTS = ("baseline", "venue_arithmetic", "team_strength")
 EPS = 1e-12
 
 def evaluate(matches, cutoff_year=2026, min_history=30):
@@ -56,7 +56,7 @@ def evaluate(matches, cutoff_year=2026, min_history=30):
             "overall":{v:summary(counts[("overall",v)]) for v in VARIANTS},
             "by_league":{league:{v:summary(counts[(league,v)]) for v in VARIANTS}
                          for league in sorted({key[0] for key in counts if key[0]!="overall"})},
-            "note":"Experimental fixed estimator, evaluated only on 2026 and later; earlier completed matches are used as historical context. No production model changed."}
+            "note":"Experimental fixed estimators, evaluated only on 2026 and later; earlier completed matches are used as historical context. No production model changed."}
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser()
