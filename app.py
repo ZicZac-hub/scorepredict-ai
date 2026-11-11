@@ -30,6 +30,7 @@ from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
 from double_tracker import save as save_double_snapshot, settle as settle_doubles
+from double_score_selection import select_diversified, score_coverage
 
 st.set_page_config(page_title='ZicZac Predict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
 st.markdown("""<style>
@@ -1854,8 +1855,10 @@ with active_page_slot:
                 if first_name is not None and second_name is not None and not manual_options:
                     st.info('Both matches must have verified history before five exact-score doubles can be calculated. Choose another match or check the Pro research warning above.')
                 if manual_options:
-                    manual_options.sort(key=lambda o:o['Joint'],reverse=True)
-                    st.markdown('**Top five exact-score doubles for your two chosen matches**')
+                    manual_options=select_diversified(manual_options,5)
+                    _coverage=score_coverage(manual_options)
+                    st.markdown('**Five diversified exact-score doubles for your two chosen matches**')
+                    st.caption(f"Coverage: {_coverage['match_1_scores']} different Match 1 scores · {_coverage['match_2_scores']} different Match 2 scores · {_coverage['distinct_exact_score_pairs']} exact pairs. Only a score pair in the SAME double counts as a win. Selection prioritises coverage after the highest-probability pair; later ranks are not necessarily ordered by probability.")
                     st.write(f"**Match 1:** {first_name}")
                     st.write(f"**Match 2:** {second_name}")
                     manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
@@ -1947,7 +1950,8 @@ with active_page_slot:
                                             'Match 1 probability':pa,'Match 2 probability':pb,
                                             'Joint probability':pa*pb})
                 options.sort(key=lambda x:x['Joint probability'],reverse=True)
-                # Prefer five distinct match pairs when available, not five variants of one pair.
+                # Diversify match pairs first, then cover additional scorelines.
+                # These are alternative combinations, not independent bets.
                 best=[];seen=set()
                 for o in options:
                     pair=(o['Match 1'],o['Match 2'])
@@ -1955,9 +1959,29 @@ with active_page_slot:
                         best.append(o);seen.add(pair)
                     if len(best)==5:break
                 if len(best)<5:
+                    # If fewer than five distinct fixture pairs exist, diversify
+                    # score pairs within each repeated fixture pair.
+                    used={(o['Match 1'],o['Match 2'],o['Score 1'],o['Score 2']) for o in best}
+                    groups={}
                     for o in options:
-                        if o not in best:best.append(o)
-                        if len(best)==5:break
+                        pair=(o['Match 1'],o['Match 2'])
+                        groups.setdefault(pair,[]).append(o)
+                    while len(best)<5:
+                        candidates=[]
+                        for pair,group in groups.items():
+                            prior=[o for o in best if (o['Match 1'],o['Match 2'])==pair]
+                            for o in select_diversified(group,5,probability='Joint probability'):
+                                key=(o['Match 1'],o['Match 2'],o['Score 1'],o['Score 2'])
+                                if key not in used:
+                                    covered1={p['Score 1'] for p in prior}
+                                    covered2={p['Score 2'] for p in prior}
+                                    novelty=int(o['Score 1'] not in covered1)+int(o['Score 2'] not in covered2)
+                                    candidates.append((novelty,o['Joint probability'],o))
+                        if not candidates:break
+                        chosen=max(candidates,key=lambda item:(item[0],item[1]))[2]
+                        best.append(chosen)
+                        used.add((chosen['Match 1'],chosen['Match 2'],chosen['Score 1'],chosen['Score 2']))
+                st.caption('Each numbered double requires both exact scores in that SAME row. Scores appearing in separate rows do not count as a winning double. Different fixture pairs are prioritised; repeated pairs use diversified scorelines.')
                 display=pd.DataFrame([{'Rank':i+1,'Match 1':o['Match 1'],'Exact score 1':o['Score 1'],
                     'Match 2':o['Match 2'],'Exact score 2':o['Score 2'],
                     'Score 1 probability':f"{o['Match 1 probability']:.2%}",
