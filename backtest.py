@@ -1,4 +1,4 @@
-"""Leakage-safe chronological evaluation of ZicZac's two forecast variants.
+"""Leakage-safe chronological evaluation of ZicZac's three forecast variants.
 
 Usage:
   python backtest.py path/to/finished_matches.json
@@ -21,7 +21,7 @@ def evaluate(matches, min_history=30):
     )
     stats = {name: defaultdict(float) for name in ('regularized', 'baseline', 'dixon_coles')}
     details = []
-    segments = defaultdict(lambda: {name: defaultdict(float) for name in ('regularized', 'baseline')})
+    segments = defaultdict(lambda: {name: defaultdict(float) for name in ('regularized', 'baseline', 'dixon_coles')})
     for index, fixture in enumerate(ordered):
         if index < min_history:
             continue
