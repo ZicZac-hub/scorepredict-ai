@@ -30,7 +30,7 @@ def historical_audit(matches, cutoff_year=2026, min_history=30):
     ordered = sorted((m for m in matches if finished(m) and _date(m.get("utcDate"))),
                      key=lambda m: _date(m["utcDate"]))
     histories = defaultdict(list)
-    data = {"baseline": [], "venue_arithmetic": []}
+    data = {"baseline": [], "venue_arithmetic": [], "team_strength": []}
     for fixture in ordered:
         code = (fixture.get("competition") or {}).get("code") or "unknown"
         kickoff = _date(fixture["utcDate"])
