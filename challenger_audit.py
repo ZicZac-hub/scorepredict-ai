@@ -10,7 +10,7 @@ import math
 from collections import defaultdict, Counter
 from engine import predict, finished, _date
 
-CANDIDATES=("baseline","venue_arithmetic","team_strength","venue_contrast")
+CANDIDATES=("baseline","venue_arithmetic","team_strength","venue_contrast","league_opponent")
 EPS=1e-12
 
 def metric(rows, variant):
