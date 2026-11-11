@@ -8,6 +8,7 @@ on:
       - 'backtest.py'
       - 'calibration_backtest.py'
       - 'xg_holdout.py'
+      - 'score_diversity_audit.py'
       - 'fetch_backtest_history.py'
       - 'test_engine_recency.py'
       - '.github/workflows/model-backtest.yml'
@@ -27,7 +28,7 @@ jobs:
       - name: Run model regression tests
         run: python -m unittest -v test_engine_recency.py
       - name: Validate backtest module
-        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py fetch_backtest_history.py
+        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py fetch_backtest_history.py
       - name: Fetch verified multi-season results using API-Football Pro
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -44,6 +45,8 @@ jobs:
         run: python calibration_backtest.py data/backtest_finished_matches.json --cutoff-year 2026 --output calibration_results.json
       - name: Evaluate alternative expected-goals model on 2026 holdout
         run: python xg_holdout.py data/backtest_finished_matches.json --output xg_holdout_results.json
+      - name: Audit 1-1 prediction concentration on 2026 holdout
+        run: python score_diversity_audit.py data/backtest_finished_matches.json --output score_diversity_results.json
       - name: Print model comparison
         run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps({'summary':r['summary'],'by_league_year':r['by_league_year']},indent=2))"
       - uses: actions/upload-artifact@v4
@@ -53,4 +56,5 @@ jobs:
             backtest_results.json
             calibration_results.json
             xg_holdout_results.json
+            score_diversity_results.json
             data/backtest_finished_matches.json
