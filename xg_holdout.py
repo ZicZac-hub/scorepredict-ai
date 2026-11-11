@@ -9,7 +9,7 @@ import math
 from collections import defaultdict
 from engine import predict, finished, _date
 
-VARIANTS = ("baseline", "venue_arithmetic", "team_strength", "opponent_adjusted")
+VARIANTS = ("baseline", "venue_arithmetic", "team_strength", "opponent_adjusted", "venue_contrast")
 EPS = 1e-12
 
 def evaluate(matches, cutoff_year=2026, min_history=30):
