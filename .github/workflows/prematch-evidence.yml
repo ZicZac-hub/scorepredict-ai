@@ -1,0 +1,35 @@
+name: Capture verified pre-match evidence
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
+      - name: Check snapshot script
+        run: python -m py_compile capture_prematch.py team_news.py engine.py
+      - name: Capture verified pre-kickoff snapshots
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python capture_prematch.py
+      - name: Archive immutable snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ziczac-prematch-snapshots
+          path: prematch_snapshots/*.json
+          if-no-files-found: warn
+          retention-days: 90
