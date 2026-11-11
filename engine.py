@@ -155,7 +155,10 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
     lam_a=clamp(weight*lam_a+(1-weight)*base_a)
     # Recent form / venue / H2H are visible evidence, not arbitrarily
     # applied extra multipliers that could double-count goals.
-    matrix=_grid(lam_h,lam_a,max_goals)
+    # Experimental Dixon-Coles low-score correction. Keep live baseline
+    # unchanged until out-of-sample validation shows a measurable gain.
+    rho=-0.08 if variant=='dixon_coles' else 0.0
+    matrix=_grid(lam_h,lam_a,max_goals,rho=rho)
     scores=sorted(((i,j,float(matrix[i,j])) for i in range(max_goals+1)
                    for j in range(max_goals+1)),key=lambda x:x[2],reverse=True)
     h2h=_h2h(past,home_id,away_id)
@@ -169,10 +172,10 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION,
+            'history_count':len(past),'model_version':('venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
-            'uncertainty_note':('Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
+            'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
             'methods':{'strength':(round(lam_h_strength,3),round(lam_a_strength,3)),
                        'attack_defence':(round(lam_h_simple,3),round(lam_a_simple,3))},
             'data_quality':'moderate' if min(len(hg),len(ag),len(hv),len(av))>=8 else 'limited'}
