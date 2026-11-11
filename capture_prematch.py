@@ -12,6 +12,7 @@ import requests
 from api_football import LEAGUES, _convert, ROOT
 from engine import predict
 from prospective_ensemble import ensemble_prediction
+from five_model_consensus import consensus_prediction
 from team_news import pre_match_report
 
 CODES = ("PL", "PD", "BL1", "SA", "FL1", "CL", "EL", "DED", "PPL", "BSA", "ELC")
@@ -89,6 +90,7 @@ def main():
         except Exception as exc:
             report = {"lineups": [], "injuries": [], "warnings": ["Team-news request failed: " + str(exc)[:180]]}
         challenger = ensemble_prediction(fixture, history)
+        five_model = consensus_prediction(fixture, history)
         records.append({
             "captured_at_utc": now.isoformat(),
             "fixture_id": fixture["id"], "competition": code,
@@ -97,6 +99,7 @@ def main():
             "away_team": fixture["awayTeam"]["name"],
             "forecast_model": forecast.get("model_version", "baseline"),
             "prospective_challenger": challenger,
+            "five_model_consensus": five_model,
             "predicted_score": list(forecast["scores"][0][:2]),
             "double_top10_scores": [[int(h),int(a),float(p)] for h,a,p in forecast["scores"][:10]],
             "predicted_score_probability": forecast["scores"][0][2],
