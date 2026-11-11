@@ -14,6 +14,7 @@ on:
       - 'league_calibration.py'
       - 'exact_score_audit.py'
       - 'challenger_audit.py'
+      - 'league_opponent_model.py'
       - 'fetch_backtest_history.py'
       - 'test_engine_recency.py'
       - '.github/workflows/model-backtest.yml'
@@ -33,7 +34,7 @@ jobs:
       - name: Run model regression tests
         run: python -m unittest -v test_engine_recency.py
       - name: Validate backtest module
-        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py league_calibration.py exact_score_audit.py challenger_audit.py fetch_backtest_history.py
+        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py league_calibration.py exact_score_audit.py challenger_audit.py league_opponent_model.py fetch_backtest_history.py
       - name: Fetch verified multi-season results using API-Football Pro
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
