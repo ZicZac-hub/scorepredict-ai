@@ -16,6 +16,9 @@ on:
       - 'challenger_audit.py'
       - 'league_opponent_model.py'
       - 'ensemble_ranking.py'
+      - 'double_score_backtest.py'
+      - 'double_score_selection.py'
+      - 'test_double_score_selection.py'
       - 'fetch_backtest_history.py'
       - 'test_engine_recency.py'
       - '.github/workflows/model-backtest.yml'
@@ -33,9 +36,9 @@ jobs:
       - name: Install model dependencies
         run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
       - name: Run model regression tests
-        run: python -m unittest -v test_engine_recency.py
+        run: python -m unittest -v test_engine_recency.py test_double_score_selection.py
       - name: Validate backtest module
-        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py league_calibration.py exact_score_audit.py challenger_audit.py league_opponent_model.py ensemble_ranking.py fetch_backtest_history.py
+        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py league_calibration.py exact_score_audit.py challenger_audit.py league_opponent_model.py ensemble_ranking.py double_score_backtest.py double_score_selection.py fetch_backtest_history.py
       - name: Fetch verified multi-season results using API-Football Pro
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -66,6 +69,8 @@ jobs:
         run: python challenger_audit.py data/backtest_finished_matches.json --output challenger_audit_results.json
       - name: Evaluate frozen probability ensemble on 2026 holdout
         run: python ensemble_ranking.py data/backtest_finished_matches.json --output ensemble_ranking_results.json
+      - name: Backtest five exact-score doubles with chronological paired evaluation
+        run: python double_score_backtest.py data/backtest_finished_matches.json --output double_score_backtest_results.json
       - name: Print model comparison
         run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps({'summary':r['summary'],'by_league_year':r['by_league_year']},indent=2))"
       - uses: actions/upload-artifact@v4
@@ -82,4 +87,5 @@ jobs:
             exact_score_audit_results.json
             challenger_audit_results.json
             ensemble_ranking_results.json
+            double_score_backtest_results.json
             data/backtest_finished_matches.json
