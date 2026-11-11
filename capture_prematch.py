@@ -13,8 +13,8 @@ from api_football import LEAGUES, _convert, ROOT
 from engine import predict
 from team_news import pre_match_report
 
-CODES = ("PL", "PD", "BL1", "SA", "FL1")
-MAX_FIXTURES = 12
+CODES = ("PL", "PD", "BL1", "SA", "FL1", "CL", "EL", "DED", "PPL", "BSA", "ELC")
+MAX_FIXTURES = 30
 LOOKAHEAD_DAYS = 14
 OUTPUT = Path("prematch_snapshots")
 
@@ -36,10 +36,14 @@ def main():
     diagnostics = {'leagues_checked': 0, 'upcoming_fixtures': 0, 'history_matches': 0, 'prediction_unavailable': 0, 'prediction_errors': [], 'league_errors': [], 'provider_fixture_counts': {}, 'next_kickoff_by_league': {}, 'lookahead_days': LOOKAHEAD_DAYS}
     for code in CODES:
         diagnostics['leagues_checked'] += 1
-        season = now.year if now.month >= 7 else now.year - 1
-        fixtures = request_fixtures(key, {"league": LEAGUES[code], "season": season,
-                    "from": now.date().isoformat(),
-                    "to": (now + timedelta(days=LOOKAHEAD_DAYS)).date().isoformat()})
+        season = now.year if code == "BSA" or now.month >= 7 else now.year - 1
+        try:
+            fixtures = request_fixtures(key, {"league": LEAGUES[code], "season": season,
+                        "from": now.date().isoformat(),
+                        "to": (now + timedelta(days=LOOKAHEAD_DAYS)).date().isoformat()})
+        except (requests.RequestException, RuntimeError) as exc:
+            diagnostics["league_errors"].append({"league": code, "stage": "fixtures", "error": str(exc)[:180]})
+            continue
         diagnostics["provider_fixture_counts"][code] = len(fixtures)
         upcoming = []
         for raw in fixtures:
@@ -56,9 +60,13 @@ def main():
         if not upcoming:
             continue
         # Historical matches must be strictly earlier than the snapshot.
-        history_raw = request_fixtures(key, {"league": LEAGUES[code], "season": season,
-                    "from": (now-timedelta(days=180)).date().isoformat(),
-                    "to": now.date().isoformat(), "status": "FT"})
+        try:
+            history_raw = request_fixtures(key, {"league": LEAGUES[code], "season": season,
+                        "from": (now-timedelta(days=180)).date().isoformat(),
+                        "to": now.date().isoformat(), "status": "FT"})
+        except (requests.RequestException, RuntimeError) as exc:
+            diagnostics["league_errors"].append({"league": code, "stage": "history", "error": str(exc)[:180]})
+            continue
         history = [m for raw in history_raw if (m:=_convert(raw,code))["status"]=="FINISHED"
                    and datetime.fromisoformat(m["utcDate"].replace("Z","+00:00")) < now]
         diagnostics['history_matches'] += len(history)
