@@ -531,8 +531,10 @@ if _featured:
     _live=''
     if _featured_status and _featured_status.get('score') and all(v is not None for v in _featured_status['score']):
         _live=f"<div style='font-size:15px;color:#9df1d6'>Current score: {_featured_status['score'][0]}–{_featured_status['score'][1]} · Provider checked</div>"
+    _kickoff_label=_hero_escape.escape(sydney_kickoff(_featured['kickoff'], '%A %d %B %Y · %I:%M %p'))
     _hero_title=f"""🏆 Featured Game of the Day
 <div style="font-size:clamp(16px,4vw,25px);font-weight:750;line-height:1.3;margin:12px 0 8px">{_home} <span style="color:#d7a7ff">vs</span> {_away}</div>
+<div style="font-size:15px;color:#f4dba7;font-weight:700;margin:8px 0">📅 {_kickoff_label}</div>
 <div style="font-size:clamp(32px,9vw,52px);font-weight:900;color:#fff;line-height:1.1">{_hh} – {_aa}</div>
 <div style="font-size:15px;color:#e2d6ff;margin-top:8px">Predicted exact score · {_pp:.1%}</div>
 <div style="font-size:15px;color:#9df1d6;margin-top:6px">{_winner[0]} · {_winner[1]:.1%} probability</div>
