@@ -1247,7 +1247,8 @@ with active_page_slot:
                                   'Match':str(saved.get('home') or 'Unknown home team')+' vs '+str(saved.get('away') or 'Unknown away team'),
                                   'Predicted score':predicted,'Actual score':str(actual),
                                   'League':saved.get('league',''),
-                                  'Kickoff (Sydney)':sydney_kickoff(saved.get('kickoff',''))})
+                                  'Kickoff (Sydney)':sydney_kickoff(saved.get('kickoff','')),
+                                  '_kickoff_sort':saved.get('kickoff','')})
             # Permanent GitHub-backed pre-match evidence survives Streamlit restarts.
             # Merge it with local SQLite results, deduplicating by fixture ID when possible.
             try:
@@ -1362,7 +1363,7 @@ with active_page_slot:
             if completed:
                 status_filter=st.selectbox('Show results',['All','🟢 HIT','🔴 ✕'],key='finished_filter')
                 shown=[x for x in completed if status_filter=='All' or x['Status']==status_filter]
-                st.dataframe(pd.DataFrame(shown),hide_index=True,use_container_width=True,
+                st.dataframe(pd.DataFrame(shown).drop(columns=['_kickoff_sort'],errors='ignore'),hide_index=True,use_container_width=True,
                              column_config={'Status':st.column_config.TextColumn(width='small'),
                                             'Predicted score':st.column_config.TextColumn(width='small'),
                                             'Actual score':st.column_config.TextColumn(width='small')})
