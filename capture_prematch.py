@@ -15,6 +15,7 @@ from team_news import pre_match_report
 
 CODES = ("PL", "PD", "BL1", "SA", "FL1")
 MAX_FIXTURES = 12
+LOOKAHEAD_DAYS = 14
 OUTPUT = Path("prematch_snapshots")
 
 def request_fixtures(key, params):
@@ -32,13 +33,14 @@ def main():
         raise RuntimeError("API_FOOTBALL_KEY secret required")
     now = datetime.now(timezone.utc)
     candidates = []
-    diagnostics = {'leagues_checked': 0, 'upcoming_fixtures': 0, 'history_matches': 0, 'prediction_unavailable': 0, 'prediction_errors': [], 'league_errors': []}
+    diagnostics = {'leagues_checked': 0, 'upcoming_fixtures': 0, 'history_matches': 0, 'prediction_unavailable': 0, 'prediction_errors': [], 'league_errors': [], 'provider_fixture_counts': {}, 'next_kickoff_by_league': {}, 'lookahead_days': LOOKAHEAD_DAYS}
     for code in CODES:
         diagnostics['leagues_checked'] += 1
         season = now.year if now.month >= 7 else now.year - 1
         fixtures = request_fixtures(key, {"league": LEAGUES[code], "season": season,
                     "from": now.date().isoformat(),
-                    "to": (now + timedelta(days=2)).date().isoformat()})
+                    "to": (now + timedelta(days=LOOKAHEAD_DAYS)).date().isoformat()})
+        diagnostics["provider_fixture_counts"][code] = len(fixtures)
         upcoming = []
         for raw in fixtures:
             fixture = _convert(raw, code)
@@ -46,9 +48,11 @@ def main():
                 kickoff = datetime.fromisoformat(fixture["utcDate"].replace("Z","+00:00"))
             except (ValueError, TypeError):
                 continue
-            if now < kickoff <= now + timedelta(hours=48) and fixture["status"] in ("SCHEDULED", "TIMED"):
+            if now < kickoff <= now + timedelta(days=LOOKAHEAD_DAYS) and fixture["status"] in ("SCHEDULED", "TIMED"):
                 upcoming.append((kickoff, fixture))
         diagnostics['upcoming_fixtures'] += len(upcoming)
+        if upcoming:
+            diagnostics['next_kickoff_by_league'][code] = min(item[0] for item in upcoming).isoformat()
         if not upcoming:
             continue
         # Historical matches must be strictly earlier than the snapshot.
