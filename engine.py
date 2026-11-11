@@ -254,7 +254,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
     # unchanged until out-of-sample validation shows a measurable gain.
     rho=-0.08 if variant=='dixon_coles' else 0.0
     matrix=_grid(lam_h,lam_a,max_goals,rho=rho)
-    scores=sorted(((i,j,float(matrix[i,j])) for i in range(max_goals+1)
+    # Experimental probability smoothing only; baseline and Smart Double remain unchanged.\n    # Temperature 1.35 is a candidate, NOT fitted to the 108 displayed outcomes.\n    if variant == 'temperature_candidate':\n        logits=np.log(np.maximum(matrix,1e-12))/1.35\n        logits-=logits.max()\n        matrix=np.exp(logits)\n        matrix/=matrix.sum()\n    scores=sorted(((i,j,float(matrix[i,j])) for i in range(max_goals+1)
                    for j in range(max_goals+1)),key=lambda x:x[2],reverse=True)
     h2h=_h2h(past,home_id,away_id)
     return {'home_xg':lam_h,'away_xg':lam_a,
@@ -267,7 +267,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':('league-opponent-iterative-experimental' if variant=='league_opponent' else 'venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
+            'history_count':len(past),'model_version':('temperature-1.35-experimental' if variant=='temperature_candidate' else 'league-opponent-iterative-experimental' if variant=='league_opponent' else 'venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
             'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
