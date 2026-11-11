@@ -208,6 +208,24 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
                       + .45 * (hf+aa)/2)
         lam_a = clamp(.55 * base_a * (.65+.35*af/base_a) * (.65+.35*ha/base_a)
                       + .45 * (af+ha)/2)
+    # Experimental fifth model: venue-contrast expected goals. Use relative
+    # attack/defence ratios rather than forcing score variety. Reliability
+    # weights temper small venue samples. No match outcomes are consulted.
+    if variant == 'venue_contrast':
+        def reliable_ratio(venue_stats, overall_stats, field, reference):
+            if not venue_stats:
+                return max(.35, overall_stats[field] / reference)
+            n = venue_stats['effective_played']
+            blended = (n * venue_stats[field] + 6 * overall_stats[field]) / (n + 6)
+            return max(.35, blended / reference)
+        home_attack = reliable_ratio(hvs, hs, 'scored', base_h)
+        away_defence = reliable_ratio(avs, as_, 'conceded', base_h)
+        away_attack = reliable_ratio(avs, as_, 'scored', base_a)
+        home_defence = reliable_ratio(hvs, hs, 'conceded', base_a)
+        # Temper multiplicative differences and preserve historical league
+        # goal totals; not a manual penalty on 1-1 scorelines.
+        lam_h = clamp(base_h * (home_attack * away_defence) ** .75)
+        lam_a = clamp(base_a * (away_attack * home_defence) ** .75)
     # Conservative uncertainty regularization for thin historical samples.
     # This is a candidate change requiring walk-forward validation.
     kickoff=_date(fixture.get('utcDate'))
@@ -243,7 +261,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':('opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
+            'history_count':len(past),'model_version':('venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
             'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
