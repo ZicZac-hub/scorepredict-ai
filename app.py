@@ -1158,6 +1158,34 @@ st.markdown("""<style>
 
 with active_page_slot:
     if view=='finished':
+        st.subheader('🔄 Updated scores for previously predicted matches')
+        st.caption('Automatic pre-kickoff recalculation every six hours. Originals remain unchanged for honest accuracy tracking. Experimental league calibration is not used.')
+        from pathlib import Path as _rescore_path
+        _revision_dir = _rescore_path('data/prematch/rescores')
+        _revisions = []
+        for _revision_file in _revision_dir.glob('*.json'):
+            if _revision_file.name == 'latest_report.json':
+                continue
+            try:
+                _revision = json.loads(_revision_file.read_text(encoding='utf-8'))
+                _kickoff = datetime.fromisoformat(_revision['kickoff_utc'].replace('Z','+00:00'))
+                if _kickoff > datetime.now(timezone.utc):
+                    _revisions.append({
+                        'Match': str(_revision.get('home_team',''))+' vs '+str(_revision.get('away_team','')),
+                        'Kickoff (Sydney)': sydney_kickoff(_revision['kickoff_utc']),
+                        'Original score': '-'.join(map(str,_revision['original_score'])),
+                        'Updated score': '-'.join(map(str,_revision['updated_score'])),
+                        'Changed': 'Yes' if _revision['changed'] else 'No',
+                        'Updated at (Sydney)': sydney_kickoff(_revision['rescored_at_utc']),
+                        'Model': _revision.get('updated_model','baseline')
+                    })
+            except (KeyError,ValueError,TypeError,OSError):
+                continue
+        if _revisions:
+            st.dataframe(pd.DataFrame(_revisions),hide_index=True,use_container_width=True)
+        else:
+            st.info('No upcoming previously predicted matches have been rescored yet. The scheduled pre-match workflow will populate this table.')
+        st.divider()
         st.subheader('🏁 Finished matches · Prediction results')
         st.caption('🟢 HIT = the predicted exact score matches the verified full-time score. 🔴 ✕ = a different final score. Only forecasts saved before kickoff are evaluated.')
         if conn is None:
