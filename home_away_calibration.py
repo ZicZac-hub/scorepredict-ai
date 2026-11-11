@@ -8,6 +8,7 @@ import argparse
 import json
 import math
 from collections import defaultdict
+import numpy as np
 from engine import predict, finished, _date, _grid
 
 SCALES = (0.80, 0.90, 0.95, 1.0, 1.05, 1.10, 1.20)
@@ -29,10 +30,8 @@ def evaluate_rows(rows, home_scale, away_scale):
         top3 += int(any((i,j)==(h,a) for i,j,_ in ranked[:3]))
         one_one += int((best[0],best[1]) == (1,1))
         logloss -= math.log(max(float(matrix[h,a]) if h < matrix.shape[0] and a < matrix.shape[1] else EPS, EPS))
-        probs = (float(matrix.T[np.triu_indices_from(matrix,1)].sum()) if False else
-                 float(sum(matrix[i,j] for i in range(matrix.shape[0]) for j in range(matrix.shape[1]) if i>j)),
-                 float(sum(matrix[i,i] for i in range(matrix.shape[0]))),
-                 float(sum(matrix[i,j] for i in range(matrix.shape[0]) for j in range(matrix.shape[1]) if i<j)))
+        probs = (float(np.tril(matrix,-1).sum()), float(np.trace(matrix)),
+                 float(np.triu(matrix,1).sum()))
         actual = 0 if h>a else 1 if h==a else 2
         outcome += int(max(range(3),key=lambda i:probs[i]) == actual)
         brier += sum((p-int(i==actual))**2 for i,p in enumerate(probs))
