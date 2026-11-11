@@ -98,6 +98,7 @@ def main():
             "forecast_model": forecast.get("model_version", "baseline"),
             "prospective_challenger": challenger,
             "predicted_score": list(forecast["scores"][0][:2]),
+            "double_top10_scores": [[int(h),int(a),float(p)] for h,a,p in forecast["scores"][:10]],
             "predicted_score_probability": forecast["scores"][0][2],
             "predicted_outcome_probabilities": {
                 "home": forecast["home_win"], "draw": forecast["draw"],
