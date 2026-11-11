@@ -31,6 +31,7 @@ from advanced import backtest, summarize_backtest, ranked_double_chance, five_tw
 from history_store import connect, save_predictions, reconcile, load
 from double_tracker import save as save_double_snapshot, settle as settle_doubles
 from double_score_selection import select_diversified, score_coverage
+from smart_double_ai import rank_pairs, five_doubles
 
 st.set_page_config(page_title='ZicZac Predict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
 st.markdown("""<style>
@@ -1935,6 +1936,31 @@ with active_page_slot:
             # league/team filters as the match selector, not the unrelated
             # analysis-studio default selection (which may be weeks away).
             chosen_rows=[r for r in pair_options.values() if r.get('result') and r.get('result',{}).get('scores')]
+            st.subheader('🧠 ZicZac Smart Double AI · experimental')
+            smart_mode=st.radio('Choose Smart Double mode',
+                ['AI Auto Select', 'Manual Select'],horizontal=True,key='smart_double_mode')
+            st.caption('AI Auto Select ranks researched same-day fixtures by estimated probability covered by five distinct exact-score combinations. It does not scan unresearched fixtures or guarantee wins. Manual Select uses your two choices above.')
+            if smart_mode=='AI Auto Select':
+                smart_pairs=rank_pairs(chosen_rows)
+                if not smart_pairs:
+                    st.info('No two model-ready fixtures on the same UTC date in this selection. Choose All leagues / All teams, extend the date range, or use Manual Select.')
+                else:
+                    smart=smart_pairs[0]
+                    st.write('**AI selected Match 1:** '+fixture_label(smart['first']))
+                    st.write('**AI selected Match 2:** '+fixture_label(smart['second']))
+                    st.metric('Estimated probability of one of five exact doubles',f"{smart['coverage']:.2%}",
+                        help='Model estimate assuming independent matches; not a measured historical win rate.')
+                    smart_df=pd.DataFrame([{'Double':i+1,
+                        'Match 1 score':o['Score 1'],'Match 2 score':o['Score 2'],
+                        'Joint probability':f"{o['Joint']:.3%}"} for i,o in enumerate(smart['doubles'])])
+                    st.dataframe(smart_df,use_container_width=True,hide_index=True)
+                    st.download_button('Download Smart Double AI predictions',
+                        smart_df.to_csv(index=False).encode(),'ziczac_smart_double_ai.csv',
+                        'text/csv',key='smart_double_export')
+                    st.caption(f"Compared {len(smart_pairs)} leading eligible fixture pairs. The ranking is experimental and does not prove improved accuracy.")
+            else:
+                st.info('Your manually chosen two matches and their five doubles are displayed above.')
+            st.divider()
             st.subheader('Five model-ranked exact-score doubles from your selected fixtures')
             st.caption('An exact-score double requires BOTH matches to finish at the specified scores. These probabilities are usually low; they are estimates, not guarantees.')
             if len(chosen_rows)<2:
