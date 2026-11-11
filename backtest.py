@@ -19,7 +19,7 @@ def evaluate(matches, min_history=30):
         (m for m in matches if finished(m) and _date(m.get('utcDate'))),
         key=lambda m: _date(m['utcDate'])
     )
-    stats = {name: defaultdict(float) for name in ('regularized', 'baseline')}
+    stats = {name: defaultdict(float) for name in ('regularized', 'baseline', 'dixon_coles')}
     details = []
     segments = defaultdict(lambda: {name: defaultdict(float) for name in ('regularized', 'baseline')})
     for index, fixture in enumerate(ordered):
@@ -37,7 +37,7 @@ def evaluate(matches, min_history=30):
         actual = fixture['score']['fullTime']
         hg, ag = actual['home'], actual['away']
         outcomes = {}
-        for label, variant in (('regularized', 'regularized'), ('baseline', 'baseline')):
+        for label, variant in (('regularized', 'regularized'), ('baseline', 'baseline'), ('dixon_coles', 'dixon_coles')):
             forecast = predict(fixture, past, variant=variant)
             if forecast is None:
                 continue
@@ -81,7 +81,7 @@ def evaluate(matches, min_history=30):
     by_league_year = {key: {label: metrics(row) for label, row in group.items()}
                       for key, group in sorted(segments.items())}
     return {'summary': summary, 'by_league_year': by_league_year, 'details': details,
-            'note': 'Baseline is the unregularized venue-form estimator, not a saved v4 model. Lower Brier/log-loss is better. No future results are used.'}
+            'note': 'Dixon-Coles uses a fixed experimental rho of -0.08, not tuned on test matches. Baseline is the unregularized venue-form estimator, not a saved v4 model. Lower Brier/log-loss is better. No future results are used.'}
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
