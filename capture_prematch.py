@@ -32,7 +32,9 @@ def main():
         raise RuntimeError("API_FOOTBALL_KEY secret required")
     now = datetime.now(timezone.utc)
     candidates = []
+    diagnostics = {'leagues_checked': 0, 'upcoming_fixtures': 0, 'history_matches': 0, 'prediction_unavailable': 0, 'prediction_errors': [], 'league_errors': []}
     for code in CODES:
+        diagnostics['leagues_checked'] += 1
         season = now.year if now.month >= 7 else now.year - 1
         fixtures = request_fixtures(key, {"league": LEAGUES[code], "season": season,
                     "from": now.date().isoformat(),
@@ -46,6 +48,7 @@ def main():
                 continue
             if now < kickoff <= now + timedelta(hours=48) and fixture["status"] in ("SCHEDULED", "TIMED"):
                 upcoming.append((kickoff, fixture))
+        diagnostics['upcoming_fixtures'] += len(upcoming)
         if not upcoming:
             continue
         # Historical matches must be strictly earlier than the snapshot.
@@ -54,28 +57,37 @@ def main():
                     "to": now.date().isoformat(), "status": "FT"})
         history = [m for raw in history_raw if (m:=_convert(raw,code))["status"]=="FINISHED"
                    and datetime.fromisoformat(m["utcDate"].replace("Z","+00:00")) < now]
+        diagnostics['history_matches'] += len(history)
         for kickoff, fixture in upcoming:
-            forecast = predict(fixture, history, variant="baseline")
-            if forecast is None:
-                continue
-            candidates.append((kickoff, fixture, forecast, code))
+            try:
+                forecast = predict(fixture, history, variant="baseline")
+                if not forecast:
+                    diagnostics['prediction_unavailable'] += 1
+                    continue
+                candidates.append((kickoff, fixture, forecast, code))
+            except Exception as exc:
+                diagnostics['prediction_errors'].append({'fixture_id': fixture['id'], 'error': str(exc)[:200]})
     candidates.sort(key=lambda item: item[0])
+    diagnostics["candidate_predictions"] = len(candidates)
     records = []
     for kickoff, fixture, forecast, code in candidates[:MAX_FIXTURES]:
-        report = pre_match_report(key, fixture, now=now)
+        try:
+            report = pre_match_report(key, fixture, now=now)
+        except Exception as exc:
+            report = {"lineups": [], "injuries": [], "warnings": ["Team-news request failed: " + str(exc)[:180]]}
         records.append({
             "captured_at_utc": now.isoformat(),
             "fixture_id": fixture["id"], "competition": code,
             "kickoff_utc": fixture["utcDate"],
             "home_team": fixture["homeTeam"]["name"],
             "away_team": fixture["awayTeam"]["name"],
-            "forecast_model": forecast["model_version"],
+            "forecast_model": forecast.get("model_version", "baseline"),
             "predicted_score": list(forecast["scores"][0][:2]),
             "predicted_score_probability": forecast["scores"][0][2],
             "predicted_outcome_probabilities": {
                 "home": forecast["home_win"], "draw": forecast["draw"],
                 "away": forecast["away_win"]},
-            "expected_goals": {"home": forecast["home_xg"], "away": forecast["away_xg"]},
+            "expected_goals": {"home": forecast.get("home_xg"), "away": forecast.get("away_xg")},
             "lineups": report.get("lineups", []),
             "injuries": report.get("injuries", []),
             "provider_warnings": report.get("warnings", []),
@@ -84,9 +96,11 @@ def main():
     path = OUTPUT / ("prematch_" + now.strftime("%Y%m%dT%H%M%SZ") + ".json")
     path.write_text(json.dumps({"captured_at_utc": now.isoformat(),
                                 "records": records,
+                                "diagnostics": diagnostics,
                                 "note": "Immutable pre-kickoff snapshot. Injury reports do not prove absence; no post-kickoff data is included."},
                                indent=2), encoding="utf-8")
     print(f"Saved {len(records)} pre-match snapshots to {path}")
+    print("Diagnostics:", json.dumps(diagnostics))
 
 if __name__ == "__main__":
     main()
