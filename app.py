@@ -25,6 +25,7 @@ from sportmonks import sportmonks_fixtures
 from engine import predict
 from live_scores import live_predicted_scores
 from featured_match import choose_feature
+from team_news import pre_match_report
 from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
@@ -1353,6 +1354,44 @@ with active_page_slot:
             st.markdown(f"**Predicted result: {winner[0]} ({winner[1]:.1%})**")
             st.bar_chart(pd.DataFrame({'Probability (%)':[round(dp.get('home_win',0)*100,1),round(dp.get('draw',0)*100,1),round(dp.get('away_win',0)*100,1)]},index=['Home win','Draw','Away win']))
             st.caption('Research: venue form, last 10 matches, available H2H and modelled expected goals. Injuries and confirmed lineups are not verified.')
+            with st.expander('🩺 Verified lineups and player availability', expanded=False):
+                st.caption('API-Football provider data only. This information is shown for research and does not silently change the prediction.')
+                if dm.get('provider') != 'API-Football':
+                    st.info('Verified player reports are available only for API-Football fixtures.')
+                elif not secondary_key:
+                    st.info('API_FOOTBALL_KEY is needed to check official provider records.')
+                else:
+                    from time import time as _news_time
+                    _news_key=str(dm.get('id'))
+                    _news_cache=st.session_state.setdefault('ziczac_featured_team_news',{})
+                    _news_item=_news_cache.get(_news_key)
+                    if st.button('🔄 Check team news',key='featured_news_refresh'):
+                        _news_item=None
+                    if _news_item is None or _news_time()-_news_item['time']>900:
+                        try:
+                            _news_report=pre_match_report(secondary_key,dm)
+                        except Exception as exc:
+                            _news_report={'available':False,'reason':'Provider request failed: '+str(exc)[:160]}
+                        _news_item={'time':_news_time(),'report':_news_report}
+                        _news_cache[_news_key]=_news_item
+                    _news=_news_item['report']
+                    if not _news.get('available'):
+                        st.info(_news.get('reason','No verified data available.'))
+                    else:
+                        st.caption('Provider checked: '+str(_news.get('checked_at','unknown'))+' UTC · Cached up to 15 minutes')
+                        if _news['lineups']:
+                            for _lineup in _news['lineups']:
+                                st.markdown('**'+str(_lineup['team'])+'** · '+('Confirmed XI' if _lineup['confirmed'] else 'Partial lineup')+' · '+str(_lineup.get('formation') or 'Formation unavailable'))
+                                st.write(', '.join(_lineup['starters']))
+                        else:
+                            st.info('No confirmed starting XI returned yet. This is not evidence that the lineup is unavailable permanently.')
+                        if _news['injuries']:
+                            st.markdown('**Reported injuries / unavailable players**')
+                            st.dataframe(pd.DataFrame(_news['injuries']),hide_index=True,use_container_width=True)
+                        else:
+                            st.caption('No injury records returned; this does not mean every player is fit.')
+                        for _warning in _news['warnings']:
+                            st.warning(_warning)
             with st.expander('🔬 Detailed research',expanded=False):
                 st.write('Expected goals:',round(dp.get('home_xg',0),2),'home ·',round(dp.get('away_xg',0),2),'away')
                 st.write('Recent home games:',len(dp.get('home_home10',[])),'· Recent away games:',len(dp.get('away_away10',[])))
