@@ -28,6 +28,7 @@ from featured_match import choose_feature
 from worldwide_model import model_worldwide
 from advanced import backtest, summarize_backtest, ranked_double_chance, five_two_leg_doubles, context_review
 from history_store import connect, save_predictions, reconcile, load
+from double_tracker import save as save_double_snapshot, settle as settle_doubles
 
 st.set_page_config(page_title='ZicZac Predict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
 st.markdown("""<style>
@@ -1789,6 +1790,40 @@ with active_page_slot:
                         st.dataframe(manual_df,hide_index=True,use_container_width=True)
                     st.download_button('Download my chosen match doubles',manual_df.to_csv(index=False).encode(),
                                        'my_selected_exact_score_doubles.csv','text/csv',key='manual_double_download')
+                    # Save forecasts before kickoff; show settlement only from verified finished fixtures.
+                    try:
+                        _first=pair_options[first_name]
+                        _second=pair_options[second_name]
+                        if conn is not None:
+                            _saved=save_double_snapshot(conn,_first,_second,manual_options)
+                            if _saved: st.caption('Five doubles saved for later accuracy tracking.')
+                    except Exception as _exc:
+                        st.caption('Double tracking unavailable: '+str(_exc))
+                    with st.expander('📊 Double prediction accuracy · final scores'):
+                        if conn is None:
+                            st.info('Prediction database unavailable on this server.')
+                        else:
+                            _finished={}
+                            for _games in histories.values():
+                                for _game in _games:
+                                    if _game.get('status')!='FINISHED': continue
+                                    _sc=(_game.get('score') or {}).get('fullTime') or {}
+                                    if isinstance(_sc.get('home'),int) and isinstance(_sc.get('away'),int):
+                                        _finished[(str(_game.get('provider','')),str(_game.get('id')))]=f"{_sc['home']}-{_sc['away']}"
+                            _records=settle_doubles(conn,_finished)
+                            _done=[x for x in _records if x['Status']!='Pending']
+                            _won=sum(x['Status']=='Won' for x in _done)
+                            st.metric('Winning doubles',f'{_won} / {len(_done)}',
+                                      help='Only doubles with two verified final scores are counted.')
+                            if _records:
+                                st.dataframe(pd.DataFrame(_records),hide_index=True,use_container_width=True)
+                                st.download_button('Download double accuracy history',
+                                    pd.DataFrame(_records).to_csv(index=False).encode(),
+                                    'ziczac_double_accuracy.csv','text/csv',key='double_accuracy_export')
+                            else:
+                                st.info('No saved doubles yet.')
+                            st.caption('Pending means final scores are not yet available in loaded history. Snapshots use local SQLite, which may reset on ephemeral hosting. Historical accuracy cannot guarantee future wins.')
+
             else:
                 st.info('Select at least two fixtures in the match selector above to choose your own double.')
             st.divider()
