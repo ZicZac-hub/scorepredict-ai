@@ -11,6 +11,7 @@ on:
       - 'score_diversity_audit.py'
       - 'hybrid_calibration.py'
       - 'home_away_calibration.py'
+      - 'league_calibration.py'
       - 'fetch_backtest_history.py'
       - 'test_engine_recency.py'
       - '.github/workflows/model-backtest.yml'
@@ -30,7 +31,7 @@ jobs:
       - name: Run model regression tests
         run: python -m unittest -v test_engine_recency.py
       - name: Validate backtest module
-        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py fetch_backtest_history.py
+        run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py league_calibration.py fetch_backtest_history.py
       - name: Fetch verified multi-season results using API-Football Pro
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -53,6 +54,8 @@ jobs:
         run: python hybrid_calibration.py data/backtest_finished_matches.json --output hybrid_calibration_results.json
       - name: Calibrate home and away expected goals on 2025, test on 2026
         run: python home_away_calibration.py data/backtest_finished_matches.json --output home_away_calibration_results.json
+      - name: Evaluate league-specific calibration with frozen 2025 coefficients
+        run: python league_calibration.py data/backtest_finished_matches.json --output league_calibration_results.json
       - name: Print model comparison
         run: python -c "import json; r=json.load(open('backtest_results.json')); print(json.dumps({'summary':r['summary'],'by_league_year':r['by_league_year']},indent=2))"
       - uses: actions/upload-artifact@v4
@@ -65,4 +68,5 @@ jobs:
             score_diversity_results.json
             hybrid_calibration_results.json
             home_away_calibration_results.json
+            league_calibration_results.json
             data/backtest_finished_matches.json
