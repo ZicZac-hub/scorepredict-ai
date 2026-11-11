@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
       - name: Check snapshot script
-        run: python -m py_compile capture_prematch.py team_news.py engine.py
+        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py
       - name: Capture verified pre-kickoff snapshots
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -33,6 +33,10 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python persist_prematch.py
+      - name: Re-score existing upcoming predictions using current live model
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python rescore_predictions.py
       - name: Commit permanent research history
         run: |
           git config user.name "github-actions[bot]"
@@ -52,5 +56,6 @@ jobs:
           path: |
             prematch_snapshots/*.json
             data/prematch/accuracy_report.json
+            data/prematch/rescores/latest_report.json
           if-no-files-found: warn
           retention-days: 90
