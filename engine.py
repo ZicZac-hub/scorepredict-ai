@@ -254,7 +254,14 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
     # unchanged until out-of-sample validation shows a measurable gain.
     rho=-0.08 if variant=='dixon_coles' else 0.0
     matrix=_grid(lam_h,lam_a,max_goals,rho=rho)
-    # Experimental probability smoothing only; baseline and Smart Double remain unchanged.\n    # Temperature 1.35 is a candidate, NOT fitted to the 108 displayed outcomes.\n    if variant == 'temperature_candidate':\n        logits=np.log(np.maximum(matrix,1e-12))/1.35\n        logits-=logits.max()\n        matrix=np.exp(logits)\n        matrix/=matrix.sum()\n    scores=sorted(((i,j,float(matrix[i,j])) for i in range(max_goals+1)
+    # Experimental probability smoothing only; baseline and Smart Double remain unchanged.
+    # Temperature 1.35 is a candidate, NOT fitted to the 108 displayed outcomes.
+    if variant == 'temperature_candidate':
+        logits=np.log(np.maximum(matrix,1e-12))/1.35
+        logits-=logits.max()
+        matrix=np.exp(logits)
+        matrix/=matrix.sum()
+    scores=sorted(((i,j,float(matrix[i,j])) for i in range(max_goals+1)
                    for j in range(max_goals+1)),key=lambda x:x[2],reverse=True)
     h2h=_h2h(past,home_id,away_id)
     return {'home_xg':lam_h,'away_xg':lam_a,
