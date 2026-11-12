@@ -232,6 +232,19 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
         if estimate is None:
             return None
         lam_h, lam_a = estimate
+    # Experimental matchup-strength contrast: retain the current model as a
+    # baseline and test whether stronger team differences are underrepresented.
+    # This is deliberately NOT enabled for production predictions.
+    if variant == 'strength_contrast_candidate':
+        prior = 6.0
+        hf = (hs['effective_played']*home_for + prior*base_h)/(hs['effective_played']+prior)
+        ad = (as_['effective_played']*away_against + prior*base_h)/(as_['effective_played']+prior)
+        af = (as_['effective_played']*away_for + prior*base_a)/(as_['effective_played']+prior)
+        hd = (hs['effective_played']*home_against + prior*base_a)/(hs['effective_played']+prior)
+        contrast_h = base_h * math.sqrt(max(.2,hf/base_h)*max(.2,ad/base_h))
+        contrast_a = base_a * math.sqrt(max(.2,af/base_a)*max(.2,hd/base_a))
+        lam_h = clamp(.5*lam_h + .5*contrast_h)
+        lam_a = clamp(.5*lam_a + .5*contrast_a)
     # Conservative uncertainty regularization for thin historical samples.
     # This is a candidate change requiring walk-forward validation.
     kickoff=_date(fixture.get('utcDate'))
@@ -274,7 +287,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':('temperature-1.35-experimental' if variant=='temperature_candidate' else 'league-opponent-iterative-experimental' if variant=='league_opponent' else 'venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
+            'history_count':len(past),'model_version':('strength-contrast-experimental' if variant=='strength_contrast_candidate' else 'temperature-1.35-experimental' if variant=='temperature_candidate' else 'league-opponent-iterative-experimental' if variant=='league_opponent' else 'venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
             'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
