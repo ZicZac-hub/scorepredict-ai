@@ -569,6 +569,7 @@ def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {sydney_kickoff(r['kickoff'])}"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
+st.info('🧠 NEW: Deep Research AI is available below the match analysis section. Scroll down to **Deep Research AI · experimental match-specific analysis**, select a researched match, then tap **Run Deep Research AI**.')
 st.subheader('📅 All available fixtures for the selected date')
 st.caption('Includes every fixture returned by the connected worldwide feeds, even if no prediction is ready. API coverage is not the same as every football match in existence.')
 if discoverable:
@@ -938,7 +939,7 @@ with st.expander('🧠 Deep Research AI · experimental match-specific analysis'
         from deep_research_ai import research_prediction
         target = deep_choices[deep_selected]
         fixture = target['fixture']
-        prior = histories.get(target['league'], [])
+        prior = target.get('past') or histories.get(target['league'], [])
         compatible = [m for m in prior if m.get('provider', 'football-data.org') == fixture.get('provider', 'football-data.org')]
         with st.spinner('Comparing match-specific research models...'):
             deep = research_prediction(fixture, compatible)
