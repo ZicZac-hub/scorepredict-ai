@@ -377,6 +377,25 @@ selected=st.multiselect('Competitions to monitor',list(names),default=[n for n i
 if not selected:st.info('Choose one or more competitions for statistical modelling. Worldwide fixture discovery above remains available.');st.stop()
 if use_secondary and not secondary_key:st.warning('API-Football backup is enabled but API_FOOTBALL_KEY is missing from Secrets.')
 if len(selected)>8:st.warning('Select up to eight competitions to protect free-tier API limits.');st.stop()
+# Cache provider data across Streamlit widget reruns. This prevents each tap
+# from repeating the same network calls for every selected competition.
+# Keep a short TTL for fixtures and a longer one for completed history.
+@st.cache_data(ttl=900, show_spinner=False, max_entries=128)
+def _fast_primary_fixtures(api_key, competition_code, start_date, end_date):
+    return fixtures(api_key, competition_code, start_date, end_date)
+
+@st.cache_data(ttl=3600, show_spinner=False, max_entries=128)
+def _fast_primary_history(api_key, competition_code):
+    return history(api_key, competition_code)
+
+@st.cache_data(ttl=900, show_spinner=False, max_entries=128)
+def _fast_secondary_fixtures(api_key, competition_code, day, horizon):
+    return secondary_fixtures(api_key, competition_code, day, horizon)
+
+@st.cache_data(ttl=3600, show_spinner=False, max_entries=128)
+def _fast_secondary_history(api_key, competition_code, day):
+    return secondary_history(api_key, competition_code, day)
+
 now=datetime.now(timezone.utc)
 rows=[];histories={};errors=[];fixture_counts=[]
 with st.spinner('Collecting fixtures and completed results...'):
@@ -384,18 +403,18 @@ with st.spinner('Collecting fixtures and completed results...'):
         code=names[name]
         upcoming=[];past=[];source='football-data.org'
         try:
-            upcoming=fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=15)).isoformat())
+            upcoming=_fast_primary_fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=15)).isoformat())
         except Exception as e:
             errors.append(f'{name}: primary fixtures unavailable ({e})')
         try:
-            past=history(key,code)
+            past=_fast_primary_history(key,code)
         except Exception as e:
             errors.append(f'{name}: primary historical data unavailable ({e})')
         # Prefer API-Football Pro data over the older provider.
         if use_secondary and secondary_key and code in supported_codes():
             try:
-                pro_upcoming=secondary_fixtures(secondary_key,code,now,14)
-                pro_past=secondary_history(secondary_key,code,now)
+                pro_upcoming=_fast_secondary_fixtures(secondary_key,code,now.date().isoformat(),14)
+                pro_past=_fast_secondary_history(secondary_key,code,now.date().isoformat())
                 if pro_upcoming:
                     upcoming=pro_upcoming
                     source='API-Football Pro'
