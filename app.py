@@ -928,6 +928,34 @@ for name in selected_worldwide:
     if candidate and candidate.get('result') and not any(str(r['fixture'].get('provider'))+':'+str(r['fixture'].get('id'))==str(candidate['fixture'].get('provider'))+':'+str(candidate['fixture'].get('id')) for r in rows):
         rows.append(candidate)
 rows.sort(key=lambda r:r['kickoff'])
+# Deep Research AI is opt-in to keep first-page loading fast. This is an
+# experimental comparison, never an automatic replacement for saved picks.
+with st.expander('🧠 Deep Research AI · experimental match-specific analysis', expanded=False):
+    st.caption('Compares five statistical models using verified prior matches, opponent strength and venue form. No fabricated team news.')
+    deep_choices = {label: row for label, row in labels.items() if row.get('result')}
+    deep_selected = st.selectbox('Choose a researched fixture', list(deep_choices), key='deep_research_fixture') if deep_choices else None
+    if deep_selected and st.button('Run Deep Research AI', key='run_deep_research'):
+        from deep_research_ai import research_prediction
+        target = deep_choices[deep_selected]
+        fixture = target['fixture']
+        prior = histories.get(target['league'], [])
+        compatible = [m for m in prior if m.get('provider', 'football-data.org') == fixture.get('provider', 'football-data.org')]
+        with st.spinner('Comparing match-specific research models...'):
+            deep = research_prediction(fixture, compatible)
+        if not deep.get('available'):
+            st.warning(deep.get('reason', 'Not enough verified match history.'))
+        else:
+            st.write('**Experimental exact score:**', '-'.join(map(str, deep['predicted_score'])))
+            st.write('**Expected goals:**', f"Home {deep['home_xg']:.2f} · Away {deep['away_xg']:.2f}")
+            st.write('**Win / draw / loss probabilities:**', {k: round(v*100, 1) for k,v in deep['outcome_probabilities'].items()})
+            st.dataframe(pd.DataFrame([{'Score':f"{h}-{a}",'Probability (%)':round(prob*100,2)} for h,a,prob in deep['scores']]),hide_index=True,use_container_width=True)
+            st.caption('Variants: '+', '.join(deep['variants_used']))
+            st.caption(deep['limitations'])
+            with st.expander('Verified evidence behind this estimate'):
+                for section in ('home_last10','away_last10','home_home10','away_away10','head_to_head'):
+                    st.write('**'+section.replace('_',' ').title()+'**')
+                    st.dataframe(pd.DataFrame(deep['evidence'][section]),hide_index=True,use_container_width=True)
+
 unmodelled=[worldwide_options[name] for name in selected_worldwide if not worldwide_options[name]['model'] or not worldwide_options[name]['model'].get('result')]
 if unmodelled:
     st.info(f"{len(unmodelled)} selected worldwide match(es) do not have sufficient compatible historical data for exact-score predictions. They are displayed for discovery only.")
