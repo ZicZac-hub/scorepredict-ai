@@ -46,5 +46,5 @@ def research_prediction(fixture, history):
                          "home_home10": base["home_home10"],
                          "away_away10": base["away_away10"],
                          "head_to_head": base["h2h_last10"],
-                         "data_quality": base["data_quality"]},
+                         "data_quality": {"history_count": base.get("history_count", 0)}},
             "limitations": "Statistical challenger only. No validated numerical injury, lineup or tactical adjustments. No guaranteed score."}
