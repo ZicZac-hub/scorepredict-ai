@@ -1,30 +1,105 @@
 {
+  "actual_score": null,
   "away_team": "1. FC K\u00f6ln",
-  "changed": false,
+  "away_team_id": 192,
+  "changed": true,
+  "comparison_context": null,
   "competition": "BL1",
+  "excluded_from_original_accuracy": true,
+  "fallback_reason": null,
   "fixture_id": 1575221,
+  "history_as_of_utc": "2026-11-13T08:04:07.255328+00:00",
+  "history_availability_policy": "final-whistle timestamp when supplied; otherwise kickoff plus three hours",
+  "history_count": 389,
+  "history_warnings": [],
   "home_team": "Bayern M\u00fcnchen",
+  "home_team_id": 157,
   "kickoff_utc": "2026-11-20T19:30:00Z",
+  "label": "Upcoming forecast revision",
+  "mode": "upcoming",
+  "model_sources": [
+    "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+  ],
   "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+  "original_kickoff_utc": "2026-11-20T19:30:00Z",
   "original_model": "venue-form-ensemble-v5-unregularized-live",
+  "original_provider": "API-Football",
   "original_score": [
     2,
     1
   ],
-  "rescored_at_utc": "2026-11-13T07:25:33.559274+00:00",
+  "original_score_probability": 0.09477109955558945,
+  "original_source": "permanent_snapshot",
+  "provider": "API-Football",
+  "rescored_at_utc": "2026-11-13T08:04:07.255328+00:00",
+  "revision_id": "20261113T080407255328Z-a6b5ec20-eee8f304e638",
+  "run_id": "20261113T080407255328Z-a6b5ec20",
+  "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.0493335774802452,
-    "home": 2.472399471255793
+    "away": 0.7568527508598495,
+    "home": 4.2626078580094235
   },
-  "updated_model": "venue-form-ensemble-v6-competition-history",
+  "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.14220461878819285,
-    "draw": 0.17284373565234235,
-    "home": 0.6849516455594649
+    "away": 0.024763951913455266,
+    "draw": 0.05305421674844871,
+    "home": 0.922181831338096
   },
   "updated_score": [
-    2,
-    1
+    4,
+    0
   ],
-  "updated_score_probability": 0.09476579900265376
+  "updated_score_probability": 0.09090049299373332,
+  "updated_top10_scores": [
+    [
+      4,
+      0,
+      0.09090049299373332
+    ],
+    [
+      3,
+      0,
+      0.08530035697080333
+    ],
+    [
+      5,
+      0,
+      0.0774946311592294
+    ],
+    [
+      4,
+      1,
+      0.06879828817682354
+    ],
+    [
+      3,
+      1,
+      0.06455980982267964
+    ],
+    [
+      2,
+      0,
+      0.0600339227520589
+    ],
+    [
+      5,
+      1,
+      0.058652024769732185
+    ],
+    [
+      6,
+      0,
+      0.05505487063125741
+    ],
+    [
+      2,
+      1,
+      0.045436839579803476
+    ],
+    [
+      6,
+      1,
+      0.0416684302855003
+    ]
+  ]
 }

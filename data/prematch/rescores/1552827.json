@@ -1,30 +1,105 @@
 {
+  "actual_score": null,
   "away_team": "Le Havre",
+  "away_team_id": 111,
   "changed": false,
+  "comparison_context": null,
   "competition": "FL1",
+  "excluded_from_original_accuracy": true,
+  "fallback_reason": null,
   "fixture_id": 1552827,
+  "history_as_of_utc": "2026-11-13T08:04:07.255328+00:00",
+  "history_availability_policy": "final-whistle timestamp when supplied; otherwise kickoff plus three hours",
+  "history_count": 397,
+  "history_warnings": [],
   "home_team": "Estac Troyes",
+  "home_team_id": 110,
   "kickoff_utc": "2026-11-20T19:45:00Z",
+  "label": "Upcoming forecast revision",
+  "mode": "upcoming",
+  "model_sources": [
+    "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+  ],
   "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+  "original_kickoff_utc": "2026-11-20T19:45:00Z",
   "original_model": "venue-form-ensemble-v5-unregularized-live",
+  "original_provider": "API-Football",
   "original_score": [
     1,
     1
   ],
-  "rescored_at_utc": "2026-11-13T07:25:33.559274+00:00",
+  "original_score_probability": 0.11129066616253136,
+  "original_source": "permanent_snapshot",
+  "provider": "API-Football",
+  "rescored_at_utc": "2026-11-13T08:04:07.255328+00:00",
+  "revision_id": "20261113T080407255328Z-a6b5ec20-3c12efe9c5ff",
+  "run_id": "20261113T080407255328Z-a6b5ec20",
+  "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.4481380848938374,
-    "home": 1.5667640834262553
+    "away": 0.9598093207787888,
+    "home": 1.1025188151574574
   },
-  "updated_model": "venue-form-ensemble-v6-competition-history",
+  "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.353056142993867,
-    "draw": 0.24185685550530917,
-    "home": 0.4050870015008238
+    "away": 0.30618297580857634,
+    "draw": 0.31389939352338053,
+    "home": 0.3799176306680431
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.11129052914441591
+  "updated_score_probability": 0.14061431447579648,
+  "updated_top10_scores": [
+    [
+      1,
+      1,
+      0.14061431447579648
+    ],
+    [
+      1,
+      0,
+      0.13413846794065573
+    ],
+    [
+      0,
+      0,
+      0.1332127467122478
+    ],
+    [
+      0,
+      1,
+      0.11599187327884976
+    ],
+    [
+      2,
+      0,
+      0.07728305732894435
+    ],
+    [
+      2,
+      1,
+      0.07417699876527868
+    ],
+    [
+      1,
+      2,
+      0.06457556443715735
+    ],
+    [
+      0,
+      2,
+      0.058570940955496614
+    ],
+    [
+      2,
+      2,
+      0.035597887402440014
+    ],
+    [
+      3,
+      0,
+      0.028402008271403885
+    ]
+  ]
 }

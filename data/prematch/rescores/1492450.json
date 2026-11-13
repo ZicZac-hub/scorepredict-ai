@@ -1,30 +1,105 @@
 {
+  "actual_score": null,
   "away_team": "Botafogo",
+  "away_team_id": 120,
   "changed": false,
+  "comparison_context": null,
   "competition": "BSA",
+  "excluded_from_original_accuracy": true,
+  "fallback_reason": null,
   "fixture_id": 1492450,
+  "history_as_of_utc": "2026-11-13T08:04:07.255328+00:00",
+  "history_availability_policy": "final-whistle timestamp when supplied; otherwise kickoff plus three hours",
+  "history_count": 719,
+  "history_warnings": [],
   "home_team": "Corinthians",
+  "home_team_id": 131,
   "kickoff_utc": "2026-11-19T00:30:00Z",
+  "label": "Upcoming forecast revision",
+  "mode": "upcoming",
+  "model_sources": [
+    "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+  ],
   "original_captured_at_utc": "2026-11-11T05:46:23.234973+00:00",
+  "original_kickoff_utc": "2026-11-19T00:30:00Z",
   "original_model": "venue-form-ensemble-v5-unregularized-live",
+  "original_provider": "API-Football",
   "original_score": [
     1,
     1
   ],
-  "rescored_at_utc": "2026-11-13T07:25:33.559274+00:00",
+  "original_score_probability": 0.1281179193776654,
+  "original_source": "permanent_snapshot",
+  "provider": "API-Football",
+  "rescored_at_utc": "2026-11-13T08:04:07.255328+00:00",
+  "revision_id": "20261113T080407255328Z-a6b5ec20-b5c3e290688a",
+  "run_id": "20261113T080407255328Z-a6b5ec20",
+  "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.0074618103942607,
-    "home": 1.3642504593565241
+    "away": 1.0353590162485586,
+    "home": 1.3638913527931338
   },
-  "updated_model": "venue-form-ensemble-v6-competition-history",
+  "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.27701508726576307,
-    "draw": 0.2729974799853846,
-    "home": 0.4499874327488524
+    "away": 0.27698869582268704,
+    "draw": 0.28739370921956775,
+    "home": 0.435617594957745
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.12826292796962915
+  "updated_score_probability": 0.13589247704127919,
+  "updated_top10_scores": [
+    [
+      1,
+      1,
+      0.13589247704127919
+    ],
+    [
+      1,
+      0,
+      0.11613019121005223
+    ],
+    [
+      0,
+      0,
+      0.09847801074717302
+    ],
+    [
+      2,
+      1,
+      0.08742574263591238
+    ],
+    [
+      0,
+      1,
+      0.08630405981749775
+    ],
+    [
+      2,
+      0,
+      0.08444002637085726
+    ],
+    [
+      1,
+      2,
+      0.06636674591791077
+    ],
+    [
+      0,
+      2,
+      0.04865984799082128
+    ],
+    [
+      2,
+      2,
+      0.045258515445458815
+    ],
+    [
+      3,
+      1,
+      0.03974640480653042
+    ]
+  ]
 }
