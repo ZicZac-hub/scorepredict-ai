@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timedelta, timezone
 from advanced import double_chance,ranked_double_chance,five_two_leg_doubles,summarize_backtest
 from history_store import connect,save_predictions,load
 
@@ -20,8 +21,10 @@ class TestAdvanced(unittest.TestCase):
   self.assertTrue(all(p['leg1']['fixture_id']!=p['leg2']['fixture_id'] for p in doubles))
  def test_write_once(self):
   c=connect(':memory:')
-  rows=[{'fixture':{'id':1,'homeTeam':{'name':'A'},'awayTeam':{'name':'B'}},'result':{'scores':[(2,1,.15)],'home_win':.5,'draw':.25,'away_win':.25},'kickoff':'2026-11-10','league':'L'}]
+  kickoff=(datetime.now(timezone.utc)+timedelta(days=1)).isoformat()
+  rows=[{'fixture':{'id':1,'provider':'football-data.org','homeTeam':{'id':10,'name':'A'},'awayTeam':{'id':20,'name':'B'}},'result':{'scores':[(2,1,.15)],'home_win':.5,'draw':.25,'away_win':.25},'kickoff':kickoff,'league':'L'}]
   self.assertEqual(save_predictions(c,rows),1)
   self.assertEqual(save_predictions(c,rows),0)
   self.assertEqual(len(load(c)),1)
 if __name__=='__main__':unittest.main()
+

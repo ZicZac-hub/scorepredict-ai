@@ -2,7 +2,7 @@
 
 Free-tier league/season availability varies. No fabricated matches or results.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import date as calendar_date, datetime, timedelta, timezone
 import hashlib
 import json
 import time
@@ -47,34 +47,65 @@ def _request(key, endpoint, params):
             return saved["data"]  # last-good snapshot; caller must not claim live freshness
         raise RuntimeError(str(exc)) from exc
 
+def _as_datetime(value):
+    """Accept the cached UI's ISO day strings as well as date/datetime callers."""
+    if isinstance(value, datetime):
+        result = value
+    elif isinstance(value, calendar_date):
+        result = datetime.combine(value, datetime.min.time())
+    elif isinstance(value, str):
+        result = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    else:
+        raise TypeError("Expected a datetime, date, or ISO date string")
+    if result.tzinfo is None:
+        result = result.replace(tzinfo=timezone.utc)
+    return result.astimezone(timezone.utc)
+
 def _convert(item, code):
     f=item.get("fixture") or {}
     teams=item.get("teams") or {}
     goals=item.get("goals") or {}
     h=teams.get("home") or {}
     a=teams.get("away") or {}
+    league=item.get("league") or {}
     status=(f.get("status") or {}).get("short","")
     date=f.get("date","")
     # Convert offset-aware kickoff to UTC for consistent filtering and sorting.
     try:
-        date=datetime.fromisoformat(date.replace("Z","+00:00")).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        date=_as_datetime(date).strftime("%Y-%m-%dT%H:%M:%SZ")
     except (ValueError,TypeError):
         date=""
     done=status in ("FT","AET","PEN")
+    # Exact-score forecasts target regulation time. API-Football's `goals`
+    # includes extra time for AET/PEN, while score.fulltime is the 90-minute
+    # result. Missing regulation scores must remain unknown, never inferred.
+    fulltime=(item.get("score") or {}).get("fulltime") or {}
+    if status == "FT" and not all(type(fulltime.get(s)) is int for s in ("home", "away")):
+        fulltime=goals
+    score={side:fulltime.get(side) if type(fulltime.get(side)) is int else None
+           for side in ("home", "away")}
+    league_id=league.get("id")
+    actual_code=next((name for name,identifier in LEAGUES.items() if identifier==league_id),
+                     f"API-{league_id}" if league_id is not None else code)
     return {"id":f.get("id"),"utcDate":date,
             "status":"FINISHED" if done else ("SCHEDULED" if status in ("NS","TBD") else "TIMED"),
             "homeTeam":{"id":h.get("id"),"name":h.get("name","Home"),"shortName":h.get("name","Home")},
             "awayTeam":{"id":a.get("id"),"name":a.get("name","Away"),"shortName":a.get("name","Away")},
-            "score":{"fullTime":{"home":goals.get("home"),"away":goals.get("away")}},
-            "competition":{"code":code},"provider":"API-Football"}
+            "score":{"fullTime":score,"duration":"REGULAR"},
+            "competition":{"id":league_id,"code":actual_code,"season":league.get("season"),
+                           "name":league.get("name")},
+            "season":league.get("season"),"provider":"API-Football",
+            "provider_status":status,"score_basis":"regulation"}
 
 def _season(code, now):
+    now=_as_datetime(now)
     # Most European seasons start in summer; Brazil uses a calendar year.
     if code=="BSA":return now.year
     return now.year if now.month>=7 else now.year-1
 
 def get_fixtures(key,code,now,days):
     if code not in LEAGUES:return []
+    now=_as_datetime(now)
     season=_season(code,now)
     params={"league":LEAGUES[code],"season":season,
             "from":now.date().isoformat(),
@@ -84,6 +115,7 @@ def get_fixtures(key,code,now,days):
 
 def get_history(key,code,now):
     if code not in LEAGUES:return []
+    now=_as_datetime(now)
     params={"league":LEAGUES[code],"season":_season(code,now),
             "from":(now.date()-timedelta(days=100)).isoformat(),
             "to":now.date().isoformat()}
@@ -92,3 +124,4 @@ def get_history(key,code,now):
 
 def supported_codes():
     return LEAGUES.copy()
+

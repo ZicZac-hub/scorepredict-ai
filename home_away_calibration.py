@@ -21,8 +21,8 @@ def evaluate_rows(rows, home_scale, away_scale):
     exact = top3 = outcome = one_one = 0
     logloss = brier = 0.0
     for home_xg, away_xg, h, a in rows:
-        matrix = _grid(max(.25, min(3.8, home_xg * home_scale)),
-                       max(.25, min(3.8, away_xg * away_scale)))
+        matrix = _grid(max(.25, home_xg * home_scale),
+                       max(.25, away_xg * away_scale))
         ranked = sorted(((i, j, float(matrix[i,j])) for i in range(matrix.shape[0])
                          for j in range(matrix.shape[1])), key=lambda item:item[2], reverse=True)
         best = ranked[0]
@@ -93,3 +93,4 @@ if __name__=="__main__":
     print(json.dumps({k:v for k,v in report.items() if k!="calibration_grid"},indent=2))
     if "error" in report:
         raise SystemExit(report["error"])
+

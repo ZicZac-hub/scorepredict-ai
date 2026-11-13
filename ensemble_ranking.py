@@ -6,7 +6,7 @@ Never alter historical predictions or auto-promote to production.
 import argparse,json,math
 from collections import defaultdict
 import numpy as np
-from engine import predict,finished,_date
+from engine import predict,finished,_date,mix_score_matrices
 
 VARIANTS=("baseline","team_strength","league_opponent")
 WEIGHTS=((1.,0.,0.),(.75,.25,0.),(.5,.5,0.),(.75,0.,.25),(.5,0.,.5),
@@ -17,7 +17,7 @@ def summarize(rows,weight):
     hits=top3=loss=one_one=0
     n=len(rows)
     for row in rows:
-        matrix=sum(w*row["matrices"][v] for w,v in zip(weight,VARIANTS) if w)
+        matrix=mix_score_matrices([row["matrices"][v] for v in VARIANTS],weight)
         ranked=np.argsort(-matrix.ravel(),kind="stable")
         h,a=row["actual"]
         actual=h*matrix.shape[1]+a
@@ -63,7 +63,7 @@ def evaluate(matches,calibration_year=2025,holdout_year=2026,min_history=30):
     wins=losses=both=neither=0
     for row in test:
         b=row["matrices"]["baseline"]
-        m=sum(w*row["matrices"][v] for w,v in zip(WEIGHTS[best],VARIANTS) if w)
+        m=mix_score_matrices([row["matrices"][v] for v in VARIANTS],WEIGHTS[best])
         actual=row["actual"]
         bh=tuple(np.unravel_index(np.argmax(b),b.shape))==actual
         mh=tuple(np.unravel_index(np.argmax(m),m.shape))==actual
@@ -91,3 +91,4 @@ if __name__=="__main__":
     with open(args.output,"w",encoding="utf-8") as f:json.dump(report,f,indent=2)
     print(json.dumps({k:v for k,v in report.items() if k!="calibration_candidates"},indent=2))
     if "error" in report:raise SystemExit(report["error"])
+

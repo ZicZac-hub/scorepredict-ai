@@ -4,9 +4,9 @@ Uses verified match results only. Team news and tactical data remain context
 unless independently validated; no invented injuries, xG or lineups.
 """
 import numpy as np
-from engine import predict
+from engine import predict, mix_score_matrices
 
-VERSION = "deep-research-challenger-v1"
+VERSION = "deep-research-challenger-v2-engine-v6"
 VARIANTS = ("baseline", "opponent_adjusted", "team_strength",
             "venue_contrast", "strength_contrast_candidate")
 
@@ -24,8 +24,7 @@ def research_prediction(fixture, history):
                 "reason": "Insufficient verified pre-kickoff history"}
     # Preserve the baseline contribution; never silently promote a challenger.
     # Fixed equal weights are experimental and require holdout calibration.
-    matrix = np.mean([r["matrix"] for r in forecasts.values()], axis=0)
-    matrix /= matrix.sum()
+    matrix = mix_score_matrices(r["matrix"] for r in forecasts.values())
     ranked = np.argsort(-matrix.ravel(), kind="stable")[:10]
     scores = [[int(i // matrix.shape[1]), int(i % matrix.shape[1]),
                float(matrix.ravel()[i])] for i in ranked]
@@ -48,3 +47,4 @@ def research_prediction(fixture, history):
                          "head_to_head": base["h2h_last10"],
                          "data_quality": {"history_count": base.get("history_count", 0)}},
             "limitations": "Statistical challenger only. No validated numerical injury, lineup or tactical adjustments. No guaranteed score."}
+

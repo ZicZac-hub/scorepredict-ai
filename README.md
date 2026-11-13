@@ -32,4 +32,27 @@ Push the project to GitHub, then deploy `app.py` on https://share.streamlit.io .
 - Historical walk-forward testing uses only prior completed matches, but is limited by available match history and should be validated out of sample before any accuracy claims.
 
 ## Tests
-Run `python -m unittest discover -s tests -v`.
+Install `pytest` and run `python -m pytest -q`. This includes both unittest
+classes and function-based regression tests. GitHub runs these checks on pull
+requests and pushes to main.
+
+## Prediction and result integrity repair
+The v6 live baseline separates provider and competition histories, uses genuine
+league-wide inputs in worldwide analysis, and supports four-plus modal scores
+when goal-rate evidence warrants them. Research context remains separate from
+the numerical model. See [validation evidence](MODEL_REPAIR_VALIDATION.md).
+
+Existing SQLite archives migrate automatically on first connection. The original
+table, original forecasts, saved timestamps, and previous results are retained.
+Older results without provider identity are excluded from accuracy until their
+provider, teams, kickoff, and regulation-time score are verified again. On the
+Finished page, use **Check completed results**; each click checks a rotating
+batch of ten matches, so unavailable recent results cannot block older records.
+The Finished count may change during this revalidation. Archive CSV exports
+include the previous result and verification status for inspection.
+
+New predictions are saved only before kickoff and never overwrite the original
+forecast. Scheduled verification also preserves old result evidence before
+rechecking it. Neither these repairs nor the experimental model comparison
+establish an improvement in the separate 236-match live archive.
+
