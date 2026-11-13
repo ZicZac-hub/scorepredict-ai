@@ -38,8 +38,10 @@ from double_tracker import save as save_double_snapshot, settle as settle_double
 from double_score_selection import select_diversified, score_coverage
 from smart_double_ai import rank_pairs, five_doubles
 from dashboard_ui import header_html, studio_css, sync_location, navigate, open_double_mode, sync_double_mode
+from private_access import require_access
 
 st.set_page_config(page_title='ZicZac Predict AI · Matchday Studio 2.0',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
+_access_gate_enabled = require_access(st)  # Optional secret-backed password, before any data or private UI
 st.markdown("""<style>
 :root{color-scheme:dark}
 .block-container{max-width:1200px;padding-top:1rem;padding-bottom:5rem}
@@ -119,7 +121,7 @@ st.markdown(studio_css(),unsafe_allow_html=True)
 _hero_slot=st.empty()
 # Native button navigation: each tap changes a single session-state route.
 # Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
-nav_items=[('🏠','Studio','home'),('🎯','Predictions','predict'),('🧠','Research','deep'),('🔗','Five Doubles','doubles'),('📊','History','archive'),('✅','Performance','finished'),('☰','Settings','more')]
+nav_items=[('🏠','Home','home'),('🎯','Daily Prediction','predict'),('🔗','Five Doubles','doubles'),('🧠','Deep Research','deep'),('📊','History','archive'),('✅','Performance','finished'),('🔒','Private Access','private'),('☰','More','more')]
 sync_location(st.session_state, st.query_params)
 def _navigate_to(page):
     navigate(st.session_state, st.query_params, page)
@@ -149,7 +151,7 @@ view=st.session_state['ziczac_active_page']
 # worldwide finder and API settings. This is what makes taps feel responsive.
 active_page_slot=st.container()
 with active_page_slot:
-    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','doubles':'🔗 Doubles and exact-score combinations','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','more':'☰ Model methodology and settings'}[view])
+    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','doubles':'🔗 Doubles and exact-score combinations','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
 
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
@@ -159,6 +161,20 @@ if not key:
     st.link_button('Get a free API key','https://www.football-data.org/client/register')
     st.stop()
 with st.sidebar:
+    st.markdown('### ⚽ ZicZac navigation')
+    st.caption('Choose a section to open it instantly.')
+    for _em, _title, _page in nav_items:
+        st.button(_em+' '+_title, key='zz_sidebar_'+_page,
+                  type='primary' if view==_page else 'secondary',
+                  use_container_width=True,
+                  on_click=_navigate_to,args=(_page,))
+    st.button('⚡ AI Auto Select',key='zz_sidebar_auto',
+              use_container_width=True,on_click=_open_double_mode,
+              args=('AI Auto Select',))
+    st.button('🎛️ Manual Select',key='zz_sidebar_manual',
+              use_container_width=True,on_click=_open_double_mode,
+              args=('Manual Select',))
+    st.divider()
     st.header('Model settings')
     _model_choice=st.selectbox('Score model', ['Preserved exact-score model (default)', 'New fitted model (research)'],key='forecast_model_choice')
     _forecast_variant='reference_v7' if _model_choice=='New fitted model (research)' else 'baseline'
@@ -432,39 +448,26 @@ def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {sydney_kickoff(r['kickoff'])}"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
+if view == 'private':
+    with active_page_slot:
+        st.subheader('🔒 Private Access')
+        st.caption('Protect the real website on iPhone and MacBook. Source-code privacy and website access are separate controls.')
+        if _access_gate_enabled:
+            st.success('The optional in-app password gate is enabled for this deployment.')
+            if st.button('🔐 Lock this session',key='ziczac_logout'):
+                st.session_state.pop('ziczac_access_granted',None)
+                st.rerun()
+        else:
+            st.warning('The in-app password gate is NOT enabled. Add ZICZAC_ACCESS_PASSWORD to Streamlit Secrets if you want password protection.')
+        st.markdown('**Recommended:** Also restrict your deployed app to your own Streamlit account under Streamlit Community Cloud → app → Settings → Sharing. A private GitHub repository alone does not restrict the website.')
+        st.caption('Never put your password or API keys into GitHub source files. App session passwords are not saved to the prediction archive.')
+        st.link_button('Open Streamlit Cloud', 'https://share.streamlit.io/', use_container_width=True)
+
 if view == 'deep':
     with active_page_slot:
-        st.subheader('🧠 Deep Research AI')
-        st.caption('NEW · Match-specific research challenger. Select a ready fixture and run the analysis below.')
-        # Deep Research AI is opt-in to keep first-page loading fast. This is an
-        # experimental comparison, never an automatic replacement for saved picks.
-        with st.expander('🧠 Deep Research AI · experimental match-specific analysis', expanded=True):
-            st.caption('Compares five statistical models using verified prior matches, opponent strength and venue form. No fabricated team news.')
-            deep_choices = {label: row for label, row in labels.items() if row.get('result')}
-            if not deep_choices:
-                st.info('No researched fixtures are ready yet. Choose a league or research a worldwide match first, then return here.')
-            deep_selected = st.selectbox('Choose a researched fixture', list(deep_choices), key='deep_research_fixture') if deep_choices else None
-            if deep_selected and st.button('Run Deep Research AI', key='run_deep_research'):
-                from deep_research_ai import research_prediction
-                target = deep_choices[deep_selected]
-                fixture = target['fixture']
-                prior = target.get('past') or histories.get(target['league'], [])
-                compatible = [m for m in prior if m.get('provider', 'football-data.org') == fixture.get('provider', 'football-data.org')]
-                with st.spinner('Comparing match-specific research models...'):
-                    deep = research_prediction(fixture, compatible)
-                if not deep.get('available'):
-                    st.warning(deep.get('reason', 'Not enough verified match history.'))
-                else:
-                    st.write('**Experimental exact score:**', '-'.join(map(str, deep['predicted_score'])))
-                    st.write('**Expected goals:**', f"Home {deep['home_xg']:.2f} · Away {deep['away_xg']:.2f}")
-                    st.write('**Win / draw / loss probabilities:**', {k: round(v*100, 1) for k,v in deep['outcome_probabilities'].items()})
-                    st.dataframe(pd.DataFrame([{'Score':f"{h}-{a}",'Probability (%)':round(prob*100,2)} for h,a,prob in deep['scores']]),hide_index=True,use_container_width=True)
-                    st.caption('Variants: '+', '.join(deep['variants_used']))
-                    st.caption(deep['limitations'])
-                    with st.expander('Verified evidence behind this estimate'):
-                        for section in ('home_last10','away_last10','home_home10','away_away10','head_to_head'):
-                            st.write('**'+section.replace('_',' ').title()+'**')
-                            st.dataframe(pd.DataFrame(deep['evidence'][section]),hide_index=True,use_container_width=True)
+        from research_ui import render as render_deep_research
+        render_deep_research(st, eligible, histories, secondary_key,
+                             sydney_kickoff, pre_match_report)
 
 
 st.subheader('📅 All available fixtures for the selected date')
@@ -1399,7 +1402,7 @@ with active_page_slot:
             st.info('No prediction-ready upcoming match is available. The featured game will appear when verified history is available.')
     st.caption('Model probabilities are estimates, not guaranteed results. Use the tabs below for full analysis.')
     st.caption('New analysis: last 10 overall, last 10 home/away, available H2H, and two mathematical goal estimators. These changes require walk-forward backtesting before any improvement in accuracy can be claimed.')
-    st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','deep':'🧠 Deep Research · Match-specific analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','finished':'🏁 Finished · Verified final scores and prediction accuracy','more':'☰ More · Model information'}[view])
+    st.caption({'home':'🏠 Home · Upcoming matches','predict':'🎯 Predict · Match analysis','deep':'🧠 Deep Research · Match-specific analysis','doubles':'🔗 Doubles · Combined predictions','archive':'📊 Archive · Results and backtesting','finished':'🏁 Finished · Verified final scores and prediction accuracy','private':'🔒 Private · Access settings','more':'☰ More · Model information'}[view])
     tabs=[st.container() for _ in range(7)]
 
     def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
