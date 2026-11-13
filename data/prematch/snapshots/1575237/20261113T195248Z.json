@@ -1,0 +1,163 @@
+{
+  "away_team": "Borussia M\u00f6nchengladbach",
+  "away_team_id": 163,
+  "captured_at_utc": "2026-11-13T19:52:48.018502+00:00",
+  "competition": "BL1",
+  "double_top10_scores": [
+    [
+      2,
+      1,
+      0.09384114091269871
+    ],
+    [
+      1,
+      1,
+      0.08641521868605902
+    ],
+    [
+      2,
+      0,
+      0.06903983065868102
+    ],
+    [
+      3,
+      1,
+      0.06793679679493489
+    ],
+    [
+      2,
+      2,
+      0.0637759366135532
+    ],
+    [
+      1,
+      0,
+      0.06357650819664173
+    ],
+    [
+      1,
+      2,
+      0.05872916138664138
+    ],
+    [
+      3,
+      0,
+      0.04998175534309626
+    ],
+    [
+      3,
+      2,
+      0.04617093104347903
+    ],
+    [
+      0,
+      1,
+      0.03978846563420713
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-13T19:52:47.322382+00:00",
+  "expected_goals": {
+    "away": 1.3592319102958168,
+    "home": 2.171866074970373
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1575237,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Werder Bremen",
+  "home_team_id": 162,
+  "injuries": [],
+  "input_digest": "db2bf59277b930fb7aabc478978a709ec1f7aa45222cc89df1dee07443d51805",
+  "kickoff_utc": "2026-11-27T19:30:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.235404862671797,
+    "draw": 0.20473805037665585,
+    "home": 0.5598570869515471
+  },
+  "predicted_score": [
+    2,
+    1
+  ],
+  "predicted_score_probability": 0.09384114091269871,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.00023698806762695312,
+      "cache_status": "committed_discovery_cache",
+      "discovery_age_seconds": 14677.92946,
+      "fetched_at_utc": "2026-11-13T15:48:08.406507+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-13T15:48:08.406744+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    "history_days": 730,
+    "news_sources": [],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-13T19:52:47.322382+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.003924846649169922,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T19:52:47.704877+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T19:52:47.708802+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.0038895606994628906,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T19:52:47.926849+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T19:52:47.930739+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 1.1048765246788517,
+      "home": 1.9292978856438292
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.21337029114226685,
+      "draw": 0.22181649311684762,
+      "home": 0.5648132157408856
+    },
+    "predicted_score": [
+      1,
+      1
+    ],
+    "score_probability": 0.10339098284802667
+  },
+  "score_basis": "regulation"
+}
