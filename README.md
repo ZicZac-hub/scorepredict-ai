@@ -93,3 +93,12 @@ unavailable histories/identities and retains originals. New five-double
 selection ranks five distinct score pairs by their actual joint mass, under the
 stated independent-match assumption; probabilities across different fixture
 pairs must not be added as portfolio coverage.
+
+## Shared evidence and central prospective ledger
+See [EVIDENCE_LEDGER.md](EVIDENCE_LEDGER.md) for the common history policy,
+PostgreSQL schema, restart recovery, full-grid v6/v7 comparisons, forecast
+horizons, and outbox retry rules. The app uses `DATABASE_URL` already configured
+in Streamlit Secrets. The Archive page shows central synchronization status and
+fresh same-evidence model comparisons; old originals and retrospective revision
+results stay separate. Scheduled collection journals all four models to GitHub
+and optionally the same database, with explicit budget/coverage reports.

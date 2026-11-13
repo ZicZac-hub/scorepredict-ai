@@ -19,6 +19,7 @@ from uuid import uuid4
 
 from api_football import LEAGUES, _convert, _request, _season
 from engine import finished
+from history_pipeline import build_evidence, load_evidence
 from persist_prematch import earliest_snapshots, parse_time
 from revision_store import save_revision_report
 
@@ -120,35 +121,8 @@ def _matches_original(record, fixture):
 
 
 def _safe_history(history, fixture, cutoff):
-    """Conservatively require results to have been available by the as-of time."""
-    output = []
-    source = fixture.get('provider') or 'football-data.org'
-    competition = fixture.get('competition') or {}
-    for match in history:
-        if not finished(match) or (match.get('provider') or 'football-data.org') != source:
-            continue
-        if str(match.get('id')) == str(fixture.get('id')):
-            continue
-        candidate = match.get('competition') or {}
-        if competition.get('id') is not None and candidate.get('id') != competition['id']:
-            continue
-        if competition.get('id') is None and competition.get('code') and candidate.get('code') != competition['code']:
-            continue
-        score = match['score']['fullTime']
-        if any(score[side] < 0 for side in ('home', 'away')):
-            continue
-        try:
-            kickoff = parse_time(match['utcDate'])
-            # Historical providers usually have kickoff but no final-whistle
-            # timestamp. Three hours avoids using an in-progress result that
-            # only became known after the original prediction was captured.
-            available = parse_time(match['finishedAt']) if match.get('finishedAt') else kickoff + timedelta(hours=3)
-            if kickoff >= cutoff or available > cutoff:
-                continue
-        except (KeyError, ValueError, TypeError):
-            continue
-        output.append(match)
-    return output
+    """Compatibility wrapper around the shared evidence policy."""
+    return build_evidence(fixture, history, cutoff)['history']
 
 
 def rescore_records(records, history_loader, fixture_loader, now=None, predictor=None, progress=None):
@@ -203,9 +177,13 @@ def rescore_records(records, history_loader, fixture_loader, now=None, predictor
             revision_id = report['run_id'] + '-' + hashlib.sha256(repr(identity).encode()).hexdigest()[:12]
             loaded_history = history_loader(deepcopy(original), deepcopy(fixture), cutoff)
             history_warnings = loaded_history.get('warnings', []) if isinstance(loaded_history, dict) else []
-            history = _safe_history(loaded_history.get('matches', []) if isinstance(loaded_history, dict) else loaded_history, fixture, cutoff)
+            source_rows = (loaded_history.get('history', loaded_history.get('matches', []))
+                           if isinstance(loaded_history, dict) else loaded_history)
+            source_metadata = loaded_history.get('provenance', []) if isinstance(loaded_history, dict) else None
+            evidence = build_evidence(fixture, source_rows, cutoff, source_metadata=source_metadata)
+            history = evidence['history']
             # Hide the target's actual score/status from the predictor itself.
-            model_fixture = deepcopy(fixture)
+            model_fixture = deepcopy(evidence['fixture'])
             model_fixture['status'] = 'SCHEDULED'
             model_fixture['score'] = {'fullTime': {'home': None, 'away': None}}
             model_fixture.pop('provider_status', None)
@@ -245,7 +223,9 @@ def rescore_records(records, history_loader, fixture_loader, now=None, predictor
                    'updated_score_probability': scores[0][2], 'updated_top10_scores': scores,
                    'updated_expected_goals': {'home': float(forecast['home_xg']), 'away': float(forecast['away_xg'])},
                    'updated_outcome_probabilities': {'home': float(forecast['home_win']), 'draw': float(forecast['draw']), 'away': float(forecast['away_win'])},
-                   'history_count': len(history), 'history_availability_policy': 'final-whistle timestamp when supplied; otherwise kickoff plus three hours',
+                   'history_count': len(history), 'history_availability_policy': 'shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours',
+                   'policy_version': evidence['policy_version'], 'input_digest': evidence['input_digest'],
+                   'history_window_start_utc': evidence['history_window_start_utc'], 'provenance': evidence.get('provenance', []),
                    'actual_score': actual, 'original_source': original.get('source'),
                    'history_warnings': history_warnings,
                    'model_sources': forecast.get('model_sources', []), 'fallback_reason': forecast.get('fallback_reason')}
@@ -292,43 +272,11 @@ def provider_loaders(api_key='', primary_get=None):
         raise ValueError('matching fixture unavailable from its original provider' + ('; ' + '; '.join(errors) if errors else ''))
 
     def history_loader(record, fixture, cutoff):
-        provider = fixture.get('provider') or 'football-data.org'
-        competition = fixture.get('competition') or {}
-        code = competition.get('code') or record['competition']
-        season = competition.get('season') or fixture.get('season')
-        if isinstance(season, dict):
-            season = str(season.get('startDate', ''))[:4]
-        try:
-            season = int(season)
-        except (ValueError, TypeError):
-            season = _season(code, parse_time(fixture['utcDate']))
-        output, warnings = [], []
-        for season_year in (season, season - 1):
-            key = (provider, code, season_year)
-            if key not in cache:
-                try:
-                    if provider == 'API-Football' and api_key:
-                        identifier = competition.get('id') or LEAGUES.get(code)
-                        if identifier is None:
-                            raise ValueError('competition identity unavailable for league history')
-                        raw = _request(api_key, '/fixtures', {'league': identifier, 'season': season_year})
-                        data = [_convert(item, code) for item in raw]
-                    elif provider == 'football-data.org' and primary_get:
-                        from result_verification import primary_result
-                        payload = primary_get(f'/competitions/{code}/matches?season={season_year}&status=FINISHED')
-                        data = [primary_result(item) for item in payload.get('matches', [])]
-                    else:
-                        raise ValueError('historical provider credentials are unavailable')
-                    cache[key] = (data, None)
-                except Exception as exc:
-                    cache[key] = ([], f'{provider} {code} {season_year}: {str(exc)[:120]}')
-            data, error = cache[key]
-            output.extend(data)
-            if error:
-                warnings.append(error)
-        if not output and warnings:
-            raise ValueError('history unavailable: ' + '; '.join(warnings))
-        return {'matches': output, 'warnings': warnings}
+        evidence = load_evidence(fixture, as_of=cutoff, api_key=api_key,
+                                 primary_get=primary_get, api_request=_request, cache=cache)
+        # Keep `matches` for older callback consumers; every path receives the
+        # same policy-filtered population and provenance.
+        return dict(evidence, matches=evidence['history'])
     return history_loader, fixture_loader
 
 

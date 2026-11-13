@@ -2,12 +2,18 @@ name: Capture verified pre-match evidence
 
 on:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '2,17,32,47 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'forecast_model.py'
+      - 'history_pipeline.py'
+      - 'forecast_ledger.py'
+      - 'prospective_ledger.py'
+      - 'evaluate_prospective_ledger.py'
+      - 'capture_prematch.py'
+      - 'api_football.py'
       - 'reference_model.py'
       - 'rescore_predictions.py'
       - 'revision_store.py'
@@ -34,34 +40,79 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
+        run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3' 'psycopg[binary]>=3.2,<4'
+      - name: Decide whether the six-hour legacy refresh is due
+        id: cadence
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PYCODE'
+          import json,os
+          from pathlib import Path
+          from datetime import datetime,timezone,timedelta
+          path=Path('data/prospective_ledger/cadence.json')
+          now=datetime.now(timezone.utc)
+          try:
+              last=datetime.fromisoformat(json.loads(path.read_text())['last_heavy_at_utc'])
+          except (OSError,ValueError,KeyError,TypeError):
+              last=now-timedelta(days=1)
+          heavy=os.environ['EVENT_NAME']!='schedule' or now-last>=timedelta(hours=6)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as handle:
+              handle.write('heavy='+str(heavy).lower()+'\n')
+          PYCODE
       - name: Check snapshot script
         run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py
       - name: Capture verified pre-kickoff snapshots
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python capture_prematch.py
+      - name: Persist newly captured originals
+        run: python persist_prematch.py --snapshots-only
       - name: Persist evidence and verify completed matches
+        if: steps.cadence.outputs.heavy == 'true'
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python persist_prematch.py
       - name: Compare frozen prospective challenger against verified results
+        if: steps.cadence.outputs.heavy == 'true'
         run: python prospective_comparison.py
       - name: Freeze five-double combinations and compare verified prospective results
+        if: steps.cadence.outputs.heavy == 'true'
         run: python prospective_double_comparison.py
       - name: Freeze Smart Double auto selections and verify outcomes
+        if: steps.cadence.outputs.heavy == 'true'
         run: python prospective_smart_double.py
       - name: Compare frozen five-model consensus with baseline
+        if: steps.cadence.outputs.heavy == 'true'
         run: python five_model_comparison.py
       - name: Re-score all saved singles and five doubles with retrospective comparisons
+        if: steps.cadence.outputs.heavy == 'true'
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python update_saved_forecasts.py
+      - name: Grade genuinely paired forecasts and simple baselines
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python evaluate_prospective_ledger.py
+      - name: Mark the completed six-hour refresh
+        if: success() && steps.cadence.outputs.heavy == 'true'
+        run: |
+          python - <<'PYCODE'
+          import json
+          from pathlib import Path
+          from datetime import datetime,timezone
+          path=Path('data/prospective_ledger/cadence.json')
+          path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps({'last_heavy_at_utc':datetime.now(timezone.utc).isoformat()})+'\n')
+          PYCODE
       - name: Commit permanent research history
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/
+          mkdir -p data/prospective_ledger
+          git add data/prematch/ data/prospective_ledger/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             git push
@@ -83,6 +134,7 @@ jobs:
             data/prematch/smart_double_pairs/*.json
             data/prematch/double_pairs/*.json
             data/prematch/rescores/latest_report.json
+            data/prospective_ledger/
             data/prematch/double_rescores/latest_report.json
           if-no-files-found: warn
           retention-days: 90
