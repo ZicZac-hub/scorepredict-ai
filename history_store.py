@@ -14,7 +14,7 @@ SCHEMA = '''CREATE TABLE IF NOT EXISTS predictions (
  home TEXT, away TEXT, home_id TEXT, away_id TEXT,
  predicted_score TEXT, home_prob REAL, draw_prob REAL, away_prob REAL,
  scores_json TEXT, actual_score TEXT, verification_status TEXT NOT NULL DEFAULT 'pending',
- verified_at TEXT, legacy_actual_score TEXT,
+ verified_at TEXT, legacy_actual_score TEXT, model_version TEXT,
  PRIMARY KEY (provider, fixture_id));'''
 
 
@@ -41,7 +41,7 @@ def _migrate(conn):
         conn.execute(SCHEMA)
         conn.commit()
         return
-    if 'provider' in columns:
+    if 'provider' in columns and 'model_version' in columns:
         return
     # Do not infer a provider from a number: ID ranges overlap across APIs.
     # Keep the complete original table as well as the previous result per row.
@@ -52,6 +52,8 @@ def _migrate(conn):
         # already-qualified table using a stale pre-lock schema observation.
         columns = {row[1] for row in conn.execute('PRAGMA table_info(predictions)')}
         if 'provider' in columns:
+            if 'model_version' not in columns:
+                conn.execute('ALTER TABLE predictions ADD COLUMN model_version TEXT')
             return
         backup = 'predictions_legacy_v1'
         suffix = 1
@@ -108,11 +110,11 @@ def save_predictions(conn, rows):
         values = (_provider(match), match['id'], now.isoformat(), row['kickoff'], row.get('league'),
                   home.get('name'), away.get('name'), str(home['id']), str(away['id']),
                   f'{top[0]}-{top[1]}', forecast['home_win'], forecast['draw'],
-                  forecast['away_win'], json.dumps(scores))
+                  forecast['away_win'], json.dumps(scores), forecast.get('model_version'))
         cur = conn.execute('''INSERT OR IGNORE INTO predictions
             (provider,fixture_id,saved_at,kickoff,league,home,away,home_id,away_id,
-             predicted_score,home_prob,draw_prob,away_prob,scores_json)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', values)
+             predicted_score,home_prob,draw_prob,away_prob,scores_json,model_version)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', values)
         saved += cur.rowcount
     conn.commit()
     return saved

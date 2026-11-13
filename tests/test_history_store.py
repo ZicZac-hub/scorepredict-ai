@@ -5,7 +5,7 @@ import threading
 import unittest
 from pathlib import Path
 
-from history_store import _migrate, connect, identity_matches, load, reconcile, save_predictions
+from history_store import SCHEMA, _migrate, connect, identity_matches, load, reconcile, save_predictions
 
 
 LEGACY_SCHEMA = '''CREATE TABLE predictions (
@@ -50,6 +50,17 @@ class ArchiveTests(unittest.TestCase):
         original = load(self.conn)[0]
         self.assertEqual(save_predictions(self.conn, [forecast(score=(3, 1))]), 0)
         self.assertEqual(load(self.conn)[0], original)
+
+    def test_model_version_is_saved_once_with_the_original_forecast(self):
+        first = forecast()
+        first['result']['model_version'] = 'old-version'
+        save_predictions(self.conn, [first])
+        later = forecast(score=(3, 1))
+        later['result']['model_version'] = 'new-version'
+        save_predictions(self.conn, [later])
+        row = load(self.conn)[0]
+        self.assertEqual(row['model_version'], 'old-version')
+        self.assertEqual(row['predicted_score'], '1-0')
 
     def test_post_kickoff_snapshot_is_never_saved(self):
         row = forecast()
@@ -115,6 +126,30 @@ class MigrationTests(unittest.TestCase):
                       'Team A', 'Team B', '1-0', .5, .3, .2, '[[1,0,0.12]]', '7-6'))
         conn.commit()
         conn.close()
+
+    def test_provider_qualified_archive_gets_only_additive_model_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = str(Path(directory) / 'archive.sqlite3')
+            conn = sqlite3.connect(path)
+            conn.execute(SCHEMA.replace(', model_version TEXT', ''))
+            conn.execute('''INSERT INTO predictions
+                (provider,fixture_id,saved_at,kickoff,home,away,predicted_score,
+                 actual_score,verification_status)
+                VALUES ('API-Football',123,'2099-12-01','2100-01-01','A','B',
+                        '1-0','2-0','verified')''')
+            conn.commit()
+            before = conn.execute('SELECT * FROM predictions').fetchone()
+            conn.close()
+            conn = connect(path)
+            row = load(conn)[0]
+            self.assertEqual(row['predicted_score'], '1-0')
+            self.assertEqual(row['actual_score'], '2-0')
+            self.assertEqual(row['verification_status'], 'verified')
+            self.assertIsNone(row['model_version'])
+            self.assertEqual(tuple(row.values())[:-1], before)
+            tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")]
+            self.assertEqual(tables, ['predictions'])
+            conn.close()
 
     def test_waiting_session_rechecks_schema_after_other_session_migrates(self):
         with tempfile.TemporaryDirectory() as directory:

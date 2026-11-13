@@ -5,6 +5,9 @@ on:
   push:
     paths:
       - 'engine.py'
+      - 'forecast_model.py'
+      - 'reference_model.py'
+      - 'reference_provider_benchmark.py'
       - 'backtest.py'
       - 'calibration_backtest.py'
       - 'xg_holdout.py'
@@ -52,6 +55,8 @@ jobs:
       - name: Run historical backtest
         run: |
           python backtest.py data/backtest_finished_matches.json --output backtest_results.json
+      - name: Evaluate frozen reference-model candidate against preserved baseline
+        run: python reference_provider_benchmark.py data/backtest_finished_matches.json --output reference_model_provider_results.json
       - name: Calibrate score probabilities and evaluate untouched 2026 holdout
         run: python calibration_backtest.py data/backtest_finished_matches.json --cutoff-year 2026 --output calibration_results.json
       - name: Evaluate alternative expected-goals model on 2026 holdout
@@ -81,6 +86,7 @@ jobs:
           name: ziczac-backtest-results
           path: |
             backtest_results.json
+            reference_model_provider_results.json
             calibration_results.json
             xg_holdout_results.json
             score_diversity_results.json
@@ -93,3 +99,4 @@ jobs:
             double_score_backtest_results.json
             balanced_double_backtest_results.json
             data/backtest_finished_matches.json
+
