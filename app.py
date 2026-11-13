@@ -23,6 +23,7 @@ def sydney_kickoff(value, fmt='%d %b %Y, %I:%M %p'):
 from global_fixtures import global_fixtures
 from sportmonks import sportmonks_fixtures
 from forecast_model import predict as _versioned_predict
+from history_pipeline import load_evidence
 
 def predict(*args, **kwargs):
     kwargs.setdefault('variant', globals().get('_forecast_variant','baseline'))
@@ -405,6 +406,9 @@ def _fast_secondary_history(api_key, competition_code, day):
 
 now=datetime.now(timezone.utc)
 rows=[];histories={};errors=[];fixture_counts=[]
+_evidence_cache={}
+def _primary_evidence_get(path,with_metadata=False):
+    return get_json(path,key,with_metadata=with_metadata)
 with st.spinner('Collecting fixtures and completed results...'):
     for name in selected:
         code=names[name]
@@ -439,10 +443,11 @@ with st.spinner('Collecting fixtures and completed results...'):
             has_teams=bool((m.get('homeTeam') or {}).get('id') and (m.get('awayTeam') or {}).get('id'))
             matching_past=[x for x in past if x.get('provider','football-data.org')==m.get('provider','football-data.org')]
             try:
-                result=predict(m,matching_past) if has_teams and matching_past else None
+                evidence=load_evidence(m,as_of=datetime.now(timezone.utc),api_key=secondary_key,primary_get=_primary_evidence_get,cache=_evidence_cache) if has_teams else None
+                result=predict(evidence['fixture'],evidence['history'],league_history=evidence['league_history']) if evidence else None
             except Exception:
-                result=None
-            rows.append({'league':name,'fixture':m,'result':result,'kickoff':kickoff})
+                result=None;evidence=None
+            rows.append({'league':name,'fixture':m,'result':result,'kickoff':kickoff,'evidence':evidence,'past':evidence['history'] if evidence else matching_past})
         fixture_counts.append({'Competition':name,'Source':source,'API scheduled fixtures':len(upcoming),'Within selected time window':visible})
 rows.sort(key=lambda r:r['kickoff'])
 # Combine date-first discovery with statistically modelled fixtures.
@@ -482,11 +487,11 @@ for m in worldwide_rows:
 
 # Automatically research all provider-compatible discovered fixtures for the
 # selected date. Cached per fixture across reruns and sessions to limit API use.
-@st.cache_data(ttl=21600,show_spinner=False)
+@st.cache_data(ttl=60,show_spinner=False)
 def _cached_pro_worldwide(key, event, model_variant):
     return model_worldwide(key,event,model_variant=model_variant)
 
-_model_cache_version='reference-informed-v7:'+_forecast_variant
+_model_cache_version='shared-evidence-v1:'+_forecast_variant+':'+str(int(datetime.now(timezone.utc).timestamp()//60))
 if st.session_state.get('worldwide_model_version') != _model_cache_version:
     st.session_state['worldwide_models']={}
     st.session_state['worldwide_model_version']=_model_cache_version
@@ -990,11 +995,19 @@ with st.expander('Why are some matches missing? · API coverage diagnostics'):
     if fixture_counts:st.dataframe(pd.DataFrame(fixture_counts),hide_index=True,use_container_width=True)
     st.caption('All kickoffs are shown in Sydney local time (AEDT/AEST). Matches without sufficient history appear without predictions. Provider team IDs are never mixed in score modelling.')
 conn=None
+_ledger_status={};_ledger_report={}
+try:
+    _database_url=st.secrets.get('DATABASE_URL','')
+except Exception:
+    _database_url=''
+_database_url=_database_url or os.environ.get('DATABASE_URL','')
 try:
     conn=connect()
-    save_predictions(conn,[r for r in rows if r['result']])
-    for past in histories.values():reconcile(conn,past)
-except Exception as e:st.warning(f'Local prediction snapshot storage unavailable: {e}')
+    from live_ledger import maintain_archive
+    _ledger_status,_ledger_report=maintain_archive(conn,rows,histories,database_url=_database_url)
+except Exception:
+    _ledger_status={'state':'partial','central_configured':bool(_database_url),'durable':False}
+    st.warning('Archive synchronization could not finish. Original local forecasts are preserved.')
 
 # Queue the complete old server archive once per model/source set. Keys remain in memory.
 from revision_jobs import start_or_resume_revision_job, get_revision_status
@@ -1002,13 +1015,13 @@ _revision_status=get_revision_status()
 def _retry_archive_revisions():
     return start_or_resume_revision_job(
         api_key=secondary_key,
-        primary_get=(lambda path:get_json(path,key)) if key else None,
+        primary_get=_primary_evidence_get if key else None,
         archive_rows=load(conn) if conn is not None else [],force=True)
 try:
     if conn is not None and (key or secondary_key):
         _revision_status=start_or_resume_revision_job(
             api_key=secondary_key,
-            primary_get=(lambda path:get_json(path,key)) if key else None,
+            primary_get=_primary_evidence_get if key else None,
             archive_rows=load(conn))
 except Exception:
     _revision_status={'state':'error'}
@@ -1649,6 +1662,8 @@ with active_page_slot:
                   'Estimated joint probability':f"{x['joint_probability_independent']:.1%}"} for i,x in enumerate(pairs)]),hide_index=True,use_container_width=True)
                 st.caption('The top combinations may reuse individual fixtures across different doubles. These are not five independent opportunities.')
     if view in ['archive']:
+        from ledger_ui import render_ledger
+        render_ledger(st,_ledger_status,_ledger_report)
         with tabs[3]:
             st.subheader('Historical walk-forward validation')
             st.write('For each completed match, the model uses only results strictly earlier than kickoff. This avoids using future results to predict past games.')
@@ -1974,9 +1989,17 @@ with active_page_slot:
                     try:
                         _first=pair_options[first_name]
                         _second=pair_options[second_name]
-                        if conn is not None:
+                        if conn is not None and _ledger_status.get('original_saves_allowed',not bool(_database_url)):
                             _saved=save_double_snapshot(conn,_first,_second,manual_options)
-                            if _saved: st.caption('Five doubles saved for later accuracy tracking.')
+                            if _saved:
+                                from live_ledger import backup_after_changes
+                                _double_backup=backup_after_changes(conn,_database_url)
+                                if _double_backup.get('durable') and _double_backup.get('state')=='complete':
+                                    st.caption('Five doubles saved and backed up in the central database.')
+                                else:
+                                    st.caption('Five doubles saved locally. Central backup is awaiting synchronization.')
+                        elif conn is not None:
+                            st.caption('Double saving is paused until the central archive can be restored, preserving any earlier original selections.')
                     except Exception as _exc:
                         st.caption('Double tracking unavailable: '+str(_exc))
                     with st.expander('📊 Double prediction accuracy · final scores'):

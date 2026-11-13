@@ -161,11 +161,15 @@ def test_legacy_fixture_lookup_can_fall_back_after_api_error():
 
 
 def test_missing_prior_season_does_not_discard_available_history():
-    with patch('rescore_predictions._request', side_effect=[[raw_game()], RuntimeError('not licensed')]):
+    available = raw_game(fid=100)
+    available['fixture'].update(date='2026-10-15T12:00:00Z', status={'short':'FT'})
+    available['goals'] = {'home':2,'away':0}
+    available['score']['fulltime'] = {'home':2,'away':0}
+    with patch('rescore_predictions._request', side_effect=[[available], RuntimeError('not licensed')]):
         loader, _ = provider_loaders(api_key='test-only')
         result = loader(original(), fixture(), NOW)
     assert len(result['matches']) == 1
-    assert 'not licensed' in result['warnings'][0]
+    assert any('history unavailable' in warning for warning in result['warnings'])
 
 
 def test_read_sqlite_archive_does_not_migrate_or_mutate_it(tmp_path):

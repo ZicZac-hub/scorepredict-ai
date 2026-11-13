@@ -4,6 +4,7 @@ The earliest pre-kickoff snapshot per fixture is the evaluation baseline.
 Later snapshots are retained separately for team-news availability analysis.
 """
 import json
+import argparse
 import math
 import os
 import unicodedata
@@ -221,6 +222,12 @@ def accuracy(snapshots, results):
     }
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--snapshots-only',action='store_true')
+    args=parser.parse_args()
+    if args.snapshots_only:
+        print('New snapshots:',persist_snapshots())
+        return
     key = os.environ.get("API_FOOTBALL_KEY", "")
     if not key:
         raise RuntimeError("API_FOOTBALL_KEY is required")

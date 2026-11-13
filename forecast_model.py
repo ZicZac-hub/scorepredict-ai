@@ -15,7 +15,8 @@ MODEL_VERSION = LIVE_MODEL_VERSION
 PARAMETERS = {'regularization': 2.0, 'half_life_days': 180.0, 'fitted_weight': 1.0}
 PROMOTION_STATUS = 'v6_retained_after_exact_score_validation'
 PROMOTION_EVIDENCE = {'paired_matches': 1385, 'v6_exact_hits': 163, 'v7_exact_hits': 157,
-                      'sample': 'Independent five-league 2026 provider replay; separate from live archive'}
+                      'sample': 'Independent five-league 2026 provider replay; separate from live archive',
+                      'evidence_protocol': 'legacy kickoff-only historical replay, before shared-evidence-v1'}
 
 
 def _summary(result):
