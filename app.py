@@ -40,7 +40,7 @@ from smart_double_ai import rank_pairs, five_doubles
 from dashboard_ui import header_html, studio_css, sync_location, navigate, open_double_mode, sync_double_mode
 from private_access import require_access
 
-st.set_page_config(page_title='ZicZac Predict AI · Matchday Studio 2.0',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
+st.set_page_config(page_title='ZicZac Predict AI · Matchday Studio 2.0',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='auto')
 _access_gate_enabled = require_access(st)  # Optional secret-backed password, before any data or private UI
 st.markdown("""<style>
 :root{color-scheme:dark}
@@ -1651,8 +1651,32 @@ with active_page_slot:
 
     if view in ['doubles']:
         with tabs[6]:
-            st.subheader('Choose the two matches for your exact-score double')
-            st.caption('Choose two different matches with verified historical results. Worldwide fixtures without sufficient model data cannot be assigned invented probabilities.')
+            st.subheader('⚡ Five exact-score doubles')
+            smart_mode=st.radio('Choose your selection mode',
+                ['AI Auto Select', 'Manual Select'], horizontal=True,
+                key='smart_double_mode', on_change=_sync_double_mode)
+            if smart_mode == 'AI Auto Select':
+                _fast_pair = rank_pairs([r for r in eligible if r.get('result')], limit=1)
+                if _fast_pair:
+                    _leader = _fast_pair[0]
+                    st.markdown('**🏆 AI-selected match pair · based on available researched fixtures**')
+                    st.write('**Match 1:** ' + fixture_label(_leader['first']))
+                    st.write('**Match 2:** ' + fixture_label(_leader['second']))
+                    st.metric('Estimated five-double coverage',f"{_leader['coverage']:.2%}")
+                    for _pos, _double in enumerate(_leader['doubles'],1):
+                        with st.container(border=True):
+                            st.markdown('**Double ' + str(_pos) + '**')
+                            _left, _right = st.columns(2)
+                            _left.metric('Match 1 exact score',_double['Score 1'])
+                            _right.metric('Match 2 exact score',_double['Score 2'])
+                            st.caption('Combined estimated probability: ' + f"{_double['Joint']:.2%}")
+                    st.caption('Coverage is a model estimate, not a measured historical hit rate. Calculated from verified pre-match history with an independence assumption.')
+                else:
+                    st.info('No two researched same-day matches are ready in the monitored leagues. Use the discovery controls below to research more matches.')
+            else:
+                st.info('Manual mode: choose Match 1 and Match 2 below to generate your five exact-score combinations.')
+            st.markdown('### 🔎 Fixture selection and additional research')
+            st.caption('Filter leagues and choose fixtures below. Unresearched matches are never given invented probabilities.')
             if True:
                 # Show future fixtures in Sydney time, nearest first; do not default
                 # to arbitrary previously selected games several weeks away.
@@ -1901,8 +1925,6 @@ with active_page_slot:
             # analysis-studio default selection (which may be weeks away).
             chosen_rows=[r for r in pair_options.values() if r.get('result') and r.get('result',{}).get('scores')]
             st.subheader('🧠 ZicZac Smart Double AI · experimental')
-            smart_mode=st.radio('Choose Smart Double mode',
-                ['AI Auto Select', 'Manual Select'],horizontal=True,key='smart_double_mode',on_change=_sync_double_mode)
             st.caption('AI Auto Select ranks researched same-day fixtures by estimated probability covered by five distinct exact-score combinations. It does not scan unresearched fixtures or guarantee wins. Manual Select uses your two choices above.')
             if smart_mode=='AI Auto Select':
                 smart_pairs=rank_pairs(chosen_rows)
