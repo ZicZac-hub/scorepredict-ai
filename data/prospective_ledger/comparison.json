@@ -1,0 +1,86 @@
+{
+  "by_horizon": {},
+  "by_league": {},
+  "common_frozen_fixtures": 118,
+  "common_frozen_slots": 118,
+  "common_unique_fixtures": 118,
+  "comparison_kind": "genuine_prospective_same_evidence",
+  "count_unit": "provider fixture and forecast horizon",
+  "exclusions": {
+    "awaiting_verified_result": 118
+  },
+  "fixed_baseline_note": "Always 1-1 is a point-forecast benchmark. Its artificial one-hot grid is excluded from probability, top-three and calibration metrics.",
+  "models": {
+    "always_1_1": {
+      "calibration": [],
+      "evaluated": 0,
+      "exact_hit_rate": null,
+      "exact_hits": 0,
+      "expected_exact_hits": null,
+      "outcome_brier": null,
+      "score_log_loss": null,
+      "top3_hit_rate": null
+    },
+    "league_poisson": {
+      "calibration": [],
+      "evaluated": 0,
+      "exact_hit_rate": null,
+      "exact_hits": 0,
+      "expected_exact_hits": null,
+      "outcome_brier": null,
+      "score_log_loss": null,
+      "top3_hit_rate": null
+    },
+    "v6": {
+      "calibration": [],
+      "evaluated": 0,
+      "exact_hit_rate": null,
+      "exact_hits": 0,
+      "expected_exact_hits": null,
+      "outcome_brier": null,
+      "score_log_loss": null,
+      "top3_hit_rate": null
+    },
+    "v7": {
+      "calibration": [],
+      "evaluated": 0,
+      "exact_hit_rate": null,
+      "exact_hits": 0,
+      "expected_exact_hits": null,
+      "outcome_brier": null,
+      "score_log_loss": null,
+      "top3_hit_rate": null
+    }
+  },
+  "note": "Earliest complete common pre-kickoff four-contributor snapshot per provider fixture and horizon. Later revisions and old originals are not backfilled. Repeated horizons are separate strata, not independent matches; pooled McNemar inference is suppressed when they repeat a physical fixture.",
+  "paired": {
+    "both_hits": 0,
+    "league_date_block_bootstrap95": null,
+    "matches": 0,
+    "mcnemar_exact_p": null,
+    "mcnemar_status": "no_verified_pairs",
+    "neither_hits": 0,
+    "repeated_fixture_slots": 0,
+    "uncertainty_note": "Diagnostic intervals; shared teams, repeated horizons and evolving histories limit independence assumptions. No automatic model promotion.",
+    "unique_fixtures": 0,
+    "v6_only_hits": 0,
+    "v7_minus_v6_exact_rate": null,
+    "v7_only_hits": 0
+  },
+  "paired_by_horizon": {},
+  "paired_verified_matches": 0,
+  "paired_verified_slots": 0,
+  "pending_common_forecasts": 118,
+  "persistence": {
+    "database": {
+      "state": "not_configured"
+    },
+    "file_settlement_errors": 0,
+    "file_settlements_written": 0,
+    "state": "complete"
+  },
+  "rows": [],
+  "schema_version": 1,
+  "tail_policy": "Full stored grids are scored; out-of-grid actual probability uses epsilon=1e-12 and is counted.",
+  "unique_verified_fixtures": 0
+}

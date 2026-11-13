@@ -8,12 +8,14 @@
   "excluded_from_original_accuracy": true,
   "fallback_reason": null,
   "fixture_id": 1492456,
-  "history_as_of_utc": "2026-11-13T08:04:07.255328+00:00",
-  "history_availability_policy": "final-whistle timestamp when supplied; otherwise kickoff plus three hours",
+  "history_as_of_utc": "2026-11-13T09:18:17.871404+00:00",
+  "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
   "history_count": 719,
   "history_warnings": [],
+  "history_window_start_utc": "2024-11-13T09:18:17.871404+00:00",
   "home_team": "Remo",
   "home_team_id": 1198,
+  "input_digest": "9388296bc158478c35af60ec8e55969655d70f5888f8f0cb707854fe2dcce730",
   "kickoff_utc": "2026-11-18T23:00:00Z",
   "label": "Upcoming forecast revision",
   "mode": "upcoming",
@@ -30,31 +32,70 @@
   ],
   "original_score_probability": 0.11772057181693382,
   "original_source": "permanent_snapshot",
+  "policy_version": "two-season-asof-v1",
+  "provenance": {
+    "history_days": 730,
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-13T09:18:17.871404+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 26.169270515441895,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T09:17:55.334580+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T09:18:21.503850+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 25.92635202407837,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T09:17:55.582549+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T09:18:21.508901+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
   "provider": "API-Football",
-  "rescored_at_utc": "2026-11-13T08:04:07.255328+00:00",
-  "revision_id": "20261113T080407255328Z-a6b5ec20-6f674d490e15",
-  "run_id": "20261113T080407255328Z-a6b5ec20",
+  "rescored_at_utc": "2026-11-13T09:18:17.871404+00:00",
+  "revision_id": "20261113T091817871404Z-58e43be3-8d1d7c7bc891",
+  "run_id": "20261113T091817871404Z-58e43be3",
   "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.035602311703164,
-    "home": 1.989779031871235
+    "away": 1.0356023117031639,
+    "home": 1.9897790318712356
   },
   "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.18539304774044213,
-    "draw": 0.22553866740922004,
-    "home": 0.5890682848503378
+    "away": 0.18539304774044196,
+    "draw": 0.22553866740921996,
+    "home": 0.589068284850338
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.10602231996267132,
+  "updated_score_probability": 0.10602231996267128,
   "updated_top10_scores": [
     [
       1,
       1,
-      0.10602231996267132
+      0.10602231996267128
     ],
     [
       2,
@@ -64,42 +105,42 @@
     [
       2,
       0,
-      0.09608891315476646
+      0.09608891315476648
     ],
     [
       1,
       0,
-      0.09058123303162262
+      0.09058123303162259
     ],
     [
       3,
       1,
-      0.06600090457997389
+      0.06600090457997393
     ],
     [
       3,
       0,
-      0.06373190155536256
+      0.0637319015553626
     ],
     [
       0,
       0,
-      0.05454057094566631
+      0.054540570945666285
     ],
     [
       1,
       2,
-      0.051791018700697265
+      0.05179101870069723
     ],
     [
       2,
       2,
-      0.0515263415452792
+      0.051526341545279186
     ],
     [
       0,
       1,
-      0.044266155714747
+      0.044266155714746964
     ]
   ]
 }

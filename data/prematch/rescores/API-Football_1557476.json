@@ -8,12 +8,14 @@
   "excluded_from_original_accuracy": true,
   "fallback_reason": null,
   "fixture_id": 1557476,
-  "history_as_of_utc": "2026-11-13T08:04:07.255328+00:00",
-  "history_availability_policy": "final-whistle timestamp when supplied; otherwise kickoff plus three hours",
+  "history_as_of_utc": "2026-11-13T09:18:17.871404+00:00",
+  "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
   "history_count": 480,
   "history_warnings": [],
+  "history_window_start_utc": "2024-11-13T09:18:17.871404+00:00",
   "home_team": "Tottenham",
   "home_team_id": 47,
+  "input_digest": "67f340b1fd7fcd817ed0d1ebf466016b6608591e331d51f80a3ffc4db440eb5f",
   "kickoff_utc": "2026-11-21T15:00:00Z",
   "label": "Upcoming forecast revision",
   "mode": "upcoming",
@@ -30,36 +32,75 @@
   ],
   "original_score_probability": 0.10791465811842088,
   "original_source": "permanent_snapshot",
+  "policy_version": "two-season-asof-v1",
+  "provenance": {
+    "history_days": 730,
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-13T09:18:17.871404+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 18.37553095817566,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T09:17:59.737445+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T09:18:18.112976+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 18.122886657714844,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T09:17:59.995537+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T09:18:18.118423+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
   "provider": "API-Football",
-  "rescored_at_utc": "2026-11-13T08:04:07.255328+00:00",
-  "revision_id": "20261113T080407255328Z-a6b5ec20-9d303e9702a0",
-  "run_id": "20261113T080407255328Z-a6b5ec20",
+  "rescored_at_utc": "2026-11-13T09:18:17.871404+00:00",
+  "revision_id": "20261113T091817871404Z-58e43be3-23db52559289",
+  "run_id": "20261113T091817871404Z-58e43be3",
   "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.3130884078613005,
-    "home": 1.758475133628376
+    "away": 1.3130884078613003,
+    "home": 1.7584751336283764
   },
   "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.2827815399224941,
+    "away": 0.28278153992249394,
     "draw": 0.24207198108203362,
-    "home": 0.4751464789954723
+    "home": 0.47514647899547247
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.11130135229174722,
+  "updated_score_probability": 0.1113013522917472,
   "updated_top10_scores": [
     [
       1,
       1,
-      0.11130135229174722
+      0.1113013522917472
     ],
     [
       2,
       1,
-      0.09409647137829204
+      0.09409647137829202
     ],
     [
       1,
@@ -69,7 +110,7 @@
     [
       2,
       0,
-      0.07166042348237675
+      0.07166042348237679
     ],
     [
       1,
@@ -84,22 +125,22 @@
     [
       0,
       1,
-      0.05657902768967899
+      0.05657902768967896
     ],
     [
       3,
       1,
-      0.055155435061515955
+      0.055155435061515976
     ],
     [
       0,
       0,
-      0.05062945136206754
+      0.050629451362067535
     ],
     [
       3,
       0,
-      0.042004357612657445
+      0.04200435761265747
     ]
   ]
 }

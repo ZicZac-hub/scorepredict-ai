@@ -1,0 +1,162 @@
+{
+  "away_team": "Liverpool",
+  "away_team_id": 40,
+  "captured_at_utc": "2026-11-13T09:18:15.000170+00:00",
+  "competition": "CL",
+  "double_top10_scores": [
+    [
+      2,
+      1,
+      0.07265626591753718
+    ],
+    [
+      2,
+      2,
+      0.0724476008986285
+    ],
+    [
+      1,
+      1,
+      0.06548656572882763
+    ],
+    [
+      1,
+      2,
+      0.06529849171616672
+    ],
+    [
+      3,
+      1,
+      0.053740620113742935
+    ],
+    [
+      3,
+      2,
+      0.05358627984631267
+    ],
+    [
+      2,
+      3,
+      0.04815969010320491
+    ],
+    [
+      1,
+      3,
+      0.043407305228195824
+    ],
+    [
+      2,
+      0,
+      0.03643276596878868
+    ],
+    [
+      3,
+      3,
+      0.03562158855740505
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-13T09:18:14.913731+00:00",
+  "expected_goals": {
+    "away": 1.994256103963683,
+    "home": 2.2189670540488704
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1635642,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Club Brugge KV",
+  "home_team_id": 569,
+  "injuries": [],
+  "input_digest": "b2ba5e9dfb871a47bf43962702112a9f23fd5c97fcf0499a1bc708d63c87f6ad",
+  "kickoff_utc": "2026-11-25T20:00:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.3576646638776441,
+    "draw": 0.2001853800477546,
+    "home": 0.4421499560746014
+  },
+  "predicted_score": [
+    2,
+    1
+  ],
+  "predicted_score_probability": 0.07265626591753718,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.00037360191345214844,
+      "cache_status": "network",
+      "fetched_at_utc": "2026-11-13T09:17:53.967031+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-13T09:17:53.967405+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    "history_days": 730,
+    "news_sources": [],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-13T09:18:14.913731+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.0034770965576171875,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T09:18:11.468112+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T09:18:11.471589+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.003209352493286133,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T09:18:11.691028+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T09:18:11.694237+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 2.198439201418912,
+      "home": 2.696039928832543
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.32261534847345524,
+      "draw": 0.18128194397936107,
+      "home": 0.49610270754718366
+    },
+    "predicted_score": [
+      2,
+      2
+    ],
+    "score_probability": 0.06576219332050201
+  },
+  "score_basis": "regulation"
+}
