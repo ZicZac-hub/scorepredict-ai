@@ -51,5 +51,6 @@ def expected_goals(fixture, past, prior=8.0, half_life_days=240.0):
             defence_h[t]=max(.35,min(2.8,(numer[("dh",t)]+prior)/(denom[("dh",t)]+prior)))
             defence_a[t]=max(.35,min(2.8,(numer[("da",t)]+prior)/(denom[("da",t)]+prior)))
     if home_id not in teams or away_id not in teams:return None
-    return (max(.25,min(4.0,base_h*attack_h[home_id]*defence_a[away_id])),
-            max(.25,min(4.0,base_a*attack_a[away_id]*defence_h[home_id])))
+    return (max(.25,base_h*attack_h[home_id]*defence_a[away_id]),
+            max(.25,base_a*attack_a[away_id]*defence_h[home_id]))
+

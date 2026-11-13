@@ -94,6 +94,10 @@ def main():
         records.append({
             "captured_at_utc": now.isoformat(),
             "fixture_id": fixture["id"], "competition": code,
+            "provider": fixture.get("provider", "API-Football"),
+            "home_team_id": fixture["homeTeam"]["id"],
+            "away_team_id": fixture["awayTeam"]["id"],
+            "score_basis": "regulation",
             "kickoff_utc": fixture["utcDate"],
             "home_team": fixture["homeTeam"]["name"],
             "away_team": fixture["awayTeam"]["name"],
@@ -123,3 +127,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

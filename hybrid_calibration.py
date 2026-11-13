@@ -8,7 +8,7 @@ import json
 import math
 from collections import defaultdict
 import numpy as np
-from engine import predict, finished, _date
+from engine import predict, finished, _date, mix_score_matrices
 
 WEIGHTS = (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0)
 EPS = 1e-12
@@ -20,7 +20,7 @@ def metrics(rows, weight):
     exact = top3 = outcome = one_one = 0
     loss = brier = 0.0
     for baseline, contrast, home, away in rows:
-        matrix = (1.0 - weight) * baseline + weight * contrast
+        matrix = mix_score_matrices([baseline,contrast],[1.0-weight,weight])
         ranked = np.argsort(matrix.ravel())[::-1][:3]
         predicted = np.unravel_index(int(ranked[0]), matrix.shape)
         exact += int(predicted == (home, away))
@@ -81,3 +81,4 @@ if __name__ == "__main__":
     print(json.dumps(report, indent=2))
     if "error" in report:
         raise SystemExit(report["error"])
+

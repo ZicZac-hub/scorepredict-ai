@@ -1,7 +1,7 @@
 """Verified API-Football Pro history for worldwide fixture forecasting.
 
-Only completed fixtures are modelled. Uses team-specific recent form and H2H,
-with date-range fallbacks for providers that do not support 'last'.
+Only completed fixtures are modelled. League scoring and opponent ratings use
+the complete target competition, separately from team-history fallbacks.
 """
 from datetime import datetime, timedelta, timezone
 from api_football import _request, _convert
@@ -20,18 +20,38 @@ def model_worldwide(key, event):
         return None, "Both API-Football team IDs are required."
     try:
         kickoff = datetime.fromisoformat(fixture["utcDate"].replace("Z", "+00:00"))
+        if kickoff.tzinfo is None:
+            kickoff = kickoff.replace(tzinfo=timezone.utc)
     except (KeyError, ValueError, TypeError):
         return None, "Fixture kickoff date is missing or invalid."
-    cutoff = min(kickoff, datetime.now(timezone.utc))
+    observed_at = datetime.now(timezone.utc)
+    cutoff = min(kickoff, observed_at)
     if cutoff <= datetime(2020, 1, 1, tzinfo=timezone.utc):
         return None, "Fixture date is outside the supported research window."
-    season = event.get("season")
-    league = event.get("league_id")
+    competition = dict(fixture.get("competition") or {})
+    season = event.get("season") or competition.get("season") or fixture.get("season")
+    league = event.get("league_id") or competition.get("id")
+    # Keep the fixture and its converted histories in the same provider-local
+    # competition namespace. Never equate team or league IDs across providers.
+    fixture = dict(fixture)
+    if league is not None:
+        competition["id"] = league
+    if season is not None:
+        competition["season"] = season
+    fixture["competition"] = competition
     past = {}
+    league_past = {}
     errors = []
     sources = []
 
-    def collect(label, params):
+    def same_competition(match):
+        comp = match.get("competition") or {}
+        if league is not None:
+            return comp.get("id") is not None and str(comp["id"]) == str(league)
+        code = competition.get("code")
+        return bool(code and comp.get("code") == code)
+
+    def collect(label, params, league_population=False):
         try:
             raw_matches = _request(key, "/fixtures", params)
             added = 0
@@ -43,12 +63,22 @@ def model_worldwide(key, event):
                     date = datetime.fromisoformat(m["utcDate"].replace("Z", "+00:00"))
                 except (ValueError, TypeError, KeyError):
                     continue
-                if date >= kickoff or date > datetime.now(timezone.utc):
+                if date.tzinfo is None:
+                    date = date.replace(tzinfo=timezone.utc)
+                if date >= cutoff:
                     continue
                 ids = ((m.get("homeTeam") or {}).get("id"), (m.get("awayTeam") or {}).get("id"))
-                if home not in ids and away not in ids:
+                if ids[0] is None or ids[1] is None or ids[0] == ids[1]:
+                    continue
+                if league_population:
+                    comp = m.get("competition") or {}
+                    if not same_competition(m) or str(comp.get("season")) != str(params["season"]):
+                        continue
+                elif home not in ids and away not in ids:
                     continue
                 identifier = m.get("id") or (m.get("utcDate"), *ids)
+                if league_population:
+                    league_past[identifier] = m
                 if identifier not in past:
                     past[identifier] = m
                     added += 1
@@ -56,19 +86,30 @@ def model_worldwide(key, event):
         except Exception as exc:
             errors.append(f"{label}: {str(exc)[:125]}")
 
-    # Pro plans may support 'last' and head-to-head; the free tier often does not.
-    # Fetch BOTH teams before modelling, so the result is not biased by an
-    # incomplete first successful response.
-    for label, tid in (("Home last 30", home), ("Away last 30", away)):
-        collect(label, {"team": tid, "last": 30})
-
-    # Include actual H2H fixtures (up to 10), which may be older than form data.
-    collect("Head-to-head last 10", {"h2h": f"{home}-{away}", "last": 10})
-
-    # Fallback across two football seasons when last/H2H endpoints are restricted.
     def count(tid):
-        return sum(tid in ((m.get("homeTeam") or {}).get("id"),
+        return sum(same_competition(m) and tid in ((m.get("homeTeam") or {}).get("id"),
                            (m.get("awayTeam") or {}).get("id")) for m in past.values())
+
+    # One cached request per league/season is shared by every fixture in that
+    # competition. Do not filter this population down to the two target teams:
+    # other clubs supply the league scoring environment and opponent ratings.
+    if league is not None and season is not None:
+        collect("Complete league season", {"league": league, "season": season},
+                league_population=True)
+        try:
+            previous_season = int(season) - 1
+        except (TypeError, ValueError):
+            previous_season = 0
+        if previous_season >= 2020 and (len(league_past) < 12 or min(count(home), count(away)) < 5):
+            collect("Complete previous league season", {"league": league, "season": previous_season},
+                    league_population=True)
+
+    # Fall back to team endpoints only for sparse histories. Their rows retain
+    # their real competition IDs; cup results cannot masquerade as league games.
+    if min(count(home), count(away)) < 10:
+        for label, tid in (("Home last 30", home), ("Away last 30", away)):
+            collect(label, {"team": tid, "last": 30})
+        collect("Head-to-head last 10", {"h2h": f"{home}-{away}", "last": 10})
 
     if count(home) < 10 or count(away) < 10:
         end = (cutoff - timedelta(days=1)).date()
@@ -78,14 +119,11 @@ def model_worldwide(key, event):
                 continue
             collect(label, {"team": tid, "from": start.isoformat(), "to": end.isoformat()})
 
-    # Last fallback: league-wide season data can fill missing home/away splits.
-    if (count(home) < 5 or count(away) < 5) and league and season:
-        collect("League season", {"league": league, "season": season,
-                                  "from": (cutoff - timedelta(days=365)).date().isoformat(),
-                                  "to": (cutoff - timedelta(days=1)).date().isoformat()})
-
     history = sorted(past.values(), key=lambda m: m.get("utcDate", ""), reverse=True)
-    result = predict(fixture, history)
+    league_history = sorted(league_past.values(), key=lambda m: m.get("utcDate", ""), reverse=True)
+    if len(league_history) < 12:
+        errors.append("Fewer than 12 verified league-wide results are available; league scoring rates use generic priors. Team-only results are not a league-wide baseline.")
+    result = predict(fixture, history, league_history=league_history)
     if result is not None:
         # Research extra independent evidence. Missing provider data is reported,
         # never converted into made-up injuries, formations or probabilities.
@@ -151,14 +189,17 @@ def model_worldwide(key, event):
         return {"league": event.get("league", "Unknown"),
                 "fixture": fixture, "result": result,
                 "kickoff": fixture["utcDate"], "past": history,
+                "league_history": league_history,
                 "research_sources": ["API-Football (verified completed results)"],
                 "research_details": sources,
                 "research_context": context,
                 "research_warnings": errors,
-                "history_counts": {"home": count(home), "away": count(away)}}, None
+                "history_counts": {"home": count(home), "away": count(away),
+                                   "league": len(league_history)}}, None
 
     reason = (f"Verified completed matches: home team {count(home)}, "
               f"away team {count(away)}. At least 5 each are required.")
     if errors:
         reason += " Data access details: " + " | ".join(errors[:3])
     return None, reason
+

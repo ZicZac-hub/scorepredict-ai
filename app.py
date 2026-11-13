@@ -6,7 +6,7 @@ import json
 import pandas as pd
 import pycountry
 import streamlit as st
-from data import competitions, fixtures, history
+from data import competitions, fixtures, history, get_json
 from api_football import get_fixtures as secondary_fixtures, get_history as secondary_history, supported_codes
 from worldwide import worldwide, SYDNEY
 
@@ -413,8 +413,8 @@ with st.spinner('Collecting fixtures and completed results...'):
         # Prefer API-Football Pro data over the older provider.
         if use_secondary and secondary_key and code in supported_codes():
             try:
-                pro_upcoming=_fast_secondary_fixtures(secondary_key,code,now.date().isoformat(),14)
-                pro_past=_fast_secondary_history(secondary_key,code,now.date().isoformat())
+                pro_upcoming=_fast_secondary_fixtures(secondary_key,code,now,14)
+                pro_past=_fast_secondary_history(secondary_key,code,now)
                 if pro_upcoming:
                     upcoming=pro_upcoming
                     source='API-Football Pro'
@@ -1247,7 +1247,8 @@ with active_page_slot:
         if conn is None:
             st.error('Prediction archive storage is unavailable.')
         else:
-            from api_football import _request as _finished_api_request, _convert as _finished_convert
+            from api_football import _request as _finished_api_request
+            from result_verification import fetch_saved_result, verification_batch
             archived=load(conn)
             now_utc=datetime.now(timezone.utc)
             due=[]
@@ -1262,25 +1263,26 @@ with active_page_slot:
             # Check most recently completed fixtures first, not the oldest 40 pending rows.
             due.sort(key=lambda item: item.get('kickoff') or '', reverse=True)
             if st.button('🔄 Check completed results',key='finished_refresh',type='primary'):
-                if not secondary_key:
-                    st.warning('API_FOOTBALL_KEY is required to verify finished scores.')
-                else:
-                    verified=[]
-                    errors=[]
-                    for saved in due[:40]:
-                        try:
-                            payload=_finished_api_request(secondary_key,'/fixtures',{'id':saved['fixture_id']})
-                            for raw in payload:
-                                match=_finished_convert(raw,'WORLD')
-                                if match.get('status')=='FINISHED':
-                                    verified.append(match)
-                        except Exception as exc:
-                            errors.append(str(exc)[:140])
-                    updated=reconcile(conn,verified)
-                    st.success(f'Updated {updated} finished results from verified API responses.')
-                    if errors:
-                        st.warning('Some results could not be verified: '+errors[0])
-                    archived=load(conn)
+                verified=[]
+                errors=[]
+                _batch,_next_cursor=verification_batch(due,st.session_state.get('finished_verification_cursor',0))
+                st.session_state['finished_verification_cursor']=_next_cursor
+                for saved in _batch:
+                    try:
+                        match,lookup_errors=fetch_saved_result(
+                            saved,
+                            primary_get=(lambda path: get_json(path,key)) if key else None,
+                            secondary_get=(lambda path,params: _finished_api_request(secondary_key,path,params)) if secondary_key else None)
+                        errors.extend(lookup_errors)
+                        if match and match.get('status')=='FINISHED':
+                            verified.append(match)
+                    except Exception as exc:
+                        errors.append(str(exc)[:140])
+                updated=reconcile(conn,verified)
+                st.success(f'Updated {updated} results after checking provider, teams and kickoff.')
+                if errors:
+                    st.warning('Some results could not be verified: '+errors[0])
+                archived=load(conn)
             completed=[]
             pending=0
             for saved in archived:
@@ -1292,7 +1294,7 @@ with active_page_slot:
                 if saved_dt>=kickoff_dt:
                     continue
                 actual=saved.get('actual_score')
-                if not actual:
+                if not actual or saved.get('verification_status')!='verified':
                     pending+=1
                     continue
                 predicted=str(saved.get('predicted_score') or '')
@@ -1308,16 +1310,16 @@ with active_page_slot:
             # Permanent GitHub-backed pre-match evidence survives Streamlit restarts.
             # Merge it with local SQLite results, deduplicating by fixture ID when possible.
             try:
-                from persist_prematch import earliest_snapshots, load_json, RESULTS as _verified_path
+                from persist_prematch import earliest_snapshots, load_json, verified_result, RESULTS as _verified_path
                 _permanent_results=load_json(_verified_path,{})
                 _originals=earliest_snapshots()
-                _seen_ids={str(item['fixture_id']) for item in archived
-                           if item.get('actual_score') and item.get('fixture_id') is not None}
+                _seen_ids={(item.get('provider'),str(item['fixture_id'])) for item in archived
+                           if item.get('verification_status')=='verified' and item.get('actual_score') and item.get('fixture_id') is not None}
                 for _fid,_original in _originals.items():
-                    if str(_fid) in _seen_ids:
+                    if ('API-Football',str(_fid)) in _seen_ids:
                         continue
                     _final=_permanent_results.get(str(_fid))
-                    if not _final:
+                    if not verified_result(_original,_final,str(_fid)):
                         continue
                     _pred=_original.get('predicted_score')
                     if not isinstance(_pred,list) or len(_pred)!=2:
@@ -1343,12 +1345,13 @@ with active_page_slot:
             # the model is worse than its stated 8–12% exact-score chances.
             _expected_hits=0.0
             _expected_count=0
+            _observed_subset_hits=0
             _top3_hits=0
             _top3_count=0
             _score_log_losses=[]
             _league_quality={}
             for _saved in archived:
-                if not _saved.get('actual_score') or not _saved.get('scores_json'):
+                if _saved.get('verification_status')!='verified' or not _saved.get('actual_score') or not _saved.get('scores_json'):
                     continue
                 try:
                     _kick=datetime.fromisoformat(_saved['kickoff'].replace('Z','+00:00'))
@@ -1360,6 +1363,7 @@ with active_page_slot:
                     if not 0<=_top<=1:continue
                     _expected_hits+=_top
                     _expected_count+=1
+                    _observed_subset_hits+=int(str(_saved.get('predicted_score'))==str(_saved['actual_score']))
                     _league=str(_saved.get('league') or 'Unknown')
                     _league_quality.setdefault(_league,{'matches':0,'hits':0,'expected':0.0})
                     _league_quality[_league]['matches']+=1
@@ -1378,7 +1382,7 @@ with active_page_slot:
             _brier_values=[]
             for _saved in archived:
                 _actual=_saved.get('actual_score')
-                if not _actual:continue
+                if not _actual or _saved.get('verification_status')!='verified':continue
                 try:
                     _kick=datetime.fromisoformat(_saved['kickoff'].replace('Z','+00:00'))
                     _saved_at=datetime.fromisoformat(_saved['saved_at'].replace('Z','+00:00'))
@@ -1401,7 +1405,7 @@ with active_page_slot:
                 _d1.metric('Expected exact-score hits',f'{_expected_hits:.1f}')
                 _d2.metric('Top-3 score coverage',f'{_top3_hits}/{_top3_count}' if _top3_count else '—')
                 _d3.metric('Expected top-score rate',f'{_expected_hits/_expected_count:.1%}')
-                st.caption(f'Among {_expected_count} saved forecasts with probability data, the model expected about {_expected_hits:.1f} exact-score hits. Compare this with observed hits over the SAME sample; a small sample is noisy.')
+                st.caption(f'Among {_expected_count} saved forecasts with probability data, the model expected about {_expected_hits:.1f} exact-score hits and observed {_observed_subset_hits}. These figures use the same local archive sample.')
                 _league_rows=[{'Competition':name,'Completed':v['matches'],
                                'Exact hits':v['hits'],
                                'Expected hits':round(v['expected'],2),
@@ -1415,7 +1419,10 @@ with active_page_slot:
             _oc1.metric('Match outcome accuracy (1X2)',f'{_outcome_hits/_outcome_count:.1%}' if _outcome_count else '—')
             _oc2.metric('1X2 Brier score · lower better',f'{sum(_brier_values)/len(_brier_values):.3f}' if _brier_values else '—')
             st.caption('Exact-score hits, winner/draw accuracy and probability calibration measure different things. Predictions are evaluated as saved before kickoff.')
-            st.caption(f'{pending} saved pre-match predictions still awaiting verified final scores. API-Football results are checked on request.')
+            st.caption(f'{pending} saved pre-match predictions await verified results. Each check processes up to 10 matches from their original providers.')
+            _legacy_count=sum(item.get('verification_status')=='legacy_unverified' for item in archived)
+            if _legacy_count:
+                st.info(f'{_legacy_count} older forecasts need their match identity and regulation-time result rechecked. Original predictions and previous results are preserved in the archive export.')
             if completed:
                 status_filter=st.selectbox('Show results',['All','🟢 HIT','🔴 ✕'],key='finished_filter')
                 shown=[x for x in completed if status_filter=='All' or x['Status']==status_filter]
@@ -1688,13 +1695,14 @@ with active_page_slot:
                             return 'Home' if h>a else 'Away' if a>h else 'Draw'
                         except (ValueError,TypeError):
                             return None
-                    completed=archive[archive['actual_score'].notna()].copy()
+                    _pre_match=pd.to_datetime(archive['saved_at'],utc=True,errors='coerce') < pd.to_datetime(archive['kickoff'],utc=True,errors='coerce')
+                    completed=archive[_pre_match & archive['actual_score'].notna() & archive['verification_status'].eq('verified')].copy()
                     completed=completed[completed['actual_score'].apply(score_outcome).notna()].copy()
                     total=len(archive)
                     resolved=len(completed)
                     if resolved:
                         completed['exact_hit']=completed['predicted_score']==completed['actual_score']
-                        completed['result_hit']=completed['predicted_score'].apply(score_outcome)==completed['actual_score'].apply(score_outcome)
+                        completed['result_hit']=completed[['home_prob','draw_prob','away_prob']].idxmax(axis=1).map({'home_prob':'Home','draw_prob':'Draw','away_prob':'Away'})==completed['actual_score'].apply(score_outcome)
                         def top_five_hit(r):
                             try:
                                 scores=json.loads(r['scores_json'] or '[]')
@@ -2128,3 +2136,4 @@ with active_page_slot:
                     st.dataframe(pd.DataFrame([{'Exact score':f'{h}-{a}','Estimated probability':f'{q:.2%}'} for h,a,q in p['scores'][:10]]),hide_index=True,use_container_width=True)
                     for note in context_review(m,p,past):st.write('• '+note)
             st.caption('Home/away and H2H use only accessible historical match data. Injuries, lineups, weather, travel and external scouting are NOT verified by this feature.')
+

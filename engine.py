@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 MODEL_VERSION = "venue-form-ensemble-v5-robust-effective-sample"
-LIVE_MODEL_VERSION = "venue-form-ensemble-v5-unregularized-live"
+LIVE_MODEL_VERSION = "venue-form-ensemble-v6-competition-history"
 
 def finished(match):
     score = match.get('score') or {}
@@ -78,12 +78,45 @@ def league_baselines(matches):
     return (max(.55,float(np.mean([s['home'] for s in scores]))),
             max(.55,float(np.mean([s['away'] for s in scores]))))
 
+def _competition_history(fixture, matches):
+    """Keep provider IDs and competition scoring environments separate.
+
+    Older normalized inputs without competition metadata remain supported when
+    the fixture itself has no competition. A labelled fixture never borrows
+    unidentified or unrelated competition results.
+    """
+    provider = fixture.get('provider', 'football-data.org')
+    competition = fixture.get('competition') or {}
+    identifier = competition.get('id')
+    code = competition.get('code')
+    selected = []
+    for match in matches:
+        if match.get('provider', 'football-data.org') != provider:
+            continue
+        candidate = match.get('competition') or {}
+        if identifier is not None:
+            if candidate.get('id') != identifier:
+                continue
+        elif code and candidate.get('code') != code:
+            continue
+        selected.append(match)
+    return _history(selected, fixture.get('utcDate'))
+
 def poisson(k,lam):
     return math.exp(-lam)*lam**k/math.factorial(k)
 
 def _grid(h,a,max_goals=10,rho=0.0):
-    matrix=np.array([[poisson(i,h)*poisson(j,a) for j in range(max_goals+1)]
-                     for i in range(max_goals+1)],dtype=float)
+    # Extend the grid when a supported high goal rate puts material probability
+    # beyond the requested minimum. Renormalizing an undersized grid can make
+    # a strong favourite appear less likely to win and hide its modal score.
+    maximum = max(int(max_goals), int(math.ceil(max(h, a))))
+    while True:
+        home = np.array([poisson(i,h) for i in range(maximum+1)])
+        away = np.array([poisson(i,a) for i in range(maximum+1)])
+        if float(home.sum()*away.sum()) >= 1.0-1e-10:
+            break
+        maximum += 1
+    matrix=np.outer(home,away)
     # Dixon-Coles low-score adjustment. Zero by default until league-specific
     # walk-forward evaluation supports fitting a nonzero rho.
     if rho:
@@ -93,6 +126,22 @@ def _grid(h,a,max_goals=10,rho=0.0):
             matrix[i,j]*=max(0.0,factor)
     matrix/=matrix.sum()
     return matrix
+
+def mix_score_matrices(matrices, weights=None):
+    """Mix complete score grids, padding smaller tails with zero probability."""
+    matrices = list(matrices)
+    if not matrices:
+        raise ValueError('At least one score matrix is required')
+    weights = ([1.0/len(matrices)]*len(matrices) if weights is None
+               else list(weights))
+    if (len(weights) != len(matrices) or any(w < 0 for w in weights)
+            or sum(weights) <= 0):
+        raise ValueError('Weights must match matrices and have positive total')
+    shape = tuple(max(matrix.shape[axis] for matrix in matrices) for axis in (0,1))
+    mixture = np.zeros(shape, dtype=float)
+    for matrix, weight in zip(matrices,weights):
+        mixture[:matrix.shape[0], :matrix.shape[1]] += weight*matrix
+    return mixture/mixture.sum()
 
 def _h2h(matches,home_id,away_id,limit=10):
     meetings=[]
@@ -107,18 +156,20 @@ def _h2h(matches,home_id,away_id,limit=10):
         if len(meetings)>=limit:break
     return meetings
 
-def predict(fixture,history,max_goals=10,variant='baseline'):
+def predict(fixture,history,max_goals=10,variant='baseline',league_history=None):
     home_id=(fixture.get('homeTeam') or {}).get('id')
     away_id=(fixture.get('awayTeam') or {}).get('id')
     if home_id is None or away_id is None or home_id==away_id:return None
     # Strictly exclude results on/after fixture kickoff, even for live fixtures.
-    past=_history(history,fixture.get('utcDate'))
+    past=_competition_history(fixture,history)
+    league_past = (past if league_history is None else
+                   _competition_history(fixture,league_history))
     hg=_games(past,home_id,limit=10);ag=_games(past,away_id,limit=10)
     hv=_games(past,home_id,'home',limit=10);av=_games(past,away_id,'away',limit=10)
     if min(len(hg),len(ag))<5:return None
     hs,as_=_stats(hg,fixture.get('utcDate')),_stats(ag,fixture.get('utcDate'))
     hvs,avs=_stats(hv,fixture.get('utcDate')),_stats(av,fixture.get('utcDate'))
-    base_h,base_a=league_baselines(past)
+    base_h,base_a=league_baselines(league_past)
     # Venue-specific rates shrink to overall form, then to league averages.
     def shrink(venue,overall,field,prior=5):
         if not venue:return overall[field]
@@ -128,7 +179,10 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
     home_against=shrink(hvs,hs,'conceded')
     away_for=shrink(avs,as_,'scored')
     away_against=shrink(avs,as_,'conceded')
-    def clamp(v,lo=.25,hi=3.8):return float(np.clip(v,lo,hi))
+    # Do not cap rates below four: that made four-goal modal forecasts
+    # impossible even with repeated high-scoring evidence. The grid handles
+    # the upper tail rather than using a score-selection ceiling.
+    def clamp(v,lo=.25):return float(max(lo,v))
     # Two complementary estimators: multiplicative strengths and arithmetic
     # attack/defence goals. Equal blend is conservative, not a tuned optimum.
     lam_h_strength=base_h*(.65+.35*home_for/base_h)*(.65+.35*away_against/base_h)
@@ -163,7 +217,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
     # using only matches strictly BEFORE that historical match (no leakage).
     # Shrink the adjustment towards 1 to avoid noisy small samples.
     if variant == 'opponent_adjusted':
-        chronological = list(reversed(past))
+        chronological = list(reversed(league_past))
         def adjusted(team_id, venue, scored_prior, conceded_prior):
             team_games = [m for m in chronological if
                           (m.get('homeTeam') or {}).get('id') == team_id or
@@ -228,7 +282,7 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
         lam_a = clamp(base_a * (away_attack * home_defence) ** .75)
     if variant == 'league_opponent':
         from league_opponent_model import expected_goals
-        estimate = expected_goals(fixture, past)
+        estimate = expected_goals(fixture, league_past)
         if estimate is None:
             return None
         lam_h, lam_a = estimate
@@ -274,8 +328,8 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
         logits-=logits.max()
         matrix=np.exp(logits)
         matrix/=matrix.sum()
-    scores=sorted(((i,j,float(matrix[i,j])) for i in range(max_goals+1)
-                   for j in range(max_goals+1)),key=lambda x:x[2],reverse=True)
+    scores=sorted(((i,j,float(matrix[i,j])) for i in range(matrix.shape[0])
+                   for j in range(matrix.shape[1])),key=lambda x:x[2],reverse=True)
     h2h=_h2h(past,home_id,away_id)
     return {'home_xg':lam_h,'away_xg':lam_a,
             'home_win':float(np.tril(matrix,-1).sum()),
@@ -287,10 +341,14 @@ def predict(fixture,history,max_goals=10,variant='baseline'):
             'home_last10':hg,'away_last10':ag,
             'home_home10':hv,'away_away10':av,
             'h2h_last10':h2h,
-            'history_count':len(past),'model_version':('strength-contrast-experimental' if variant=='strength_contrast_candidate' else 'temperature-1.35-experimental' if variant=='temperature_candidate' else 'league-opponent-iterative-experimental' if variant=='league_opponent' else 'venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
+            'history_count':len(past),
+            'league_history_count':len(league_past),
+            'league_baseline_source':('competition_history' if len(league_past)>=12 else 'generic_prior'),
+            'model_version':('strength-contrast-experimental' if variant=='strength_contrast_candidate' else 'temperature-1.35-experimental' if variant=='temperature_candidate' else 'league-opponent-iterative-experimental' if variant=='league_opponent' else 'venue-contrast-experimental' if variant=='venue_contrast' else 'opponent-adjusted-experimental' if variant=='opponent_adjusted' else 'team-strength-geometric-experimental' if variant=='team_strength' else 'venue-arithmetic-experimental' if variant=='venue_arithmetic' else 'venue-form-dixon-coles-experimental' if variant=='dixon_coles' else MODEL_VERSION if variant=='regularized' else LIVE_MODEL_VERSION),
             'evidence_weight':round(weight,3),
             'history_freshness':round(freshness,3),
             'uncertainty_note':('Experimental Dixon-Coles correction; not validated for live use.' if variant=='dixon_coles' else 'Sparse and stale histories are shrunk toward league averages.' if variant=='regularized' else 'Unregularized venue-form forecast selected after historical backtests; no exact score is guaranteed.'),
             'methods':{'strength':(round(lam_h_strength,3),round(lam_a_strength,3)),
                        'attack_defence':(round(lam_h_simple,3),round(lam_a_simple,3))},
             'data_quality':'moderate' if min(len(hg),len(ag),len(hv),len(av))>=8 else 'limited'}
+
