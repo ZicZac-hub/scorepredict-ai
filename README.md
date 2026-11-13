@@ -56,3 +56,40 @@ forecast. Scheduled verification also preserves old result evidence before
 rechecking it. Neither these repairs nor the experimental model comparison
 establish an improvement in the separate 236-match live archive.
 
+
+## Reference-informed upgrade and complete archive revisions
+The original code is preserved on
+[`archive/pre-reference-upgrade-v6-2026-11-13`](https://github.com/ZicZac-hub/scorepredict-ai/tree/archive/pre-reference-upgrade-v6-2026-11-13).
+The unchanged v6 engine also remains available in this version.
+
+Public [AI/site references](REFERENCE_SOURCES.md) inform the new fitted
+opponent-strength and Dixon–Coles research model. These sources do not supply
+actual provider API votes. [Validation](REFERENCE_MODEL_VALIDATION.md) found
+better probability scores but fewer exact hits in an independent 1,385-match
+replay, so the preserved scorer stays the default. Select **New fitted model
+(research)** in the sidebar to use the candidate for live forecasts.
+
+The upgrade automatically queues the server's old SQLite forecasts and saved
+doubles for revision on first load. The Finished page shows progress, upcoming
+revisions, separate finished retrospective comparisons, revised five doubles,
+and skipped-record reasons. **Update all saved forecasts and five doubles**
+retries the complete archive. New-model comparisons use `reference_v7`; original
+predictions, original accuracy and original five-double sets remain unchanged.
+Finished comparisons reconstruct information available at original capture;
+where a final-whistle timestamp is absent, prior games require a conservative
+three-hour interval after kickoff. They cannot be advertised as contemporaneous
+predictions or improvements to the original hit rate.
+
+For an unattended pass on repository-backed records or a local server archive:
+
+```sh
+python update_saved_forecasts.py --archive-db predictions.sqlite3
+```
+
+The existing provider keys stay in environment/Streamlit settings. GitHub
+Actions cannot read a private Streamlit instance's local SQLite; the server's
+background pass handles those records. An incomplete run explicitly reports
+unavailable histories/identities and retains originals. New five-double
+selection ranks five distinct score pairs by their actual joint mass, under the
+stated independent-match assumption; probabilities across different fixture
+pairs must not be added as portfolio coverage.

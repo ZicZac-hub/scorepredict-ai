@@ -5,10 +5,11 @@ the complete target competition, separately from team-history fallbacks.
 """
 from datetime import datetime, timedelta, timezone
 from api_football import _request, _convert
-from engine import predict, finished
+from engine import finished
+from forecast_model import predict
 
 
-def model_worldwide(key, event):
+def model_worldwide(key, event, model_variant='baseline'):
     fixture = event.get("fixture")
     if not fixture:
         return None, "Fixture has no compatible API-Football identifiers."
@@ -123,7 +124,7 @@ def model_worldwide(key, event):
     league_history = sorted(league_past.values(), key=lambda m: m.get("utcDate", ""), reverse=True)
     if len(league_history) < 12:
         errors.append("Fewer than 12 verified league-wide results are available; league scoring rates use generic priors. Team-only results are not a league-wide baseline.")
-    result = predict(fixture, history, league_history=league_history)
+    result = predict(fixture, history, league_history=league_history, variant=model_variant)
     if result is not None:
         # Research extra independent evidence. Missing provider data is reported,
         # never converted into made-up injuries, formations or probabilities.

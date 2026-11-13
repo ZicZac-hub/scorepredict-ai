@@ -91,4 +91,6 @@ def fixtures(key, code, date_from, date_to):
 
 def history(key, code):
     data = get_json(f'/competitions/{code}/matches?status=FINISHED', key)
-    return data.get('matches', [])
+    from result_verification import primary_result
+    return [primary_result(match) for match in data.get('matches', [])]
+

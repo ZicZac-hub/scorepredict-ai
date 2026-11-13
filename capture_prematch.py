@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import requests
 from api_football import LEAGUES, _convert, ROOT
-from engine import predict
+from forecast_model import predict
 from prospective_ensemble import ensemble_prediction
 from five_model_consensus import consensus_prediction
 from team_news import pre_match_report
@@ -102,6 +102,8 @@ def main():
             "home_team": fixture["homeTeam"]["name"],
             "away_team": fixture["awayTeam"]["name"],
             "forecast_model": forecast.get("model_version", "baseline"),
+            "model_sources": forecast.get("model_sources", []),
+            "reference_model_comparison": forecast.get("candidate_summary"),
             "prospective_challenger": challenger,
             "five_model_consensus": five_model,
             "predicted_score": list(forecast["scores"][0][:2]),

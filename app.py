@@ -22,7 +22,11 @@ def sydney_kickoff(value, fmt='%d %b %Y, %I:%M %p'):
 
 from global_fixtures import global_fixtures
 from sportmonks import sportmonks_fixtures
-from engine import predict
+from forecast_model import predict as _versioned_predict
+
+def predict(*args, **kwargs):
+    kwargs.setdefault('variant', globals().get('_forecast_variant','baseline'))
+    return _versioned_predict(*args, **kwargs)
 from live_scores import live_predicted_scores
 from featured_match import choose_feature
 from team_news import pre_match_report
@@ -281,6 +285,9 @@ if not key:
     st.stop()
 with st.sidebar:
     st.header('Model settings')
+    _model_choice=st.selectbox('Score model', ['Preserved exact-score model (default)', 'New fitted model (research)'],key='forecast_model_choice')
+    _forecast_variant='reference_v7' if _model_choice=='New fitted model (research)' else 'baseline'
+    st.caption('The new fitted model improves probability metrics in testing. Exact-score improvement has not been established; the preserved model remains the default.')
     days=st.slider('Upcoming days',1,14,14)
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
@@ -476,12 +483,13 @@ for m in worldwide_rows:
 # Automatically research all provider-compatible discovered fixtures for the
 # selected date. Cached per fixture across reruns and sessions to limit API use.
 @st.cache_data(ttl=21600,show_spinner=False)
-def _cached_pro_worldwide(key, event):
-    return model_worldwide(key,event)
+def _cached_pro_worldwide(key, event, model_variant):
+    return model_worldwide(key,event,model_variant=model_variant)
 
-if st.session_state.get('worldwide_model_version') != 'pro-quality-v8':
+_model_cache_version='reference-informed-v7:'+_forecast_variant
+if st.session_state.get('worldwide_model_version') != _model_cache_version:
     st.session_state['worldwide_models']={}
-    st.session_state['worldwide_model_version']='pro-quality-v8'
+    st.session_state['worldwide_model_version']=_model_cache_version
 _auto_cache=st.session_state.setdefault('worldwide_models',{})
 _auto_pending=[item for item in discoverable
                if item['name'] not in _auto_cache
@@ -493,7 +501,7 @@ if secondary_key and _auto_pending:
     _auto_limit=12
     with st.spinner(f'Automatically researching {min(len(_auto_pending),_auto_limit)} worldwide matches using Pro…'):
         for _item in _auto_pending[:_auto_limit]:
-            _row,_error=_cached_pro_worldwide(secondary_key,_item['event'])
+            _row,_error=_cached_pro_worldwide(secondary_key,_item['event'],_forecast_variant)
             _auto_cache[_item['name']]={'row':_row,'error':_error}
     if len(_auto_pending)>_auto_limit:
         st.caption(f'Pro research completed its first batch; {len(_auto_pending)-_auto_limit} fixtures remain for the next batch to protect response time and API quota.')
@@ -526,7 +534,7 @@ if secondary_key and st.session_state.get('ziczac_active_page','home')=='home':
             _feature_key='featured:'+str(_id)
             if _feature_key not in _auto_cache and _feature_attempts<8:
                 with st.spinner('Finding tomorrow’s best Pro prediction…'):
-                    _r,_err=_cached_pro_worldwide(secondary_key,_event)
+                    _r,_err=_cached_pro_worldwide(secondary_key,_event,_forecast_variant)
                 _auto_cache[_feature_key]={'row':_r,'error':_err}
                 _feature_attempts+=1
             _r=_auto_cache.get(_feature_key,{}).get('row')
@@ -630,7 +638,7 @@ if discoverable:
                       and item['event'].get('source')=='API-Football']
             with st.spinner(f'Researching up to {min(_max_batch,len(_pending))} fixtures using Pro…'):
                 for item in _pending[:_max_batch]:
-                    row,error=_cached_pro_worldwide(secondary_key,item['event'])
+                    row,error=_cached_pro_worldwide(secondary_key,item['event'],_forecast_variant)
                     _research_cache[item['name']]={'row':row,'error':error}
             if not _pending:
                 st.info('No additional compatible unresearched fixtures in this date range.')
@@ -859,7 +867,7 @@ if selected_worldwide:
                 if item.get('model') and item['model'].get('result'):
                     continue
                 with st.spinner('Pro analysing '+name+'…'):
-                    row,error=_cached_pro_worldwide(secondary_key,item['event'])
+                    row,error=_cached_pro_worldwide(secondary_key,item['event'],_forecast_variant)
                 st.session_state['worldwide_models'][name]={'row':row,'error':error}
     else:
         st.warning('API_FOOTBALL_KEY is missing; Pro history cannot run.')
@@ -869,7 +877,7 @@ if selected_worldwide:
             item=worldwide_options[name]
             if item['model'] and item['model'].get('result'):
                 continue
-            row,error=_cached_pro_worldwide(secondary_key,item['event'])
+            row,error=_cached_pro_worldwide(secondary_key,item['event'],_forecast_variant)
             st.session_state['worldwide_models'][name]={'row':row,'error':error}
     for name in selected_worldwide:
         cached=st.session_state['worldwide_models'].get(name)
@@ -987,6 +995,23 @@ try:
     save_predictions(conn,[r for r in rows if r['result']])
     for past in histories.values():reconcile(conn,past)
 except Exception as e:st.warning(f'Local prediction snapshot storage unavailable: {e}')
+
+# Queue the complete old server archive once per model/source set. Keys remain in memory.
+from revision_jobs import start_or_resume_revision_job, get_revision_status
+_revision_status=get_revision_status()
+def _retry_archive_revisions():
+    return start_or_resume_revision_job(
+        api_key=secondary_key,
+        primary_get=(lambda path:get_json(path,key)) if key else None,
+        archive_rows=load(conn) if conn is not None else [],force=True)
+try:
+    if conn is not None and (key or secondary_key):
+        _revision_status=start_or_resume_revision_job(
+            api_key=secondary_key,
+            primary_get=(lambda path:get_json(path,key)) if key else None,
+            archive_rows=load(conn))
+except Exception:
+    _revision_status={'state':'error'}
 
 # Corner assistant: works with live loaded fixtures and modelled results.
 # Optional OPENAI_API_KEY enables conversational responses; the local fallback
@@ -1214,33 +1239,8 @@ st.markdown("""<style>
 
 with active_page_slot:
     if view=='finished':
-        st.subheader('🔄 Updated scores for previously predicted matches')
-        st.caption('Automatic pre-kickoff recalculation every six hours. Originals remain unchanged for honest accuracy tracking. Experimental league calibration is not used.')
-        from pathlib import Path as _rescore_path
-        _revision_dir = _rescore_path('data/prematch/rescores')
-        _revisions = []
-        for _revision_file in _revision_dir.glob('*.json'):
-            if _revision_file.name == 'latest_report.json':
-                continue
-            try:
-                _revision = json.loads(_revision_file.read_text(encoding='utf-8'))
-                _kickoff = datetime.fromisoformat(_revision['kickoff_utc'].replace('Z','+00:00'))
-                if _kickoff > datetime.now(timezone.utc):
-                    _revisions.append({
-                        'Match': str(_revision.get('home_team',''))+' vs '+str(_revision.get('away_team','')),
-                        'Kickoff (Sydney)': sydney_kickoff(_revision['kickoff_utc']),
-                        'Original score': '-'.join(map(str,_revision['original_score'])),
-                        'Updated score': '-'.join(map(str,_revision['updated_score'])),
-                        'Changed': 'Yes' if _revision['changed'] else 'No',
-                        'Updated at (Sydney)': sydney_kickoff(_revision['rescored_at_utc']),
-                        'Model': _revision.get('updated_model','baseline')
-                    })
-            except (KeyError,ValueError,TypeError,OSError):
-                continue
-        if _revisions:
-            st.dataframe(pd.DataFrame(_revisions),hide_index=True,use_container_width=True)
-        else:
-            st.info('No upcoming previously predicted matches have been rescored yet. The scheduled pre-match workflow will populate this table.')
+        from revision_ui import render_revision_panel
+        render_revision_panel(st, _revision_status, sydney_kickoff, _retry_archive_revisions)
         st.divider()
         st.subheader('🏁 Finished matches · Prediction results')
         st.caption('🟢 HIT = the predicted exact score matches the verified full-time score. 🔴 ✕ = a different final score. Only forecasts saved before kickoff are evaluated.')
@@ -1613,12 +1613,22 @@ with active_page_slot:
                             st.caption('H2H goals are oriented to the upcoming home/away teams, even if prior meetings used the opposite venue.')
                         else:
                             st.caption('No verified head-to-head matches in the accessible history.')
+                        st.markdown('**Preserved and new-model comparison**')
+                        _comparison=[]
+                        for _name,_summary in [('Preserved model',p.get('baseline_reference')),('New fitted model',p.get('candidate_summary'))]:
+                            if _summary:
+                                _comparison.append({'Model':_name,'Score':'-'.join(map(str,_summary.get('predicted_score',[]))), 'Score probability':_summary.get('score_probability'),'Version':_summary.get('model_version')})
+                        if _comparison:
+                            st.dataframe(pd.DataFrame(_comparison),hide_index=True,use_container_width=True)
                         st.markdown('**Mathematical model comparison**')
                         methods=p.get('methods',{})
                         if methods:
                             st.dataframe(pd.DataFrame([{'Estimator':name,'Expected home goals':round(vals[0],2),'Expected away goals':round(vals[1],2)} for name,vals in methods.items()]+[{'Estimator':'Blended forecast','Expected home goals':round(p['home_xg'],2),'Expected away goals':round(p['away_xg'],2)}]),hide_index=True,use_container_width=True)
                         st.caption('Data quality: '+str(p.get('data_quality','unknown'))+' · Model: '+str(p.get('model_version','legacy'))+'. H2H is descriptive, not an extra goal multiplier. Injuries and lineups are not independently verified.')
     if view in ['doubles']:
+        with st.expander('Previous forecasts · revised five doubles'):
+            from revision_ui import render_revision_panel
+            render_revision_panel(st, _revision_status, sydney_kickoff, _retry_archive_revisions)
         with tabs[1]:
             st.subheader('Five highest-probability double-chance selections')
             st.caption('1X = home or draw · X2 = away or draw · 12 = either team wins. These are NOT exact-score doubles.')
@@ -1752,6 +1762,11 @@ with active_page_slot:
                     st.download_button('Download prediction archive CSV',archive.to_csv(index=False).encode(),'prediction_archive.csv','text/csv')
     if view in ['more']:
         with tabs[5]:
+            st.subheader('Forecast methods and references')
+            st.write('The new fitted research model estimates team attack, defence, venue effects and low-score behaviour. The default preserves the earlier exact-score model because the new candidate did not beat it on exact hits. You can compare both using Score model in the sidebar.')
+            st.markdown('Public references: [ScoreGPT methodology](https://scoregpt.app/methodology), [Forebet](https://www.forebet.com/faq/), [Opta Analyst](https://theanalyst.com/articles/opta-football-predictions), and [Dixon–Coles](https://doi.org/10.1111/1467-9876.00065).')
+            st.markdown('Evidence and structured-output references: [OpenAI / ChatGPT](https://developers.openai.com/api/docs/guides/structured-outputs), [Claude](https://platform.claude.com/docs/en/build-with-claude/citations), [DeepSeek](https://api-docs.deepseek.com/guides/json_mode/), and [Gemini](https://aistudio.google.com/docs/structured-output).')
+            st.caption('These are methodological references. The contributors producing the numerical probabilities are the named local statistical models. External AI APIs and proprietary prediction feeds are not connected.')
             st.markdown('''**Mathematical model:** Recency-weighted goals scored/conceded, venue-specific shrinkage, league home/away baselines, regularized expected-goal estimates and a normalized independent Poisson score matrix.\n\n**Human-style analysis:** Transparent rule-based commentary on relative strengths, sample sizes and uncertainty. It does **not** use an LLM, live injuries, verified lineups, bookmaker odds or premium xG data.\n\n**Backtesting:** Walk-forward evaluation of exact scores, match outcomes, Brier score and goal error. In-sample tuning on these same matches would overstate performance.\n\n**Limitations:** Data availability varies by league, free plan and season. Small samples, lineup changes, correlated matches and model miscalibration can make predictions inaccurate. No score can be guaranteed.''')
         st.divider()
         st.caption('For information and research only. Probabilities are model estimates, not betting advice or guaranteed results.')
@@ -1886,7 +1901,7 @@ with active_page_slot:
                         if _event.get('source')!='API-Football':
                             continue
                         _research_attempts+=1
-                        _researched,_research_error=_cached_pro_worldwide(secondary_key,_event)
+                        _researched,_research_error=_cached_pro_worldwide(secondary_key,_event,_forecast_variant)
                         if _researched:
                             pair_options[_name]=_researched
                         elif _research_error:
@@ -1901,7 +1916,7 @@ with active_page_slot:
                         if ev.get('source')!='API-Football':
                             continue
                         with st.spinner('Pro researching '+selected_name+'…'):
-                            researched,error=_cached_pro_worldwide(secondary_key,ev)
+                            researched,error=_cached_pro_worldwide(secondary_key,ev,_forecast_variant)
                         st.session_state.setdefault('worldwide_models',{})[selected_row['_worldwide_name']]={'row':researched,'error':error}
                         if researched:
                             pair_options[selected_name]=researched
@@ -1911,17 +1926,15 @@ with active_page_slot:
                 if first_name is not None and second_name is not None and pair_options[first_name].get('result') and pair_options[second_name].get('result'):
                     first=pair_options[first_name]
                     second=pair_options[second_name]
-                    for h1,a1,p1 in first['result']['scores'][:10]:
-                        for h2,a2,p2 in second['result']['scores'][:10]:
-                            manual_options.append({'Score 1':f'{h1}-{a1}','Score 2':f'{h2}-{a2}',
-                                'P1':p1,'P2':p2,'Joint':p1*p2})
+                    manual_options=five_doubles(first,second)
                 if first_name is not None and second_name is not None and not manual_options:
                     st.info('Both matches must have verified history before five exact-score doubles can be calculated. Choose another match or check the Pro research warning above.')
                 if manual_options:
-                    manual_options=select_diversified(manual_options,5)
+                    manual_options=manual_options[:5]
                     _coverage=score_coverage(manual_options)
-                    st.markdown('**Five diversified exact-score doubles for your two chosen matches**')
-                    st.caption(f"Coverage: {_coverage['match_1_scores']} different Match 1 scores · {_coverage['match_2_scores']} different Match 2 scores · {_coverage['distinct_exact_score_pairs']} exact pairs. Only a score pair in the SAME double counts as a win. Selection prioritises coverage after the highest-probability pair; later ranks are not necessarily ordered by probability.")
+                    st.markdown('**Five highest-probability exact-score doubles for your two chosen matches**')
+                    st.caption(f"Coverage: {_coverage['match_1_scores']} different Match 1 scores · {_coverage['match_2_scores']} different Match 2 scores · {_coverage['distinct_exact_score_pairs']} exact pairs. Only a score pair in the SAME double counts as a win. The five distinct score pairs maximize their combined model probability for these two matches, assuming independence.")
+                    st.metric('Estimated coverage of these five doubles',f"{sum(o['Joint'] for o in manual_options):.2%}")
                     st.write(f"**Match 1:** {first_name}")
                     st.write(f"**Match 2:** {second_name}")
                     manual_df=pd.DataFrame([{'Rank':i+1,'Match 1 score':o['Score 1'],
@@ -1974,9 +1987,12 @@ with active_page_slot:
                             for _games in histories.values():
                                 for _game in _games:
                                     if _game.get('status')!='FINISHED': continue
+                                    if _game.get('provider','football-data.org')=='football-data.org':
+                                        from result_verification import primary_result
+                                        _game=primary_result(_game)
                                     _sc=(_game.get('score') or {}).get('fullTime') or {}
                                     if isinstance(_sc.get('home'),int) and isinstance(_sc.get('away'),int):
-                                        _finished[(str(_game.get('provider') or ('API-Football' if _game.get('competition',{}).get('code') in supported_codes() else 'football-data.org')),str(_game.get('id')))]=f"{_sc['home']}-{_sc['away']}"
+                                        _finished[(str(_game.get('provider') or 'football-data.org'),str(_game.get('id')))]=f"{_sc['home']}-{_sc['away']}"
                             _records=settle_doubles(conn,_finished)
                             _done=[x for x in _records if x['Status']!='Pending']
                             _won=sum(x['Status']=='Won' for x in _done)
@@ -2030,46 +2046,14 @@ with active_page_slot:
             else:
                 options=[]
                 for a,b in combinations(chosen_rows,2):
-                    # Explore the top five scorelines for each match rather than assuming the most likely score is certain.
-                    for ha,aa,pa in a['result']['scores'][:5]:
-                        for hb,ab,pb in b['result']['scores'][:5]:
-                            options.append({'Match 1':fixture_label(a),'Score 1':f'{ha}-{aa}',
-                                            'Match 2':fixture_label(b),'Score 2':f'{hb}-{ab}',
-                                            'Match 1 probability':pa,'Match 2 probability':pb,
-                                            'Joint probability':pa*pb})
+                    for option in five_doubles(a,b):
+                        options.append({'Match 1':fixture_label(a),'Score 1':option['Score 1'],
+                                        'Match 2':fixture_label(b),'Score 2':option['Score 2'],
+                                        'Match 1 probability':option['P1'],'Match 2 probability':option['P2'],
+                                        'Joint probability':option['Joint']})
                 options.sort(key=lambda x:x['Joint probability'],reverse=True)
-                # Diversify match pairs first, then cover additional scorelines.
-                # These are alternative combinations, not independent bets.
-                best=[];seen=set()
-                for o in options:
-                    pair=(o['Match 1'],o['Match 2'])
-                    if pair not in seen:
-                        best.append(o);seen.add(pair)
-                    if len(best)==5:break
-                if len(best)<5:
-                    # If fewer than five distinct fixture pairs exist, diversify
-                    # score pairs within each repeated fixture pair.
-                    used={(o['Match 1'],o['Match 2'],o['Score 1'],o['Score 2']) for o in best}
-                    groups={}
-                    for o in options:
-                        pair=(o['Match 1'],o['Match 2'])
-                        groups.setdefault(pair,[]).append(o)
-                    while len(best)<5:
-                        candidates=[]
-                        for pair,group in groups.items():
-                            prior=[o for o in best if (o['Match 1'],o['Match 2'])==pair]
-                            for o in select_diversified(group,5,probability='Joint probability'):
-                                key=(o['Match 1'],o['Match 2'],o['Score 1'],o['Score 2'])
-                                if key not in used:
-                                    covered1={p['Score 1'] for p in prior}
-                                    covered2={p['Score 2'] for p in prior}
-                                    novelty=int(o['Score 1'] not in covered1)+int(o['Score 2'] not in covered2)
-                                    candidates.append((novelty,o['Joint probability'],o))
-                        if not candidates:break
-                        chosen=max(candidates,key=lambda item:(item[0],item[1]))[2]
-                        best.append(chosen)
-                        used.add((chosen['Match 1'],chosen['Match 2'],chosen['Score 1'],chosen['Score 2']))
-                st.caption('Each numbered double requires both exact scores in that SAME row. Scores appearing in separate rows do not count as a winning double. Different fixture pairs are prioritised; repeated pairs use diversified scorelines.')
+                best=options[:5]
+                st.caption('These are the five highest-probability distinct selections from the eligible fixture pairs. Each row requires both exact scores. Rows reusing matches are correlated; their probabilities must not be added across different fixture pairs.')
                 display=pd.DataFrame([{'Rank':i+1,'Match 1':o['Match 1'],'Exact score 1':o['Score 1'],
                     'Match 2':o['Match 2'],'Exact score 2':o['Score 2'],
                     'Score 1 probability':f"{o['Match 1 probability']:.2%}",

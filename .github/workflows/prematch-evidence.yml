@@ -4,6 +4,18 @@ on:
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'forecast_model.py'
+      - 'reference_model.py'
+      - 'rescore_predictions.py'
+      - 'revision_store.py'
+      - 'revision_jobs.py'
+      - 'double_revisions.py'
+      - 'smart_double_ai.py'
+      - 'update_saved_forecasts.py'
+      - '.github/workflows/prematch-evidence.yml'
 
 permissions:
   contents: write
@@ -15,7 +27,7 @@ concurrency:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
       - name: Check snapshot script
-        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py
+        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py
       - name: Capture verified pre-kickoff snapshots
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -41,10 +53,10 @@ jobs:
         run: python prospective_smart_double.py
       - name: Compare frozen five-model consensus with baseline
         run: python five_model_comparison.py
-      - name: Re-score existing upcoming predictions using current live model
+      - name: Re-score all saved singles and five doubles with retrospective comparisons
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-        run: python rescore_predictions.py
+        run: python update_saved_forecasts.py
       - name: Commit permanent research history
         run: |
           git config user.name "github-actions[bot]"
@@ -71,5 +83,7 @@ jobs:
             data/prematch/smart_double_pairs/*.json
             data/prematch/double_pairs/*.json
             data/prematch/rescores/latest_report.json
+            data/prematch/double_rescores/latest_report.json
           if-no-files-found: warn
           retention-days: 90
+
