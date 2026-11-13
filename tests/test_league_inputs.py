@@ -93,3 +93,9 @@ def test_mixture_preserves_scores_across_different_tail_sizes():
     assert mixed[3,0] == 0.75
     assert mixed[1,1] == 0.125
     assert mixed.sum() == 1.0
+
+
+def test_calibration_baseline_does_not_restore_removed_goal_ceiling():
+    from home_away_calibration import evaluate_rows
+    result = evaluate_rows([(4.6, 0.5, 4, 0)], 1.0, 1.0)
+    assert result['exact_hits'] == 1
