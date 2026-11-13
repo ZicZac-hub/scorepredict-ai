@@ -49,7 +49,7 @@ def _assert_page(app, page, title):
     assert not app.exception
     assert app.session_state['ziczac_active_page'] == page
     assert any(f'<h1>{title}</h1>' in item.value for item in app.markdown)
-    assert any('VERSION 2.0' in item.value for item in app.markdown)
+    assert any('STUDIO 2.1' in item.value for item in app.markdown)
 
 
 def test_navigation_opens_selected_content_without_home_cards(offline_app):
@@ -59,7 +59,7 @@ def test_navigation_opens_selected_content_without_home_cards(offline_app):
 
     for route, title in [('predict', 'Daily Predictions'), ('deep', 'Deep Research AI'),
                          ('archive', 'Prediction History'), ('finished', 'Real Performance'),
-                         ('more', 'Settings &amp; Methods')]:
+                         ('private', 'Private Access'), ('more', 'Settings &amp; Methods')]:
         app.button(key='zz_route_' + route).click().run()
         _assert_page(app, route, title)
         assert _param(app, 'view') == route
