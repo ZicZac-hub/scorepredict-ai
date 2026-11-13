@@ -37,8 +37,9 @@ from history_store import connect, save_predictions, reconcile, load
 from double_tracker import save as save_double_snapshot, settle as settle_doubles
 from double_score_selection import select_diversified, score_coverage
 from smart_double_ai import rank_pairs, five_doubles
+from dashboard_ui import header_html, studio_css, sync_location, navigate, open_double_mode, sync_double_mode
 
-st.set_page_config(page_title='ZicZac Predict AI',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
+st.set_page_config(page_title='ZicZac Predict AI · Matchday Studio 2.0',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='collapsed')
 st.markdown("""<style>
 :root{color-scheme:dark}
 .block-container{max-width:1200px;padding-top:1rem;padding-bottom:5rem}
@@ -114,146 +115,19 @@ div[data-testid="stTabs"] [role="tablist"]{border-bottom-color:rgba(123,151,216,
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
 </style>""",unsafe_allow_html=True)
-_hero_html="""<style>
-/* ZicZac Predict AI — compact, mobile-first dashboard */
-.zz-head{background:linear-gradient(145deg,#0a1634,#101b41 58%,#181340);border:1px solid #3e4c84;border-radius:22px;padding:18px 16px 16px;text-align:center;box-shadow:0 12px 30px #0005;margin-bottom:16px}
-.zz-logo{font-size:37px;line-height:1.15;filter:drop-shadow(0 0 14px #5f82ff70)}
-.zz-name{font-weight:900;font-size:clamp(25px,5vw,36px);line-height:1.25;color:#f9fbff;letter-spacing:-.045em}
-.zz-name span{color:#ff547f}
-.zz-sub{color:#b6c6e8;font-size:13px;margin-top:4px}
-.zz-by{color:#9fd6ff;font-weight:700;font-size:12px;letter-spacing:.08em;margin-top:8px}
-.zz-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:18px}
-.zz-nav-item{background:linear-gradient(150deg,#172449,#101a38);border:1px solid #344573;border-radius:13px;padding:11px 3px 9px;color:#f1f5ff;font-size:11px;font-weight:700}
-.zz-nav-item:first-child{background:linear-gradient(130deg,#5744f2,#8737d6);box-shadow:0 0 16px #7551ff55}
-.zz-nav-item .zz-ico{display:block;font-size:21px;margin-bottom:4px}
-.zz-stadium{position:relative;overflow:hidden;border-radius:19px;min-height:165px;margin:14px 0 0;background:radial-gradient(ellipse at 15% 18%,#90d8ff70,transparent 18%),radial-gradient(ellipse at 85% 18%,#90d8ff70,transparent 18%),linear-gradient(180deg,#0a1640 0%,#152f60 51%,#075039 88%,#093322);border:1px solid #425da0}
-.zz-stadium:before{content:"";position:absolute;inset:42% 0 15%;background:repeating-linear-gradient(0deg,#182a4c 0 7px,#30466a 8px 10px);clip-path:polygon(0 25%,50% 0,100% 25%,100% 100%,0 100%);opacity:.75}
-.zz-stadium:after{content:"";position:absolute;bottom:-40px;left:-8%;width:116%;height:85px;border:2px solid #c4f9d060;border-radius:50%;background:repeating-linear-gradient(90deg,#116044 0 16%,#0e533e 16% 32%)}
-.zz-stadium-copy{position:relative;z-index:1;padding:20px 10px 35px;text-align:center;text-shadow:0 3px 12px #000}
-.zz-stadium-title{font-size:clamp(22px,5vw,30px);font-weight:900;color:white;line-height:1.25}
-.zz-stadium-desc{color:#e6eeff;font-size:12px;margin-top:7px}
-.zz-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 18px}
-.zz-feature{background:linear-gradient(135deg,#192750,#111b38);border:1px solid #364d86;border-radius:15px;padding:14px 12px;color:#fff;min-height:74px;display:flex;align-items:center;gap:10px}
-.zz-feature-icon{font-size:26px}
-.zz-feature strong{display:block;font-size:14px}.zz-feature small{color:#b6c7e6;font-size:11px}
-.zz-section-title{font-size:22px;font-weight:850;color:#f8faff;margin:15px 0 9px}
-.zz-match-card{border:1px solid #42538a;border-radius:17px;background:linear-gradient(140deg,#19234a,#111a35);padding:15px;margin-bottom:11px;color:#f6f7ff}
-.zz-match-top{font-size:12px;color:#c0d2ff;margin-bottom:10px}
-.zz-match-teams{font-weight:800;font-size:17px;line-height:1.45;text-align:center}
-.zz-match-score{display:inline-block;background:linear-gradient(135deg,#0f756a,#1a9b70);border-radius:10px;padding:6px 14px;font-size:20px;margin:9px auto;color:white}
-.zz-match-meta{text-align:center;font-size:12px;color:#aabde5}
-@media(max-width:600px){.zz-head{padding:14px 10px}.zz-nav{gap:5px}.zz-nav-item{font-size:10px;padding:9px 2px}.zz-nav-item .zz-ico{font-size:19px}.zz-stadium{min-height:155px}.zz-feature{padding:11px 9px;gap:7px}.zz-feature strong{font-size:12px}.zz-feature-icon{font-size:21px}}
-/* Readability upgrade for iPhone: stronger hierarchy, contrast and spacing. */
-.zz-head{background:linear-gradient(155deg,#13254c 0%,#14254c 58%,#211c53 100%);border:2px solid #6e87cb;box-shadow:0 16px 38px #0009}
-.zz-logo{font-size:46px}
-.zz-name{font-size:clamp(29px,6.5vw,40px);text-shadow:0 2px 8px #0008}
-.zz-sub{font-size:clamp(15px,3.5vw,18px);color:#f0f5ff;font-weight:600}
-.zz-by{font-size:14px;color:#c7e7ff;letter-spacing:.09em}
-.zz-nav{gap:9px}
-.zz-nav-item{background:#1d315c;border:2px solid #6481bc;color:#fff;font-size:13px;padding:15px 4px 13px;box-shadow:inset 0 1px #ffffff1a}
-.zz-nav-item:first-child{background:linear-gradient(130deg,#6549ef,#9944dd);border-color:#ac8bff}
-.zz-nav-item .zz-ico{font-size:27px}
-.zz-stadium{border:2px solid #7999dc;background:linear-gradient(180deg,#132c59 0%,#193b6c 58%,#086244 100%);min-height:205px}
-.zz-stadium-copy{padding:24px 12px 48px;background:linear-gradient(180deg,#07142b65,#07142b20)}
-.zz-stadium-title{font-size:clamp(26px,6vw,37px);text-shadow:0 3px 7px #000,0 0 14px #0009}
-.zz-stadium-desc{font-size:clamp(14px,3.2vw,17px);font-weight:650;color:#fff;text-shadow:0 2px 7px #000}
-.zz-section-title{font-size:clamp(24px,5vw,30px)}
-.zz-feature{background:#1a2c55;border-color:#6c86bd}
-.zz-feature strong{font-size:16px}.zz-feature small{font-size:13px;color:#e0eaff}
-.zz-match-card{background:#192c55;border-color:#6f8dcb}
-.zz-match-top,.zz-match-meta{font-size:14px;color:#e2ecff}
-.zz-match-teams{font-size:20px}
-[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li{line-height:1.65}
-[data-testid="stWidgetLabel"] p{font-size:16px!important;font-weight:650;color:#f2f6ff!important}
-[data-testid="stExpander"]{background:#142443!important;border:1px solid #536fa5!important}
-[data-baseweb="select"]>div,[data-testid="stTextInput"] input{background:#1a2b4b!important;border-color:#6786b8!important;color:#fff!important}
-@media(max-width:680px){
-.zz-head{padding:18px 12px}
-.zz-nav{gap:6px}
-.zz-nav-item{font-size:12px;padding:13px 2px;min-height:86px}
-.zz-nav-item .zz-ico{font-size:24px;margin-bottom:8px}
-.zz-stadium{min-height:190px}
-.zz-feature strong{font-size:14px}
-.zz-feature-icon{font-size:25px}
-[data-testid="stMarkdownContainer"] p{font-size:15px}
-}
-/* ZicZac premium mobile fixture finder — visual-only enhancement */
-:root{--zz-ink:#eaf2ff;--zz-muted:#b4c8e9;--zz-stroke:#5377b3}
-[data-testid="stAppViewContainer"] .block-container{max-width:1080px}
-[data-testid="stMarkdownContainer"] h2,[data-testid="stMarkdownContainer"] h3{
-  color:#f7faff;letter-spacing:-.025em;line-height:1.25;
-  text-wrap:balance;text-shadow:0 3px 18px #02081988
-}
-[data-testid="stMarkdownContainer"] h2{font-weight:850;margin-top:1.15rem}
-[data-testid="stMarkdownContainer"] h3{font-weight:820}
-[data-testid="stCaptionContainer"] p{color:#bfd0ed!important;line-height:1.5!important}
-[data-testid="stWidgetLabel"] p{color:#f4f7ff!important;font-weight:750!important;letter-spacing:.005em}
-[data-testid="stMultiSelect"] [data-baseweb="select"]>div,
-[data-testid="stSelectbox"] [data-baseweb="select"]>div{
-  background:linear-gradient(145deg,#192d55,#172446)!important;
-  border:1px solid #6686c5!important;border-radius:15px!important;
-  min-height:55px;box-shadow:0 7px 22px #0003,inset 0 1px #ffffff0b
-}
-[data-testid="stMultiSelect"] [data-baseweb="tag"]{
-  background:linear-gradient(115deg,#825cf5,#5f4fe6)!important;
-  border:1px solid #b7a1ff!important;border-radius:10px!important;
-  box-shadow:0 3px 10px #2a1e6e55;
-  padding:5px 7px;max-width:100%
-}
-[data-testid="stMultiSelect"] [data-baseweb="tag"] span{
-  color:#fff!important;font-size:13px!important;font-weight:700!important;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
-}
-[data-testid="stMultiSelect"] [data-baseweb="tag"] svg{fill:#fff}
-[data-testid="stCheckbox"]{
-  background:linear-gradient(130deg,#1b3157,#172646);
-  border:1px solid #395a8b;border-radius:14px;
-  padding:11px 12px;margin:4px 0 8px;
-  box-shadow:0 5px 15px #0002;transition:border-color .15s,background .15s
-}
-[data-testid="stCheckbox"]:hover{border-color:#a0baff;background:#243b67}
-[data-testid="stCheckbox"] label{align-items:flex-start;gap:9px}
-[data-testid="stCheckbox"] label p{
-  color:#f0f5ff!important;font-size:14px!important;font-weight:650;
-  line-height:1.55!important;overflow-wrap:anywhere
-}
-[data-testid="stCheckbox"] [data-baseweb="checkbox"]{margin-top:3px}
-[data-testid="stExpander"]{
-  background:linear-gradient(125deg,#1a3057,#172342)!important;
-  border:1px solid #6888c2!important;border-radius:16px!important;
-  box-shadow:0 8px 24px #0003
-}
-[data-testid="stExpander"] summary{padding:13px 15px!important}
-[data-testid="stExpander"] summary p{font-weight:750!important;color:#eaf3ff!important}
-[data-testid="stTextInput"] input{
-  min-height:51px;border-radius:13px!important;
-  background:#1b2e52!important;border:1px solid #6584b9!important
-}
-[data-testid="stAlert"]{border-radius:14px!important}
-hr{border-color:#46618a!important;margin:1.5rem 0!important}
-@media(max-width:680px){
-  [data-testid="stAppViewContainer"] .block-container{padding-left:13px;padding-right:13px}
-  [data-testid="stMarkdownContainer"] h2{font-size:clamp(22px,6vw,28px)!important}
-  [data-testid="stMarkdownContainer"] h3{font-size:clamp(19px,5vw,24px)!important}
-  [data-testid="stMultiSelect"] [data-baseweb="tag"]{max-width:calc(100vw - 105px)}
-  [data-testid="stCheckbox"]{padding:11px 10px}
-  [data-testid="stCheckbox"] label p{font-size:13px!important}
-  [data-testid="stWidgetLabel"] p{font-size:15px!important}
-}
-</style>
-<div class="zz-head"><div class="zz-logo">⚽</div><div class="zz-name">ZicZac Predict <span>AI</span></div><div class="zz-sub">AI Football Predictions &amp; Exact Scores</div><div class="zz-by">PREDICTION BY ZICZAC</div>
-
-<div class="zz-stadium"><div class="zz-stadium-copy"><div class="zz-stadium-title">Today's Football<br>Predictions</div><div class="zz-stadium-desc">⚡ Data-driven analysis · Exact scores · Worldwide matches</div><div style="font-size:28px;margin-top:9px">⚽</div></div></div></div>
-"""
+st.markdown(studio_css(),unsafe_allow_html=True)
 _hero_slot=st.empty()
 # Native button navigation: each tap changes a single session-state route.
 # Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
-nav_items=[('🏠','Home','home'),('🎯','Predict','predict'),('🧠','Deep Research','deep'),('🔗','Doubles','doubles'),('📊','Archive','archive'),('✅','Finished','finished'),('☰','More','more')]
-if 'ziczac_active_page' not in st.session_state:
-    initial=st.query_params.get('view','home')
-    st.session_state['ziczac_active_page']=initial if initial in {x[2] for x in nav_items} else 'home'
+nav_items=[('🏠','Studio','home'),('🎯','Predictions','predict'),('🧠','Research','deep'),('🔗','Five Doubles','doubles'),('📊','History','archive'),('✅','Performance','finished'),('☰','Settings','more')]
+sync_location(st.session_state, st.query_params)
 def _navigate_to(page):
-    st.session_state['ziczac_active_page']=page
+    navigate(st.session_state, st.query_params, page)
+def _open_double_mode(mode):
+    open_double_mode(st.session_state, st.query_params, mode)
+def _sync_double_mode():
+    sync_double_mode(st.session_state, st.query_params)
+_hero_slot.markdown(header_html(st.session_state['ziczac_active_page']),unsafe_allow_html=True)
 st.markdown("""<style>
 /* Large native buttons with clear selected state on mobile. */
 div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
@@ -553,31 +427,7 @@ rows.sort(key=lambda r:r['kickoff'])
 eligible=[r for r in rows if r.get('result')]
 # Populate the large stadium hero with tomorrow's highest-probability
 # verified exact-score estimate. This is the same live data used throughout.
-import html as _hero_escape
 _featured, _featured_status = choose_feature(eligible, st.session_state, secondary_key)
-_hero_title = "🏆 Featured Game of the Day"
-if _featured:
-    _ff=_featured['fixture']
-    _hh,_aa,_pp=_featured['result']['scores'][0]
-    _home=_hero_escape.escape(str(_ff['homeTeam'].get('name','Home')))
-    _away=_hero_escape.escape(str(_ff['awayTeam'].get('name','Away')))
-    _winner=max([('Home win',_featured['result'].get('home_win',0)),
-                 ('Draw',_featured['result'].get('draw',0)),
-                 ('Away win',_featured['result'].get('away_win',0))],key=lambda x:x[1])
-    _live=''
-    if _featured_status and _featured_status.get('score') and all(v is not None for v in _featured_status['score']):
-        _live=f"<div style='font-size:15px;color:#9df1d6'>Current score: {_featured_status['score'][0]}–{_featured_status['score'][1]} · Provider checked</div>"
-    _kickoff_label=_hero_escape.escape(sydney_kickoff(_featured['kickoff'], '%A %d %B %Y · %I:%M %p'))
-    _hero_title=f"""🏆 Featured Game of the Day
-<div style="font-size:clamp(16px,4vw,25px);font-weight:750;line-height:1.3;margin:12px 0 8px">{_home} <span style="color:#d7a7ff">vs</span> {_away}</div>
-<div style="font-size:15px;color:#f4dba7;font-weight:700;margin:8px 0">📅 {_kickoff_label}</div>
-<div style="font-size:clamp(32px,9vw,52px);font-weight:900;color:#fff;line-height:1.1">{_hh} – {_aa}</div>
-<div style="font-size:15px;color:#e2d6ff;margin-top:8px">Predicted exact score · {_pp:.1%}</div>
-<div style="font-size:15px;color:#9df1d6;margin-top:6px">{_winner[0]} · {_winner[1]:.1%} probability</div>
-{_live}"""
-else:
-    _hero_title="🏆 Featured Game of the Day<div style='font-size:16px;font-weight:500;margin-top:12px'>No eligible upcoming match with verified model history is currently available.</div>"
-_hero_slot.markdown(_hero_html.replace("Today's Football<br>Predictions",_hero_title),unsafe_allow_html=True)
 def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {sydney_kickoff(r['kickoff'])}"
@@ -1445,36 +1295,46 @@ with active_page_slot:
                                             'Actual score':st.column_config.TextColumn(width='small')})
             else:
                 st.info('No verified finished predictions are stored yet. Results will appear after a pre-match prediction is saved and the final score is checked.')
-    c1,c2,c3,c4=st.columns(4)
-    c1.metric('Upcoming fixtures',len(rows));c2.metric('Modelled fixtures',sum(bool(r['result']) for r in rows))
-    c3.metric('Competitions loaded',len(histories));c4.metric('Saved forecasts',len(load(conn)) if conn else 'N/A')
-    # Native navigation buttons: decorative HTML cards were not clickable.
-    feature_cols=st.columns(2,gap='small')
-    with feature_cols[0]:
-        st.button('🎯 Exact Scores\\nModel probabilities',key='feature_exact',use_container_width=True,on_click=_navigate_to,args=('predict',))
-        st.button('📈 Live Form\\nTeam stats & H2H',key='feature_form',use_container_width=True,on_click=_navigate_to,args=('predict',))
-    with feature_cols[1]:
-        st.button('🔗 Five Doubles\\nChoose league & teams',key='feature_doubles',use_container_width=True,on_click=_navigate_to,args=('doubles',))
-        st.button('🏆 Accuracy\\nBacktesting & archive',key='feature_accuracy',use_container_width=True,on_click=_navigate_to,args=('archive',))
-    st.markdown('<div class="zz-section-title">⚽ Upcoming match previews</div>',unsafe_allow_html=True)
-    dashboard_rows=[r for r in rows if r.get('result') and r.get('kickoff') and datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(timezone.utc) >= datetime.now(timezone.utc)][:3]
-    if not dashboard_rows:
-        st.caption('No prediction-ready fixtures available right now. Check the worldwide finder or upcoming predictions below.')
-    for preview in dashboard_rows:
-        match=preview['fixture']
-        pred=preview['result']
-        best=pred['scores'][0]
-        home=match['homeTeam'].get('shortName') or match['homeTeam'].get('name','Home')
-        away=match['awayTeam'].get('shortName') or match['awayTeam'].get('name','Away')
-        import html
-        # A modal exact score and the most likely 1X2 outcome are different
-        # statistics. Showing both avoids implying that a 1-1 forecast means
-        # the draw is the most likely outcome.
-        _outcomes=[('Home win',pred['home_win']),('Draw',pred['draw']),('Away win',pred['away_win'])]
-        _favourite=max(_outcomes,key=lambda pair:pair[1])
-        _alternatives=' · '.join(f'{h}–{a} {p:.1%}' for h,a,p in pred['scores'][:3])
-        _confidence_note='Limited historical evidence' if pred.get('data_quality')=='limited' else 'Model-based estimate'
-        st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(sydney_kickoff(preview.get('kickoff','')))+'</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Most likely exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div><div class="zz-match-meta" style="margin-top:9px;color:#e6ddff">Top 3 scores: '+html.escape(_alternatives)+'</div><div class="zz-match-meta" style="margin-top:7px">Most likely match outcome: '+html.escape(_favourite[0])+' '+f'{_favourite[1]:.0%}'+' · '+html.escape(_confidence_note)+'</div></div>',unsafe_allow_html=True)
+    if view=='home':
+        st.markdown('<section class="studio-start"><div class="studio-eyebrow">YOUR MATCHDAY WORKFLOW</div><h2>Two matches.<span>Five exact-score doubles.</span></h2><p>Choose your matches, explore the research, and record your predictions before kickoff.</p></section>',unsafe_allow_html=True)
+        _studio_actions=st.columns(2,gap='small')
+        with _studio_actions[0]:
+            st.button('✨ AI Auto Select',key='studio_auto',type='primary',use_container_width=True,on_click=_open_double_mode,args=('AI Auto Select',))
+            st.caption('Rank researched fixtures and choose the model’s leading pair.')
+        with _studio_actions[1]:
+            st.button('🎛️ Manual Select',key='studio_manual',use_container_width=True,on_click=_open_double_mode,args=('Manual Select',))
+            st.caption('Choose two matches yourself and calculate five exact-score doubles.')
+        st.caption('Research uses the existing verified provider history. Pending scores never count as wins.')
+        c1,c2,c3,c4=st.columns(4)
+        c1.metric('Upcoming fixtures',len(rows));c2.metric('Modelled fixtures',sum(bool(r['result']) for r in rows))
+        c3.metric('Competitions loaded',len(histories));c4.metric('Saved forecasts',len(load(conn)) if conn else 'N/A')
+        st.markdown('<div class="zz-section-title">Your prediction workspace</div>',unsafe_allow_html=True)
+        feature_cols=st.columns(3,gap='small')
+        with feature_cols[0]:
+            st.button('🧠 Deep Research AI',key='feature_research',use_container_width=True,on_click=_navigate_to,args=('deep',))
+        with feature_cols[1]:
+            st.button('📊 Prediction History',key='feature_history',use_container_width=True,on_click=_navigate_to,args=('archive',))
+        with feature_cols[2]:
+            st.button('✅ Real Performance',key='feature_performance',use_container_width=True,on_click=_navigate_to,args=('finished',))
+        st.markdown('<div class="zz-section-title">⚽ Upcoming match previews</div>',unsafe_allow_html=True)
+        dashboard_rows=[r for r in rows if r.get('result') and r.get('kickoff') and datetime.fromisoformat(r['kickoff'].replace('Z','+00:00')).astimezone(timezone.utc) >= datetime.now(timezone.utc)][:3]
+        if not dashboard_rows:
+            st.caption('No prediction-ready fixtures available right now. Check the worldwide finder or upcoming predictions below.')
+        for preview in dashboard_rows:
+            match=preview['fixture']
+            pred=preview['result']
+            best=pred['scores'][0]
+            home=match['homeTeam'].get('shortName') or match['homeTeam'].get('name','Home')
+            away=match['awayTeam'].get('shortName') or match['awayTeam'].get('name','Away')
+            import html
+            # A modal exact score and the most likely 1X2 outcome are different
+            # statistics. Showing both avoids implying that a 1-1 forecast means
+            # the draw is the most likely outcome.
+            _outcomes=[('Home win',pred['home_win']),('Draw',pred['draw']),('Away win',pred['away_win'])]
+            _favourite=max(_outcomes,key=lambda pair:pair[1])
+            _alternatives=' · '.join(f'{h}–{a} {p:.1%}' for h,a,p in pred['scores'][:3])
+            _confidence_note='Limited historical evidence' if pred.get('data_quality')=='limited' else 'Model-based estimate'
+            st.markdown('<div class="zz-match-card"><div class="zz-match-top">🏟️ '+html.escape(str(preview.get('league','Football')))+' · '+html.escape(sydney_kickoff(preview.get('kickoff','')))+'</div><div class="zz-match-teams">'+html.escape(home)+' &nbsp; VS &nbsp; '+html.escape(away)+'</div><div style="text-align:center"><span class="zz-match-score">'+str(best[0])+' – '+str(best[1])+'</span></div><div class="zz-match-meta">Most likely exact score: '+f'{best[2]:.1%}'+' · Home '+f"{pred['home_win']:.0%}"+' · Draw '+f"{pred['draw']:.0%}"+' · Away '+f"{pred['away_win']:.0%}"+'</div><div class="zz-match-meta" style="margin-top:9px;color:#e6ddff">Top 3 scores: '+html.escape(_alternatives)+'</div><div class="zz-match-meta" style="margin-top:7px">Most likely match outcome: '+html.escape(_favourite[0])+' '+f'{_favourite[1]:.0%}'+' · '+html.escape(_confidence_note)+'</div></div>',unsafe_allow_html=True)
     # Exactly one evidence-based daily feature, selected only from fixtures on today's Sydney date.
     if view == 'home':
         st.subheader('🏆 Featured Game of the Day')
@@ -2039,7 +1899,7 @@ with active_page_slot:
             chosen_rows=[r for r in pair_options.values() if r.get('result') and r.get('result',{}).get('scores')]
             st.subheader('🧠 ZicZac Smart Double AI · experimental')
             smart_mode=st.radio('Choose Smart Double mode',
-                ['AI Auto Select', 'Manual Select'],horizontal=True,key='smart_double_mode')
+                ['AI Auto Select', 'Manual Select'],horizontal=True,key='smart_double_mode',on_change=_sync_double_mode)
             st.caption('AI Auto Select ranks researched same-day fixtures by estimated probability covered by five distinct exact-score combinations. It does not scan unresearched fixtures or guarantee wins. Manual Select uses your two choices above.')
             if smart_mode=='AI Auto Select':
                 smart_pairs=rank_pairs(chosen_rows)

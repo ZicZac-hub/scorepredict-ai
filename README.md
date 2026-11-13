@@ -2,6 +2,12 @@
 
 A free, transparent football score forecasting Streamlit application. No fabricated fixtures, paid services or hidden prediction guarantees.
 
+## Matchday Studio 2.0 interface
+
+The existing website is https://ziczacscorepredict-ai.streamlit.app/ . The updated interface has a compact Version 2.0 header, route-specific content, and Home buttons for AI Auto Select, Manual Select, Deep Research, prediction history and real performance. Choosing a section updates `?view=` in the URL; Home cards no longer appear above every other page. Direct doubles links also accept `&mode=auto` or `&mode=manual`.
+
+The forecast models, provider keys and original saved records are preserved. Streamlit hosting controls account access; this interface update does not introduce a custom password or change host sharing settings. The separate iPhone launch page in `pwa/` links to this existing service.
+
 ## Features
 - Upcoming real fixtures from football-data.org competitions accessible to your key
 - Recent and venue-weighted attacking/defensive rates, Poisson exact-score probability matrix
