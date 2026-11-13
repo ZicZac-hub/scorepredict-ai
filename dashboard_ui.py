@@ -2,12 +2,13 @@
 from html import escape
 
 PAGES = {
-    'home': ('Matchday Studio', 'Live research. Five score doubles. A record you can verify.'),
+    'home': ('Matchday Studio', 'Verified football research, five exact-score doubles and transparent results.'),
     'predict': ('Daily Predictions', 'Explore upcoming fixtures and researched exact-score probabilities.'),
     'deep': ('Deep Research AI', 'Recent form, home and away records, head-to-head and available team news.'),
     'doubles': ('Five Score Doubles', 'Select two matches and generate five exact-score combinations.'),
     'archive': ('Prediction History', 'Your original forecasts, timestamps and verified final scores.'),
     'finished': ('Real Performance', 'Actual hits and misses from predictions saved before kickoff.'),
+    'private': ('Private Access', 'Secure your match research on your iPhone and MacBook.'),
     'more': ('Settings & Methods', 'Understand the connected data, statistical models and their limits.'),
 }
 MODES = {'auto': 'AI Auto Select', 'manual': 'Manual Select'}
@@ -54,8 +55,8 @@ def header_html(page):
     return ('<header class="studio-header"><div class="studio-brand">'
             '<span class="studio-brand-icon" aria-hidden="true">⚡</span>'
             '<div><strong>ZicZac <span>Predict AI</span></strong>'
-            '<small>FOOTBALL INTELLIGENCE</small></div></div>'
-            '<span class="studio-version">VERSION 2.0</span>'
+            '<small>FOOTBALL SCORE INTELLIGENCE</small></div></div>'
+            '<span class="studio-version">STUDIO 2.1</span>'
             '<div class="studio-route-title"><h1>' + escape(title) + '</h1>'
             '<p>' + escape(description) + '</p></div></header>')
 
@@ -76,4 +77,52 @@ def studio_css():
     [data-testid="stCaptionContainer"] p{color:#97adc5!important;font-size:12px!important;line-height:1.75!important}[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li{overflow-wrap:anywhere;line-height:1.75}
     @media(max-width:680px){.block-container{padding-left:13px!important;padding-right:13px!important}.studio-header{padding:18px 16px;gap:12px}.studio-brand{gap:9px}.studio-brand strong{font-size:19px}.studio-brand-icon{width:35px;height:39px;font-size:21px}.studio-brand small{font-size:7px;letter-spacing:1.5px}.studio-version{font-size:8px;padding:6px 7px}.studio-route-title{padding-top:15px}.studio-route-title h1{font-size:27px!important}.studio-route-title p{font-size:12px!important}.studio-start{padding:23px 18px}.studio-start h2{font-size:29px!important}.studio-start p{font-size:13px!important}.studio-eyebrow{font-size:9px;letter-spacing:1.2px}.stButton button{min-height:48px!important}.stButton button p{font-size:13px!important}.zz-match-card{padding:17px 13px}.zz-match-teams{font-size:17px}.zz-match-top,.zz-match-meta{font-size:11px}.zz-section-title{font-size:21px}.studio-route-title,.studio-brand{min-width:0}[data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{min-width:min(135px,100%)!important;max-width:100%}[data-testid="stDataFrame"]{max-width:100%}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+    /* Dark matchday-neon styling inspired by the user's reference dashboard. */
+    html,body,[data-testid="stAppViewContainer"],[data-testid="stApp"]{max-width:100%!important;overflow-x:hidden!important}
+    [data-testid="stAppViewContainer"]{
+      background-color:#050b1b!important;
+      background-image:radial-gradient(ellipse at 46% -4%,rgba(16,103,225,.25),transparent 56%),
+        radial-gradient(ellipse at 100% 37%,rgba(91,35,194,.15),transparent 48%),
+        linear-gradient(180deg,#061022,#090f20 65%,#080d1b)!important;
+    }
+    .studio-header{
+      border:1px solid #286ca8!important;box-shadow:inset 0 1px rgba(118,194,255,.19),0 9px 32px rgba(0,0,0,.22);
+      background:linear-gradient(110deg,#081c37,#141840 70%,#0e213b)!important;
+    }
+    .studio-brand strong{font-style:italic!important;font-weight:850!important;letter-spacing:-.75px!important}
+    .studio-brand strong span{color:#3fdef3!important}
+    .studio-version{background:#282152!important;border-color:#6f43d9!important;color:#e5dfff!important}
+    .studio-route-title h1{font-weight:830!important}
+    .studio-start{background:linear-gradient(120deg,#132d55,#15234d 54%,#33195b)!important;border-color:#4375b5!important}
+    .studio-start h2 span{color:#6aeaf4!important}
+    .zz-match-card{border-color:#396aaa!important;background:linear-gradient(125deg,#10294b,#16143d)!important}
+    .zz-match-score{background:linear-gradient(100deg,#183e83,#362384)!important;border-color:#675ced!important;color:white!important}
+    .zz-research-hero{
+      padding:23px 27px;margin-bottom:16px;border:1px solid #5147ae;border-radius:17px;
+      background:linear-gradient(125deg,#101e47,#171b4d 63%,#342258);
+      box-shadow:inset 0 1px rgba(187,178,255,.16),0 7px 24px rgba(0,0,0,.17);
+    }
+    .zz-research-hero h2{font-size:clamp(23px,3vw,33px)!important;font-weight:830!important;margin:8px 0 9px!important;color:#f6f4ff!important}
+    .zz-research-hero h2 span{color:#5be5f1!important}
+    .zz-research-hero p{font-size:13px;line-height:1.75;color:#b8c8ee;max-width:850px;margin:0}
+    .zz-research-kicker{color:#b0a0ff;font-size:11px;font-weight:800;letter-spacing:1.2px}
+    .stButton button[kind="primary"]{
+      color:#fff!important;background:linear-gradient(110deg,#155ecb,#7c35db)!important;
+      border:1px solid #9e6cff!important;box-shadow:0 0 18px rgba(91,80,241,.23)!important
+    }
+    .stButton button[kind="secondary"]{border-color:#34537e!important;background:linear-gradient(110deg,#0e1d3b,#152244)!important;color:#eaf2ff!important}
+    .stButton button:hover{filter:brightness(1.13)}
+    [data-testid="stSidebar"]{background:linear-gradient(180deg,#08182f,#131137)!important;border-right:1px solid #344f95}
+    [data-testid="stSidebar"] [data-testid="stButton"] button{text-align:left!important}
+    [data-testid="stMetric"]{background:linear-gradient(140deg,#112c51,#241740)!important;border-color:#4c5795!important}
+    [data-testid="stDataFrame"]{max-width:100%!important}
+    @media(max-width:680px){
+      .studio-header{margin-bottom:11px!important}
+      .zz-research-hero{padding:17px 16px}
+      .zz-research-hero h2{font-size:24px!important}
+      [data-testid="stHorizontalBlock"]{flex-wrap:wrap!important;gap:8px!important}
+      [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]{min-width:min(150px,46%)!important;flex:1 1 46%!important}
+      [data-testid="stButton"] button{min-height:53px!important;padding:8px 6px!important}
+      [data-testid="stButton"] button p{font-size:12px!important}
+    }
     </style>'''
