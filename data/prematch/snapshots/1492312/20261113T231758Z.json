@@ -1,0 +1,163 @@
+{
+  "away_team": "Vasco DA Gama",
+  "away_team_id": 133,
+  "captured_at_utc": "2026-11-13T23:17:58.089353+00:00",
+  "competition": "BSA",
+  "double_top10_scores": [
+    [
+      1,
+      1,
+      0.10676090900697002
+    ],
+    [
+      1,
+      2,
+      0.0937894858495441
+    ],
+    [
+      0,
+      1,
+      0.08052884538699348
+    ],
+    [
+      2,
+      1,
+      0.07076899983614722
+    ],
+    [
+      0,
+      2,
+      0.07074461125476608
+    ],
+    [
+      2,
+      2,
+      0.06217058444383784
+    ],
+    [
+      1,
+      0,
+      0.06076316331597599
+    ],
+    [
+      1,
+      3,
+      0.05492939152692766
+    ],
+    [
+      0,
+      0,
+      0.045833137141773554
+    ],
+    [
+      0,
+      3,
+      0.04143277271257404
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-13T23:17:57.453537+00:00",
+  "expected_goals": {
+    "away": 1.7570005111781302,
+    "home": 1.3257474199948405
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1492312,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Chapecoense-sc",
+  "home_team_id": 132,
+  "injuries": [],
+  "input_digest": "a7b29be240adec0fde93565de1bedaedb53b50d88546140856c2de1f8d63a2b8",
+  "kickoff_utc": "2026-11-14T23:30:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.47630855594705596,
+    "draw": 0.2334309637753118,
+    "home": 0.29026048027763235
+  },
+  "predicted_score": [
+    1,
+    1
+  ],
+  "predicted_score_probability": 0.10676090900697002,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.00041985511779785156,
+      "cache_status": "committed_discovery_cache",
+      "discovery_age_seconds": 2865.650446,
+      "fetched_at_utc": "2026-11-13T22:30:13.042856+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-13T22:30:13.043275+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    "history_days": 730,
+    "news_sources": [],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-13T23:17:57.453537+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.010070085525512695,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T23:17:57.679341+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T23:17:57.689411+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.005248308181762695,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-13T23:17:57.852960+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-13T23:17:57.858208+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 1.8137038518529325,
+      "home": 1.3494226636946753
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.47804950044545963,
+      "draw": 0.24169403736882805,
+      "home": 0.28025646218571243
+    },
+    "predicted_score": [
+      1,
+      1
+    ],
+    "score_probability": 0.10972152854896976
+  },
+  "score_basis": "regulation"
+}
