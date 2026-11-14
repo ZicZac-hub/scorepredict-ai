@@ -4,7 +4,7 @@ Use the SAME original model score tables as Five Doubles, optionally adding
 previously frozen AI opinions plus owner-authorised on-demand AI providers.
 No scraping, no fabricated data, no overwrite of original match forecasts.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import csv
 import io
 from functools import lru_cache
@@ -259,11 +259,98 @@ def render(st,rows,histories=None):
     st.caption("The original Five Doubles page and frozen prediction history "
                "remain unchanged.")
     minute=int(datetime.now(timezone.utc).timestamp()//60)
-    found=options(rows, archived=_minute_archived_candidates(minute))
+    from ai_five_live_finder import research_day
+    from on_demand_ai import utc
+    import os
+
+    clock=datetime.now(timezone.utc)
+    local_today=clock.astimezone(SYDNEY).date()
+    st.caption("Sydney dates: Today "+local_today.strftime("%d %b %Y")+
+               " · Tomorrow "+(local_today+timedelta(days=1)).strftime("%d %b %Y"))
+    date_scope=st.selectbox(
+        "Show matches for",
+        ["Today & Tomorrow", "Today only", "Tomorrow only", "Next 7 days", "All upcoming"],
+        key="zz_ai_five_day_scope")
+    search_day=st.selectbox(
+        "Search fresh matches on",
+        ["Today", "Tomorrow"],
+        key="zz_ai_five_target_day",
+        help="Choose a Sydney date and request real fixtures from API-Football. "
+             "This does not invent scores or change archived predictions.")
+    target_day=local_today+(timedelta(days=1) if search_day=="Tomorrow" else timedelta())
+    with st.expander("🔎 Find today's or tomorrow's missing matches", expanded=True):
+        st.caption("If the saved forecast list starts on 19 November, the "
+                   "collector may not have modelled two eligible earlier fixtures. "
+                   "Search this date directly, then build score predictions "
+                   "only from sufficient verified historical results. "
+                   "Up to four matches are researched per click to limit API use.")
+        request_today=st.button(
+            "🔎 Search & model "+search_day+"'s matches",
+            key="zz_ai_five_search_near", use_container_width=True)
+    fetched=st.session_state.setdefault("zz_ai_five_targeted_modelled",{})
+    day_key=target_day.isoformat()
+    if request_today:
+        try:
+            api_key=str(st.secrets.get("API_FOOTBALL_KEY") or
+                        os.environ.get("API_FOOTBALL_KEY") or "").strip()
+        except (AttributeError, OSError, KeyError, RuntimeError):
+            api_key=str(os.environ.get("API_FOOTBALL_KEY") or "").strip()
+        previous=fetched.get(day_key) or {"rows":[],"checked_ids":[]}
+        with st.spinner("Searching verified fixtures and modelling up to four "
+                        "upcoming matches on "+day_key+"..."):
+            result=research_day(api_key,target_day,
+                                known_ids=previous["checked_ids"],now=clock)
+        existing={identity(row):row for row in previous["rows"]}
+        for new_row in result["modeled"]:
+            existing.setdefault(identity(new_row),new_row)
+        fetched[day_key]={
+            "rows":list(existing.values()),
+            "checked_ids":list(dict.fromkeys(previous["checked_ids"]+
+                                              result["checked_ids"])),
+            "last":{k:v for k,v in result.items()
+                    if k not in ("modeled","checked_ids")}
+        }
+    for day,entry in sorted(fetched.items()):
+        if day>=local_today.isoformat():
+            status=entry.get("last") or {}
+            if status:
+                st.caption("Direct search "+day+": "+str(status.get("discovered",0))+
+                           " eligible upcoming fixtures found, "+
+                           str(len(entry.get("checked_ids") or []))+
+                           " checked, "+str(len(entry.get("rows") or []))+
+                           " fully modelled; "+
+                           str(status.get("remaining",0))+
+                           " more unprocessed. No missing results were fabricated.")
+                for e in (status.get("errors") or [])[:2]:
+                    st.caption("Provider/model limitation: "+str(e)[:160])
+    targeted=[row for day,entry in fetched.items()
+              if day>=local_today.isoformat() for row in entry.get("rows",[])]
+    found_all=options(rows+targeted, archived=_minute_archived_candidates(minute))
+    until=local_today+timedelta(days=7)
+    def in_scope(row):
+        day=utc(row["kickoff"]).astimezone(SYDNEY).date()
+        if date_scope=="Today only":
+            return day==local_today
+        if date_scope=="Tomorrow only":
+            return day==local_today+timedelta(days=1)
+        if date_scope=="Today & Tomorrow":
+            return local_today<=day<=local_today+timedelta(days=1)
+        if date_scope=="Next 7 days":
+            return local_today<=day<until
+        return True
+    found=[row for row in found_all if in_scope(row)]
+    st.caption("Eligible modelled matches in selected range: "+str(len(found))+
+               " · All upcoming eligible matches: "+str(len(found_all))+
+               ". Same-Sydney-day pairing and five distinct scores are mandatory.")
     if len(found)<2:
-        st.warning("Not enough upcoming modelled fixtures are available. "
-                   "The studio also checks saved pre-match v8 research when "
-                   "live API quotas prevent new fixture discovery.")
+        next_label=(label(found_all[0]) if found_all else "none yet")
+        st.info("Fewer than two eligible matches are available in this "
+                "Sydney-date range. This does not mean football games are "
+                "absent; they may lack a verified pre-match score model. "
+                "Use Search & model for Today or Tomorrow above. "
+                "You can also select All upcoming for existing later dates.")
+        if found_all and not found:
+            st.caption("First available eligible saved/modelled fixture: "+next_label)
         return
     ids={label(r):r for r in found}
     first_label=st.selectbox("1. Select Match 1",list(ids),key="ziczac_ai_five_first")
