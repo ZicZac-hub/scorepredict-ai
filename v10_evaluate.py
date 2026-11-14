@@ -264,11 +264,18 @@ def evaluate(root=ROOT,results=None):
     # time as the market challenger; no unfair old-vs-new comparison.
     common=[]
     common_v10=[]
+    original_vs_near=[]
     control_count=0
     comparison_excluded=0
     for (provider,fixture_id,model),row in latest.items():
         if model!="v8":
             continue
+        early=hits.get((provider,fixture_id,"v8"))
+        near=hits.get((provider,fixture_id,"v8_near"))
+        if early is not None and near is not None:
+            # This tests whether genuinely newer available information
+            # helped the SAME real fixture; not a same-as-of model contest.
+            original_vs_near.append((early,near))
         for challenger, cohort in (("v9",common),("v10",common_v10)):
             alt=latest.get((provider,fixture_id,challenger))
             if alt is None or hits.get((provider,fixture_id,challenger)) is None:
@@ -336,7 +343,13 @@ def evaluate(root=ROOT,results=None):
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
         "verified_result_source":"verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
-        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v9","v10")},
+        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v8_near","v9","v10")},
+        "paired_original_v8_vs_near_v8":{
+            "same_fixture_verified":len(original_vs_near),
+            "original_only_exact_hits":sum(a and not b for a,b in original_vs_near),
+            "fresh_research_only_exact_hits":sum(b and not a for a,b in original_vs_near),
+            "purpose":"Observe the effect of newer verified pre-match information; NOT an equal-information model comparison.",
+            "insufficient_to_claim_improvement":len(original_vs_near)<200},
         "comparison_diagnostics":{
             "matched_market_time_controls":control_count,
             "excluded_mismatched_evidence_pairs":comparison_excluded,
