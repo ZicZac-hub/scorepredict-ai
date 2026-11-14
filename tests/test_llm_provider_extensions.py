@@ -163,3 +163,32 @@ def test_existing_immutable_panel_prevents_duplicate_paid_calls(tmp_path, monkey
         root=root, source=tmp_path, request=network)
     assert result["attempted"] == 0
     assert result["captured"] == 0
+
+def test_latest_real_errors_survive_no_fixture_research_pass(tmp_path, monkeypatch):
+    import llm_research_panel as panel
+    root = tmp_path / "research"
+    root.mkdir()
+    (root / "status.json").write_text(json.dumps({
+        "checked_at_utc": "2026-11-14T01:00:00Z",
+        "last_attempt_at_utc": "2026-11-14T01:00:00Z",
+        "last_attempt_errors": {"openai": {
+            "type": "HTTPError", "http_status": 429,
+            "reason": "quota_or_rate_limit"}}
+    }))
+    monkeypatch.setattr(panel, "read_latest", lambda source: {})
+    report = panel.capture(
+        environ={"LLM_RESEARCH_ENABLED": "true",
+                 "OPENAI_API_KEY": "placeholder", "OPENAI_MODEL": "gpt-4o-mini"},
+        root=root, source=tmp_path)
+    assert report["attempted"] == 0
+    assert report["last_attempt_errors"]["openai"]["http_status"] == 429
+    assert report["last_attempt_at_utc"] == "2026-11-14T01:00:00Z"
+
+
+def test_ai_generated_reports_allowed_in_safe_rebase():
+    from reconcile_capture_conflicts import REPORT_EXACT
+    for name in ("data/llm_research/status.json",
+                 "data/llm_research/evaluation.json",
+                 "data/independent_football/status.json",
+                 "data/independent_football/evaluation.json"):
+        assert name in REPORT_EXACT
