@@ -134,6 +134,19 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
             continue
         picks=[{"score1":p["Score 1"],"score2":p["Score 2"],
                 "joint_probability":float(p["Joint"])} for p in best["doubles"]]
+        # Freeze v9/v10 challengers for the IDENTICAL v8-selected pair
+        # only when both alternate model snapshots already exist now.
+        challenger_picks={}
+        for challenger in ("v9","v10"):
+            candidates=[options.get((provider,fixture_id,challenger))
+                        for provider,fixture_id in ids]
+            if all(candidates) and all(utc(c["captured_at_utc"])<=instant
+                                       for c in candidates):
+                alternatives=five_doubles(_match(candidates[0]),_match(candidates[1]))
+                if len(alternatives)==5:
+                    challenger_picks[challenger]=[{
+                        "score1":p["Score 1"],"score2":p["Score 2"],
+                        "joint_probability":float(p["Joint"])} for p in alternatives]
         result={"policy":"v10-evidence-ranked-shadow-v1",
                 "mode":"prospective", "status":"frozen_pre_kickoff",
                 "sydney_date":day,"captured_at_utc":instant.isoformat(),
@@ -144,6 +157,7 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
                           ("provider","fixture_id","kickoff_utc","home_team_id","away_team_id",
                            "home_team","away_team","forecast_id","model_version")},
                 "five_doubles":picks,"estimated_coverage":float(best["coverage"]),
+                "same_pair_challengers":challenger_picks,
                 "independence_assumption":True,
                 "accuracy_status":"pending_verified_final_scores",
                 "selection_note":"Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
@@ -200,30 +214,48 @@ def evaluate(root=ROOT,results=None):
             score2=f'{b["home_goals"]}-{b["away_goals"]}'
             hit=any(p["score1"]==score1 and p["score2"]==score2
                     for p in packet["five_doubles"])
+            additional={}
+            for challenger,choices in (packet.get("same_pair_challengers") or {}).items():
+                if challenger not in ("v9","v10") or len(choices)!=5:
+                    continue
+                additional[challenger]={
+                    "hit":any(p["score1"]==score1 and p["score2"]==score2 for p in choices),
+                    "coverage":sum(float(p["joint_probability"]) for p in choices)}
             pairs.append({"sydney_date":packet["sydney_date"],
                           "status":"verified","hit":hit,
+                          "same_pair_challengers":additional,
                           "actual_scores":[score1,score2],
                           "estimated_coverage":packet["estimated_coverage"]})
         except (KeyError,TypeError,ValueError):
             continue
     completed=[p for p in pairs if p["status"]=="verified"]
+    comparison={}
+    for challenger in ("v9","v10"):
+        cohort=[p for p in completed if challenger in p.get("same_pair_challengers",{})]
+        comparison[challenger]={
+            "same_pair_verified_days":len(cohort),
+            "challenger_wins":sum(p["same_pair_challengers"][challenger]["hit"] for p in cohort),
+            "v8_wins_on_those_days":sum(p["hit"] for p in cohort),
+            "challenger_hit_rate":sum(p["same_pair_challengers"][challenger]["hit"] for p in cohort)/len(cohort) if cohort else None,
+            "note":"Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs."}
     report={
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
         "verified_result_source":"data/prematch/verified_results.json",
-        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v9")},
+        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v9","v10")},
         "paired_v8_v9":{"verified_same_fixture_count":len(common),
                         "v8_only_hits":sum(a and not b for a,b in common),
                         "v9_only_hits":sum(b and not a for a,b in common),
                         "insufficient_to_claim_improvement":len(common)<200},
         "five_doubles":{"frozen_pairs":len(pairs),"verified_pairs":len(completed),
+                        "same_pair_challengers":comparison,
                         "awaiting_both_results":len(pairs)-len(completed),
                         "wins":sum(p["hit"] for p in completed),
                         "hit_rate":sum(p["hit"] for p in completed)/len(completed) if completed else None,
                         "average_estimated_coverage":
                             sum(p["estimated_coverage"] for p in completed)/len(completed)
                             if completed else None,"rows":pairs},
-        "limitations":"Exact scores remain low probability. Neither retrospective replay nor a market-disabled v8 fallback is counted as a verified v9 result. Pending matches are not losses.",
+        "limitations":"Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
         "promotion_gate":"Never promote v9/v10 as more accurate without enough paired prospective results, calibration and uncertainty checks."}
     return report
 
