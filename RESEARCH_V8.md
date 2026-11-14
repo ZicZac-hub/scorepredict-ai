@@ -88,6 +88,24 @@ NOT scrape proprietary algorithms or connect those vendors' prediction
 services. Doing so would require supported official APIs, separate user
 credentials, permission, ongoing cost and separate historical validation.
 
+## Frozen replay evidence (14 November 2026)
+
+A larger pre-kickoff reconstruction from 2,255 verified source games evaluated
+632 paired fixtures (70/632 exact v6 versus 77/632 exact v8). Mean outcome
+Brier decreased from 0.6083 to 0.5946, and modal 1–1 concentration fell from
+80.38% to 68.51%. However, top-three exact-score coverage decreased slightly
+(30.38% to 29.91%). In the common-snapshot same-match-pair comparison across
+59 Sydney dates, v8 hit two of five-double selections and v6 hit one. These
+are too few winning doubles to support a reliable improvement claim.
+
+The exact-score paired discordance is 17 v8-only hits versus 10 v6-only hits
+(two-sided exact paired p≈0.248). Thus v8 remains a **manual research option**
+instead of automatically replacing v6 or rewriting historical predictions.
+
+Evidence: `data/research_v8/extended_historical_validation.json`, captured
+from [the successful CI run](https://github.com/ZicZac-hub/scorepredict-ai/actions/runs/43532480039).
+Earlier 160-match replay remains available separately as an audit.
+
 ## Credentials and security
 
 Do not commit keys or passwords to GitHub. Keep secrets in Streamlit Secrets
