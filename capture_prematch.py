@@ -176,7 +176,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             ledger_root=LEDGER_ROOT, database_url=None, max_api_calls=120, api_request=None,
             evidence_loader=None, pair_builder=None, clock=None,
             daily_recorder=None, research_recorder=None,
-            research_backfill_limit=0):
+            research_backfill_limit=0,market_refresher=None,
+            research_market_refresh_limit=0):
     """Return old-format snapshots and full-grid ledger coverage without fake history.
 
     Optional callbacks make data policy, timing and budget tests independent of
@@ -436,6 +437,57 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         except Exception as exc:
             diagnostics['v10_research_backfill_errors'].append({
                 'error_type':type(exc).__name__,'stage':'backfill_discovery'})
+    # Fix: original v8 captures can happen DAYS before provider odds exist.
+    # Query pre-kickoff markets separately on the heavy research cadence,
+    # without overwriting any early v8 or v6/v7 prediction.
+    diagnostics['v10_market_refresh_checked']=0
+    diagnostics['v10_market_refresh_v9_saved']=0
+    diagnostics['v10_market_refresh_v10_saved']=0
+    diagnostics['v10_market_refresh_errors']=[]
+    if market_refresher is not None and research_market_refresh_limit>0:
+        try:
+            from v10_prospective import read_latest as _read_shadow_models
+            shadow=_read_shadow_models()
+            awaiting=[]
+            now=_time(current_time())
+            for kickoff,fixture,code in fixtures.values():
+                identity=(str(fixture.get('provider')),str(fixture['id']))
+                if ((*identity,'v8') in shadow and (*identity,'v9') not in shadow
+                        and timedelta(minutes=30)<kickoff-now<=timedelta(hours=48)):
+                    awaiting.append((kickoff,fixture,code))
+            awaiting.sort(key=lambda item:(item[0],str(item[1]['id'])))
+            for kickoff,fixture,code in awaiting[:research_market_refresh_limit]:
+                if (diagnostics['v10_market_calls']>=4
+                        or max_seconds and time.monotonic()-monotonic_start>=max_seconds):
+                    break
+                diagnostics['v10_market_refresh_checked']+=1
+                try:
+                    observed=_time(current_time())
+                    if observed>=kickoff:
+                        continue
+                    packet=evidence_loader(fixture,as_of=observed,api_key=key,
+                                           api_request=request,cache=history_cache)
+                    result=market_refresher(
+                        fixture,packet,_time(current_time()),code,request,
+                        max(0,4-diagnostics['v10_market_calls']))
+                    diagnostics['v10_market_calls']+=int(result.get('market_calls',0))
+                    for keyname in ('v9','v10'):
+                        count=int(bool(result.get(keyname+'_recorded')))
+                        diagnostics['v10_shadow_'+keyname+'_saved']+=count
+                        diagnostics['v10_market_refresh_'+keyname+'_saved']+=count
+                    diagnostics.setdefault('v10_market_refresh_reasons',{}).setdefault(
+                        result.get('reason','unknown'),0)
+                    diagnostics['v10_market_refresh_reasons'][result.get('reason','unknown')]+=1
+                except CaptureBudgetExceeded:
+                    diagnostics['v10_market_refresh_errors'].append({
+                        'fixture_id':fixture['id'],'error_type':'provider_call_budget'})
+                    break
+                except Exception as exc:
+                    diagnostics['v10_market_refresh_errors'].append({
+                        'fixture_id':fixture['id'],'error_type':type(exc).__name__})
+        except Exception as exc:
+            diagnostics['v10_market_refresh_errors'].append({
+                'stage':'market_refresh_discovery','error_type':type(exc).__name__})
     diagnostics['provider_adapter_calls'] = provider_calls
     diagnostics['news_coverage_complete'] = not diagnostics['news_errors']
     diagnostics['coverage_complete'] = not (diagnostics['discovery_budget_skipped'] or diagnostics['budget_skipped'] or diagnostics['league_errors'] or diagnostics['prediction_errors'] or diagnostics['prediction_unavailable'] or diagnostics['history_source_errors'])
@@ -449,10 +501,14 @@ def main():
         raise RuntimeError('API_FOOTBALL_KEY secret required')
     from daily_pick_capture import candidate as daily_candidate, save_for_dates
     from v10_prospective import capture as capture_v10
+    from v10_prospective import capture_market_followup as refresh_v10_market
     _daily_candidates=[]
     def _record_v10(fixture,evidence,observed,code,request,remaining):
         return capture_v10(fixture,evidence,observed,api_key=key,
                            request=request,market_calls_remaining=remaining)
+    def _refresh_market(fixture,evidence,observed,code,request,remaining):
+        return refresh_v10_market(fixture,evidence,observed,api_key=key,
+                                  request=request,market_calls_remaining=remaining)
     def _record_daily(fixture, evidence, observed, code):
         result=daily_candidate(fixture,evidence,observed,code)
         if result:
@@ -462,7 +518,9 @@ def main():
         database_url=os.environ.get('DATABASE_URL') or None,
         max_api_calls=_positive_limit(os.environ.get('CAPTURE_MAX_API_CALLS'),120),
         daily_recorder=_record_daily,research_recorder=_record_v10,
-        research_backfill_limit=_positive_limit(os.environ.get('V10_BACKFILL_LIMIT'),0))
+        research_backfill_limit=_positive_limit(os.environ.get('V10_BACKFILL_LIMIT'),0),
+        market_refresher=_refresh_market,
+        research_market_refresh_limit=_positive_limit(os.environ.get('V10_MARKET_REFRESH_LIMIT'),0))
     saved_days=save_for_dates(_daily_candidates)
     payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)
     payload['diagnostics']['daily_pick_days_written']=saved_days
