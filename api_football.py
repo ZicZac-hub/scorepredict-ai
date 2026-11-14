@@ -11,6 +11,18 @@ from uuid import uuid4
 from pathlib import Path
 import requests
 
+class ProviderQuotaError(RuntimeError):
+    """Provider rate limit or monthly/daily request allowance exhausted."""
+
+
+class ProviderAccessError(RuntimeError):
+    """Provider API key, permissions or subscription access unavailable."""
+
+
+class ProviderRejectedError(RuntimeError):
+    """Provider rejected the requested league/endpoint or parameters."""
+
+
 ROOT = "https://v3.football.api-sports.io"
 CACHE = Path("/tmp/scorepredict_api_sports")
 CACHE.mkdir(parents=True, exist_ok=True)
@@ -69,11 +81,21 @@ def _request(key, endpoint, params, with_metadata=False):
         response=requests.get(ROOT+endpoint,params=params,
                               headers={"x-apisports-key":key},timeout=25)
         if response.status_code==429:
-            raise RuntimeError("API-Football daily or per-minute quota reached")
+            raise ProviderQuotaError("API-Football request quota or rate limit")
+        if response.status_code in (401,403):
+            raise ProviderAccessError("API-Football credentials or plan access unavailable")
         response.raise_for_status()
         payload=response.json()
         if payload.get("errors"):
-            raise RuntimeError("API-Football request was rejected by the provider")
+            # Examine only for categorisation; never print vendor error
+            # bodies, credentials, request headers or token values.
+            error_body=payload["errors"]
+            hint=str(error_body).casefold()[:3000]
+            if any(word in hint for word in ("rate limit","request limit","quota","too many","reached the limit")):
+                raise ProviderQuotaError("API-Football request quota or rate limit")
+            if any(word in hint for word in ("api key","token","subscription","plan access","not authorized","not authorised")):
+                raise ProviderAccessError("API-Football credentials or plan access unavailable")
+            raise ProviderRejectedError("API-Football endpoint or league rejected")
         data=payload.get("response",[])
         fetched_at=time.time()
         temporary = path.with_name(path.name+'.'+uuid4().hex+'.tmp')
@@ -90,6 +112,8 @@ def _request(key, endpoint, params, with_metadata=False):
         stale_limit = min(86400, max(300, ttl*4))
         if saved and time.time()-saved.get("time",0)<stale_limit:
             return _expose(saved['data'], saved['time'], ttl, 'stale_fallback', with_metadata)
+        if isinstance(exc,(ProviderQuotaError,ProviderAccessError,ProviderRejectedError)):
+            raise
         raise RuntimeError('API-Football request failed ('+type(exc).__name__+')') from exc
 
 def _as_datetime(value):
