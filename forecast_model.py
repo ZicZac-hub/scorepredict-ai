@@ -34,6 +34,12 @@ def predict(fixture, history, max_goals=10, variant='baseline', league_history=N
     histories retain a clearly disclosed v6 fallback rather than manufactured
     league evidence. Original saved predictions are never modified here.
     """
+    if variant == 'research_v8':
+        # Explicit experimental opt-in. The original default and immutable
+        # pre-kickoff forecasts remain unchanged; no vendor AI is called.
+        from research_ensemble_v8 import predict as predict_research_v8
+        return predict_research_v8(fixture, history, league_history=league_history,
+                                   max_goals=max_goals)
     if variant not in ('baseline', 'reference_v7'):
         return legacy.predict(fixture, history, max_goals=max_goals,
                               variant=variant, league_history=league_history)
