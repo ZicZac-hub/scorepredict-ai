@@ -109,11 +109,14 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python evaluate_prospective_ledger.py
-      - name: Independently verify completed v10 matches
-        if: steps.cadence.outputs.heavy == 'true'
+      - name: Independently verify recently completed exact-score and five-double fixtures
+        # Scheduled passes can settle newly completed matches without waiting
+        # for the six-hour heavy refresh. Cooldowns in v10_settlement.py cap
+        # repeated requests; source-code pushes make no paid result calls.
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-          V10_RESULT_LIMIT: '20'
+          V10_RESULT_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '20' || '2' }}
         run: python v10_settlement.py
       - name: Optional independent ten-AI research panel (shadow only)
         # Never make paid model calls merely because source code was pushed.
