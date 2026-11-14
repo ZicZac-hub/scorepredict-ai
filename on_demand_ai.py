@@ -126,6 +126,18 @@ def _secret(st, name, environ):
     return str(value or environ.get(name, "")).strip()
 
 
+
+def private_gate_ready(st, environ=None):
+    """Only enable paid on-demand calls after real password authentication."""
+    env=os.environ if environ is None else environ
+    has_password=bool(_secret(st, "ZICZAC_ACCESS_PASSWORD", env))
+    try:
+        authenticated=st.session_state.get("ziczac_access_granted") is True
+    except (AttributeError, TypeError):
+        authenticated=False
+    return has_password and authenticated
+
+
 def server_settings(st, environ=None):
     """Names and keys only from the app server, NEVER from the public browser."""
     env = os.environ if environ is None else environ
