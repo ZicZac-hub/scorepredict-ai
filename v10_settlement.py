@@ -40,6 +40,55 @@ def _reference_rows(forecasts):
     return unique
 
 
+
+def _verification_order(references, root, clock):
+    """Verify fully due frozen five-double legs before unrelated old scores.
+
+    This only changes RESULT LOOKUP PRIORITY. It never creates or changes any
+    pre-match score, pairing, capture timestamp or result.
+    """
+    prioritized=[]
+    for path in sorted((Path(root)/"doubles").glob("*.json")):
+        try:
+            packet=load_json(path,{})
+            if packet.get("mode")!="prospective" or packet.get("status")!="frozen_pre_kickoff":
+                continue
+            first,second=packet["first"],packet["second"]
+            saved=utc(packet["captured_at_utc"])
+            legs=[first,second]
+            if saved>=min(utc(leg["kickoff_utc"]) for leg in legs):
+                continue
+            if not all(utc(leg["kickoff_utc"])+MIN_FINAL_LAG<=clock
+                       for leg in legs):
+                continue
+            matching=[]
+            for leg in legs:
+                fixture_id=str(leg["fixture_id"])
+                row=references.get(fixture_id)
+                if (row is None or row.get("provider")!=leg.get("provider") or
+                    str(row.get("fixture_id"))!=fixture_id or
+                    utc(row["kickoff_utc"])!=utc(leg["kickoff_utc"]) or
+                    str(row.get("home_team_id"))!=str(leg.get("home_team_id")) or
+                    str(row.get("away_team_id"))!=str(leg.get("away_team_id"))):
+                    break
+                matching.append((fixture_id,row))
+            if len(matching)==2:
+                prioritized.extend(matching)
+        except (ValueError,TypeError,KeyError,OSError):
+            continue
+    # Other singles are verified newest first, so early data is not held
+    # hostage by a long backlog of much older unverified fixtures.
+    rest=sorted(references.items(),key=lambda entry:utc(entry[1]["kickoff_utc"]),
+                reverse=True)
+    seen=set()
+    ordered=[]
+    for fid,row in prioritized+rest:
+        if fid in seen:
+            continue
+        seen.add(fid)
+        ordered.append((fid,row))
+    return ordered
+
 def _provider_match(key,fixture_id,reference,request=None):
     get=request or requests.get
     response=get(API_ROOT+"/fixtures",
@@ -96,8 +145,7 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
             "waiting_for_full_time":0,"retry_cooldown":0,
             "source_errors":[]}
     merged=merge_verified(old,own)
-    for fixture_id,reference in sorted(
-            references.items(),key=lambda p:utc(p[1]["kickoff_utc"])):
+    for fixture_id,reference in _verification_order(references,root,clock):
         known=merged.get(str(fixture_id))
         if known is not None:
             if not verified_result(reference,known,fixture_id):
