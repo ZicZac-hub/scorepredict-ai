@@ -100,7 +100,7 @@ def _extract(response, name):
         text = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
     text = text.strip()
     if text.startswith("```"):
-        text = re.sub(r"^\`\`\`(?:json)?\\s*|\\s*\`\`\`$", "", text, flags=re.I).strip()
+        text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     return json.loads(text)
 
 
