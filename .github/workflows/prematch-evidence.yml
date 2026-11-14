@@ -115,7 +115,7 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           V10_RESULT_LIMIT: '20'
         run: python v10_settlement.py
-      - name: Optional independent five-AI research panel (shadow only)
+      - name: Optional independent ten-AI research panel (shadow only)
         if: steps.cadence.outputs.heavy == 'true'
         env:
           LLM_RESEARCH_ENABLED: ${{ vars.LLM_RESEARCH_ENABLED }}
@@ -219,6 +219,12 @@ jobs:
             data/prospective_ledger/
             data/daily_picks/
             data/v10_prospective/
+            data/llm_research/status.json
+            data/llm_research/evaluation.json
+            data/llm_research/forecasts/*.json
+            data/independent_football/status.json
+            data/independent_football/evaluation.json
+            data/independent_football/forecasts/*.json
             data/prematch/double_rescores/latest_report.json
           if-no-files-found: warn
           retention-days: 90
