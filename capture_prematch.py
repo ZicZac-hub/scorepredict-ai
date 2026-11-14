@@ -441,6 +441,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
     # Query pre-kickoff markets separately on the heavy research cadence,
     # without overwriting any early v8 or v6/v7 prediction.
     diagnostics['v10_market_refresh_checked']=0
+    diagnostics['v10_near_research_saved']=0
     diagnostics['v10_market_refresh_v9_saved']=0
     diagnostics['v10_market_refresh_v10_saved']=0
     diagnostics['v10_market_refresh_errors']=[]
@@ -452,13 +453,14 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             now=_time(current_time())
             for kickoff,fixture,code in fixtures.values():
                 identity=(str(fixture.get('provider')),str(fixture['id']))
-                if ((*identity,'v8') in shadow and (*identity,'v9') not in shadow
-                        and timedelta(minutes=30)<kickoff-now<=timedelta(hours=48)):
+                if ((*identity,'v8') in shadow
+                        and ((*identity,'v8_near') not in shadow
+                             or (*identity,'v9') not in shadow)
+                        and timedelta(minutes=45)<kickoff-now<=timedelta(hours=48)):
                     awaiting.append((kickoff,fixture,code))
             awaiting.sort(key=lambda item:(item[0],str(item[1]['id'])))
             for kickoff,fixture,code in awaiting[:research_market_refresh_limit]:
-                if (diagnostics['v10_market_calls']>=4
-                        or max_seconds and time.monotonic()-monotonic_start>=max_seconds):
+                if max_seconds and time.monotonic()-monotonic_start>=max_seconds:
                     break
                 diagnostics['v10_market_refresh_checked']+=1
                 try:
@@ -471,6 +473,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                         fixture,packet,_time(current_time()),code,request,
                         max(0,4-diagnostics['v10_market_calls']))
                     diagnostics['v10_market_calls']+=int(result.get('market_calls',0))
+                    diagnostics['v10_near_research_saved']+=int(
+                        bool(result.get('v8_near_recorded')))
                     for keyname in ('v9','v10'):
                         count=int(bool(result.get(keyname+'_recorded')))
                         diagnostics['v10_shadow_'+keyname+'_saved']+=count
@@ -502,13 +506,21 @@ def main():
     from daily_pick_capture import candidate as daily_candidate, save_for_dates
     from v10_prospective import capture as capture_v10
     from v10_prospective import capture_market_followup as refresh_v10_market
+    from v10_prospective import capture_near_research as refresh_v8_near
     _daily_candidates=[]
     def _record_v10(fixture,evidence,observed,code,request,remaining):
         return capture_v10(fixture,evidence,observed,api_key=key,
                            request=request,market_calls_remaining=remaining)
     def _refresh_market(fixture,evidence,observed,code,request,remaining):
-        return refresh_v10_market(fixture,evidence,observed,api_key=key,
+        updated=refresh_v8_near(fixture,evidence,observed)
+        # Odds are optional: fresh historical research must still be saved
+        # when the bookmaker feed is empty or the market quota is exhausted.
+        if remaining <= 0:
+            return {**updated,"market_calls":0,"v9_recorded":False,
+                    "v10_recorded":False}
+        result=refresh_v10_market(fixture,evidence,observed,api_key=key,
                                   request=request,market_calls_remaining=remaining)
+        return {**result,"v8_near_recorded":updated.get("v8_near_recorded",False)}
     def _record_daily(fixture, evidence, observed, code):
         result=daily_candidate(fixture,evidence,observed,code)
         if result:
