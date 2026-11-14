@@ -174,11 +174,98 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
         return outcome
 
 
+def capture_market_followup(fixture,evidence,captured_at,*,api_key=None,
+                            request=None,root=ROOT,market_calls_remaining=0):
+    """Near-kickoff fresh market check for a fixture ALREADY frozen in v8.
+
+    Saves a separately named SAME-EVIDENCE v8 comparison control alongside
+    verified v9/v10. The original early v8 score is not changed. One market
+    request per fixture, only if v9 is not yet present; no invented markets.
+    """
+    before=utc(captured_at)
+    kickoff=utc(fixture["utcDate"])
+    identity=_identity(fixture)
+    diagnostics={"v8_control_recorded":False,"v9_recorded":False,
+                 "v10_recorded":False,"market_calls":0,
+                 "reason":"not_eligible"}
+    if (not api_key or request is None or market_calls_remaining<=0
+        or fixture.get("provider")!="API-Football"
+        or not timedelta(minutes=30)<kickoff-before<=timedelta(hours=48)):
+        return diagnostics
+    saved=read_latest(root)
+    if (*identity,"v8") not in saved:
+        diagnostics["reason"]="no_original_frozen_v8"
+        return diagnostics
+    if (*identity,"v9") in saved:
+        diagnostics["reason"]="v9_already_frozen"
+        return diagnostics
+    cutoff=utc(evidence["as_of_utc"])
+    if cutoff>before or not evidence.get("input_digest"):
+        raise ValueError("New market comparison requires verified as-of evidence")
+    history=evidence.get("history") or []
+    league=evidence.get("league_history") or history
+    base=research_predict(fixture,history,league_history=league,as_of=cutoff)
+    if base is None or len(base.get("component_weights") or {})<2:
+        diagnostics["reason"]="insufficient_current_history"
+        return diagnostics
+    diagnostics["market_calls"]=1
+    try:
+        packet=request(api_key,"/odds",{"fixture":fixture["id"]},
+                       with_metadata=True)
+        meta=packet.get("metadata") or {}
+        fetched=utc(meta["fetched_at_utc"])
+        retrieved=utc(meta["retrieved_at_utc"])
+        observed=max(before,utc(datetime.now(timezone.utc)))
+        if (meta.get("freshness_known") is not True or meta.get("stale")
+                or fetched>retrieved or fetched>observed or observed>=kickoff):
+            diagnostics["reason"]="market_metadata_not_prematch_fresh"
+            return diagnostics
+        market=select_market_response(packet.get("data") or [],fixture,as_of=observed)
+        if not market:
+            diagnostics["reason"]="no_matching_timestamped_market"
+            return diagnostics
+        updated=market_predict(fixture,history,league_history=league,
+                               market=market,as_of=observed)
+        if updated is None or not updated.get("market_used"):
+            diagnostics["reason"]="v9_market_unavailable"
+            return diagnostics
+        frozen=max(observed,utc(datetime.now(timezone.utc)))
+        if frozen>=kickoff:
+            diagnostics["reason"]="market_calculation_finished_after_kickoff"
+            return diagnostics
+        control=dict(base)
+        control["model_version"]="ziczac-v8-market-time-matched-control-v1"
+        original=_record(fixture,evidence,control,"v8_control",frozen)
+        original["numerical_model_version"]=base["model_version"]
+        original["horizon"]="market_control"
+        comparison=_record(fixture,evidence,updated,"v9",frozen,market=market)
+        # Neither data source nor original early pre-match forecast is altered.
+        diagnostics["v8_control_recorded"]=bool(append_file_record(
+            original,root=root,kind="forecasts"))
+        diagnostics["v9_recorded"]=bool(append_file_record(
+            comparison,root=root,kind="forecasts"))
+        from multi_market_v10 import market_consensus, predict as predict_multi
+        consensus=market_consensus(packet.get("data") or [],fixture,as_of=observed)
+        if consensus:
+            candidate=predict_multi(fixture,history,league_history=league,
+                                    market=consensus,as_of=observed)
+            complete=utc(datetime.now(timezone.utc))
+            if candidate is not None and complete<kickoff:
+                row=_record(fixture,evidence,candidate,"v10",complete,market=consensus)
+                diagnostics["v10_recorded"]=bool(append_file_record(
+                    row,root=root,kind="forecasts"))
+        diagnostics["reason"]="verified_market_comparison_saved"
+        return diagnostics
+    except (KeyError,ValueError,TypeError,RuntimeError,LookupError) as exc:
+        diagnostics["reason"]="market_source_"+type(exc).__name__
+        return diagnostics
+
+
 def read_latest(root=ROOT):
     """Return earliest independently saved forecast for each model/fixture."""
     found={}
     for row in read_file_records(root=root,kind="forecasts"):
-        if row.get("model_key") not in ("v8","v9","v10"):
+        if row.get("model_key") not in ("v8","v8_control","v9","v10"):
             continue
         try:
             key=(row["provider"],str(row["fixture_id"]),row["model_key"])
