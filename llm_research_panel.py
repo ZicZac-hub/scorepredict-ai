@@ -1,7 +1,7 @@
-"""Optional five-provider pre-kickoff research panel; NEVER changes production scores.
+"""Optional ten-provider pre-kickoff research panel; NEVER changes production scores.
 
-Uses identical, saved evidence for independent OpenAI, Claude, Gemini, Grok
-and DeepSeek analyses. No provider is connected without its own API credentials.
+Uses identical saved evidence for ten independent AI adapters. No provider
+is connected without its own API credentials.
 All evaluations require verified regulation-time final scores.
 """
 import json
@@ -11,6 +11,7 @@ import re
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 import requests
 
@@ -19,7 +20,12 @@ from v10_prospective import ROOT as V10_ROOT, read_latest, utc
 
 ROOT = Path("data/llm_research")
 PANEL_DIR = ROOT / "forecasts"
-PROVIDERS = ("openai", "claude", "gemini", "grok", "deepseek")
+PROVIDERS = ("openai", "claude", "gemini", "grok", "deepseek",
+             "perplexity", "mistral", "qwen", "groqcloud", "cohere")
+SECRETS = {"openai": "OPENAI", "claude": "ANTHROPIC",
+           "gemini": "GEMINI", "grok": "XAI", "deepseek": "DEEPSEEK",
+           "perplexity": "PERPLEXITY", "mistral": "MISTRAL",
+           "qwen": "QWEN", "groqcloud": "GROQ", "cohere": "COHERE"}
 MAX_MATCHES_PER_RUN = 2
 MIN_LEAD = timedelta(minutes=45)
 MAX_LEAD = timedelta(hours=36)
@@ -30,8 +36,7 @@ def settings(environ=None):
     env = os.environ if environ is None else environ
     result = {}
     for name in PROVIDERS:
-        prefix = {"openai": "OPENAI", "claude": "ANTHROPIC",
-                  "gemini": "GEMINI", "grok": "XAI", "deepseek": "DEEPSEEK"}[name]
+        prefix = SECRETS[name]
         key, model = env.get(prefix + "_API_KEY", ""), env.get(prefix + "_MODEL", "")
         if key and model:
             result[name] = (key, model)
@@ -90,7 +95,16 @@ def briefing(row):
 
 def _extract(response, name):
     payload = response.json()
-    if name == "claude":
+    if name == "perplexity":
+        text = "".join(part.get("text", "") for item in payload.get("output", [])
+                       if item.get("type") == "message"
+                       for part in item.get("content", [])
+                       if part.get("type") == "output_text")
+    elif name == "cohere":
+        text = "".join(part.get("text", "") for part in
+                       (payload.get("message") or {}).get("content", [])
+                       if part.get("type") == "text")
+    elif name == "claude":
         parts = payload.get("content") or []
         text = "".join(part.get("text", "") for part in parts if part.get("type") == "text")
     elif name == "gemini":
@@ -132,11 +146,35 @@ def validate_vote(answer):
     }
 
 
-def ask(name, key, model, prompt, request=None):
+def _qwen_url(configured):
+    """Only Alibaba-controlled HTTPS endpoints; no secret-bearing URL redirects."""
+    value = configured or "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions"
+    parsed = urlparse(value)
+    host = (parsed.hostname or "").lower()
+    legacy = host in ("dashscope.aliyuncs.com", "dashscope-intl.aliyuncs.com",
+                      "dashscope-us.aliyuncs.com", "cn-hongkong.dashscope.aliyuncs.com")
+    dedicated = host.endswith(".maas.aliyuncs.com") and bool(re.fullmatch(r"[a-z0-9.-]+", host))
+    if (parsed.scheme != "https" or not (legacy or dedicated) or parsed.port not in (None, 443)
+            or parsed.username or parsed.password or parsed.query or parsed.fragment
+            or parsed.path != "/compatible-mode/v1/chat/completions"):
+        raise ValueError("Qwen endpoint must be the official Alibaba compatible-mode chat URL")
+    return value
+
+
+def ask(name, key, model, prompt, request=None, endpoint=None):
     post = request or requests.post
-    if not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", model):
+    if not re.fullmatch(r"[A-Za-z0-9._/-]{1,120}", model) or ".." in model or "//" in model:
         raise ValueError("Invalid configured model identifier")
-    if name == "claude":
+    if name == "perplexity":
+        url = "https://api.perplexity.ai/v1/agent"
+        headers = {"Authorization": "Bearer " + key}
+        body = {"model": model, "input": prompt}
+    elif name == "cohere":
+        url = "https://api.cohere.com/v2/chat"
+        headers = {"Authorization": "Bearer " + key}
+        body = {"model": model, "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 650}
+    elif name == "claude":
         url = "https://api.anthropic.com/v1/messages"
         headers = {"x-api-key": key, "anthropic-version": "2023-06-01"}
         body = {"model": model, "max_tokens": 650,
@@ -149,11 +187,14 @@ def ask(name, key, model, prompt, request=None):
     else:
         url = {"openai": "https://api.openai.com/v1/chat/completions",
                "grok": "https://api.x.ai/v1/chat/completions",
-               "deepseek": "https://api.deepseek.com/chat/completions"}[name]
+               "deepseek": "https://api.deepseek.com/chat/completions",
+               "mistral": "https://api.mistral.ai/v1/chat/completions",
+               "groqcloud": "https://api.groq.com/openai/v1/chat/completions",
+               "qwen": _qwen_url(endpoint)}[name]
         headers = {"Authorization": "Bearer " + key}
         body = {"model": model, "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": 650}
-    response = post(url, headers=headers, json=body, timeout=40)
+    response = post(url, headers=headers, json=body, timeout=40, allow_redirects=False)
     response.raise_for_status()
     return validate_vote(_extract(response, name))
 
@@ -173,7 +214,8 @@ def consensus(votes):
                         key=lambda item: (-item[1], item[0]))[0][0]) if candidates else None
     return {"outcome_probabilities": probs, "outcome": winning,
             "suggested_score": score, "provider_count": len(votes),
-            "complete_five_provider_panel": len(votes) == 5,
+            "complete_five_provider_panel": all(name in votes for name in PROVIDERS[:5]),
+            "complete_ten_provider_panel": all(name in votes for name in PROVIDERS),
             "note": "Independent AI interpretation of the same supplied evidence; "
                     "not measured exact-score accuracy or a substitute for the baseline."}
 
@@ -212,7 +254,8 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         votes, models = {}, {}
         for name, (key, model) in configured.items():
             try:
-                votes[name] = ask(name, key, model, prompt, request=request)
+                votes[name] = ask(name, key, model, prompt, request=request,
+                                  endpoint=env.get("QWEN_API_URL") if name == "qwen" else None)
                 models[name] = model
             except (requests.RequestException, ValueError, KeyError, TypeError, RuntimeError) as exc:
                 status["provider_error_types"][name] = type(exc).__name__
@@ -234,6 +277,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                   "baseline_predicted_score": row["predicted_score"],
                   "baseline_probabilities": row["outcome_probabilities"],
                   "provider_count": len(votes),
+                  "configured_provider_count": len(configured),
                   "disclaimer": "No real-time web access by LLMs; source packet is frozen "
                                 "statistical evidence. Shadow-only and not verified as superior."}
         path.parent.mkdir(parents=True, exist_ok=True)
