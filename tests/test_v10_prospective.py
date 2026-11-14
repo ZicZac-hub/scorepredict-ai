@@ -194,15 +194,17 @@ def test_new_research_snapshots_are_separate_from_original_and_selected_if_fresh
     # original early v8 score and a newer pre-match v8 challenger.
     now=when()
     from zoneinfo import ZoneInfo
-    sydney_now=now.astimezone(ZoneInfo("Australia/Sydney"))
-    # Pick the same Sydney day 11:00 local so 12/13 hour kickoffs also match.
-    local=datetime(sydney_now.year,sydney_now.month,sydney_now.day,8,0,
-                   tzinfo=ZoneInfo("Australia/Sydney"))
-    now=local.astimezone(timezone.utc)
-    if now < when()-timedelta(days=1):
-        now+=timedelta(days=1)
+    syd=ZoneInfo("Australia/Sydney")
+    local_now=now.astimezone(syd)
+    first_local=local_now+timedelta(hours=4)
+    if first_local.hour>20:
+        first_local=(local_now+timedelta(days=1)).replace(
+            hour=18,minute=0,second=0,microsecond=0)
+    second_local=first_local+timedelta(hours=1)
     first=fixture(83501,now,"Club Q","Club R",12)
     second=fixture(83502,now,"Club S","Club T",13)
+    first["utcDate"]=first_local.astimezone(timezone.utc).isoformat()
+    second["utcDate"]=second_local.astimezone(timezone.utc).isoformat()
     early=now-timedelta(days=3)
     monkeypatch.setattr(shadow,"research_predict",lambda *args,**kwargs:candidate())
     for item in (first,second):
@@ -218,7 +220,7 @@ def test_new_research_snapshots_are_separate_from_original_and_selected_if_fresh
         fresh=shadow.read_latest(tmp_path)[("API-Football",str(item["id"]),"v8_near")]
         assert original_now["input_digest"]!=fresh["input_digest"]
         assert original_now["captured_at_utc"]<fresh["captured_at_utc"]
-    frozen=grader.freeze_doubles(root=tmp_path,now=now)
+    frozen=grader.freeze_doubles(root=tmp_path,now=when())
     assert len(frozen["days_saved"])==1
     with (tmp_path/"doubles"/(frozen["days_saved"][0]+".json")).open() as handle:
         result=json.load(handle)
