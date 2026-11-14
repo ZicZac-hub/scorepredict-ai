@@ -1,0 +1,1355 @@
+{
+  "input_count": 127,
+  "model_version": "reference-informed-v7",
+  "note": "Original forecasts remain unchanged. Upcoming revisions use current pre-kickoff results; retrospective comparisons use only results available by the original capture and never enter original live accuracy.",
+  "rescored_at_utc": "2026-11-14T12:20:48.386624+00:00",
+  "revisions": [
+    {
+      "actual_score": null,
+      "away_team": "Le Havre",
+      "away_team_id": 111,
+      "changed": false,
+      "comparison_context": null,
+      "competition": "FL1",
+      "excluded_from_original_accuracy": true,
+      "fallback_reason": null,
+      "fixture_id": 1552827,
+      "history_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+      "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+      "history_count": 397,
+      "history_warnings": [],
+      "history_window_start_utc": "2024-11-14T12:20:48.386624+00:00",
+      "home_team": "Estac Troyes",
+      "home_team_id": 110,
+      "input_digest": "6037e427deda8ec65029c4af360afd5505cc2cb60e7515dcb9b246d6b35c510f",
+      "kickoff_utc": "2026-11-20T19:45:00Z",
+      "label": "Upcoming forecast revision",
+      "mode": "upcoming",
+      "model_sources": [
+        "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+      ],
+      "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+      "original_kickoff_utc": "2026-11-20T19:45:00Z",
+      "original_model": "venue-form-ensemble-v5-unregularized-live",
+      "original_provider": "API-Football",
+      "original_score": [
+        1,
+        1
+      ],
+      "original_score_probability": 0.11129066616253136,
+      "original_source": "permanent_snapshot",
+      "policy_version": "two-season-asof-v1",
+      "provenance": {
+        "history_days": 730,
+        "provider": "API-Football",
+        "requested_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+        "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+        "seasons": [
+          2026,
+          2025
+        ],
+        "sources": [
+          {
+            "age_seconds": 0.0039370059967041016,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:48.795107+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:48.799044+00:00",
+            "season": 2026,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          },
+          {
+            "age_seconds": 0.0040302276611328125,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:48.975943+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:48.979974+00:00",
+            "season": 2025,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          }
+        ]
+      },
+      "provider": "API-Football",
+      "rescored_at_utc": "2026-11-14T12:20:48.386624+00:00",
+      "revision_id": "20261114T122048386624Z-28a3e638-9c173693e2cc",
+      "run_id": "20261114T122048386624Z-28a3e638",
+      "source_ref": null,
+      "updated_expected_goals": {
+        "away": 0.9598093207787888,
+        "home": 1.1025188151574568
+      },
+      "updated_model": "reference-informed-v7",
+      "updated_outcome_probabilities": {
+        "away": 0.3061829758085765,
+        "draw": 0.3138993935233807,
+        "home": 0.37991763066804296
+      },
+      "updated_score": [
+        1,
+        1
+      ],
+      "updated_score_probability": 0.1406143144757965,
+      "updated_top10_scores": [
+        [
+          1,
+          1,
+          0.1406143144757965
+        ],
+        [
+          1,
+          0,
+          0.1341384679406558
+        ],
+        [
+          0,
+          0,
+          0.13321274671224792
+        ],
+        [
+          0,
+          1,
+          0.11599187327884986
+        ],
+        [
+          2,
+          0,
+          0.0772830573289443
+        ],
+        [
+          2,
+          1,
+          0.07417699876527864
+        ],
+        [
+          1,
+          2,
+          0.06457556443715735
+        ],
+        [
+          0,
+          2,
+          0.058570940955496656
+        ],
+        [
+          2,
+          2,
+          0.035597887402439986
+        ],
+        [
+          3,
+          0,
+          0.028402008271403868
+        ]
+      ]
+    },
+    {
+      "actual_score": null,
+      "away_team": "Cagliari",
+      "away_team_id": 490,
+      "changed": false,
+      "comparison_context": null,
+      "competition": "SA",
+      "excluded_from_original_accuracy": true,
+      "fallback_reason": null,
+      "fixture_id": 1550200,
+      "history_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+      "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+      "history_count": 490,
+      "history_warnings": [],
+      "history_window_start_utc": "2024-11-14T12:20:48.386624+00:00",
+      "home_team": "Como",
+      "home_team_id": 895,
+      "input_digest": "5ae0e3db6987baee04ae6a5d344afab4d135c1ffa7e272a19dad0240d59c4076",
+      "kickoff_utc": "2026-11-21T14:00:00Z",
+      "label": "Upcoming forecast revision",
+      "mode": "upcoming",
+      "model_sources": [
+        "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+      ],
+      "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+      "original_kickoff_utc": "2026-11-21T14:00:00Z",
+      "original_model": "venue-form-ensemble-v5-unregularized-live",
+      "original_provider": "API-Football",
+      "original_score": [
+        1,
+        0
+      ],
+      "original_score_probability": 0.12379556500441526,
+      "original_source": "permanent_snapshot",
+      "policy_version": "two-season-asof-v1",
+      "provenance": {
+        "history_days": 730,
+        "provider": "API-Football",
+        "requested_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+        "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+        "seasons": [
+          2026,
+          2025
+        ],
+        "sources": [
+          {
+            "age_seconds": 0.004483938217163086,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:49.900576+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:49.905060+00:00",
+            "season": 2026,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          },
+          {
+            "age_seconds": 0.0050640106201171875,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:50.107658+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:50.112722+00:00",
+            "season": 2025,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          }
+        ]
+      },
+      "provider": "API-Football",
+      "rescored_at_utc": "2026-11-14T12:20:48.386624+00:00",
+      "revision_id": "20261114T122048386624Z-28a3e638-fe24af8baf19",
+      "run_id": "20261114T122048386624Z-28a3e638",
+      "source_ref": null,
+      "updated_expected_goals": {
+        "away": 0.6148431705311809,
+        "home": 1.6930668392370511
+      },
+      "updated_model": "reference-informed-v7",
+      "updated_outcome_probabilities": {
+        "away": 0.13466606998009992,
+        "draw": 0.22603988165169664,
+        "home": 0.6392940483682036
+      },
+      "updated_score": [
+        1,
+        0
+      ],
+      "updated_score_probability": 0.17203158377149297,
+      "updated_top10_scores": [
+        [
+          1,
+          0,
+          0.17203158377149297
+        ],
+        [
+          2,
+          0,
+          0.14256260735494083
+        ],
+        [
+          1,
+          1,
+          0.09992017553034165
+        ],
+        [
+          0,
+          0,
+          0.09584487566989833
+        ],
+        [
+          2,
+          1,
+          0.08765364550530368
+        ],
+        [
+          3,
+          0,
+          0.08045600770641138
+        ],
+        [
+          0,
+          1,
+          0.06478183610327069
+        ],
+        [
+          3,
+          1,
+          0.0494678268664911
+        ],
+        [
+          4,
+          0,
+          0.03405434967917861
+        ],
+        [
+          1,
+          2,
+          0.031831729286584134
+        ]
+      ]
+    },
+    {
+      "actual_score": null,
+      "away_team": "Espanyol",
+      "away_team_id": 540,
+      "changed": false,
+      "comparison_context": null,
+      "competition": "PD",
+      "excluded_from_original_accuracy": true,
+      "fallback_reason": null,
+      "fixture_id": 1570454,
+      "history_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+      "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+      "history_count": 499,
+      "history_warnings": [],
+      "history_window_start_utc": "2024-11-14T12:20:48.386624+00:00",
+      "home_team": "Athletic Club",
+      "home_team_id": 531,
+      "input_digest": "0687fa831cffc083e88ca5d1f3db151c12313ab834cb8c59f508229d81b569c6",
+      "kickoff_utc": "2026-11-20T20:00:00Z",
+      "label": "Upcoming forecast revision",
+      "mode": "upcoming",
+      "model_sources": [
+        "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+      ],
+      "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+      "original_kickoff_utc": "2026-11-20T20:00:00Z",
+      "original_model": "venue-form-ensemble-v5-unregularized-live",
+      "original_provider": "API-Football",
+      "original_score": [
+        1,
+        0
+      ],
+      "original_score_probability": 0.12779466043093884,
+      "original_source": "permanent_snapshot",
+      "policy_version": "two-season-asof-v1",
+      "provenance": {
+        "history_days": 730,
+        "provider": "API-Football",
+        "requested_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+        "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+        "seasons": [
+          2026,
+          2025
+        ],
+        "sources": [
+          {
+            "age_seconds": 0.004311800003051758,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:50.496542+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:50.500854+00:00",
+            "season": 2026,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          },
+          {
+            "age_seconds": 0.004844188690185547,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:50.686938+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:50.691782+00:00",
+            "season": 2025,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          }
+        ]
+      },
+      "provider": "API-Football",
+      "rescored_at_utc": "2026-11-14T12:20:48.386624+00:00",
+      "revision_id": "20261114T122048386624Z-28a3e638-7701ee0fc8ba",
+      "run_id": "20261114T122048386624Z-28a3e638",
+      "source_ref": null,
+      "updated_expected_goals": {
+        "away": 0.865333436171745,
+        "home": 1.3822651713715501
+      },
+      "updated_model": "reference-informed-v7",
+      "updated_outcome_probabilities": {
+        "away": 0.22668599602052114,
+        "draw": 0.29190429001297546,
+        "home": 0.4814097139665034
+      },
+      "updated_score": [
+        1,
+        0
+      ],
+      "updated_score_probability": 0.13770362082071474,
+      "updated_top10_scores": [
+        [
+          1,
+          0,
+          0.13770362082071474
+        ],
+        [
+          1,
+          1,
+          0.13470959154861173
+        ],
+        [
+          0,
+          0,
+          0.1139889684451318
+        ],
+        [
+          2,
+          0,
+          0.10093297221783196
+        ],
+        [
+          2,
+          1,
+          0.08734067567233945
+        ],
+        [
+          0,
+          1,
+          0.08308842157990566
+        ],
+        [
+          1,
+          2,
+          0.05467750222045623
+        ],
+        [
+          3,
+          0,
+          0.046505377392354094
+        ],
+        [
+          3,
+          1,
+          0.0402426580194152
+        ],
+        [
+          0,
+          2,
+          0.039556449325543225
+        ]
+      ]
+    },
+    {
+      "actual_score": null,
+      "away_team": "Fulham",
+      "away_team_id": 36,
+      "changed": true,
+      "comparison_context": null,
+      "competition": "PL",
+      "excluded_from_original_accuracy": true,
+      "fallback_reason": null,
+      "fixture_id": 1557474,
+      "history_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+      "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+      "history_count": 480,
+      "history_warnings": [],
+      "history_window_start_utc": "2024-11-14T12:20:48.386624+00:00",
+      "home_team": "Manchester City",
+      "home_team_id": 50,
+      "input_digest": "8d6f85d5c50297f26b07ee45c0b288fa6782883bd675e22cf2a54d24f9e826bc",
+      "kickoff_utc": "2026-11-21T12:30:00Z",
+      "label": "Upcoming forecast revision",
+      "mode": "upcoming",
+      "model_sources": [
+        "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+      ],
+      "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+      "original_kickoff_utc": "2026-11-21T12:30:00Z",
+      "original_model": "venue-form-ensemble-v5-unregularized-live",
+      "original_provider": "API-Football",
+      "original_score": [
+        1,
+        1
+      ],
+      "original_score_probability": 0.1214119807178865,
+      "original_source": "permanent_snapshot",
+      "policy_version": "two-season-asof-v1",
+      "provenance": {
+        "history_days": 730,
+        "provider": "API-Football",
+        "requested_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+        "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+        "seasons": [
+          2026,
+          2025
+        ],
+        "sources": [
+          {
+            "age_seconds": 0.004324197769165039,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:51.081098+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:51.085423+00:00",
+            "season": 2026,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          },
+          {
+            "age_seconds": 0.00488591194152832,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:51.270407+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:51.275293+00:00",
+            "season": 2025,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          }
+        ]
+      },
+      "provider": "API-Football",
+      "rescored_at_utc": "2026-11-14T12:20:48.386624+00:00",
+      "revision_id": "20261114T122048386624Z-28a3e638-f797774460fc",
+      "run_id": "20261114T122048386624Z-28a3e638",
+      "source_ref": null,
+      "updated_expected_goals": {
+        "away": 0.7684066266039288,
+        "home": 1.9277194507362527
+      },
+      "updated_model": "reference-informed-v7",
+      "updated_outcome_probabilities": {
+        "away": 0.1375672279172455,
+        "draw": 0.21909519968959468,
+        "home": 0.6433375723931599
+      },
+      "updated_score": [
+        1,
+        0
+      ],
+      "updated_score_probability": 0.12605878453585317,
+      "updated_top10_scores": [
+        [
+          1,
+          0,
+          0.12605878453585317
+        ],
+        [
+          2,
+          0,
+          0.12535595947137468
+        ],
+        [
+          1,
+          1,
+          0.10393350949090654
+        ],
+        [
+          2,
+          1,
+          0.09632434994209786
+        ],
+        [
+          3,
+          0,
+          0.08055037379992624
+        ],
+        [
+          0,
+          0,
+          0.0714638092781073
+        ],
+        [
+          3,
+          1,
+          0.061895441003286845
+        ],
+        [
+          0,
+          1,
+          0.04784416049973694
+        ],
+        [
+          4,
+          0,
+          0.03881963059436443
+        ],
+        [
+          1,
+          2,
+          0.03839576798991102
+        ]
+      ]
+    },
+    {
+      "actual_score": null,
+      "away_team": "1. FC K\u00f6ln",
+      "away_team_id": 192,
+      "changed": true,
+      "comparison_context": null,
+      "competition": "BL1",
+      "excluded_from_original_accuracy": true,
+      "fallback_reason": null,
+      "fixture_id": 1575221,
+      "history_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+      "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+      "history_count": 81,
+      "history_warnings": [
+        "Provider fetch freshness is unknown for at least one history source.",
+        "API-Football season 2025 history unavailable (RuntimeError)."
+      ],
+      "history_window_start_utc": "2024-11-14T12:20:48.386624+00:00",
+      "home_team": "Bayern M\u00fcnchen",
+      "home_team_id": 157,
+      "input_digest": "5426835177702cd21ea47c2b4ce2331e57616f8b1286e051cdc6abcbd389ec14",
+      "kickoff_utc": "2026-11-20T19:30:00Z",
+      "label": "Upcoming forecast revision",
+      "mode": "upcoming",
+      "model_sources": [
+        "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+      ],
+      "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+      "original_kickoff_utc": "2026-11-20T19:30:00Z",
+      "original_model": "venue-form-ensemble-v5-unregularized-live",
+      "original_provider": "API-Football",
+      "original_score": [
+        2,
+        1
+      ],
+      "original_score_probability": 0.09477109955558945,
+      "original_source": "permanent_snapshot",
+      "policy_version": "two-season-asof-v1",
+      "provenance": {
+        "history_days": 730,
+        "provider": "API-Football",
+        "requested_as_of_utc": "2026-11-14T12:20:48.386624+00:00",
+        "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+        "seasons": [
+          2026,
+          2025
+        ],
+        "sources": [
+          {
+            "age_seconds": 0.003587484359741211,
+            "cache_status": "network",
+            "endpoint": "/fixtures",
+            "fetched_at_utc": "2026-11-14T12:20:51.662214+00:00",
+            "freshness_known": true,
+            "provider": "API-Football",
+            "retrieved_at_utc": "2026-11-14T12:20:51.665801+00:00",
+            "season": 2026,
+            "source_season_mismatches": 0,
+            "stale": false,
+            "ttl_seconds": 900
+          },
+          {
+            "freshness_known": false,
+            "provider": "API-Football",
+            "season": 2025
+          }
+        ]
+      },
+      "provider": "API-Football",
+      "rescored_at_utc": "2026-11-14T12:20:48.386624+00:00",
+      "revision_id": "20261114T122048386624Z-28a3e638-473241a32586",
+      "run_id": "20261114T122048386624Z-28a3e638",
+      "source_ref": null,
+      "updated_expected_goals": {
+        "away": 0.5124035458573958,
+        "home": 4.3188711688321835
+      },
+      "updated_model": "reference-informed-v7",
+      "updated_outcome_probabilities": {
+        "away": 0.01323826110897396,
+        "draw": 0.037744222408479765,
+        "home": 0.9490175164825462
+      },
+      "updated_score": [
+        4,
+        0
+      ],
+      "updated_score_probability": 0.11563087349303897,
+      "updated_top10_scores": [
+        [
+          4,
+          0,
+          0.11563087349303897
+        ],
+        [
+          3,
+          0,
+          0.10709360751767617
+        ],
+        [
+          5,
+          0,
+          0.09987896917232028
+        ],
+        [
+          2,
+          0,
+          0.07438999912839349
+        ],
+        [
+          6,
+          0,
+          0.07189406673704272
+        ],
+        [
+          4,
+          1,
+          0.059249669588421115
+        ],
+        [
+          3,
+          1,
+          0.054875144230717515
+        ],
+        [
+          5,
+          1,
+          0.05117833796047842
+        ],
+        [
+          7,
+          0,
+          0.04435731601519844
+        ],
+        [
+          2,
+          1,
+          0.0381176993297174
+        ]
+      ]
+    }
+  ],
+  "run_id": "20261114T122048386624Z-28a3e638",
+  "skipped": [
+    {
+      "fixture_id": 1575222,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575223,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570453,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575226,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550202,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575225,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575229,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557470,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557467,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563267,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492456,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557476,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557468,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492459,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492455,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492458,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492457,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492451,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492312,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563270,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492454,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492453,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492450,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563268,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492452,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557471,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563263,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563265,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563266,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563269,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563271,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563272,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563273,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563274,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570460,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552229,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552824,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550205,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557475,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570462,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575228,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552226,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552233,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492468,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550204,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552819,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552820,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552823,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552826,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552228,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552231,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570461,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492462,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492465,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552232,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550201,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563264,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570455,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552225,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552230,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550199,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550206,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552825,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557472,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575224,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570459,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552227,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552821,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557473,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575227,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550197,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570458,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492460,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550198,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552822,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570456,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492466,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492464,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550203,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557469,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570457,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492467,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492463,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492469,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635641,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563275,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563276,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563277,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563278,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563279,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563280,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563281,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563282,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635611,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635692,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635715,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492472,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635718,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635728,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563283,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563284,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563286,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563285,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635625,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1635642,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492461,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1636231,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1636315,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1636334,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1636261,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1636294,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1636305,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492478,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552238,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575237,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1550216,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1552830,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1557485,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1563294,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1570468,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1575551,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    },
+    {
+      "fixture_id": 1492475,
+      "provider": "API-Football",
+      "reason": "matching fixture unavailable from its original provider; API-Football: API-Football request failed (RuntimeError)"
+    }
+  ],
+  "summary": {
+    "changed": 2,
+    "input_records": 127,
+    "processed": 127,
+    "retrospective_comparisons": 0,
+    "revised": 5,
+    "skipped": 122,
+    "upcoming_revisions": 5
+  }
+}
