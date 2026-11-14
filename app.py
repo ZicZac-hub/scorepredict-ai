@@ -469,9 +469,11 @@ if view == 'private':
 if view == 'deep':
     with active_page_slot:
         from research_ui import render as render_deep_research
+        # Keep this call backward-compatible with existing Streamlit
+        # deployments that may still have an older research_ui module cached.
+        # research_ui verifies the private gate from session+server secrets.
         render_deep_research(st, eligible, histories, secondary_key,
-                             sydney_kickoff, pre_match_report,
-                             external_private=_access_gate_enabled)
+                             sydney_kickoff, pre_match_report)
 
 
 st.subheader('📅 All available fixtures for the selected date')
