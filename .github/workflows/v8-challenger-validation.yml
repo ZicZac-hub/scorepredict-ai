@@ -1,0 +1,46 @@
+name: Evidence v8 honest historical comparison
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research_ensemble_v8.py'
+      - 'smart_double_v8.py'
+      - 'v8_challenger_backtest.py'
+      - '.github/workflows/v8-challenger-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compare-with-preserved-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt 'pytest>=8,<10'
+      - name: Run v8 regression tests
+        run: python -m pytest -q tests/test_research_ensemble_v8.py tests/test_research_ui_and_private_access.py
+      - name: Download completed historical fixtures
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: |
+          python fetch_backtest_history.py --leagues PL,PD,BL1,SA,FL1 \
+            --seasons 2025,2026 --max-matches 3000 \
+            --output work/v8_verified_matches.json
+      - name: Replay original v6 versus challenger v8 with identical pre-match history
+        run: |
+          python v8_challenger_backtest.py work/v8_verified_matches.json \
+            --holdout-year 2026 --max-fixtures 160 --max-pair-days 12 \
+            --output work/v8_challenger_evaluation.json
+      - name: Archive evidence with no original prediction changes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v8-challenger-historical-validation
+          if-no-files-found: warn
+          path: work/v8_challenger_evaluation.json
