@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from api_football import LEAGUES, _convert, _request
+from api_football import LEAGUES, _convert, _request, ProviderQuotaError, ProviderAccessError
 from forecast_model import predict
 from history_pipeline import load_evidence
 
@@ -247,6 +247,14 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             continue
         except Exception as exc:
             diagnostics['league_errors'].append({'league': code, 'stage': 'fixtures', 'error_type': type(exc).__name__})
+            if isinstance(exc,(ProviderQuotaError,ProviderAccessError)):
+                # All leagues share this same API key. One confirmed global
+                # quota/access failure must not cause ten more paid retries.
+                # Preserve earlier captures; never invent fixture coverage.
+                diagnostics['collector_blocker']={
+                    'reason':'provider_quota' if isinstance(exc,ProviderQuotaError)
+                    else 'provider_credentials_or_plan', 'source':'API-Football'}
+                break
             continue
         diagnostics['provider_fixture_counts'][code] = len(raw)
         for item in raw:
