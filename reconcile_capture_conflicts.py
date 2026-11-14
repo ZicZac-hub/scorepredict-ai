@@ -1,13 +1,14 @@
 """Safely reconcile generated-report conflicts in the capture workflow.
 
-This intentionally does NOT auto-resolve conflicts involving immutable
-original forecasts, saved five-double selections or daily research picks.
-On rebase, git stage 2 is the latest upstream state and stage 3 is the
-capture job's generated state. An existing newer upstream report wins over
-a stale generated report; verified final-score dictionaries are merged only
-when both observations agree on the exact fixture and result identity.
+This never overwrites immutable forecast records. Concurrent jobs may
+freeze different predictions for the same Sydney date; after validating
+both candidates as pre-kickoff, the FIRST already published date wins.
+On rebase, stage 2 is newer upstream and stage 3 the capture job.
+Generated reports prefer upstream; verified final scores are unioned
+only after matching exact source identities.
 """
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import subprocess
 import sys
@@ -31,6 +32,7 @@ REPORT_EXACT = frozenset((
     "data/v10_prospective/performance.json",
 ))
 VERIFIED = "data/prematch/verified_results.json"
+FREEZE_PREFIXES = ("data/daily_picks/","data/v10_prospective/doubles/")
 RESULT_FIELDS = ("provider","fixture_id","kickoff_utc","home_team_id",
                  "away_team_id","score_basis","home_goals","away_goals",
                  "evidence_version")
@@ -54,6 +56,47 @@ def merge_verified(upstream, local):
     return merged
 
 
+def _timestamp(value):
+    date=datetime.fromisoformat(str(value).replace("Z","+00:00"))
+    if date.tzinfo is None:
+        raise ValueError("Original freeze must be timezone-aware")
+    return date.astimezone(timezone.utc)
+
+
+def valid_freeze(path,row):
+    """Validate published and pending picks before keeping first publication."""
+    if not isinstance(row,dict) or not isinstance(path,str):
+        return False
+    try:
+        if path.startswith("data/daily_picks/"):
+            day=Path(path).stem
+            original=_timestamp(row["captured_at_utc"])
+            kickoff=_timestamp(row["kickoff_utc"])
+            return bool(row.get("prediction_date")==day
+                        and row.get("status")=="frozen_in_capture_workflow"
+                        and original<kickoff
+                        and isinstance(row.get("exact_score"),list)
+                        and len(row["exact_score"])==2
+                        and all(type(n) is int and n>=0 for n in row["exact_score"]))
+        if path.startswith("data/v10_prospective/doubles/"):
+            day=Path(path).stem
+            original=_timestamp(row["captured_at_utc"])
+            first=_timestamp(row["first"]["kickoff_utc"])
+            second=_timestamp(row["second"]["kickoff_utc"])
+            combinations=row.get("five_doubles")
+            if not isinstance(combinations,list) or len(combinations)!=5:
+                return False
+            pairs={(x["score1"],x["score2"]) for x in combinations}
+            return bool(row.get("sydney_date")==day
+                        and row.get("status")=="frozen_pre_kickoff"
+                        and original<min(first,second)
+                        and len(pairs)==5
+                        and str(row["first"]["fixture_id"])!=str(row["second"]["fixture_id"]))
+    except (ValueError,TypeError,KeyError,AttributeError):
+        return False
+    return False
+
+
 def _git(*args):
     result=subprocess.run(["git",*args],capture_output=True,text=True)
     if result.returncode:
@@ -71,20 +114,29 @@ def reconcile():
     # score snapshots are NEVER automatically discarded or overwritten.
     disallowed=[x for x in paths
                 if x!=VERIFIED and x not in REPORT_EXACT
-                and not x.startswith(REPORT_PREFIXES)]
+                and not x.startswith(REPORT_PREFIXES)
+                and not x.startswith(FREEZE_PREFIXES)]
     if disallowed:
         raise RuntimeError("Immutable forecast conflicts need manual review: "+
                            ", ".join(disallowed[:8]))
+    # Validate every conflicting freeze before mutating any merge contents.
+    for path in paths:
+        if path.startswith(FREEZE_PREFIXES):
+            upstream=json.loads(_git("show",":2:"+path))
+            local=json.loads(_git("show",":3:"+path))
+            if not valid_freeze(path,upstream) or not valid_freeze(path,local):
+                raise RuntimeError("Unverified pre-match frozen pick conflict: "+path)
     for path in paths:
         if path==VERIFIED:
             upstream=json.loads(_git("show",":2:"+path))
             local=json.loads(_git("show",":3:"+path))
             merged=merge_verified(upstream,local)
             Path(path).parent.mkdir(parents=True,exist_ok=True)
-            Path(path).write_text(json.dumps(merged,indent=2,sort_keys=True)+"\n",
+            Path(path).write_text(json.dumps(merged,indent=2,sort_keys=True)+"\\n",
                                   encoding="utf-8")
         else:
-            # REBASE semantics: --ours means the newer upstream main state.
+            # REBASE semantics: --ours means first already published on main.
+            # This preserves the ORIGINAL frozen score on date collisions.
             _git("checkout","--ours","--",path)
         _git("add","--",path)
     print("Reconciled derived reports without touching immutable originals:",len(paths))
