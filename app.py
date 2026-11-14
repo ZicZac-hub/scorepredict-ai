@@ -176,10 +176,12 @@ with st.sidebar:
               args=('Manual Select',))
     st.divider()
     st.header('Model settings')
-    _model_choice=st.selectbox('Score model', ['Preserved exact-score model (default)', 'New fitted model (research)', 'Evidence Ensemble v8 (experimental)'],key='forecast_model_choice')
-    _forecast_variant=('research_v8' if _model_choice=='Evidence Ensemble v8 (experimental)'
-                       else 'reference_v7' if _model_choice=='New fitted model (research)' else 'baseline')
-    st.caption('The preserved v6 model remains the default. V8 is an opt-in experimental contender; in a 160-match pre-match replay it scored 19 exact hits versus v6\'s 18. This is not proof of better future accuracy. Previous saved predictions remain unchanged.')
+    _model_choice=st.selectbox('Score model',
+        ['Evidence Ensemble v8 · enhanced (default)', 'Preserved v6 · original', 'Fitted Dixon–Coles v7 · research'],
+        key='forecast_model_choice')
+    _forecast_variant=('research_v8' if _model_choice.startswith('Evidence Ensemble')
+                       else 'reference_v7' if _model_choice.startswith('Fitted') else 'baseline')
+    st.caption('New default: research ensemble v8. The previous v6 model remains available and unchanged. In a 632-match historical replay, v8 had 77 exact hits vs v6\'s 70, not a statistically established improvement. Market-informed v9 is available on demand in Deep Research when verified odds exist.')
     days=st.slider('Upcoming days',1,14,14)
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
