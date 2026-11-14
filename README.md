@@ -8,6 +8,17 @@ The existing website is https://ziczacscorepredict-ai.streamlit.app/ . The updat
 
 The forecast models, provider keys and original saved records are preserved. Streamlit hosting controls account access; this interface update does not introduce a custom password or change host sharing settings. The separate iPhone launch page in `pwa/` links to this existing service.
 
+## Optional independent five-AI panel
+
+A non-destructive research panel is wired to the scheduled collection workflow and
+the Deep Research / Performance pages. It can independently consult OpenAI,
+Anthropic Claude, Google Gemini, xAI Grok and DeepSeek using genuine, frozen
+pre-match evidence. **It is disabled unless the owner opts in and configures
+individual API keys and supported model IDs.** It does not download predictions
+from ScoreGPT or replace the saved numerical scores. Its same-fixture accuracy
+comparison begins only after verified regulation-time finals. See
+[FIVE_AI_SETUP.md](FIVE_AI_SETUP.md) for exact secure setup and cost controls.
+
 ## Features
 - Upcoming real fixtures from football-data.org competitions accessible to your key
 - Recent and venue-weighted attacking/defensive rates, Poisson exact-score probability matrix
