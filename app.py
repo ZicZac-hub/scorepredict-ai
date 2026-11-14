@@ -1107,6 +1107,10 @@ st.markdown("""<style>
 </style>""",unsafe_allow_html=True)
 
 with active_page_slot:
+    if view=='deep':
+        from llm_research_ui import render as render_five_ai
+        render_five_ai(st)
+        st.divider()
     if view=='finished':
         from v10_status_ui import render as render_v10_status
         render_v10_status(st)
