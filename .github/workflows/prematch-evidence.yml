@@ -4,37 +4,6 @@ on:
   schedule:
     - cron: '2,17,32,47 * * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'forecast_model.py'
-      - 'history_pipeline.py'
-      - 'forecast_ledger.py'
-      - 'prospective_ledger.py'
-      - 'evaluate_prospective_ledger.py'
-      - 'capture_prematch.py'
-      - 'v10_prospective.py'
-      - 'v10_evaluate.py'
-      - 'automatic_doubles_ui.py'
-      - 'smart_double_v8.py'
-      - 'v10_settlement.py'
-      - 'multi_market_v10.py'
-      - 'verified_features_v10.py'
-      - 'reconcile_capture_conflicts.py'
-      - 'api_football.py'
-      - 'reference_model.py'
-      - 'rescore_predictions.py'
-      - 'revision_store.py'
-      - 'revision_jobs.py'
-      - 'double_revisions.py'
-      - 'smart_double_ai.py'
-      - 'update_saved_forecasts.py'
-      - 'llm_research_panel.py'
-      - 'sportmonks_probability_research.py'
-      - 'llm_research_ui.py'
-      - 'sportmonks_probability_ui.py'
-      - '.github/workflows/prematch-evidence.yml'
-
 permissions:
   contents: write
 
