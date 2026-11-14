@@ -17,9 +17,9 @@ def packet(now,fixture_id=9011,changes=None,dateshift=0):
     for i in range(3):
         bookmakers.append({"name":("Pinnacle","Bet365","Bookmaker Three")[i],
             "bets":[{"name":"Match Winner","values":[
-                {"value":"Home","odd":str(2.0+(changes[i] if i<len(changes) else i*.1))},
-                {"value":"Draw","odd":str(3.6+i*.1)},
-                {"value":"Away","odd":str(4.0+i*.1)}]},
+                {"value":"Home","odd":str(2.0+(changes[i] if i<len(changes) else i*.05))},
+                {"value":"Draw","odd":"3.50"},
+                {"value":"Away","odd":"4.0"}]},
                 {"name":"Goals Over/Under","values":[
                     {"value":"Under 2.5","odd":"1.85"},
                     {"value":"Over 2.5","odd":"2.06"}]}]})
@@ -40,7 +40,7 @@ def test_requires_multiple_real_source_snapshots():
 
 def test_v10_median_distribution_validated_before_kickoff(monkeypatch):
     now=when();game=fixture(9011,now,"Test A","Test B",36)
-    market=multi.market_consensus(packet(now,changes=[0,.2,1.1]),game,as_of=now)
+    market=multi.market_consensus(packet(now,changes=[0,.10,.17]),game,as_of=now)
     assert market["bookmaker_count"]==3
     assert sum(market["winner"])==pytest.approx(1.0)
     assert sum(market["totals"])==pytest.approx(1.0)
