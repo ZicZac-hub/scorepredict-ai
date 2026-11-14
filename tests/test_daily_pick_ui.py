@@ -41,7 +41,7 @@ def test_chooses_best_supported_daily_history_not_a_random_score():
     assert daily.daily_candidates([low,strong],now)[0] is strong
 
 
-def test_forecast_frozen_before_kickoff_and_stays_after_kickoff(monkeypatch):
+def test_forecast_frozen_before_kickoff_and_stays_after_kickoff(monkeypatch,tmp_path):
     import research_ensemble_v8
     now=datetime(2026,11,14,11,0,tzinfo=SYDNEY).astimezone(timezone.utc)
     first=row("First",now+timedelta(hours=3),.13,ident=12)
@@ -52,37 +52,37 @@ def test_forecast_frozen_before_kickoff_and_stays_after_kickoff(monkeypatch):
         return first["result"] if fixture["id"]==12 else replacement["result"]
     monkeypatch.setattr(research_ensemble_v8,"predict",prediction)
     session={}
-    original=daily.choose_daily_snapshot([first],session,now)
+    original=daily.choose_daily_snapshot([first],session,now,snapshot_dir=tmp_path)
     assert original["exact_score"]==[2,1]
     assert original["model"]==daily.MODEL
     assert original["captured_at_utc"]<original["kickoff_utc"]
-    assert daily.choose_daily_snapshot([replacement],session,now+timedelta(hours=4)) is original
+    assert daily.choose_daily_snapshot([replacement],session,now+timedelta(hours=4),snapshot_dir=tmp_path) is original
     assert calls==[12]
 
 
-def test_no_postkickoff_new_forecast_and_no_invented_fixture(monkeypatch):
+def test_no_postkickoff_new_forecast_and_no_invented_fixture(monkeypatch,tmp_path):
     import research_ensemble_v8
     now=datetime(2026,11,14,11,0,tzinfo=SYDNEY).astimezone(timezone.utc)
     complete=row("Started",now-timedelta(minutes=10),.2,ident=3)
     assert daily.daily_candidates([complete],now)==[]
     assert daily.build_snapshot(complete,now,complete["result"]) is None
-    assert daily.choose_daily_snapshot([complete],{},now) is None
+    assert daily.choose_daily_snapshot([complete],{},now,snapshot_dir=tmp_path) is None
 
 
-def test_next_day_is_explicit_and_previous_session_day_expires(monkeypatch):
+def test_next_day_is_explicit_and_previous_session_day_expires(monkeypatch,tmp_path):
     import research_ensemble_v8
     now=datetime(2026,11,14,11,0,tzinfo=SYDNEY).astimezone(timezone.utc)
     nextday=row("Tomorrow",now+timedelta(hours=26),.15,ident=33)
     monkeypatch.setattr(research_ensemble_v8,"predict",lambda *args,**kwargs:nextday["result"])
     session={}
-    snapshot=daily.choose_daily_snapshot([nextday],session,now)
+    snapshot=daily.choose_daily_snapshot([nextday],session,now,snapshot_dir=tmp_path)
     assert snapshot["prediction_date"]=="2026-11-15"
     assert daily._label(snapshot,now).startswith("NEXT")
-    assert daily.choose_daily_snapshot([],session,now+timedelta(hours=20)) is snapshot
-    assert daily.choose_daily_snapshot([],session,now+timedelta(hours=45)) is None
+    assert daily.choose_daily_snapshot([],session,now+timedelta(hours=20),snapshot_dir=tmp_path) is snapshot
+    assert daily.choose_daily_snapshot([],session,now+timedelta(hours=45),snapshot_dir=tmp_path) is None
 
 
-def test_valid_prematch_v9_odds_upgrades_only_the_new_daily_card(monkeypatch):
+def test_valid_prematch_v9_odds_upgrades_only_the_new_daily_card(monkeypatch,tmp_path):
     import research_ensemble_v8, market_score_v9, api_football
     now=datetime(2026,11,14,10,0,tzinfo=SYDNEY).astimezone(timezone.utc)
     chosen=row("Verified",now+timedelta(hours=4),.13,ident=23)
@@ -99,23 +99,23 @@ def test_valid_prematch_v9_odds_upgrades_only_the_new_daily_card(monkeypatch):
               "scores":[(1,0,.18),(2,1,.12)]}
     monkeypatch.setattr(market_score_v9,"predict",lambda *args,**kwargs:adjusted)
     session={}
-    first=daily.choose_daily_snapshot([chosen],session,now,api_key="test-key")
+    first=daily.choose_daily_snapshot([chosen],session,now,api_key="test-key",snapshot_dir=tmp_path)
     assert first["model"]=="market-informed-v9-experimental"
     assert first["exact_score"]==[1,0]
     assert first["v8_comparison"]["exact_score"]==[2,1]
     assert first["market_provenance"]["bookmaker"]=="Pinnacle"
     assert calls==[("/odds",23)]
-    assert daily.choose_daily_snapshot([chosen],session,now+timedelta(minutes=5),api_key="test-key") is first
+    assert daily.choose_daily_snapshot([chosen],session,now+timedelta(minutes=5),api_key="test-key",snapshot_dir=tmp_path) is first
     assert calls==[("/odds",23)]
 
 
-def test_fallback_when_unverified_market_is_missing(monkeypatch):
+def test_fallback_when_unverified_market_is_missing(monkeypatch,tmp_path):
     import research_ensemble_v8, api_football
     now=datetime(2026,11,14,10,0,tzinfo=SYDNEY).astimezone(timezone.utc)
     chosen=row("No Odds",now+timedelta(hours=5),.13,ident=18)
     monkeypatch.setattr(research_ensemble_v8,"predict",lambda *args,**kwargs:chosen["result"])
     monkeypatch.setattr(api_football,"_request",lambda *args,**kwargs:
                         {"metadata":{"freshness_known":False,"stale":False},"data":[]})
-    actual=daily.choose_daily_snapshot([chosen],{},now,api_key="test-key")
+    actual=daily.choose_daily_snapshot([chosen],{},now,api_key="test-key",snapshot_dir=tmp_path)
     assert actual["model"]==daily.MODEL
     assert "market_provenance" not in actual
