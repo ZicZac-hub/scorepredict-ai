@@ -187,3 +187,41 @@ def test_doubles_wait_until_near_matchday_to_find_full_slate(tmp_path):
     later=grader.freeze_doubles(root=tmp_path,now=now+timedelta(hours=17))
     assert later["days_saved"]==[]
     assert original==(tmp_path/"doubles"/(close["days_saved"][0]+".json")).read_bytes()
+
+
+def test_new_research_snapshots_are_separate_from_original_and_selected_if_fresher(monkeypatch,tmp_path):
+    # Two distinct fixtures within the same Sydney matchday, with an
+    # original early v8 score and a newer pre-match v8 challenger.
+    now=when()
+    from zoneinfo import ZoneInfo
+    sydney_now=now.astimezone(ZoneInfo("Australia/Sydney"))
+    # Pick the same Sydney day 11:00 local so 12/13 hour kickoffs also match.
+    local=datetime(sydney_now.year,sydney_now.month,sydney_now.day,8,0,
+                   tzinfo=ZoneInfo("Australia/Sydney"))
+    now=local.astimezone(timezone.utc)
+    if now < when()-timedelta(days=1):
+        now+=timedelta(days=1)
+    first=fixture(83501,now,"Club Q","Club R",12)
+    second=fixture(83502,now,"Club S","Club T",13)
+    early=now-timedelta(days=3)
+    monkeypatch.setattr(shadow,"research_predict",lambda *args,**kwargs:candidate())
+    for item in (first,second):
+        original=shadow._record(item,evidence(early),candidate(),"v8",early)
+        assert append_file_record(original,root=tmp_path)
+        current=evidence(now)
+        current["input_digest"]="research-refresh-"+str(item["id"])
+        saved=shadow.capture_near_research(item,current,now,root=tmp_path)
+        assert saved["v8_near_recorded"]
+        repeated=shadow.capture_near_research(item,current,now,root=tmp_path)
+        assert not repeated["v8_near_recorded"]
+        original_now=shadow.read_latest(tmp_path)[("API-Football",str(item["id"]),"v8")]
+        fresh=shadow.read_latest(tmp_path)[("API-Football",str(item["id"]),"v8_near")]
+        assert original_now["input_digest"]!=fresh["input_digest"]
+        assert original_now["captured_at_utc"]<fresh["captured_at_utc"]
+    frozen=grader.freeze_doubles(root=tmp_path,now=now)
+    assert len(frozen["days_saved"])==1
+    with (tmp_path/"doubles"/(frozen["days_saved"][0]+".json")).open() as handle:
+        result=json.load(handle)
+    assert result["first"]["model_key"]=="v8_near"
+    assert result["second"]["model_key"]=="v8_near"
+    assert all(v["source"]=="v8_near" for v in result["selected_forecasts"].values())
