@@ -470,7 +470,8 @@ if view == 'deep':
     with active_page_slot:
         from research_ui import render as render_deep_research
         render_deep_research(st, eligible, histories, secondary_key,
-                             sydney_kickoff, pre_match_report)
+                             sydney_kickoff, pre_match_report,
+                             external_private=_access_gate_enabled)
 
 
 st.subheader('📅 All available fixtures for the selected date')
