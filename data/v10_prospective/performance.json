@@ -1,0 +1,51 @@
+{
+  "evidence": "genuinely_frozen_pre_kickoff_only",
+  "five_doubles": {
+    "average_estimated_coverage": null,
+    "awaiting_both_results": 0,
+    "frozen_pairs": 0,
+    "hit_rate": null,
+    "rows": [],
+    "verified_pairs": 0,
+    "wins": 0
+  },
+  "freeze_diagnostics": {
+    "abstained": {},
+    "days_evaluated": 0,
+    "days_saved": []
+  },
+  "limitations": "Exact scores remain low probability. Neither retrospective replay nor a market-disabled v8 fallback is counted as a verified v9 result. Pending matches are not losses.",
+  "models": {
+    "v8": {
+      "exact_score_hits": 0,
+      "exact_score_rate": null,
+      "frozen_fixtures": 0,
+      "mean_expected_exact_hits": null,
+      "mean_outcome_brier": null,
+      "mean_score_log_loss": null,
+      "pending_fixtures": 0,
+      "top3_hit_rate": null,
+      "verified_fixtures": 0
+    },
+    "v9": {
+      "exact_score_hits": 0,
+      "exact_score_rate": null,
+      "frozen_fixtures": 0,
+      "mean_expected_exact_hits": null,
+      "mean_outcome_brier": null,
+      "mean_score_log_loss": null,
+      "pending_fixtures": 0,
+      "top3_hit_rate": null,
+      "verified_fixtures": 0
+    }
+  },
+  "paired_v8_v9": {
+    "insufficient_to_claim_improvement": true,
+    "v8_only_hits": 0,
+    "v9_only_hits": 0,
+    "verified_same_fixture_count": 0
+  },
+  "promotion_gate": "Never promote v9/v10 as more accurate without enough paired prospective results, calibration and uncertainty checks.",
+  "verified_result_source": "data/prematch/verified_results.json",
+  "version": "v10-shadow-performance-v1"
+}
