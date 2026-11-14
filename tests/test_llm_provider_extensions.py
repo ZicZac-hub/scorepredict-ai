@@ -3,7 +3,7 @@ import json
 import pytest
 
 from llm_research_panel import (
-    PROVIDERS, _extract, _qwen_url, ask, consensus, settings
+    PROVIDERS, _extract, _qwen_url, ask, classify_provider_error, consensus, settings
 )
 
 
@@ -83,3 +83,19 @@ def test_ten_votes_do_not_count_as_verified_exact_score_accuracy():
     assert result["complete_five_provider_panel"] is True
     assert result["complete_ten_provider_panel"] is True
     assert "exact_score_probability" not in result
+
+def test_safe_provider_errors_never_reveal_keys_or_provider_body():
+    import requests
+    response = requests.Response()
+    response.status_code = 401
+    response.url = "https://example.com/secret-should-not-be-printed?key=example"
+    response._content = b"Private credential must not be logged"
+    error = requests.HTTPError("Secret test token", response=response)
+    result = classify_provider_error(error)
+    assert result == {"type":"HTTPError", "http_status":401,
+                      "reason":"invalid_or_expired_key"}
+    assert "Secret" not in str(result)
+    response.status_code = 429
+    assert classify_provider_error(error)["reason"] == "quota_or_rate_limit"
+    assert classify_provider_error(ValueError("sensitive response")) == {
+        "type":"ValueError", "reason":"response_format_or_model_configuration"}
