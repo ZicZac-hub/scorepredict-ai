@@ -111,8 +111,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger
-          git add data/prematch/ data/prospective_ledger/
+          mkdir -p data/prospective_ledger data/daily_picks
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source-code edits may land while the 15-minute capture runs.
@@ -153,6 +153,7 @@ jobs:
             data/prematch/double_pairs/*.json
             data/prematch/rescores/latest_report.json
             data/prospective_ledger/
+            data/daily_picks/
             data/prematch/double_rescores/latest_report.json
           if-no-files-found: warn
           retention-days: 90
