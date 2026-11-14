@@ -173,7 +173,8 @@ def ask(name, key, model, prompt, request=None, endpoint=None):
         url = "https://api.cohere.com/v2/chat"
         headers = {"Authorization": "Bearer " + key}
         body = {"model": model, "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 650}
+                "max_tokens": 800,
+                "response_format": {"type": "json_object"}}
     elif name == "claude":
         url = "https://api.anthropic.com/v1/messages"
         headers = {"x-api-key": key, "anthropic-version": "2023-06-01"}
@@ -195,7 +196,17 @@ def ask(name, key, model, prompt, request=None, endpoint=None):
             url = _qwen_url(endpoint)
         headers = {"Authorization": "Bearer " + key}
         body = {"model": model, "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 650}
+                "max_tokens": 800}
+        # JSON mode is supported by these APIs; schema validity is still
+        # checked locally before freezing any pre-match vote.
+        if name in ("openai", "grok", "groqcloud", "mistral"):
+            body["response_format"] = {"type": "json_object"}
+        if name == "groqcloud" and model.startswith("openai/gpt-oss-"):
+            # GPT-OSS may otherwise spend the output budget on reasoning
+            # and return no JSON answer. Only set flags for supported models.
+            body["reasoning_effort"] = "low"
+            body["reasoning_format"] = "hidden"
+            body["max_tokens"] = 1024
     response = post(url, headers=headers, json=body, timeout=25, allow_redirects=False)
     response.raise_for_status()
     return validate_vote(_extract(response, name))
@@ -253,6 +264,18 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         status["reason"] = "disabled" if not status["enabled"] else "provider_keys_or_models_missing"
         write_json(Path(root)/"status.json", status)
         return status
+    # An earlier independently frozen research panel must remain the first
+    # published version. Never repeatedly bill new providers for that same
+    # fixture just because its statistical evidence digest has changed.
+    previously_frozen = set()
+    for saved in (Path(root)/"forecasts").glob("*.json"):
+        try:
+            prior = load_json(saved, {})
+            if (prior.get("research_only") is True
+                    and utc(prior["captured_at_utc"]) < utc(prior["kickoff_utc"])):
+                previously_frozen.add((str(prior["provider"]), str(prior["fixture_id"])))
+        except (OSError,ValueError,TypeError,KeyError):
+            continue
     rows = list(read_latest(source).values())
     # Choose one valid frozen model per fixture, preferring newer near-kickoff evidence.
     eligible_rows = {}
@@ -260,6 +283,8 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         if not eligible(row, clock):
             continue
         identity = (row["provider"], str(row["fixture_id"]))
+        if identity in previously_frozen:
+            continue
         old = eligible_rows.get(identity)
         if old is None or (row["model_key"] == "v8_near" and old["model_key"] != "v8_near"):
             eligible_rows[identity] = row
