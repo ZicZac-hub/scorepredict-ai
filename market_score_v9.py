@@ -14,6 +14,8 @@ import numpy as np
 from research_ensemble_v8 import predict as research_predict
 
 VERSION = "market-informed-v9-experimental"
+MAX_MARKET_AGE_HOURS = 12
+NEAR_FRESHEST_HOURS = 3
 MARKET_WEIGHT = 0.45  # fixed, unvalidated; prevents fully replacing historical forecasts
 
 
@@ -76,7 +78,7 @@ def select_market_response(payload,fixture,as_of=None):
         if str((item.get("fixture") or {}).get("id")) != str(fixture.get("id")):
             continue
         stamped = _time(item.get("update"))
-        if not stamped or stamped>cutoff or cutoff-stamped>timedelta(hours=48):
+        if not stamped or stamped>cutoff or cutoff-stamped>timedelta(hours=MAX_MARKET_AGE_HOURS):
             continue
         for bookmaker in item.get("bookmakers") or []:
             winner, total = _market_bets(bookmaker)
@@ -87,7 +89,14 @@ def select_market_response(payload,fixture,as_of=None):
             candidates.append((priority,stamped,name,winner,total))
     if not candidates:
         return None
-    priority,stamp,name,win,total = max(candidates,key=lambda v:(v[0][2],v[0][0],v[0][1],v[1]))
+    # Never select a 10-hour-old quote just because it includes totals
+    # when another genuine, supported bookmaker updated more recently.
+    # Compare market completeness/brand only within three hours of the
+    # freshest verified snapshot for the SAME fixture.
+    freshest=max(v[1] for v in candidates)
+    near=[v for v in candidates if freshest-v[1]<=timedelta(hours=NEAR_FRESHEST_HOURS)]
+    priority,stamp,name,win,total = max(
+        near,key=lambda v:(v[0][2],v[0][0],v[1],v[0][1]))
     return {"bookmaker":name,"snapshot_utc":stamp.isoformat(),"winner":win[0],
             "winner_overround":win[1],"totals":total[0] if total else None,
             "totals_overround":total[1] if total else None,"fixture_id":fixture.get("id"),
@@ -158,7 +167,7 @@ def predict(fixture,history,league_history=None,market=None,as_of=None,max_goals
     kickoff=_time(fixture.get("utcDate"))
     if not stamp or not reference or not kickoff or stamp>reference or stamp>=kickoff or reference>=kickoff:
         raise ValueError("Market snapshot is not a verified pre-kickoff observation")
-    if reference-stamp>timedelta(hours=48):
+    if reference-stamp>timedelta(hours=MAX_MARKET_AGE_HOURS):
         raise ValueError("Market data is too stale for v9")
     adjusted=_project(base["matrix"],market)
     mixed=(1-MARKET_WEIGHT)*base["matrix"]+MARKET_WEIGHT*adjusted
