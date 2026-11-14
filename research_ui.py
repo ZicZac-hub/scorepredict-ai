@@ -127,7 +127,7 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
     identifier = (provider, str(fixture.get("id")), str(fixture.get("utcDate")))
     st.caption(str(selected.get("league") or "Football") + " · " + sydney_kickoff(selected.get("kickoff")))
     method = st.radio("Prediction method",
-        ["Evidence Ensemble v8 · new challenger", "Preserved Deep Research v2"],
+        ["Market-Informed v9 · odds when verified", "Evidence Ensemble v8 · historical", "Preserved Deep Research v2"],
         horizontal=True, key="deep_prediction_method",
         help="Compare the new opponent/Elo ensemble with the previous research model. Existing saved predictions are never changed.")
     cols = st.columns(2)
@@ -142,10 +142,31 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
         compatible = [m for m in prior if str(m.get("provider") or "football-data.org") == provider]
         with st.spinner("Reviewing verified results and model probabilities..."):
             try:
-                if method.startswith("Evidence Ensemble v8"):
-                    from research_ensemble_v8 import predict as candidate_predict
+                if method.startswith("Market-Informed") or method.startswith("Evidence Ensemble v8"):
                     league_history = histories.get(selected.get("league"), compatible)
-                    candidate = candidate_predict(fixture, compatible, league_history=league_history)
+                    market = None
+                    reason = None
+                    if method.startswith("Market-Informed"):
+                        from market_score_v9 import predict as candidate_predict, select_market_response
+                        if provider == "API-Football" and api_key and fixture.get("id"):
+                            from api_football import _request
+                            try:
+                                odds = _request(api_key, "/odds", {"fixture": fixture["id"]}, with_metadata=True)
+                                metadata = odds.get("metadata", {})
+                                if metadata.get("stale") or metadata.get("freshness_known") is False:
+                                    reason = "Market snapshot was stale or its retrieval time was unverified."
+                                else:
+                                    market = select_market_response(odds.get("data", []), fixture)
+                                    if market is None:
+                                        reason = "No complete, recent 90-minute 1X2 market was available for this fixture."
+                            except (ValueError, TypeError, RuntimeError) as exc:
+                                reason = "Pre-match market feed unavailable: " + type(exc).__name__
+                        else:
+                            reason = "Only supported API-Football fixtures with credentials can use live market prices."
+                        candidate = candidate_predict(fixture, compatible, league_history=league_history, market=market)
+                    else:
+                        from research_ensemble_v8 import predict as candidate_predict
+                        candidate = candidate_predict(fixture, compatible, league_history=league_history)
                     if candidate:
                         probabilities = {
                             "home":candidate["home_win"],"draw":candidate["draw"],
@@ -162,9 +183,12 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
                             "elo":candidate["elo"],
                             "agreement":f"{candidate['component_top_score_agreement']}/{candidate['component_count']}",
                             "difference":candidate["baseline_to_challenger_total_variation"],
+                            "market_used":candidate.get("market_used",False),
+                            "market_details":candidate.get("market_details",{}),
+                            "market_note":reason,
                             "limitations":candidate["limitations"]}
                     else:
-                        result = {"available":False,"reason":"Insufficient pre-kickoff verified match history for the v8 challenger."}
+                        result = {"available":False,"reason":"Insufficient pre-kickoff verified match history for this challenger."}
                 else:
                     result = research_prediction(fixture, compatible)
             except (TypeError, KeyError, ValueError, ZeroDivisionError) as exc:
@@ -189,11 +213,22 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
     cards[1].metric("Estimated score probability", f"{best_prob:.1%}")
     cards[2].metric("Expected goals (H / A)", f"{report['home_xg']:.2f} / {report['away_xg']:.2f}")
     st.caption("Experimental statistical estimate, not a promised result. No original pre-kickoff predictions are changed.")
+    if method.startswith("Market-Informed"):
+        if report.get("market_used"):
+            _market=report["market_details"]
+            st.success("Verified pre-match market data used: " + str(_market["bookmaker"]) +
+                       " · Snapshot: " + str(_market["snapshot_utc"]) +
+                       " · 1X2 overround: " + f"{(_market['winner_overround']-1):.1%}")
+            if _market.get("totals"):
+                st.caption("Complete Over/Under 2.5 market also incorporated; odds adjusted for the bookmaker margin.")
+        else:
+            st.warning("No qualifying provider market data was used. This result equals the historical v8 forecast, not a validated market-enhanced prediction. " +
+                       str(report.get("market_note") or ""))
     if report.get("baseline_score"):
         st.info("Preserved v6 score: **" + "-".join(map(str,report["baseline_score"])) +
-                "** (" + f"{report['baseline_probability']:.1%}" + " modal probability) · v8 challenger: **" +
+                "** (" + f"{report['baseline_probability']:.1%}" + " modal probability) · research challenger: **" +
                 score + "**. A changed score is not proof of increased accuracy.")
-        st.caption("Model agreement on v8 modal score: " + str(report["agreement"]) +
+        st.caption("Model agreement on historical model modal score: " + str(report["agreement"]) +
                    " contributors · Probability-distribution difference from original: " + f"{report['difference']:.1%}")
         st.write("**Statistical contributors / declared weights:**",
                  {name: f"{weight:.0%}" for name,weight in report["component_weights"].items()})
