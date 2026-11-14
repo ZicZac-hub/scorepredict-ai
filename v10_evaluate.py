@@ -189,13 +189,17 @@ def evaluate(root=ROOT,results=None):
         else:
             pending[model]+=1
     common=[]
+    common_v10=[]
     for (provider,fixture_id,model),row in latest.items():
         if model!="v8":
             continue
         first=hits.get((provider,fixture_id,"v8"))
         second=hits.get((provider,fixture_id,"v9"))
+        third=hits.get((provider,fixture_id,"v10"))
         if first is not None and second is not None:
             common.append((first,second))
+        if first is not None and third is not None:
+            common_v10.append((first,third))
     pairs=[]
     for path in sorted((Path(root)/"doubles").glob("*.json")):
         packet=load_json(path,{})
@@ -247,6 +251,10 @@ def evaluate(root=ROOT,results=None):
                         "v8_only_hits":sum(a and not b for a,b in common),
                         "v9_only_hits":sum(b and not a for a,b in common),
                         "insufficient_to_claim_improvement":len(common)<200},
+        "paired_v8_v10":{"verified_same_fixture_count":len(common_v10),
+                         "v8_only_hits":sum(a and not b for a,b in common_v10),
+                         "v10_only_hits":sum(b and not a for a,b in common_v10),
+                         "insufficient_to_claim_improvement":len(common_v10)<200},
         "five_doubles":{"frozen_pairs":len(pairs),"verified_pairs":len(completed),
                         "same_pair_challengers":comparison,
                         "awaiting_both_results":len(pairs)-len(completed),
