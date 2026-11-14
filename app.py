@@ -1146,6 +1146,22 @@ with active_page_slot:
                     due.append(saved)
             # Check most recently completed fixtures first, not the oldest 40 pending rows.
             due.sort(key=lambda item: item.get('kickoff') or '', reverse=True)
+            # The local live-archive and immutable GitHub shadow archive are
+            # different datasets. Show that distinction before checking scores.
+            from finished_result_explainer import research_archive_summary
+            _shadow_summary=research_archive_summary()
+            if _shadow_summary.get('frozen'):
+                st.caption(
+                    f"GitHub research archive: {_shadow_summary['frozen']} original "
+                    f"pre-match v8 forecasts; {_shadow_summary['verified']} verified "
+                    f"final scores; {_shadow_summary['doubles_pending']} five-double "
+                    "sets still awaiting both results. This archive is separate "
+                    "from the local Finished forecasts counter."
+                )
+            st.caption(f"Local website archive: {len(archived)} saved forecasts; "
+                       f"{len(due)} past-kickoff forecasts awaiting a verified "
+                       "regulation-time final score. The Check button inspects "
+                       "up to 10 eligible local records per press.")
             if st.button('🔄 Check completed results',key='finished_refresh',type='primary'):
                 verified=[]
                 errors=[]
@@ -1163,7 +1179,18 @@ with active_page_slot:
                     except Exception as exc:
                         errors.append(str(exc)[:140])
                 updated=reconcile(conn,verified)
-                st.success(f'Updated {updated} results after checking provider, teams and kickoff.')
+                if updated:
+                    st.success(f'Verified {updated} new finished forecast(s), '
+                               'matching provider, teams, kickoff and regulation-time score.')
+                elif not _batch:
+                    st.info('No local past-kickoff forecasts are ready for '
+                            'result verification yet. Future matches and the '
+                            'separate GitHub research archive do not count as '
+                            'completed local forecasts.')
+                else:
+                    st.info(f'Checked {len(_batch)} eligible local forecast(s); '
+                            'none received a matching verified full-time result '
+                            'yet. This is not an exact-score loss.')
                 if errors:
                     st.warning('Some results could not be verified: '+errors[0])
                 archived=load(conn)
