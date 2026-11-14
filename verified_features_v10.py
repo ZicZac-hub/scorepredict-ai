@@ -5,10 +5,15 @@ two-season pre-match evidence policy enter these diagnostics. Rest is a
 *match-schedule feature*, not an xG/lineup estimate and it does not
 silently change the outcome probabilities before validation.
 """
-from datetime import datetime,timezone
-import math
+from datetime import datetime, timezone
 from research_ensemble_v8 import _asof_history
-from v10_prospective import utc
+
+
+def utc(value):
+    result = value if isinstance(value,datetime) else datetime.fromisoformat(str(value).replace("Z","+00:00"))
+    if result.tzinfo is None:
+        raise ValueError("As-of features require timezone-aware dates")
+    return result.astimezone(timezone.utc)
 
 
 def describe(fixture,evidence):
