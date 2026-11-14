@@ -214,7 +214,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         'database_status': 'configured' if database_url else 'not_configured', 'database_records_written': 0,
         'database_recovered_forecasts': 0, 'database_recovered_settlements': 0,
         'discovery_cache_hits': 0, 'api_call_limit': max_api_calls, 'provider_adapter_calls': 0, 'discovery_budget_skipped': [],
-        'v10_shadow_v8_saved':0,'v10_shadow_v9_saved':0,'v10_market_calls':0,
+        'v10_shadow_v8_saved':0,'v10_shadow_v9_saved':0,'v10_shadow_v10_saved':0,'v10_market_calls':0,
         'v10_shadow_skipped':{},'v10_shadow_errors':[]}
     # Recover the immutable outbox before deciding that every horizon is done.
     # A database outage must not strand old files simply because no new pair is due.
@@ -315,6 +315,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                                 max(0, 4-diagnostics['v10_market_calls']))
                             diagnostics['v10_shadow_v8_saved'] += int(result.get('v8_recorded',False))
                             diagnostics['v10_shadow_v9_saved'] += int(result.get('v9_recorded',False))
+                            diagnostics['v10_shadow_v10_saved'] += int(result.get('v10_recorded',False))
                             diagnostics['v10_market_calls'] += int(result.get('market_calls',0))
                             reason = result.get('reason') or 'unspecified'
                             if not result.get('v8_recorded'):
@@ -421,6 +422,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                     saved=int(bool(result.get('v8_recorded')))
                     diagnostics['v10_shadow_v8_saved']+=saved
                     diagnostics['v10_shadow_v9_saved']+=int(bool(result.get('v9_recorded')))
+                    diagnostics['v10_shadow_v10_saved']+=int(bool(result.get('v10_recorded')))
                     diagnostics['v10_research_backfill_saved']+=saved
                     if saved and daily_recorder is not None:
                         daily_recorder(fixture,evidence,_time(current_time()),code)
