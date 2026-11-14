@@ -176,9 +176,10 @@ with st.sidebar:
               args=('Manual Select',))
     st.divider()
     st.header('Model settings')
-    _model_choice=st.selectbox('Score model', ['Preserved exact-score model (default)', 'New fitted model (research)'],key='forecast_model_choice')
-    _forecast_variant='reference_v7' if _model_choice=='New fitted model (research)' else 'baseline'
-    st.caption('The new fitted model improves probability metrics in testing. Exact-score improvement has not been established; the preserved model remains the default.')
+    _model_choice=st.selectbox('Score model', ['Preserved exact-score model (default)', 'New fitted model (research)', 'Evidence Ensemble v8 (experimental)'],key='forecast_model_choice')
+    _forecast_variant=('research_v8' if _model_choice=='Evidence Ensemble v8 (experimental)'
+                       else 'reference_v7' if _model_choice=='New fitted model (research)' else 'baseline')
+    st.caption('The preserved v6 model remains the default. V8 is an opt-in experimental contender; in a 160-match pre-match replay it scored 19 exact hits versus v6\'s 18. This is not proof of better future accuracy. Previous saved predictions remain unchanged.')
     days=st.slider('Upcoming days',1,14,14)
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
