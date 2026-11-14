@@ -175,7 +175,7 @@ def _legacy_record(fixture, forecast, code, evidence, captured_at, report):
 def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             ledger_root=LEDGER_ROOT, database_url=None, max_api_calls=120, api_request=None,
             evidence_loader=None, pair_builder=None, clock=None,
-            daily_recorder=None):
+            daily_recorder=None, research_recorder=None):
     """Return old-format snapshots and full-grid ledger coverage without fake history.
 
     Optional callbacks make data policy, timing and budget tests independent of
@@ -212,7 +212,9 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         'lookahead_days': LOOKAHEAD_DAYS, 'fixture_limit': max_fixtures, 'time_limit_seconds': max_seconds,
         'database_status': 'configured' if database_url else 'not_configured', 'database_records_written': 0,
         'database_recovered_forecasts': 0, 'database_recovered_settlements': 0,
-        'discovery_cache_hits': 0, 'api_call_limit': max_api_calls, 'provider_adapter_calls': 0, 'discovery_budget_skipped': []}
+        'discovery_cache_hits': 0, 'api_call_limit': max_api_calls, 'provider_adapter_calls': 0, 'discovery_budget_skipped': [],
+        'v10_shadow_v8_saved':0,'v10_shadow_v9_saved':0,'v10_market_calls':0,
+        'v10_shadow_skipped':{},'v10_shadow_errors':[]}
     # Recover the immutable outbox before deciding that every horizon is done.
     # A database outage must not strand old files simply because no new pair is due.
     store = None
@@ -299,6 +301,32 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                     raise CaptureBudgetExceeded('History lookup reached the configured provider-call budget')
                 if any('history unavailable' in warning for warning in evidence.get('warnings', [])):
                     diagnostics['history_source_errors'].append({'fixture_id':fixture['id'],'provider':fixture.get('provider'),'reason':'one_or_more_history_sources_unavailable'})
+                # Save the new independent research forecast BEFORE the old
+                # baseline gate. A sparse v6/v7 forecast must not erase a
+                # separately valid v8 candidate, and vice versa.
+                observed_research = _time(current_time())
+                if observed_research < kickoff:
+                    if research_recorder is not None:
+                        try:
+                            result = research_recorder(
+                                fixture, evidence, observed_research, code, request,
+                                max(0, 4-diagnostics['v10_market_calls']))
+                            diagnostics['v10_shadow_v8_saved'] += int(result.get('v8_recorded',False))
+                            diagnostics['v10_shadow_v9_saved'] += int(result.get('v9_recorded',False))
+                            diagnostics['v10_market_calls'] += int(result.get('market_calls',0))
+                            reason = result.get('reason') or 'unspecified'
+                            if not result.get('v8_recorded'):
+                                skipped=diagnostics['v10_shadow_skipped']
+                                skipped[reason]=skipped.get(reason,0)+1
+                        except Exception as exc:
+                            diagnostics['v10_shadow_errors'].append({
+                                'fixture_id':fixture['id'],'error_type':type(exc).__name__})
+                    if daily_recorder is not None:
+                        try:
+                            daily_recorder(fixture,evidence,observed_research,code)
+                        except Exception as exc:
+                            diagnostics.setdefault('daily_pick_errors',[]).append({
+                                'fixture_id':fixture['id'],'error_type':type(exc).__name__})
                 forecast = predict(fixture, evidence['history'], league_history=evidence['league_history'])
                 if not forecast:
                     diagnostics['prediction_unavailable'] += 1
@@ -347,14 +375,6 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                 known.add(pair[0].get('slot_key') or pair_slot_key(fixture,horizon,POLICY_VERSION))
                 captured_at = pair[0].get('captured_at_utc') or observed.isoformat()
                 records.append(_legacy_record(fixture, forecast, code, evidence, captured_at, report))
-                # Daily v8 research is independent of the immutable original.
-                # Capture failures must never interrupt v6/v7 ledger recording.
-                if daily_recorder is not None:
-                    try:
-                        daily_recorder(fixture, evidence, observed, code)
-                    except Exception as exc:
-                        diagnostics.setdefault('daily_pick_errors',[]).append({
-                            'fixture_id':fixture['id'],'error_type':type(exc).__name__})
                 diagnostics['captured_fixtures'] += 1
             except CaptureBudgetExceeded:
                 diagnostics['budget_skipped'].append({'fixture_id':fixture['id'],'provider':fixture.get('provider'),'horizon':horizon,'reason':'configured_api_call_budget'})
@@ -375,7 +395,11 @@ def main():
     if not key:
         raise RuntimeError('API_FOOTBALL_KEY secret required')
     from daily_pick_capture import candidate as daily_candidate, save_for_dates
+    from v10_prospective import capture as capture_v10
     _daily_candidates=[]
+    def _record_v10(fixture,evidence,observed,code,request,remaining):
+        return capture_v10(fixture,evidence,observed,api_key=key,
+                           request=request,market_calls_remaining=remaining)
     def _record_daily(fixture, evidence, observed, code):
         result=daily_candidate(fixture,evidence,observed,code)
         if result:
@@ -384,7 +408,7 @@ def main():
         max_seconds=_positive_limit(os.environ.get('CAPTURE_MAX_SECONDS'), 600),
         database_url=os.environ.get('DATABASE_URL') or None,
         max_api_calls=_positive_limit(os.environ.get('CAPTURE_MAX_API_CALLS'),120),
-        daily_recorder=_record_daily)
+        daily_recorder=_record_daily,research_recorder=_record_v10)
     saved_days=save_for_dates(_daily_candidates)
     payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)
     payload['diagnostics']['daily_pick_days_written']=saved_days
