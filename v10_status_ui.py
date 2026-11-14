@@ -52,4 +52,24 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                               "Top-three coverage":f"{m['top3_hit_rate']:.2%}",
                               "Score log loss (lower better)":round(m["mean_score_log_loss"],3),
                               "1X2 Brier score (lower better)":round(m["mean_outcome_brier"],3)})
+        with st.expander("⚙️ Automatic forecast & odds-refresh diagnostics"):
+            try:
+                status=json.loads(Path("data/prospective_ledger/capture_coverage.json").read_text(encoding="utf-8"))
+            except (OSError,ValueError,TypeError):
+                status={}
+            if status:
+                st.write({
+                    "v8 saved by latest collection":int(status.get("v10_shadow_v8_saved") or 0),
+                    "v9 saved by latest collection":int(status.get("v10_shadow_v9_saved") or 0),
+                    "v10 saved by latest collection":int(status.get("v10_shadow_v10_saved") or 0),
+                    "new near-kickoff market checks":int(status.get("v10_market_refresh_checked") or 0),
+                    "new near-kickoff v9 forecasts":int(status.get("v10_market_refresh_v9_saved") or 0),
+                    "provider market calls":int(status.get("v10_market_calls") or 0),
+                    "shadow errors":len(status.get("v10_shadow_errors") or []),
+                    "market refresh errors":len(status.get("v10_market_refresh_errors") or [])
+                })
+                st.caption("Latest collector report only. The near-kickoff refresh is enabled on six-hour heavy runs; a light run normally shows zero refresh checks.")
+            else:
+                st.caption("No collector diagnostics have been published in this deployment yet.")
+        st.caption("Accuracy fixes v10.1: near-kickoff odds refresh · same-evidence market controls · matchday double freeze · timestamp-based bookmaker selection.")
         st.caption("Market-informed v9 and multi-book v10 are challengers, not proven superior models. Better historical-looking predictions do not justify changing the recorded champion without prospective evidence.")
