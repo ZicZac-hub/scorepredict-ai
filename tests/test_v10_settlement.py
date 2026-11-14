@@ -149,3 +149,52 @@ def test_unfinished_result_retry_uses_60_minute_cooldown(tmp_path):
                               now=now+timedelta(minutes=122),request=completed)
     assert fourth["newly_verified"]==1
     assert fourth["still_pending"]==0
+
+
+def test_next_five_double_legs_receive_lookup_priority_over_unrelated_singles(tmp_path):
+    old_a=one_frozen(tmp_path,97341)
+    old_b=one_frozen(tmp_path,97342)
+    now=datetime.now(timezone.utc).replace(microsecond=0)
+    capture=now-timedelta(days=1)
+    newer_fixture=fixture(97343,capture,"Unrelated Home","Unrelated Away",
+                          delta_hours=22)
+    unrelated=shadow._record(newer_fixture,evidence(capture),candidate(),"v8",capture)
+    assert append_file_record(unrelated,root=tmp_path,kind="forecasts")
+    pair_legs=[]
+    for row in (old_a,old_b):
+        pair_legs.append({k:row[k] for k in
+            ("provider","fixture_id","kickoff_utc","home_team_id","away_team_id")})
+    double_folder=tmp_path/"doubles"
+    double_folder.mkdir()
+    (double_folder/"2026-11-15.json").write_text(json.dumps({
+        "mode":"prospective","status":"frozen_pre_kickoff",
+        "captured_at_utc":old_a["captured_at_utc"],
+        "first":pair_legs[0],"second":pair_legs[1]
+    }))
+    reference={str(r["fixture_id"]):r for r in (old_a,old_b,unrelated)}
+    ordered=settlement._verification_order(reference,tmp_path,now)
+    assert [x[0] for x in ordered[:2]]==[
+        str(old_a["fixture_id"]),str(old_b["fixture_id"])]
+    assert ordered[-1][0]==str(unrelated["fixture_id"])
+
+
+def test_inconsistent_frozen_pair_cannot_prioritize_wrong_provider_identity(tmp_path):
+    a=one_frozen(tmp_path,97351)
+    b=one_frozen(tmp_path,97352)
+    legs=[{k:r[k] for k in
+          ("provider","fixture_id","kickoff_utc","home_team_id","away_team_id")}
+          for r in (a,b)]
+    legs[1]["away_team_id"]="wrong"
+    out=tmp_path/"doubles"
+    out.mkdir()
+    (out/"2026-11-15.json").write_text(json.dumps({
+        "mode":"prospective","status":"frozen_pre_kickoff",
+        "captured_at_utc":a["captured_at_utc"],
+        "first":legs[0],"second":legs[1]
+    }))
+    now=datetime.now(timezone.utc)
+    refs={str(r["fixture_id"]):r for r in (a,b)}
+    ordered=settlement._verification_order(refs,tmp_path,now)
+    assert len(ordered)==2
+    # A corrupted pair cannot add any new verification reference IDs.
+    assert set(x[0] for x in ordered)==set(refs)
