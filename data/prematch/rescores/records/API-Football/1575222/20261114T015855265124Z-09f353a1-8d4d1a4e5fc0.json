@@ -1,0 +1,146 @@
+{
+  "actual_score": null,
+  "away_team": "SC Paderborn 07",
+  "away_team_id": 185,
+  "changed": true,
+  "comparison_context": null,
+  "competition": "BL1",
+  "excluded_from_original_accuracy": true,
+  "fallback_reason": null,
+  "fixture_id": 1575222,
+  "history_as_of_utc": "2026-11-14T01:58:55.265124+00:00",
+  "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+  "history_count": 389,
+  "history_warnings": [],
+  "history_window_start_utc": "2024-11-14T01:58:55.265124+00:00",
+  "home_team": "Bayer Leverkusen",
+  "home_team_id": 168,
+  "input_digest": "579083ff9312ac771ba1a325c586d2172d546e5f70d68216822348097c0e4ea0",
+  "kickoff_utc": "2026-11-21T14:30:00Z",
+  "label": "Upcoming forecast revision",
+  "mode": "upcoming",
+  "model_sources": [
+    "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+  ],
+  "original_captured_at_utc": "2026-11-11T05:42:58.630663+00:00",
+  "original_kickoff_utc": "2026-11-21T14:30:00Z",
+  "original_model": "venue-form-ensemble-v5-unregularized-live",
+  "original_provider": "API-Football",
+  "original_score": [
+    1,
+    1
+  ],
+  "original_score_probability": 0.1062102589177606,
+  "original_source": "permanent_snapshot",
+  "policy_version": "two-season-asof-v1",
+  "provenance": {
+    "history_days": 730,
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-14T01:58:55.265124+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 3.9783413410186768,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-14T01:58:52.303077+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-14T01:58:56.281418+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 3.758666753768921,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-14T01:58:52.528667+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-14T01:58:56.287333+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "rescored_at_utc": "2026-11-14T01:58:55.265124+00:00",
+  "revision_id": "20261114T015855265124Z-09f353a1-8d4d1a4e5fc0",
+  "run_id": "20261114T015855265124Z-09f353a1",
+  "source_ref": null,
+  "updated_expected_goals": {
+    "away": 0.7587518457018007,
+    "home": 1.7997359434587803
+  },
+  "updated_model": "reference-informed-v7",
+  "updated_outcome_probabilities": {
+    "away": 0.15202718785882938,
+    "draw": 0.2269438499582622,
+    "home": 0.6210289621829085
+  },
+  "updated_score": [
+    1,
+    0
+  ],
+  "updated_score_probability": 0.1384708196225021,
+  "updated_top10_scores": [
+    [
+      1,
+      0,
+      0.1384708196225021
+    ],
+    [
+      2,
+      0,
+      0.12538640652637734
+    ],
+    [
+      1,
+      1,
+      0.10659132372643927
+    ],
+    [
+      2,
+      1,
+      0.09513716737780512
+    ],
+    [
+      0,
+      0,
+      0.07828958048444966
+    ],
+    [
+      3,
+      0,
+      0.07522080755608712
+    ],
+    [
+      0,
+      1,
+      0.0578760299297712
+    ],
+    [
+      3,
+      1,
+      0.057073926568361064
+    ],
+    [
+      1,
+      2,
+      0.04010894020214518
+    ],
+    [
+      2,
+      2,
+      0.03609275067137539
+    ]
+  ]
+}
