@@ -92,3 +92,18 @@ def test_same_sydney_day_four_team_double_ranking():
     assert ranked[0]["second"]["fixture"]["id"]==2
     assert len(ranked[0]["doubles"])==5
     assert 0<ranked[0]["coverage"]<1
+
+
+def test_forecast_router_exposes_v8_only_when_opted_in(monkeypatch):
+    import forecast_model
+    import research_ensemble_v8
+    token = {"model_version":"test-v8"}
+    calls = []
+    def candidate(fixture,history,league_history=None,max_goals=10):
+        calls.append((fixture,history,league_history,max_goals))
+        return token
+    monkeypatch.setattr(research_ensemble_v8,'predict',candidate)
+    fixture = {"id":123}
+    assert forecast_model.predict(fixture,[],variant='research_v8') is token
+    assert len(calls)==1
+    assert calls[0][0] is fixture
