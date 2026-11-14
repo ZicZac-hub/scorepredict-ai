@@ -35,7 +35,7 @@ jobs:
       - name: Replay original v6 versus challenger v8 with identical pre-match history
         run: |
           python v8_challenger_backtest.py work/v8_verified_matches.json \
-            --holdout-year 2026 --max-fixtures 160 --max-pair-days 12 \
+            --holdout-year 2026 --max-fixtures 700 --max-pair-days 60 \
             --output work/v8_challenger_evaluation.json
       - name: Archive evidence with no original prediction changes
         if: always()
