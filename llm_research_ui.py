@@ -62,4 +62,6 @@ def render(st, root=ROOT):
                       "Original saved score (unchanged)": entry.get("baseline_predicted_score")})
             st.caption("AI scores are research candidates only; do not treat these "
                        "as independently calibrated exact-score probabilities.")
-
+    st.divider()
+    from sportmonks_probability_ui import render as render_sportmonks
+    render_sportmonks(st)
