@@ -1,5 +1,5 @@
 {
-  "already_captured": 127,
+  "already_captured": 0,
   "api_call_limit": 120,
   "budget_skipped": [],
   "captured_fixtures": 0,
@@ -11,159 +11,80 @@
   "database_recovered_settlements": 0,
   "database_status": "not_configured",
   "discovery_budget_skipped": [],
-  "discovery_cache_hits": 11,
-  "eligible_horizon_fixtures": 22,
+  "discovery_cache_hits": 0,
+  "eligible_horizon_fixtures": 0,
   "fixture_limit": 0,
-  "history_source_errors": [
+  "history_source_errors": [],
+  "league_errors": [
     {
-      "fixture_id": 1635667,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "PL",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635649,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "PD",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635663,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "BL1",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635713,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "SA",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635731,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "FL1",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635673,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "CL",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635682,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "EL",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635703,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "DED",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635724,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "PPL",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1635735,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "BSA",
+      "stage": "fixtures"
     },
     {
-      "fixture_id": 1636244,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636255,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636298,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636307,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636329,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636252,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636270,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636277,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636301,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636336,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636343,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
-    },
-    {
-      "fixture_id": 1636349,
-      "provider": "API-Football",
-      "reason": "one_or_more_history_sources_unavailable"
+      "error_type": "RuntimeError",
+      "league": "ELC",
+      "stage": "fixtures"
     }
   ],
-  "league_errors": [],
   "leagues_checked": 11,
   "ledger_records_written": 0,
   "lookahead_days": 14,
   "news_coverage_complete": true,
   "news_errors": [],
-  "next_kickoff_by_league": {
-    "BL1": "2026-11-20T19:30:00+00:00",
-    "BSA": "2026-11-14T21:30:00+00:00",
-    "CL": "2026-11-24T17:45:00+00:00",
-    "DED": "2026-11-21T15:30:00+00:00",
-    "EL": "2026-11-26T17:45:00+00:00",
-    "ELC": "2026-11-21T12:30:00+00:00",
-    "FL1": "2026-11-20T19:45:00+00:00",
-    "PD": "2026-11-20T20:00:00+00:00",
-    "PL": "2026-11-21T12:30:00+00:00",
-    "PPL": "2026-11-27T20:15:00+00:00",
-    "SA": "2026-11-21T14:00:00+00:00"
-  },
+  "next_kickoff_by_league": {},
   "prediction_errors": [],
-  "prediction_unavailable": 22,
-  "processed_fixtures": 22,
-  "provider_adapter_calls": 4,
-  "provider_fixture_counts": {
-    "BL1": 15,
-    "BSA": 24,
-    "CL": 18,
-    "DED": 13,
-    "EL": 18,
-    "ELC": 35,
-    "FL1": 15,
-    "PD": 15,
-    "PL": 14,
-    "PPL": 5,
-    "SA": 14
-  },
+  "prediction_unavailable": 0,
+  "processed_fixtures": 0,
+  "provider_adapter_calls": 11,
+  "provider_fixture_counts": {},
   "time_limit_seconds": 600,
-  "upcoming_fixtures": 149,
+  "upcoming_fixtures": 0,
   "v10_market_calls": 0,
   "v10_market_refresh_checked": 0,
   "v10_market_refresh_errors": [],
@@ -174,9 +95,7 @@
   "v10_research_backfill_errors": [],
   "v10_research_backfill_saved": 0,
   "v10_shadow_errors": [],
-  "v10_shadow_skipped": {
-    "insufficient_verified_research_evidence": 22
-  },
+  "v10_shadow_skipped": {},
   "v10_shadow_v10_saved": 0,
   "v10_shadow_v8_saved": 0,
   "v10_shadow_v9_saved": 0
