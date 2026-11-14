@@ -41,6 +41,14 @@ def render(st, root=ROOT):
         st.caption("Both rows use identical completed fixtures; there is no automatic model promotion.")
     else:
         st.caption("No verified complete-panel results yet; no multi-AI exact-score win rate can be claimed.")
+    ten_n = int(report.get("ten_provider_paired_verified") or 0)
+    if ten_n:
+        st.write({"All ten AI providers, paired verified matches": ten_n,
+                  "Ten-provider exact hits": report.get("ten_provider_exact_hits"),
+                  "Same-fix original ZicZac exact hits":report.get("ten_provider_baseline_exact_hits")})
+        st.caption("The original 5-AI group and the new 10-AI group are measured separately.")
+    else:
+        st.caption("A complete ten-AI panel does not yet have verified final results.")
     archived = []
     for path in sorted((root/"forecasts").glob("*.json"), reverse=True):
         entry = _json(path)
