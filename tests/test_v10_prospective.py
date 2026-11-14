@@ -220,7 +220,10 @@ def test_new_research_snapshots_are_separate_from_original_and_selected_if_fresh
         fresh=shadow.read_latest(tmp_path)[("API-Football",str(item["id"]),"v8_near")]
         assert original_now["input_digest"]!=fresh["input_digest"]
         assert original_now["captured_at_utc"]<fresh["captured_at_utc"]
-    frozen=grader.freeze_doubles(root=tmp_path,now=when())
+    # The newly frozen near-matchday records include sub-second timestamps.
+    # Do not pass the old second-rounded test clock as if those future
+    # records had already existed at that earlier instant.
+    frozen=grader.freeze_doubles(root=tmp_path,now=datetime.now(timezone.utc))
     assert frozen["near_research_available"]==2, frozen
     assert len(frozen["days_saved"])==1
     with (tmp_path/"doubles"/(frozen["days_saved"][0]+".json")).open() as handle:
