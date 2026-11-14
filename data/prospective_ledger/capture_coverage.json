@@ -3,6 +3,10 @@
   "api_call_limit": 120,
   "budget_skipped": [],
   "captured_fixtures": 0,
+  "collector_blocker": {
+    "reason": "provider_quota",
+    "source": "API-Football"
+  },
   "coverage_complete": false,
   "daily_pick_days_written": [],
   "daily_research_candidates": 0,
@@ -20,59 +24,9 @@
       "error_type": "ProviderQuotaError",
       "league": "PL",
       "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "PD",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "BL1",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "SA",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "FL1",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "CL",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "EL",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "DED",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "PPL",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "BSA",
-      "stage": "fixtures"
-    },
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "ELC",
-      "stage": "fixtures"
     }
   ],
-  "leagues_checked": 11,
+  "leagues_checked": 1,
   "ledger_records_written": 0,
   "lookahead_days": 14,
   "news_coverage_complete": true,
@@ -81,7 +35,7 @@
   "prediction_errors": [],
   "prediction_unavailable": 0,
   "processed_fixtures": 0,
-  "provider_adapter_calls": 11,
+  "provider_adapter_calls": 1,
   "provider_fixture_counts": {},
   "time_limit_seconds": 600,
   "upcoming_fixtures": 0,
