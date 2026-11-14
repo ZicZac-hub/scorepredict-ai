@@ -6,7 +6,7 @@ import pytest
 
 from on_demand_ai import (
     _verified_history, briefing, fixture_key, frozen_for_fixture,
-    run_selected, server_settings
+    private_gate_ready, run_selected, server_settings
 )
 
 
@@ -185,3 +185,22 @@ def test_frozen_ai_records_must_have_original_capture_before_kickoff(tmp_path):
     record["votes"]={}
     (folder/"late.json").write_text(json.dumps(record))
     assert frozen_for_fixture(match(),root=tmp_path) is None
+
+
+def test_paid_model_calls_require_real_private_password_and_login():
+    class DummyApp:
+        def __init__(self, secret, logged_in):
+            self.secrets={"ZICZAC_ACCESS_PASSWORD": secret}
+            self.session_state={"ziczac_access_granted": logged_in}
+    assert private_gate_ready(DummyApp("owner-password", True), environ={})
+    assert not private_gate_ready(DummyApp("owner-password", False), environ={})
+    assert not private_gate_ready(DummyApp("", True), environ={})
+    assert not private_gate_ready(DummyApp("owner-password", "true"), environ={})
+
+
+def test_on_demand_screen_entry_point_remains_backward_compatible():
+    import inspect
+    from research_ui import render
+    signature=inspect.signature(render)
+    assert "external_private" in signature.parameters
+    assert signature.parameters["external_private"].default is False
