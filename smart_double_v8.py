@@ -29,6 +29,64 @@ def _team_key(row,side):
     return " ".join(str(team.get("name") or "").casefold().split())
 
 
+def select_auto_research_pool(rows,max_fixtures=18,max_days=3,as_of=None):
+    """Keep genuine same-Sydney-day pairs in a bounded research batch.
+
+    The old implementation considered only the next 18 kickoffs: during a
+    crowded week those may include many one-off isolated fixtures or thin
+    histories, leaving no viable two-match research pair. Reserve at least
+    two games per represented date, then fill with the strongest observable
+    historical support, all without making extra network requests.
+    """
+    instant=as_of or datetime.now(timezone.utc)
+    groups={}
+    for row in rows:
+        kickoff=_kick(row)
+        if not kickoff or kickoff<=instant or not row.get("result"):
+            continue
+        day=kickoff.astimezone(SYDNEY).date().isoformat()
+        groups.setdefault(day,[]).append(row)
+    dates=[day for day in sorted(groups) if len(groups[day])>=2][:max_days]
+    if not dates or max_fixtures<2:
+        return []
+    def quality(row):
+        result=row.get("result") or {}
+        a=len(result.get("home_last10") or [])
+        b=len(result.get("away_last10") or [])
+        h=len(result.get("home_home10") or [])
+        v=len(result.get("away_away10") or [])
+        top=(result.get("scores") or [(0,0,0)])[0]
+        return (min(a,b)>=5,min(h,v)>=2,min(a,b),min(h,v),
+                float(top[2]), -_kick(row).timestamp())
+    for day in dates:
+        groups[day].sort(key=quality,reverse=True)
+    chosen=[]
+    identifiers=set()
+    def add(row):
+        fixture=row["fixture"]
+        identity=(str(fixture.get("provider")),str(fixture.get("id")))
+        if identity in identifiers:
+            return
+        identifiers.add(identity)
+        chosen.append(row)
+    # Ensure no represented day has only one studied match.
+    for day in dates:
+        for row in groups[day][:2]:
+            if len(chosen)<max_fixtures:
+                add(row)
+    extras=[]
+    for day in dates:
+        extras.extend((day,row) for row in groups[day][2:])
+    extras.sort(key=lambda p:(-quality(p[1])[0],-quality(p[1])[1],
+                              -quality(p[1])[2],-quality(p[1])[3],
+                              -quality(p[1])[4],p[0],-_kick(p[1]).timestamp()))
+    for day,row in extras:
+        if len(chosen)>=max_fixtures:
+            break
+        add(row)
+    return chosen
+
+
 def research_fixture_rows(rows, histories, max_fixtures=18, as_of=None):
     """Calculate at most 18 time-bounded challenger forecasts on demand."""
     as_of=as_of or datetime.now(timezone.utc)
