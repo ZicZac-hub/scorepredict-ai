@@ -81,7 +81,7 @@ def _stats(records):
             "Conceded/game": round(sum(r["Conceded"] for r in records) / n, 2) if n else None}
 
 
-def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
+def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, external_private=False):
     st.markdown('<div class="zz-research-hero"><div class="zz-research-kicker">🧠 DEEP RESEARCH LAB · EXPERIMENTAL</div><h2>Know the match. <span>See the evidence.</span></h2><p>Recent form, venue performance, opponent-adjusted models and honest score probabilities. No invented injuries or guaranteed scores.</p></div>', unsafe_allow_html=True)
     with st.expander("📈 Verified historical replay · v6 versus v8 (not live accuracy)"):
         from pathlib import Path
@@ -136,6 +136,39 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
                         use_container_width=True, key="deep_execute")
     with cols[1]:
         st.caption("Runs only when requested. Your archived original predictions are not overwritten.")
+
+    # Separate server-only provider credentials are required for on-demand
+    # Streamlit calls. GitHub Actions secrets are not readable by this app.
+    from on_demand_ai import (server_settings, server_qwen_url, run_selected,
+                              view as show_external_ai)
+    external_configs = server_settings(st)
+    use_external = st.checkbox(
+        "Also consult my connected external AI models (API charges may apply)",
+        value=bool(external_private and external_configs),
+        key="deep_external_ai_requested",
+        help="Only runs after pressing the purple button, on the private "
+             "website, before kickoff. Each provider gets the same selected "
+             "match facts; original predictions remain unchanged.")
+    if not external_private:
+        st.caption("⚠️ External paid model calls are disabled until you protect "
+                   "ZicZac with ZICZAC_ACCESS_PASSWORD in Streamlit Secrets.")
+    elif not external_configs:
+        st.caption("⚙️ No external AI keys plus model IDs were found in Streamlit "
+                   "Secrets. GitHub Actions secrets are separate; see the "
+                   "on-demand setup guide below.")
+    else:
+        st.caption("Connected to this Streamlit server: "+
+                   ", ".join(name.title() for name in external_configs)+
+                   ". Only one paid batch per selected match per app session.")
+    with st.expander("How to connect GitHub AI keys to this button"):
+        st.caption("GitHub Secrets cannot be read by the Streamlit website. "
+                   "In your Streamlit Cloud app Settings → Secrets, add the "
+                   "same provider API keys and model IDs as server-side secrets, "
+                   "plus ZICZAC_ACCESS_PASSWORD to protect paid calls. "
+                   "Never place credentials in the public repository.")
+        st.markdown("[Open Streamlit Cloud](https://share.streamlit.io/) · "
+                    "[Setup guide](https://github.com/ZicZac-hub/scorepredict-ai/"
+                    "blob/main/ON_DEMAND_AI_SETUP.md)")
 
     if run:
         prior = selected.get("past") or histories.get(selected.get("league"), [])
@@ -194,11 +227,38 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
             except (TypeError, KeyError, ValueError, ZeroDivisionError) as exc:
                 result = {"available": False, "reason": "Research could not be completed: " + str(exc)[:160]}
         st.session_state["ziczac_deep_report"] = {"fixture": identifier, "method": method, "result": result}
+        if use_external:
+            ai_runs = st.session_state.setdefault("ziczac_external_ai_runs", {})
+            cached = ai_runs.get(identifier)
+            if cached and cached.get("attempted"):
+                # A Streamlit rerun or second click must not repeat paid calls.
+                pass
+            elif not external_private:
+                ai_runs[identifier] = {"status": "private_access_required"}
+            elif not external_configs:
+                ai_runs[identifier] = {"status": "no_streamlit_api_credentials"}
+            else:
+                with st.spinner("Consulting available external AI models for this match..."):
+                    try:
+                        ai_runs[identifier] = run_selected(
+                            fixture, compatible,
+                            result if result.get("available") else {},
+                            selected.get("result") or {}, external_configs,
+                            qwen_url=server_qwen_url(st))
+                    except Exception:
+                        # Never expose provider error text, request headers, API
+                        # keys or external response bodies in the website.
+                        ai_runs[identifier] = {"status": "request_failed",
+                                               "errors": {},
+                                               "votes": {}}
     current = st.session_state.get("ziczac_deep_report") or {}
     if current.get("fixture") != identifier or current.get("method") != method:
         st.info("Choose this match and press **Run Deep Research AI** to open its report.")
         return
     report = current["result"]
+    external_current = (st.session_state.get("ziczac_external_ai_runs") or {}).get(identifier)
+    if use_external and external_current:
+        show_external_ai(st, external_current)
     if not report.get("available"):
         st.warning(report.get("reason", "Not enough verified match history for this fixture."))
         return
