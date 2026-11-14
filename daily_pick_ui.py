@@ -62,11 +62,16 @@ def daily_candidates(rows,as_of):
         suitable.append((row,kickoff))
     if not suitable:
         return []
-    nearest=min(k.astimezone(SYDNEY).date() for _,k in suitable)
-    return [r for r,k in sorted(suitable,
-                                key=lambda item:(_quality(item[0]),
-                                  -item[1].timestamp()),reverse=True)
-            if k.astimezone(SYDNEY).date()==nearest]
+    # Evaluate later dates only if today's candidates cannot produce a valid
+    # pre-match research forecast. Within a date, prefer strong verified form.
+    output=[]
+    for day in sorted({kickoff.astimezone(SYDNEY).date() for _,kickoff in suitable}):
+        options=[(row,kickoff) for row,kickoff in suitable
+                 if kickoff.astimezone(SYDNEY).date()==day]
+        output.extend(row for row,kickoff in sorted(
+            options,key=lambda item:(_quality(item[0]),-item[1].timestamp()),
+            reverse=True))
+    return output
 
 
 def build_snapshot(row,as_of,forecast=None):
@@ -113,8 +118,8 @@ def build_snapshot(row,as_of,forecast=None):
     return snapshot
 
 
-def choose_daily_snapshot(rows,session,as_of=None):
-    """Do not recalculate an already shown candidate within this user session."""
+def choose_daily_snapshot(rows,session,as_of=None,api_key=None):
+    """Freeze one researched score per session, using genuine v9 odds if available."""
     now=_when(as_of or datetime.now(timezone.utc))
     if now is None:
         return None
@@ -139,6 +144,30 @@ def choose_daily_snapshot(rows,session,as_of=None):
                    len(forecast.get("away_last10") or []))<5:
                 continue
             frozen=build_snapshot(row,now,forecast)
+            if frozen and api_key and row["fixture"].get("provider")=="API-Football":
+                # A single bounded odds lookup for the ONE selected fixture.
+                # Provider history alone remains the explicit fallback.
+                try:
+                    from api_football import _request
+                    from market_score_v9 import select_market_response, predict as predict_v9
+                    odds=_request(api_key,"/odds",{"fixture":row["fixture"]["id"]},
+                                  with_metadata=True)
+                    meta=odds.get("metadata") or {}
+                    if not meta.get("stale") and meta.get("freshness_known") is True:
+                        market=select_market_response(odds.get("data") or [],
+                                                      row["fixture"],as_of=now)
+                        if market:
+                            mixed=predict_v9(row["fixture"],prior,league_history=league,
+                                             market=market,as_of=now)
+                            upgraded=build_snapshot(row,now,mixed)
+                            if upgraded:
+                                upgraded["v8_comparison"]={"exact_score":frozen["exact_score"],
+                                     "probability":frozen["probability"],
+                                     "model_version":frozen["model"]}
+                                upgraded["market_provenance"]=market
+                                frozen=upgraded
+                except (RuntimeError,ValueError,TypeError,KeyError,ZeroDivisionError):
+                    pass
             if frozen:
                 session[STATE_KEY]=frozen
                 session.pop(ODDS_KEY,None)
@@ -171,8 +200,8 @@ def render(st,rows,session,api_key=None,now=None):
     .zz-pod-meta{color:#c6d2f8;font-size:clamp(.8rem,1.75vw,1rem);margin:6px 0}
     </style>""",unsafe_allow_html=True)
     st.subheader("🏆 Highly Researched Prediction of the Day")
-    st.caption("One pre-match exact-score forecast selected using verified form and venue evidence · Enhanced v8 research · Optional market-informed v9 comparison.")
-    snapshot=choose_daily_snapshot(rows,session,now)
+    st.caption("One high-evidence pre-match match: v8 opponent/venue/Elo research with real v9 market probabilities when available. No fabricated data.")
+    snapshot=choose_daily_snapshot(rows,session,now,api_key=api_key)
     if not snapshot:
         st.info("No sufficiently researched upcoming match is available from the connected football feeds. Expand your fixture dates or monitored competitions; a score will never be invented.")
         return
@@ -182,9 +211,10 @@ def render(st,rows,session,api_key=None,now=None):
     homes=html.escape(snapshot["home"])
     aways=html.escape(snapshot["away"])
     matchdate=html.escape(_date_format(snapshot["kickoff_utc"],"%a %d %b %Y · %I:%M %p Sydney"))
+    version="MARKET-INFORMED v9" if snapshot.get("market_provenance") else "ENHANCED RESEARCH v8"
     st.markdown(
         '<div class="zz-pod"><div class="zz-pod-kicker">🏆 '+title+
-        ' · ENHANCED MODEL v8</div><div class="zz-pod-meta">'+league+' · '+matchdate+
+        ' · '+version+'</div><div class="zz-pod-meta">'+league+' · '+matchdate+
         '</div><div class="zz-pod-title">'+homes+' <span style="color:#9489ff">VS</span> '+aways+
         '</div><div class="zz-pod-score">'+score+'</div><div class="zz-pod-meta">Most likely single exact score · Estimated chance '+
         f'{snapshot["probability"]:.1%}'+
@@ -196,6 +226,17 @@ def render(st,rows,session,api_key=None,now=None):
     st.caption(f'Estimated goals: {snapshot["home_xg"]:.2f} home · {snapshot["away_xg"]:.2f} away · '
                f'Model components: {int(snapshot["component_count"])} · '
                f'Selected {_date_format(snapshot["captured_at_utc"],"%d %b %I:%M %p")} Sydney.')
+    if snapshot.get("market_provenance"):
+        market=snapshot["market_provenance"]
+        st.caption("✅ Verified market-adjusted v9: "+str(market["bookmaker"])+
+                   " · Odds snapshot "+str(market["snapshot_utc"])+
+                   " · Margin removed before blending.")
+        old=snapshot["v8_comparison"]
+        st.caption("Original v8 exact-score estimate: "+
+                   "-".join(map(str,old["exact_score"]))+" · "+f'{old["probability"]:.1%}'+
+                   ". This earlier estimate is preserved for comparison.")
+    else:
+        st.caption("Historical v8 only. No valid recent bookmaker prices were available or the provider odds feed was not configured; no market signal was invented.")
     if now>=_when(snapshot["kickoff_utc"]):
         st.warning("Kickoff has passed. This original estimate is unchanged; check verified match results in Performance.")
     else:
