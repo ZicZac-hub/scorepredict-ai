@@ -153,6 +153,26 @@ active_page_slot=st.container()
 with active_page_slot:
     st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
 
+# The AI Five-Double Studio can run entirely on already-frozen GitHub
+# forecasts. Render it immediately on tap, before expensive fixture discovery,
+# competition loading or the public football API. Owners may opt in to current
+# live feed discovery, which retains the original complete-data path below.
+if view == 'ai_five':
+    with active_page_slot:
+        st.caption("Fast mode uses existing saved pre-match forecasts and any "
+                   "available archived AI opinions. It needs no new football "
+                   "data download and does not make paid model requests.")
+        _ai_five_live = st.toggle(
+            "🌍 Load fresh live fixtures as well (can take longer)",
+            value=False, key="zz_ai_five_live_feed",
+            help="Turn this on only if you need newly modelled fixtures not "
+                 "already present in the frozen research archive.")
+        if not _ai_five_live:
+            from ai_five_double_ui import render as render_ai_five_double_studio
+            render_ai_five_double_studio(st, [], {})
+    if not _ai_five_live:
+        st.stop()
+
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
 key=key or os.environ.get('FOOTBALL_DATA_API_KEY','')
@@ -453,6 +473,8 @@ def fixture_label(r):
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
 if view == 'ai_five':
     with active_page_slot:
+        st.caption("Live research mode adds newly discovered and modelled "
+                   "fixtures to the immutable saved-forecast candidates.")
         from ai_five_double_ui import render as render_ai_five_double_studio
         render_ai_five_double_studio(st, eligible, histories)
 
