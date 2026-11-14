@@ -6,7 +6,7 @@ smart-double output. The stored result is session-only and not a verified pick.
 from datetime import datetime, timezone
 import pandas as pd
 from smart_double_ai import five_doubles
-from smart_double_v8 import research_fixture_rows, rank_research_pairs, manually_selected
+from smart_double_v8 import research_fixture_rows, rank_research_pairs, manually_selected, select_auto_research_pool
 
 
 def _label(row, labeler):
@@ -64,10 +64,11 @@ def render(st, rows, histories, labeler):
                         for r in eligible)
     identity=("v8",mode,identifiers)
     if mode.startswith("AI"):
-        st.caption("Scans up to 18 upcoming researched fixtures, requiring two distinct same-Sydney-date matches with four teams.")
+        st.caption("Researches up to 18 evidence-supported fixtures across the next three Sydney matchdays, reserving at least two matches on each day. Four distinct teams are required.")
         if st.button("🔬 Run v8 Auto Select",key="v8_run_auto",type="primary",use_container_width=True):
             with st.spinner("Comparing verified match history and score distributions..."):
-                researched = research_fixture_rows(eligible,histories,max_fixtures=18)
+                pool=select_auto_research_pool(eligible,max_fixtures=18,max_days=3)
+                researched = research_fixture_rows(pool,histories,max_fixtures=18)
                 best = rank_research_pairs(researched,limit=1)
             if best:
                 st.session_state["v8_double_report"] = {"identity":identity,"candidate":best[0]}
