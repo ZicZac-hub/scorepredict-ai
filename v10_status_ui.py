@@ -23,6 +23,14 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
             st.caption(f"Exact hits: {hits}/{n}" + (
                 f" · {item['exact_score_rate']:.1%}" if n and item.get("exact_score_rate") is not None
                 else " · No verified outcomes yet"))
+    near=models.get("v8_near") or {}
+    near_count=int(near.get("frozen_fixtures") or 0)
+    near_checked=int(near.get("verified_fixtures") or 0)
+    near_hits=int(near.get("exact_score_hits") or 0)
+    st.caption("Fresh verified pre-kickoff research: "+str(near_count)+
+               " separately frozen v8 snapshots · "+str(near_hits)+"/"+
+               str(near_checked)+" exact-score hits on completed matches. "+
+               "Original v8 predictions are never rewritten.")
     doubles=report.get("five_doubles") or {}
     with cols[3]:
         st.metric("Five doubles frozen",int(doubles.get("frozen_pairs") or 0))
@@ -31,6 +39,15 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
         st.caption(f"Verified wins: {wins}/{n}"+(
             f" · {doubles['hit_rate']:.1%}" if n and doubles.get("hit_rate") is not None
             else " · No verified pairs yet"))
+    near_pair=report.get("paired_original_v8_vs_near_v8") or {}
+    near_verified=int(near_pair.get("same_fixture_verified") or 0)
+    if near_verified:
+        st.caption("Original vs fresh v8 · "+str(near_verified)+
+                   " independently verified same-fixture matches · fresh-only hits: "+
+                   str(near_pair.get("fresh_research_only_exact_hits") or 0)+
+                   " · original-only hits: "+
+                   str(near_pair.get("original_only_exact_hits") or 0)+
+                   ". These forecasts used different available information.")
     common=(report.get("paired_v8_v9") or {}).get("verified_same_fixture_count",0)
     common_v10=(report.get("paired_v8_v10") or {}).get("verified_same_fixture_count",0)
     st.caption(f"Fair same-fixture verification: v8 vs v9 = {common} matches · v8 vs v10 = {common_v10} matches. Pending games are neither hits nor losses.")
@@ -41,7 +58,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                               str(item["same_pair_verified_days"])+ " hits"
                               for name,item in comparisons.items() if item.get("same_pair_verified_days")) )
     if not compact:
-        for name in ("v8","v9","v10"):
+        for name in ("v8","v8_near","v9","v10"):
             m=models.get(name) or {}
             with st.expander(name.upper()+" · Full probability-quality breakdown"):
                 if not m.get("verified_fixtures"):
@@ -62,6 +79,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                     "v8 saved by latest collection":int(status.get("v10_shadow_v8_saved") or 0),
                     "v9 saved by latest collection":int(status.get("v10_shadow_v9_saved") or 0),
                     "v10 saved by latest collection":int(status.get("v10_shadow_v10_saved") or 0),
+                    "new near-kickoff research forecasts":int(status.get("v10_near_research_saved") or 0),
                     "new near-kickoff market checks":int(status.get("v10_market_refresh_checked") or 0),
                     "new near-kickoff v9 forecasts":int(status.get("v10_market_refresh_v9_saved") or 0),
                     "provider market calls":int(status.get("v10_market_calls") or 0),
