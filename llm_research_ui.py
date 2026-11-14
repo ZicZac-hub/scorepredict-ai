@@ -12,6 +12,42 @@ def _json(path):
         return {}
 
 
+def _score_text(value):
+    if (isinstance(value, (list, tuple)) and len(value) == 2
+            and all(type(v) is int and v >= 0 for v in value)):
+        return str(value[0]) + "–" + str(value[1])
+    return "Not available"
+
+
+def _pct(value):
+    if type(value) not in (int, float) or not 0 <= value <= 1:
+        return "Not available"
+    return f"{value:.1%}"
+
+
+def _outcome_of(score):
+    if not isinstance(score, (list, tuple)) or len(score) != 2:
+        return None
+    if not all(type(x) is int and x >= 0 for x in score):
+        return None
+    return "home" if score[0] > score[1] else "away" if score[0] < score[1] else "draw"
+
+
+def _score_explanation(panel, votes):
+    """Explain abstention without changing immutable votes or inventing scores."""
+    selected = panel.get("suggested_score")
+    if _score_text(selected) != "Not available":
+        return "Aligned research score: " + _score_text(selected) + " (not verified)."
+    if not votes:
+        return "No validated AI score suggestions were saved."
+    top = str(panel.get("outcome") or "")
+    if top and any(_outcome_of(v.get("score")) != top for v in votes.values()):
+        return ("No consensus exact score: the suggested scoreline differs from "
+                "the leading home/draw/away probability. Individual AI picks "
+                "appear below; nothing has been discarded.")
+    return "Not enough agreeing evidence for a consensus exact score."
+
+
 def render(st, root=ROOT):
     st.markdown("### 🧠 Ten-Provider Independent AI Research Panel")
     st.caption("OpenAI · Claude · Gemini · Grok · DeepSeek · Perplexity · Mistral · "
@@ -62,27 +98,52 @@ def render(st, root=ROOT):
         st.caption("The original 5-AI group and the new 10-AI group are measured separately.")
     else:
         st.caption("A complete ten-AI panel does not yet have verified final results.")
-    archived = []
-    for path in sorted((root/"forecasts").glob("*.json"), reverse=True):
-        entry = _json(path)
+    saved = []
+    for file in (root/"forecasts").glob("*.json"):
+        entry = _json(file)
         if entry.get("research_only") and entry.get("captured_at_utc") and entry.get("consensus"):
-            archived.append(entry)
-        if len(archived) >= 3:
-            break
-    for entry in archived:
+            saved.append(entry)
+    saved.sort(key=lambda entry: str(entry["captured_at_utc"]), reverse=True)
+    if not saved:
+        st.info("No frozen external-AI research yet. A valid pre-kickoff "
+                "fixture must be collected before any AI predictions appear.")
+    for entry in saved[:3]:
         panel = entry["consensus"]
+        votes = entry.get("votes") or {}
+        actual_count = len(votes)
+        configured = entry.get("configured_provider_count") or len(status.get("configured_providers") or [])
         label = (str(entry.get("home_team") or "Home")+" vs "+
                  str(entry.get("away_team") or "Away"))
-        with st.expander(label+" · "+str(entry.get("provider_count"))+"/10 independent models"):
-            st.caption("Frozen at "+str(entry.get("captured_at_utc"))+
-                       " UTC; matchup kickoff "+str(entry.get("kickoff_utc"))+
-                       "; source "+str(entry.get("source_model")))
-            st.write({"Outcome": panel.get("outcome"),
-                      "Outcome probabilities": panel.get("outcome_probabilities"),
-                      "AI suggested score (unvalidated)": panel.get("suggested_score"),
-                      "Original saved score (unchanged)": entry.get("baseline_predicted_score")})
-            st.caption("AI scores are research candidates only; do not treat these "
-                       "as independently calibrated exact-score probabilities.")
+        with st.expander(label + " · " + str(actual_count) + " AI vote(s) saved"):
+            st.caption("Frozen: "+str(entry.get("captured_at_utc"))+
+                       " UTC · Source: "+str(entry.get("source_model") or "unknown")+
+                       " · Original forecast preserved")
+            st.write("**AI responses:** "+str(actual_count)+
+                     " of "+str(configured)+" configured at capture")
+            probabilities = panel.get("outcome_probabilities") or {}
+            st.write("**Independent research — home/draw/away:** "
+                     + " / ".join(_pct(probabilities.get(k)) for k in
+                                  ("home","draw","away")))
+            st.write("**Most likely match outcome in AI panel:** "
+                     + str(panel.get("outcome") or "Not available").title())
+            st.write("**Original ZicZac exact score:** "
+                     + _score_text(entry.get("baseline_predicted_score")))
+            st.caption(_score_explanation(panel, votes))
+            if votes:
+                st.markdown("**Individual AI suggestions (unvalidated)**")
+                for name,vote in sorted(votes.items()):
+                    st.write("**"+name.title()+"** · Score "+
+                             _score_text(vote.get("score"))+
+                             " · H/D/A "+
+                             "/".join(_pct(vote.get(k)) for k in
+                                      ("home","draw","away")))
+                    facts=vote.get("factors") or []
+                    if isinstance(facts,list) and facts:
+                        st.caption("Evidence notes: "+"; ".join(str(item)[:140]
+                                   for item in facts[:2]))
+            st.caption("Only pre-kickoff archived AI opinions are shown. "
+                       "These are not real-time updates or verified hits. "
+                       "A missing vote is not a zero-percent prediction.")
     st.divider()
     from sportmonks_probability_ui import render as render_sportmonks
     render_sportmonks(st)
