@@ -53,6 +53,10 @@ def render(st, root=ROOT):
     st.caption("OpenAI · Claude · Gemini · Grok · DeepSeek · Perplexity · Mistral · "
                "Qwen · GroqCloud (hosted models) · Cohere. Same frozen pre-match evidence; "
                "not a proven score-accuracy upgrade.")
+    st.caption("This panel displays automatically frozen research from previous "
+               "matches. It is separate from the match selected above and from "
+               "the Run Deep Research AI button; selecting a match does not "
+               "retroactively request ten external AI predictions.")
     status = _json(root/"status.json")
     if not status.get("enabled"):
         st.info("Ten-provider research is installed but not activated. Enter API keys, "
