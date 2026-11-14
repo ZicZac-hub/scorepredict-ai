@@ -1,0 +1,62 @@
+{
+  "away_team": "Atletico-MG",
+  "away_team_id": "1062",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.2944140283295472,
+    "draw": 0.27458843115128634,
+    "home": 0.4309975405191664
+  },
+  "captured_at_utc": "2026-11-14T08:52:23.935517+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.3,
+      "draw": 0.27,
+      "home": 0.43
+    },
+    "provider_count": 1,
+    "suggested_score": null
+  },
+  "disclaimer": "No real-time web access by LLMs; source packet is frozen statistical evidence. Shadow-only and not verified as superior.",
+  "fixture_id": "1492455",
+  "home_team": "Mirassol",
+  "home_team_id": "7848",
+  "input_digest": "7325afc1c34a56218d3b0df2c8eee1a1d3414d81fa98458d13cd6f544340753d",
+  "kickoff_utc": "2026-11-14T21:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite"
+  },
+  "provider": "API-Football",
+  "provider_count": 1,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "source_captured_at_utc": "2026-11-14T02:30:15.384841Z",
+  "source_forecast_id": "b60a548432d90cd520bd047c5efe816ebe56007c534366150d685ce4b0f1d68a",
+  "source_model": "v8_near",
+  "votes": {
+    "gemini": {
+      "away": 0.3,
+      "draw": 0.27,
+      "factors": [
+        "Prior statistical model slightly favors home team Mirassol based on baseline form.",
+        "Expected goals model estimate indicates a tight match with home team around 1.38 xG vs away team 1.09 xG.",
+        "Rest days are relatively balanced with a small 1-day differential favoring the home side."
+      ],
+      "home": 0.43,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty due to balanced expected goal rates and close historical score probabilities pointing towards a low-scoring affair."
+    }
+  }
+}
