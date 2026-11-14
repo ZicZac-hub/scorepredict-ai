@@ -107,7 +107,7 @@ def test_ai_five_button_opens_fast_studio_and_generates_five_no_cost_doubles(off
     from datetime import datetime,timedelta,timezone
     from zoneinfo import ZoneInfo
 
-    day=datetime.now(ZoneInfo("Australia/Sydney")).date()+timedelta(days=2)
+    day=datetime.now(ZoneInfo("Australia/Sydney")).date()+timedelta(days=1)
     def row(fid, home, away, hour):
         kick=datetime(day.year,day.month,day.day,hour,
                       tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc).isoformat()
