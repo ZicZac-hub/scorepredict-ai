@@ -1,0 +1,98 @@
+"""Focused Today/Tomorrow model discovery must respect time and quota."""
+from datetime import datetime,timezone,date
+
+from ai_five_live_finder import research_day
+
+
+NOW=datetime(2026,11,15,0,0,tzinfo=timezone.utc)
+DAY=date(2026,11,15)
+
+
+def fixture(fid,kickoff, *, provider="API-Football", home_id=None):
+    home_id=fid*2 if home_id is None else home_id
+    data={
+        "provider":provider,"id":fid,"utcDate":kickoff,
+        "homeTeam":{"id":home_id,"name":"Home "+str(fid)},
+        "awayTeam":{"id":fid*2+1,"name":"Away "+str(fid)},
+    }
+    return {"source":"API-Football","fixture":data}
+
+
+def modeled(event):
+    item=event["fixture"]
+    return {
+        "fixture":item,"kickoff":item["utcDate"],"past":[],
+        "league":"test", "result":{
+            "scores":[[1,1,.15],[1,0,.13],[2,1,.12],
+                      [0,0,.11],[2,0,.09],[0,1,.08]],
+            "model_version":"verified-v8-test",
+        }
+    }
+
+
+def test_date_scoped_search_only_models_upcoming_fixtures_four_at_a_time():
+    events=[fixture(i,"2026-11-15T08:00:00Z") for i in range(10,16)]
+    events.append(fixture(16,"2026-11-14T00:00:00Z"))
+    calls=[]
+    def discover(key,day,days):
+        assert key=="test-key"
+        assert day==DAY and days==1
+        return events, []
+    def model(key,event,model_variant=None):
+        calls.append(event["fixture"]["id"])
+        assert model_variant=="research_v8"
+        return modeled(event),None
+    result=research_day("test-key",DAY,limit=20,discover=discover,
+                        model=model,now=NOW)
+    assert result["discovered"]==6
+    assert result["checked"]==4
+    assert len(result["modeled"])==4
+    assert result["remaining"]==2
+    assert calls==[10,11,12,13]
+    second=research_day("test-key",DAY,known_ids=result["checked_ids"],
+                        discover=discover,model=model,now=NOW)
+    assert second["checked"]==2
+    assert len(second["modeled"])==2
+    assert second["remaining"]==0
+    assert calls[-2:]==[14,15]
+
+
+def test_no_key_never_calls_network():
+    def forbid(*args,**kwargs):
+        raise AssertionError("No data requests should happen without a valid key")
+    report=research_day("",DAY,discover=forbid,model=forbid,now=NOW)
+    assert report["checked"]==0
+    assert report["modeled"]==[]
+    assert "API_FOOTBALL_KEY" in report["errors"][0]
+
+
+def test_today_search_rejects_started_invalid_and_unmodelled_fixtures():
+    events=[fixture(1,"2026-11-15T00:02:00Z"),
+            fixture(2,"2026-11-15T04:00:00Z",provider="other"),
+            fixture(3,"2026-11-15T05:00:00Z",home_id=None),
+            fixture(4,"2026-11-15T07:00:00Z")]
+    events[2]["fixture"]["homeTeam"]["id"]=None
+    attempts=[]
+    def model(_,event,model_variant=None):
+        attempts.append(event["fixture"]["id"])
+        return None,"Not enough verified team histories"
+    report=research_day("key",DAY,
+                        discover=lambda *a:(events,[]),
+                        model=model,now=NOW)
+    assert report["discovered"]==1
+    assert report["checked"]==1
+    assert report["modeled"]==[]
+    assert report["unmodeled"]==1
+    assert attempts==[4]
+    assert "Not enough verified" in report["errors"][0]
+
+
+def test_does_not_bypass_pre_kickoff_quality_controls():
+    report=research_day("key",DAY,discover=lambda *a:([
+        fixture(20,"2026-11-15T08:00:00Z")],[]),
+        model=lambda key,event,model_variant=None: (
+            {**modeled(event),"result":{"scores":[[1,1,.5]]}},None),
+        now=NOW)
+    assert report["checked"]==1
+    assert report["modeled"]==[]
+    assert report["unmodeled"]==1
