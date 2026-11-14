@@ -24,7 +24,14 @@ MIN_COVERAGE = 0.04  # conservative untuned guardrail, NOT a calibrated hit rate
 
 def _qualified(row, result):
     """Validate actual provider, identity, date and regulation score."""
-    return bool(result and verified_result(row, result, str(row["fixture_id"])))
+    if not result or not verified_result(row,result,str(row["fixture_id"])):
+        return False
+    if result.get("status") not in ("FT","AET","PEN","FINISHED"):
+        return False
+    try:
+        return utc(result["verified_at_utc"])>utc(result["kickoff_utc"])
+    except (ValueError,TypeError,KeyError):
+        return False
 
 
 def _metric(row, result):
