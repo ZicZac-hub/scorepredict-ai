@@ -44,6 +44,8 @@ def _record(fixture, evidence, forecast, model_key, captured_at, market=None):
         raise ValueError("Score grid is invalid")
     provider, fixture_id = _identity(fixture)
     home, away = fixture["homeTeam"], fixture["awayTeam"]
+    from verified_features_v10 import describe as verified_schedule_context
+    research_context = verified_schedule_context(fixture,evidence)
     scores = [[int(h), int(a), float(p)] for h,a,p in forecast["scores"]]
     if not scores:
         raise ValueError("No valid exact-score outcomes")
@@ -71,6 +73,7 @@ def _record(fixture, evidence, forecast, model_key, captured_at, market=None):
         "history_matches":len(evidence.get("history") or []),
         "league_history_matches":len(evidence.get("league_history") or []),
         "component_weights":dict(forecast.get("component_weights") or {}),
+        "research_context":research_context,
         "market_used":bool(market),
         "market_snapshot":({key:market[key] for key in (
             "bookmaker","snapshot_utc","winner","winner_overround",
