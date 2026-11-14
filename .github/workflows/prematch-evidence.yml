@@ -73,6 +73,7 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           V10_BACKFILL_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '12' || '0' }}
+          V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '4' || '0' }}
         run: python capture_prematch.py
       - name: Persist newly captured originals
         run: python persist_prematch.py --snapshots-only
