@@ -1,0 +1,146 @@
+{
+  "actual_score": null,
+  "away_team": "Ararat-Armenia",
+  "away_team_id": 3683,
+  "changed": true,
+  "comparison_context": null,
+  "competition": "EL",
+  "excluded_from_original_accuracy": true,
+  "fallback_reason": null,
+  "fixture_id": 1636334,
+  "history_as_of_utc": "2026-11-14T01:21:26.442713+00:00",
+  "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+  "history_count": 423,
+  "history_warnings": [],
+  "history_window_start_utc": "2024-11-14T01:21:26.442713+00:00",
+  "home_team": "Red Bull Salzburg",
+  "home_team_id": 571,
+  "input_digest": "5b66160899e30bdf054104d35619dc0201479387bf2d00b26169d731cc10da3a",
+  "kickoff_utc": "2026-11-26T17:45:00Z",
+  "label": "Upcoming forecast revision",
+  "mode": "upcoming",
+  "model_sources": [
+    "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+  ],
+  "original_captured_at_utc": "2026-11-13T09:18:16.113415+00:00",
+  "original_kickoff_utc": "2026-11-26T17:45:00Z",
+  "original_model": "reference-informed-v7-v6-retained",
+  "original_provider": "API-Football",
+  "original_score": [
+    1,
+    1
+  ],
+  "original_score_probability": 0.10044200273787075,
+  "original_source": "permanent_snapshot",
+  "policy_version": "two-season-asof-v1",
+  "provenance": {
+    "history_days": 730,
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-14T01:21:26.442713+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 22.494534730911255,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-14T01:21:25.391856+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-14T01:21:47.886391+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 22.36299777030945,
+        "cache_status": "fresh_cache",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-14T01:21:25.525724+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-14T01:21:47.888722+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "rescored_at_utc": "2026-11-14T01:21:26.442713+00:00",
+  "revision_id": "20261114T012126442713Z-c3d3210f-26bb36896ed2",
+  "run_id": "20261114T012126442713Z-c3d3210f",
+  "source_ref": null,
+  "updated_expected_goals": {
+    "away": 0.992440610166372,
+    "home": 2.8096245352496165
+  },
+  "updated_model": "reference-informed-v7",
+  "updated_outcome_probabilities": {
+    "away": 0.10940724273692592,
+    "draw": 0.1365025356354667,
+    "home": 0.7540902216276073
+  },
+  "updated_score": [
+    2,
+    0
+  ],
+  "updated_score_probability": 0.08811516631906777,
+  "updated_top10_scores": [
+    [
+      2,
+      0,
+      0.08811516631906777
+    ],
+    [
+      2,
+      1,
+      0.08744906942660696
+    ],
+    [
+      3,
+      0,
+      0.08252351108621574
+    ],
+    [
+      3,
+      1,
+      0.0818996836954753
+    ],
+    [
+      1,
+      0,
+      0.0664917367084005
+    ],
+    [
+      1,
+      1,
+      0.05848171331239127
+    ],
+    [
+      4,
+      0,
+      0.05796502038029195
+    ],
+    [
+      4,
+      1,
+      0.05752684019452313
+    ],
+    [
+      2,
+      2,
+      0.04339400391011162
+    ],
+    [
+      3,
+      2,
+      0.04064028602958519
+    ]
+  ]
+}
