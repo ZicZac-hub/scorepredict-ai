@@ -1,0 +1,42 @@
+{
+  "comparison_version": "v8_expanded_frozen_holdout",
+  "source_workflow": "https://github.com/ZicZac-hub/scorepredict-ai/actions/runs/43532480039",
+  "generated_date": "2026-11-14",
+  "method": "Expanded historical replay: 632 paired predictions from 700 latest 2026 fixtures using 2,255 available finished matches in five leagues, all evaluated with at least 60 minutes of pre-match lead. Not a prospective live hit rate.",
+  "source_results": 2255,
+  "matched": 632,
+  "leagues": {
+    "BL1": 97,
+    "SA": 140,
+    "PD": 158,
+    "FL1": 109,
+    "PL": 128
+  },
+  "preserved_v6": {
+    "exact_hits": 70,
+    "exact_accuracy": 0.11075949367088607,
+    "top_three_rate": 0.3037974683544304,
+    "score_log_loss": 3.023772740258652,
+    "outcome_brier": 0.6082959644512961,
+    "one_one_share": 0.8037974683544303
+  },
+  "research_v8": {
+    "exact_hits": 77,
+    "exact_accuracy": 0.12183544303797468,
+    "top_three_rate": 0.2990506329113924,
+    "score_log_loss": 2.9992692199061066,
+    "outcome_brier": 0.5945843305415625,
+    "one_one_share": 0.685126582278481
+  },
+  "paired": {
+    "v8_only_hits": 17,
+    "v6_only_hits": 10,
+    "exact_mcnemar_p_approx": 0.24778856337070465
+  },
+  "five_doubles": {
+    "days": 59,
+    "v8_hits": 2,
+    "v6_same_pair_hits": 1
+  },
+  "release_status": "Experimental opt-in only: exact-score difference is not statistically decisive (paired exact p≈0.248), top-three coverage dipped and double sample remains small. No promotion to default."
+}
