@@ -1,0 +1,45 @@
+name: Check ZicZac live Streamlit hosting
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app.py'
+      - 'daily_pick_ui.py'
+      - 'v10_status_ui.py'
+      - 'v10_evaluate.py'
+      - 'v10_prospective.py'
+      - 'market_score_v9.py'
+      - 'multi_market_v10.py'
+      - '.github/workflows/streamlit-live-smoke.yml'
+  schedule:
+    - cron: '20 */6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  check-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check URL and Streamlit server health
+        shell: bash
+        run: |
+          set -uo pipefail
+          site="https://ziczacscorepredict-ai.streamlit.app"
+          for attempt in 1 2 3; do
+            health=$(curl -L -sS -m 35 -o /tmp/ziczac-health -w '%{http_code}' "$site/_stcore/health" || true)
+            page=$(curl -L -sS -m 35 -o /tmp/ziczac-page -w '%{http_code}' "$site/?view=predict" || true)
+            echo "Attempt $attempt: Streamlit health HTTP $health; Daily Prediction page HTTP $page"
+            if [[ "$health" == "200" && "$page" == "200" ]]; then
+              echo "Live hosting responds to requests." >> "$GITHUB_STEP_SUMMARY"
+              echo "GitHub source commit: ${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
+              echo "NOTE: HTTP availability alone does not prove the app uses the latest commit or that every Python widget works." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Live hosting has not passed basic HTTP checks. Verify Streamlit Cloud deployment logs, branch and linked GitHub repository." >> "$GITHUB_STEP_SUMMARY"
+          exit 1
