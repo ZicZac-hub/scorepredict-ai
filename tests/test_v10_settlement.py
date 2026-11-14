@@ -101,3 +101,51 @@ def test_research_result_provider_quota_limit_is_honoured(tmp_path):
                               legacy_results={},request=fetch,limit=1)
     assert report["checked"]==1 and len(seen)==1
     assert report["still_pending"]>=1
+
+
+def test_recent_kickoff_is_not_queried_before_fulltime(tmp_path):
+    now=datetime.now(timezone.utc).replace(microsecond=0)
+    captured=now-timedelta(hours=3)
+    game=fixture(97330,captured,"Recent Home","Recent Away",
+                 delta_hours=2)
+    row=shadow._record(game,evidence(captured),candidate(),"v8",captured)
+    assert append_file_record(row,root=tmp_path,kind="forecasts")
+    def no_request(*args,**kwargs):
+        raise AssertionError("Cannot verify a match only 60 minutes after kickoff")
+    report=settlement.collect("test",root=tmp_path,legacy_results={},
+                              now=now,request=no_request)
+    assert report["checked"]==0
+    assert report["still_pending"]==1
+    assert report["waiting_for_full_time"]==1
+    assert report["newly_verified"]==0
+
+
+def test_unfinished_result_retry_uses_60_minute_cooldown(tmp_path):
+    row=one_frozen(tmp_path,97331)
+    calls=[]
+    def unfinished(url,params,headers,timeout):
+        calls.append(params["id"])
+        return Response({"response":[fulltime_result(row,status="NS")],
+                         "errors":[]})
+    now=datetime.now(timezone.utc)
+    first=settlement.collect("test",root=tmp_path,legacy_results={},
+                             now=now,request=unfinished)
+    assert first["checked"]==1
+    assert first["still_pending"]==1
+    second=settlement.collect("test",root=tmp_path,legacy_results={},
+                              now=now+timedelta(minutes=15),request=unfinished)
+    assert second["checked"]==0
+    assert second["retry_cooldown"]==1
+    assert len(calls)==1
+    third=settlement.collect("test",root=tmp_path,legacy_results={},
+                             now=now+timedelta(minutes=61),request=unfinished)
+    assert third["checked"]==1
+    assert len(calls)==2
+    assert third["still_pending"]==1
+    # A newly finished result is still checked by exact original team IDs.
+    def completed(url,params,headers,timeout):
+        return Response({"response":[fulltime_result(row)],"errors":[]})
+    fourth=settlement.collect("test",root=tmp_path,legacy_results={},
+                              now=now+timedelta(minutes=122),request=completed)
+    assert fourth["newly_verified"]==1
+    assert fourth["still_pending"]==0
