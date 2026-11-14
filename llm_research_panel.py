@@ -255,8 +255,12 @@ def evaluate(root=ROOT, results_path=V10_ROOT/"verified_results.json"):
     complete = 0
     eligible_n = 0
     panel_exact = baseline_exact = panel_outcome = baseline_outcome = 0
-    for path in sorted((Path(root)/"forecasts").glob("*.json")):
-        row = load_json(path, {})
+    # Multiple genuinely frozen evidence updates may exist for one fixture.
+    # Grade the first published panel, never whichever digest sorts first.
+    entries = [load_json(path, {}) for path in (Path(root)/"forecasts").glob("*.json")]
+    entries = [row for row in entries if row.get("captured_at_utc")]
+    entries.sort(key=lambda row: utc(row["captured_at_utc"]))
+    for row in entries:
         fixture_id = str(row.get("fixture_id"))
         unique = (row.get("provider"), fixture_id)
         if unique in seen:
