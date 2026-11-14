@@ -221,6 +221,7 @@ def test_new_research_snapshots_are_separate_from_original_and_selected_if_fresh
         assert original_now["input_digest"]!=fresh["input_digest"]
         assert original_now["captured_at_utc"]<fresh["captured_at_utc"]
     frozen=grader.freeze_doubles(root=tmp_path,now=when())
+    assert frozen["near_research_available"]==2, frozen
     assert len(frozen["days_saved"])==1
     with (tmp_path/"doubles"/(frozen["days_saved"][0]+".json")).open() as handle:
         result=json.load(handle)
