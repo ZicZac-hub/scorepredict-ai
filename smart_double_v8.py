@@ -36,14 +36,16 @@ def research_fixture_rows(rows, histories, max_fixtures=18, as_of=None):
                         _kick(row) and _kick(row)>as_of),key=_kick)
     evaluated=[]
     seen=set()
+    attempts=0
     for row in available:
         fixture=row["fixture"]
         fingerprint=(_kick(row),_team_key(row,"home"),_team_key(row,"away"))
         if fingerprint in seen:
             continue
         seen.add(fingerprint)
-        if len(evaluated)>=max_fixtures:
+        if attempts>=max_fixtures:
             break
+        attempts += 1
         before=row.get("past") or histories.get(row.get("league"),[])
         league=histories.get(row.get("league"),before)
         forecast=predict_v8(fixture,before,league_history=league,as_of=as_of)
