@@ -1655,7 +1655,9 @@ with active_page_slot:
     if view in ['doubles']:
         with tabs[6]:
             from v8_doubles_ui import render as render_v8_doubles
+            from market_double_v9_ui import render as render_v9_market_doubles
             render_v8_doubles(st, eligible, histories, fixture_label)
+            render_v9_market_doubles(st, eligible, histories, fixture_label, secondary_key)
             st.divider()
             st.subheader('⚡ Five exact-score doubles')
             smart_mode=st.radio('Choose your selection mode',
