@@ -1,5 +1,6 @@
 """No-network v10 multi-bookmaker and frozen comparison tests."""
 from datetime import datetime,timedelta,timezone
+from zoneinfo import ZoneInfo
 import numpy as np
 import pytest
 
@@ -79,8 +80,8 @@ def test_same_odds_request_can_archive_three_independent_models(monkeypatch,tmp_
 
 
 def test_a_frozen_double_compares_v10_on_the_same_pair(tmp_path):
-    now=when()
-    games=[fixture(9261,now,"A","B",36),fixture(9262,now,"C","D",37)]
+    now=datetime(2027,1,11,8,0,tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc)
+    games=[fixture(9261,now,"A","B",12),fixture(9262,now,"C","D",13)]
     v8=candidate()
     for game in games:
         append_file_record(shadow._record(game,evidence(now),v8,"v8",now),root=tmp_path)
