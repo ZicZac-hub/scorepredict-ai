@@ -87,7 +87,7 @@ def test_same_sydney_day_four_team_double_ranking():
     c=item("Red","White",start+timedelta(hours=2),3)
     d=item("Black","Silver",start+timedelta(days=1),4)
     ranked=rank_research_pairs([a,b,c,d])
-    assert len(ranked)==1
+    assert len(ranked)==2
     assert ranked[0]["first"]["fixture"]["id"]==1
     assert ranked[0]["second"]["fixture"]["id"]==2
     assert len(ranked[0]["doubles"])==5
