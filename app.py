@@ -121,7 +121,7 @@ st.markdown(studio_css(),unsafe_allow_html=True)
 _hero_slot=st.empty()
 # Native button navigation: each tap changes a single session-state route.
 # Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
-nav_items=[('🏠','Home','home'),('🎯','Daily Prediction','predict'),('🔗','Five Doubles','doubles'),('🧠','Deep Research','deep'),('📊','History','archive'),('✅','Performance','finished'),('🔒','Private Access','private'),('☰','More','more')]
+nav_items=[('🏠','Home','home'),('🎯','Daily Prediction','predict'),('🔗','Five Doubles','doubles'),('🤖','AI Five-Double','ai_five'),('🧠','Deep Research','deep'),('📊','History','archive'),('✅','Performance','finished'),('🔒','Private Access','private'),('☰','More','more')]
 sync_location(st.session_state, st.query_params)
 def _navigate_to(page):
     navigate(st.session_state, st.query_params, page)
@@ -151,7 +151,7 @@ view=st.session_state['ziczac_active_page']
 # worldwide finder and API settings. This is what makes taps feel responsive.
 active_page_slot=st.container()
 with active_page_slot:
-    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','doubles':'🔗 Doubles and exact-score combinations','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
+    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
 
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
@@ -451,6 +451,11 @@ def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {sydney_kickoff(r['kickoff'])}"
 labels={f"{r['fixture'].get('id')} · {fixture_label(r)}":r for r in eligible}
+if view == 'ai_five':
+    with active_page_slot:
+        from ai_five_double_ui import render as render_ai_five_double_studio
+        render_ai_five_double_studio(st, eligible, histories)
+
 if view == 'private':
     with active_page_slot:
         st.subheader('🔒 Private Access')
@@ -1704,6 +1709,12 @@ with active_page_slot:
 
     if view in ['doubles']:
         with tabs[6]:
+            st.button('🤖 Open separate AI Five-Double Studio',
+                      use_container_width=True,key='open_ai_five_studio',
+                      on_click=_navigate_to,args=('ai_five',))
+            st.caption('Select two matches, compare the saved statistical model '
+                       'with verified pre-match AI opinions and optionally '
+                       'consult connected OpenAI, Gemini and other APIs.')
             from automatic_doubles_ui import render as render_auto_frozen
             render_auto_frozen(st)
             st.divider()
