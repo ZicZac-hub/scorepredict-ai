@@ -31,8 +31,11 @@ REPORT_EXACT = frozenset((
     "data/prospective_ledger/capture_coverage.json",
     "data/prospective_ledger/cadence.json",
     "data/v10_prospective/performance.json",
+    "data/v10_prospective/settlement_status.json",
 ))
 VERIFIED = "data/prematch/verified_results.json"
+V10_VERIFIED = "data/v10_prospective/verified_results.json"
+VERIFIED_FILES = frozenset((VERIFIED,V10_VERIFIED))
 FREEZE_PREFIXES = ("data/daily_picks/","data/v10_prospective/doubles/")
 RESULT_FIELDS = ("provider","fixture_id","kickoff_utc","home_team_id",
                  "away_team_id","score_basis","home_goals","away_goals",
@@ -117,7 +120,7 @@ def reconcile():
     # Inspect all paths before changing ANY of them. Original files and
     # score snapshots are NEVER automatically discarded or overwritten.
     disallowed=[x for x in paths
-                if x!=VERIFIED and x not in REPORT_EXACT
+                if x not in VERIFIED_FILES and x not in REPORT_EXACT
                 and not x.startswith(REPORT_PREFIXES)
                 and not x.startswith(FREEZE_PREFIXES)]
     if disallowed:
@@ -131,7 +134,7 @@ def reconcile():
             if not valid_freeze(path,upstream) or not valid_freeze(path,local):
                 raise RuntimeError("Unverified pre-match frozen pick conflict: "+path)
     for path in paths:
-        if path==VERIFIED:
+        if path in VERIFIED_FILES:
             upstream=json.loads(_git("show",":2:"+path))
             local=json.loads(_git("show",":3:"+path))
             merged=merge_verified(upstream,local)
