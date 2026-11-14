@@ -5,7 +5,8 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from on_demand_ai import (
-    _verified_history, briefing, fixture_key, run_selected, server_settings
+    _verified_history, briefing, fixture_key, frozen_for_fixture,
+    run_selected, server_settings
 )
 
 
@@ -138,3 +139,49 @@ def test_excludes_unrelated_league_results_and_120_minute_scores():
     assert len(output)==2
     assert all(x["home"]!="Unrelated" for x in output)
     assert next(x for x in output if x["away"]=="Cup Rival")["full_time_90min"]==[1,1]
+
+
+def test_matches_existing_git_hub_ai_records_by_exact_fixture_and_pre_kickoff_time(tmp_path):
+    from pathlib import Path
+    folder=Path(tmp_path)/"forecasts"
+    folder.mkdir()
+    baseline={
+        "research_only": True, "provider": "API-Football", "fixture_id":"991",
+        "kickoff_utc":"2031-11-20T12:00:00Z",
+        "captured_at_utc":"2031-11-20T06:00:00Z",
+        "home_team_id":"11","away_team_id":"12",
+        "votes":{"gemini":{"score":[1,1],"home":.4,"draw":.3,"away":.3}}
+    }
+    (folder/"a.json").write_text(json.dumps(baseline))
+    assert frozen_for_fixture(match(),root=tmp_path)["votes"]["gemini"]["score"]==[1,1]
+    # A previous freeze is never replaced by a later, more flattering vote.
+    revised=dict(baseline, captured_at_utc="2031-11-20T08:00:00Z",
+                 votes={"openai":{"score":[2,1],"home":.6,"draw":.2,"away":.2}})
+    (folder/"b.json").write_text(json.dumps(revised))
+    assert frozen_for_fixture(match(),root=tmp_path)["votes"]["gemini"]["score"]==[1,1]
+    # The stored API-Football ID must never be treated as the same id
+    # from a different fixture data provider.
+    wrong_provider=dict(match(),provider="football-data.org")
+    assert frozen_for_fixture(wrong_provider,root=tmp_path) is None
+    wrong_team=dict(match(),homeTeam={"id":999,"name":"Wrong Team"})
+    assert frozen_for_fixture(wrong_team,root=tmp_path) is None
+    wrong_kickoff=match("2031-11-20T13:00:00Z")
+    assert frozen_for_fixture(wrong_kickoff,root=tmp_path) is None
+
+
+def test_frozen_ai_records_must_have_original_capture_before_kickoff(tmp_path):
+    folder=tmp_path/"forecasts"
+    folder.mkdir()
+    record={
+        "research_only":True,"provider":"API-Football","fixture_id":"991",
+        "kickoff_utc":"2031-11-20T12:00:00Z",
+        "captured_at_utc":"2031-11-20T12:00:01Z",
+        "home_team_id":"11","away_team_id":"12",
+        "votes":{"gemini":{"score":[1,1],"home":.4,"draw":.3,"away":.3}}
+    }
+    (folder/"late.json").write_text(json.dumps(record))
+    assert frozen_for_fixture(match(),root=tmp_path) is None
+    record["captured_at_utc"]="2031-11-20T11:00:00Z"
+    record["votes"]={}
+    (folder/"late.json").write_text(json.dumps(record))
+    assert frozen_for_fixture(match(),root=tmp_path) is None
