@@ -7,6 +7,7 @@ No scraping, no fabricated data, no overwrite of original match forecasts.
 from datetime import datetime, timezone
 import csv
 import io
+from functools import lru_cache
 
 from ai_five_double_engine import eligible, identity, merged_five, pair_check, teams, SYDNEY
 from on_demand_ai import (frozen_for_fixture, private_gate_ready, run_selected,
@@ -65,6 +66,13 @@ def archive_rows(now=None, root=None):
             row["source_model"]=model
             output[key]=row
     return sorted(output.values(),key=lambda row:row["kickoff"])
+
+
+@lru_cache(maxsize=4)
+def _minute_archived_candidates(minute):
+    """One read per minute rather than rescanning hundreds of JSON files
+    for every Streamlit button or selectbox rerun."""
+    return archive_rows()
 
 
 def options(rows, *, now=None, archived=None):
@@ -250,7 +258,8 @@ def render(st,rows,histories=None):
              "fresh calls to connected ChatGPT/OpenAI, Gemini and other providers.")
     st.caption("The original Five Doubles page and frozen prediction history "
                "remain unchanged.")
-    found=options(rows)
+    minute=int(datetime.now(timezone.utc).timestamp()//60)
+    found=options(rows, archived=_minute_archived_candidates(minute))
     if len(found)<2:
         st.warning("Not enough upcoming modelled fixtures are available. "
                    "The studio also checks saved pre-match v8 research when "
