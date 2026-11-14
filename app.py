@@ -400,11 +400,13 @@ for m in worldwide_rows:
 
 # Automatically research all provider-compatible discovered fixtures for the
 # selected date. Cached per fixture across reruns and sessions to limit API use.
-@st.cache_data(ttl=60,show_spinner=False)
+@st.cache_data(ttl=1800,show_spinner=False)
 def _cached_pro_worldwide(key, event, model_variant):
     return model_worldwide(key,event,model_variant=model_variant)
 
-_model_cache_version='shared-evidence-v1:'+_forecast_variant+':'+str(int(datetime.now(timezone.utc).timestamp()//60))
+# Reuse provider-derived evidence for 30 minutes instead of rerunning
+# potentially expensive league-history and context calls each minute.
+_model_cache_version='shared-evidence-v2:'+_forecast_variant+':'+str(int(datetime.now(timezone.utc).timestamp()//1800))
 if st.session_state.get('worldwide_model_version') != _model_cache_version:
     st.session_state['worldwide_models']={}
     st.session_state['worldwide_model_version']=_model_cache_version
@@ -413,10 +415,11 @@ _auto_pending=[item for item in discoverable
                if item['name'] not in _auto_cache
                and not (item.get('model') and item['model'].get('result'))
                and item['event'].get('source')=='API-Football']
-if secondary_key and _auto_pending:
-    # Avoid unbounded work on each Streamlit rerun. Continue automatically on
-    # subsequent interactions; allow an explicit button for the remaining batch.
-    _auto_limit=12
+if secondary_key and _auto_pending and view not in ('ai_five',):
+    # AI Five-Double has its own explicit date-scoped search. Do not burn
+    # scarce API quota on unrelated worldwide modelling before that search.
+    # Other pages model only a small batch, with 30-minute shared caching.
+    _auto_limit=3
     with st.spinner(f'Automatically researching {min(len(_auto_pending),_auto_limit)} worldwide matches using Pro…'):
         for _item in _auto_pending[:_auto_limit]:
             _row,_error=_cached_pro_worldwide(secondary_key,_item['event'],_forecast_variant)
