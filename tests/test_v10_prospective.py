@@ -1,5 +1,6 @@
 """V10 prospective score, market, double and verification integrity tests."""
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 import json
 
 import numpy as np
@@ -121,9 +122,9 @@ def test_no_v9_record_for_stale_or_missing_market(monkeypatch,tmp_path):
 
 
 def test_freeze_five_doubles_is_same_day_and_write_once(tmp_path):
-    now=when()
-    a=fixture(82101,now,"A","B",delta_hours=26)
-    b=fixture(82102,now,"C","D",delta_hours=27)
+    now=datetime(2027,1,11,8,0,tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc)
+    a=fixture(82101,now,"A","B",delta_hours=12)
+    b=fixture(82102,now,"C","D",delta_hours=13)
     records=[save(tmp_path,game,now) for game in (a,b)]
     frozen=grader.freeze_doubles(root=tmp_path,now=now)
     assert len(frozen["days_saved"])==1
@@ -140,9 +141,9 @@ def test_freeze_five_doubles_is_same_day_and_write_once(tmp_path):
 
 
 def test_a_real_verified_hit_and_pending_are_separate(tmp_path):
-    now=when()
-    a=fixture(82201,now,"Alfa","Beta",26)
-    b=fixture(82202,now,"Gamma","Delta",27)
+    now=datetime(2027,1,11,8,0,tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc)
+    a=fixture(82201,now,"Alfa","Beta",12)
+    b=fixture(82202,now,"Gamma","Delta",13)
     ra,rb=[save(tmp_path,game,now) for game in (a,b)]
     grader.freeze_doubles(root=tmp_path,now=now)
     complete={str(a["id"]):verified(ra,1,0),str(b["id"]):verified(rb,1,0)}
@@ -169,3 +170,20 @@ def test_conflicting_final_goals_can_never_be_silently_merged():
     merged=merge_verified({"100":one},{"100":one,"101":{**one,"fixture_id":101}})
     assert set(merged)=={"100","101"}
     assert merged["100"]==one
+
+
+def test_doubles_wait_until_near_matchday_to_find_full_slate(tmp_path):
+    now=datetime(2027,1,11,8,0,tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc)
+    first=fixture(83001,now,"Mornington","Western",delta_hours=36)
+    second=fixture(83002,now,"Eastern","Southern",delta_hours=37)
+    for match in (first,second):
+        save(tmp_path,match,now)
+    early=grader.freeze_doubles(root=tmp_path,now=now)
+    assert early["days_saved"]==[]
+    assert list((tmp_path/"doubles").glob("*.json"))==[]
+    close=grader.freeze_doubles(root=tmp_path,now=now+timedelta(hours=16))
+    assert len(close["days_saved"])==1
+    original=(tmp_path/"doubles"/(close["days_saved"][0]+".json")).read_bytes()
+    later=grader.freeze_doubles(root=tmp_path,now=now+timedelta(hours=17))
+    assert later["days_saved"]==[]
+    assert original==(tmp_path/"doubles"/(close["days_saved"][0]+".json")).read_bytes()
