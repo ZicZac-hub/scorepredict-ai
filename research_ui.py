@@ -86,7 +86,9 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
     with st.expander("📈 Verified historical replay · v6 versus v8 (not live accuracy)"):
         from pathlib import Path
         import json
-        saved = Path("data/research_v8/first_historical_validation.json")
+        saved = Path("data/research_v8/extended_historical_validation.json")
+        if not saved.exists():
+            saved = Path("data/research_v8/first_historical_validation.json")
         if saved.exists():
             report = json.loads(saved.read_text(encoding="utf-8"))
             st.caption(report["method"])
