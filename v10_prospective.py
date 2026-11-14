@@ -174,6 +174,52 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
         return outcome
 
 
+def capture_near_research(fixture,evidence,captured_at,*,root=ROOT):
+    """Frozen v8 near-kickoff challenger, with new as-of history only.
+
+    Write at most ONE research refresh for a fixture. Do not alter the
+    already-saved original v8 snapshot. Make no extra bookmaker requests.
+    A newer as-of model is not necessarily a more accurate model.
+    """
+    now=utc(captured_at)
+    kickoff=utc(fixture["utcDate"])
+    original=read_latest(root)
+    identity=_identity(fixture)
+    result={"v8_near_recorded":False,"reason":"not_eligible"}
+    if (*identity,"v8") not in original:
+        result["reason"]="no_existing_original_v8"
+        return result
+    if (*identity,"v8_near") in original:
+        result["reason"]="near_research_already_frozen"
+        return result
+    if not timedelta(minutes=45)<kickoff-now<=timedelta(hours=48):
+        result["reason"]="outside_near_kickoff_window"
+        return result
+    cutoff=utc(evidence["as_of_utc"])
+    if cutoff>now or not evidence.get("input_digest"):
+        raise ValueError("New research requires verified before-kickoff evidence")
+    history=evidence.get("history") or []
+    league=evidence.get("league_history") or history
+    candidate=research_predict(fixture,history,league_history=league,as_of=cutoff)
+    if candidate is None or len(candidate.get("component_weights") or {})<2:
+        result["reason"]="insufficient_current_history"
+        return result
+    completed=max(now,utc(datetime.now(timezone.utc)))
+    if completed>=kickoff:
+        result["reason"]="research_finished_after_kickoff"
+        return result
+    challenger=dict(candidate)
+    challenger["model_version"]="ziczac-v8-near-kickoff-research-v1"
+    record=_record(fixture,evidence,challenger,"v8_near",completed)
+    record["numerical_model_version"]=candidate["model_version"]
+    record["horizon"]="near_kickoff"
+    record["early_original_forecast_id"]=original[(*identity,"v8")].get("forecast_id")
+    result["v8_near_recorded"]=bool(append_file_record(
+        record,root=root,kind="forecasts"))
+    result["reason"]="research_refreshed" if result["v8_near_recorded"] else "already_recorded"
+    return result
+
+
 def capture_market_followup(fixture,evidence,captured_at,*,api_key=None,
                             request=None,root=ROOT,market_calls_remaining=0):
     """Near-kickoff fresh market check for a fixture ALREADY frozen in v8.
@@ -265,7 +311,7 @@ def read_latest(root=ROOT):
     """Return earliest independently saved forecast for each model/fixture."""
     found={}
     for row in read_file_records(root=root,kind="forecasts"):
-        if row.get("model_key") not in ("v8","v8_control","v9","v10"):
+        if row.get("model_key") not in ("v8","v8_near","v8_control","v9","v10"):
             continue
         try:
             key=(row["provider"],str(row["fixture_id"]),row["model_key"])
