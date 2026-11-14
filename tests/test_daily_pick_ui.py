@@ -31,7 +31,7 @@ def test_chooses_today_over_higher_probability_tomorrow():
     now=datetime(2026,11,14,10,0,tzinfo=SYDNEY).astimezone(timezone.utc)
     today=row("Today",now+timedelta(hours=2),.08,ident=1)
     tomorrow=row("Tomorrow",now+timedelta(hours=26),.3,ident=2)
-    assert daily.daily_candidates([tomorrow,today],now)==[today]
+    assert daily.daily_candidates([tomorrow,today],now)==[today,tomorrow]
 
 
 def test_chooses_best_supported_daily_history_not_a_random_score():
@@ -80,3 +80,42 @@ def test_next_day_is_explicit_and_previous_session_day_expires(monkeypatch):
     assert daily._label(snapshot,now).startswith("NEXT")
     assert daily.choose_daily_snapshot([],session,now+timedelta(hours=20)) is snapshot
     assert daily.choose_daily_snapshot([],session,now+timedelta(hours=45)) is None
+
+
+def test_valid_prematch_v9_odds_upgrades_only_the_new_daily_card(monkeypatch):
+    import research_ensemble_v8, market_score_v9, api_football
+    now=datetime(2026,11,14,10,0,tzinfo=SYDNEY).astimezone(timezone.utc)
+    chosen=row("Verified",now+timedelta(hours=4),.13,ident=23)
+    monkeypatch.setattr(research_ensemble_v8,"predict",lambda *args,**kwargs:chosen["result"])
+    calls=[]
+    def provider(key, endpoint, params, with_metadata=False):
+        calls.append((endpoint,params["fixture"]))
+        return {"metadata":{"freshness_known":True,"stale":False},
+                "data":[{"fixture":{"id":23},"update":now.isoformat(),
+                         "bookmakers":[{"name":"Pinnacle","bets":[{"name":"Match Winner",
+                         "values":[{"value":"Home","odd":"2.1"},{"value":"Draw","odd":"3.2"},{"value":"Away","odd":"3.9"}]}]}]}]}
+    monkeypatch.setattr(api_football,"_request",provider)
+    adjusted={**chosen["result"],"model_version":"market-informed-v9-experimental",
+              "scores":[(1,0,.18),(2,1,.12)]}
+    monkeypatch.setattr(market_score_v9,"predict",lambda *args,**kwargs:adjusted)
+    session={}
+    first=daily.choose_daily_snapshot([chosen],session,now,api_key="test-key")
+    assert first["model"]=="market-informed-v9-experimental"
+    assert first["exact_score"]==[1,0]
+    assert first["v8_comparison"]["exact_score"]==[2,1]
+    assert first["market_provenance"]["bookmaker"]=="Pinnacle"
+    assert calls==[("/odds",23)]
+    assert daily.choose_daily_snapshot([chosen],session,now+timedelta(minutes=5),api_key="test-key") is first
+    assert calls==[("/odds",23)]
+
+
+def test_fallback_when_unverified_market_is_missing(monkeypatch):
+    import research_ensemble_v8, api_football
+    now=datetime(2026,11,14,10,0,tzinfo=SYDNEY).astimezone(timezone.utc)
+    chosen=row("No Odds",now+timedelta(hours=5),.13,ident=18)
+    monkeypatch.setattr(research_ensemble_v8,"predict",lambda *args,**kwargs:chosen["result"])
+    monkeypatch.setattr(api_football,"_request",lambda *args,**kwargs:
+                        {"metadata":{"freshness_known":False,"stale":False},"data":[]})
+    actual=daily.choose_daily_snapshot([chosen],{},now,api_key="test-key")
+    assert actual["model"]==daily.MODEL
+    assert "market_provenance" not in actual
