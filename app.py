@@ -1665,6 +1665,9 @@ with active_page_slot:
 
     if view in ['doubles']:
         with tabs[6]:
+            from automatic_doubles_ui import render as render_auto_frozen
+            render_auto_frozen(st)
+            st.divider()
             from v8_doubles_ui import render as render_v8_doubles
             from market_double_v9_ui import render as render_v9_market_doubles
             render_v8_doubles(st, eligible, histories, fixture_label)
