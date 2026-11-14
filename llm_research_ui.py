@@ -53,10 +53,14 @@ def render(st, root=ROOT):
     st.caption("OpenAI · Claude · Gemini · Grok · DeepSeek · Perplexity · Mistral · "
                "Qwen · GroqCloud (hosted models) · Cohere. Same frozen pre-match evidence; "
                "not a proven score-accuracy upgrade.")
-    st.caption("This panel displays automatically frozen research from previous "
-               "matches. It is separate from the match selected above and from "
-               "the Run Deep Research AI button; selecting a match does not "
-               "retroactively request ten external AI predictions.")
+    context = st.session_state.get("ziczac_ten_ai_context") or {}
+    from ten_ai_action_ui import render as render_ten_ai_action
+    render_ten_ai_action(st, rows=context.get("rows"),
+                         histories=context.get("histories"))
+    st.divider()
+    st.markdown("#### 📁 Automatically frozen research archive")
+    st.caption("The records below are saved by the separate GitHub schedule. "
+               "They cannot be changed by an on-demand Run & Predict request.")
     status = _json(root/"status.json")
     if not status.get("enabled"):
         st.info("Ten-provider research is installed but not activated. Enter API keys, "
