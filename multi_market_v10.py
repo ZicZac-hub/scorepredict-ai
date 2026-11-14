@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 import math
 import numpy as np
 
-from market_score_v9 import _time, _market_bets, _project, MARKET_WEIGHT, _summarize
+from market_score_v9 import _time, _market_bets, _project, MARKET_WEIGHT, _summarize, MAX_MARKET_AGE_HOURS, NEAR_FRESHEST_HOURS
 from research_ensemble_v8 import predict as research_predict
 
 VERSION="ziczac-multibook-score-v10-shadow-experimental"
@@ -26,7 +26,7 @@ def market_consensus(items,fixture,as_of=None,min_bookmakers=MIN_BOOKMAKERS):
         if str((item.get("fixture") or {}).get("id"))!=str(fixture.get("id")):
             continue
         stamped=_time(item.get("update"))
-        if not stamped or stamped>cutoff or cutoff-stamped>timedelta(hours=48):
+        if not stamped or stamped>cutoff or cutoff-stamped>timedelta(hours=MAX_MARKET_AGE_HOURS):
             continue
         for bookmaker in item.get("bookmakers") or []:
             name=str(bookmaker.get("name") or "").strip()
@@ -40,9 +40,17 @@ def market_consensus(items,fixture,as_of=None,min_bookmakers=MIN_BOOKMAKERS):
             if key not in vendors or stamped>vendors[key]["timestamp"]:
                 vendors[key]={"name":name,"timestamp":stamped,
                               "winner":winner,"total":total}
-    if len(vendors)<min_bookmakers:
+    if not vendors:
         return None
-    selected=sorted(vendors.values(),key=lambda row:row["name"].casefold())
+    # Markets must refer to essentially the SAME pre-match information.
+    # Median probabilities across quotes 12 hours apart can blend stale
+    # team news with current prices and make score forecasts misleading.
+    freshest=max(v["timestamp"] for v in vendors.values())
+    contemporary=[v for v in vendors.values()
+                  if freshest-v["timestamp"]<=timedelta(hours=NEAR_FRESHEST_HOURS)]
+    if len(contemporary)<min_bookmakers:
+        return None
+    selected=sorted(contemporary,key=lambda row:row["name"].casefold())
     first=np.median(np.asarray([v["winner"][0] for v in selected]),axis=0)
     first=first/first.sum()
     totals=[v["total"][0] for v in selected if v["total"] is not None]
@@ -69,7 +77,7 @@ def predict(fixture,history,league_history=None,market=None,as_of=None,max_goals
     kickoff=_time(fixture.get("utcDate"))
     stamp=_time(market.get("snapshot_utc"))
     if (not instant or not stamp or not kickoff or instant>=kickoff
-            or stamp>instant or instant-stamp>timedelta(hours=48)
+            or stamp>instant or instant-stamp>timedelta(hours=MAX_MARKET_AGE_HOURS)
             or str(market.get("fixture_id"))!=str(fixture.get("id"))):
         raise ValueError("Market consensus is not a valid pre-kickoff snapshot")
     baseline=research_predict(fixture,history,league_history=league_history,
