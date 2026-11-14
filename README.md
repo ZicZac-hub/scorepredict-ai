@@ -8,16 +8,21 @@ The existing website is https://ziczacscorepredict-ai.streamlit.app/ . The updat
 
 The forecast models, provider keys and original saved records are preserved. Streamlit hosting controls account access; this interface update does not introduce a custom password or change host sharing settings. The separate iPhone launch page in `pwa/` links to this existing service.
 
-## Optional independent five-AI panel
+## Optional ten-provider AI + Sportmonks Predictions research
 
-A non-destructive research panel is wired to the scheduled collection workflow and
-the Deep Research / Performance pages. It can independently consult OpenAI,
-Anthropic Claude, Google Gemini, xAI Grok and DeepSeek using genuine, frozen
-pre-match evidence. **It is disabled unless the owner opts in and configures
-individual API keys and supported model IDs.** It does not download predictions
-from ScoreGPT or replace the saved numerical scores. Its same-fixture accuracy
-comparison begins only after verified regulation-time finals. See
-[FIVE_AI_SETUP.md](FIVE_AI_SETUP.md) for exact secure setup and cost controls.
+A non-destructive research panel is wired to the scheduled collection workflow
+and the Deep Research / Performance pages. It supports OpenAI, Claude,
+Gemini, Grok, DeepSeek, Perplexity Agent, Mistral, Alibaba Qwen, GroqCloud
+(Llama) and Cohere, plus a separate Sportmonks **Predictions add-on**
+correct-score probability comparison. Existing Sportmonks *fixture* access
+does not automatically include the paid Predictions add-on.
+
+**All external research adapters are opt-in and currently disabled until
+individual provider keys and model IDs are configured in GitHub Actions.**
+They do not retrieve proprietary ScoreGPT predictions. Forecasts and doubles
+remain immutable and none of these research opinions is automatically promoted
+to the live numerical model. See [10 AI + Sportmonks setup guide](
+TEN_AI_AND_SPORTMONKS_SETUP.md) for secure configuration and cost limits.
 
 ## Features
 - Upcoming real fixtures from football-data.org competitions accessible to your key
