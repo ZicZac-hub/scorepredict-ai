@@ -1411,6 +1411,11 @@ with active_page_slot:
     def match_name(m):return f"{m['homeTeam'].get('shortName') or m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('shortName') or m['awayTeam'].get('name','Away')}"
     if view in ['home','predict']:
         with tabs[0]:
+            if view == 'predict':
+                from daily_pick_ui import render as render_prediction_of_the_day
+                render_prediction_of_the_day(st, eligible, st.session_state,
+                                             api_key=secondary_key)
+                st.divider()
             st.subheader('🔴 Live scores · Your predicted matches')
             st.caption('Live API-Football scores are matched only to fixtures predicted by ZicZac. Scores are not predictions.')
             if st.button('🔄 Refresh live scores', key='refresh_predicted_live_scores'):
