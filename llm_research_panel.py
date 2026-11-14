@@ -279,6 +279,15 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
     status = {"checked_at_utc": clock.isoformat(), "enabled": env.get("LLM_RESEARCH_ENABLED") == "true",
               "configured_providers": list(configured), "captured": 0, "attempted": 0,
               "provider_error_types": {}, "provider_error_details": {}, "reason": ""}
+    previous_status = load_json(Path(root)/"status.json", {})
+    # Retain the last actual provider diagnostic across scheduled passes with
+    # no eligible fixture; an empty 15-minute run must not hide API failures.
+    if isinstance(previous_status, dict) and previous_status.get("last_attempt_at_utc"):
+        status["last_attempt_at_utc"] = previous_status["last_attempt_at_utc"]
+        status["last_attempt_errors"] = previous_status.get("last_attempt_errors") or {}
+    elif isinstance(previous_status, dict) and previous_status.get("attempted"):
+        status["last_attempt_at_utc"] = previous_status.get("checked_at_utc")
+        status["last_attempt_errors"] = previous_status.get("provider_error_details") or {}
     if not status["enabled"] or not configured:
         status["reason"] = "disabled" if not status["enabled"] else "provider_keys_or_models_missing"
         write_json(Path(root)/"status.json", status)
@@ -353,6 +362,9 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
             status["captured"] += 1
         except FileExistsError:
             pass
+    if status["attempted"]:
+        status["last_attempt_at_utc"] = clock.isoformat()
+        status["last_attempt_errors"] = dict(status["provider_error_details"])
     status["reason"] = "frozen_or_no_eligible_upcoming_fixtures"
     write_json(Path(root)/"status.json",status)
     return status
