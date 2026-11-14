@@ -6,6 +6,7 @@ PAGES = {
     'predict': ('Daily Predictions', 'Explore upcoming fixtures and researched exact-score probabilities.'),
     'deep': ('Deep Research AI', 'Recent form, home and away records, head-to-head and available team news.'),
     'doubles': ('Five Score Doubles', 'Select two matches and generate five exact-score combinations.'),
+    'ai_five': ('AI Five-Double Studio', 'Choose two matches, consult available AI providers and view five research-backed score doubles.'),
     'archive': ('Prediction History', 'Your original forecasts, timestamps and verified final scores.'),
     'finished': ('Real Performance', 'Actual hits and misses from predictions saved before kickoff.'),
     'private': ('Private Access', 'Secure your match research on your iPhone and MacBook.'),
