@@ -101,7 +101,11 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
     if forecast is None or len(forecast.get("component_weights") or {})<2:
         return {"v8_recorded":False,"v9_recorded":False,
                 "reason":"insufficient_verified_research_evidence","market_calls":0}
-    base=_record(fixture,evidence,forecast,"v8",when)
+    frozen_at=max(when,utc(datetime.now(timezone.utc)))
+    if frozen_at>=kickoff:
+        return {"v8_recorded":False,"v9_recorded":False,
+                "reason":"calculation_finished_after_kickoff","market_calls":0}
+    base=_record(fixture,evidence,forecast,"v8",frozen_at)
     written_v8=append_file_record(base,root=root,kind="forecasts")
     outcome={"v8_recorded":bool(written_v8),"v9_recorded":False,
              "reason":"market_not_queried","market_calls":0}
@@ -127,15 +131,23 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
                 or retrieved>utc(datetime.now(timezone.utc))+timedelta(seconds=10)):
             outcome["reason"]="unverified_or_stale_market_source"
             return outcome
-        market=select_market_response(packet.get("data") or [],fixture,as_of=when)
+        market_observed=max(when,utc(datetime.now(timezone.utc)))
+        if market_observed>=kickoff or fetched>market_observed:
+            outcome["reason"]="odds_received_after_kickoff"
+            return outcome
+        market=select_market_response(packet.get("data") or [],fixture,as_of=market_observed)
         if not market:
             outcome["reason"]="no_verified_prematch_market"
             return outcome
-        revised=market_predict(fixture,history,league_history=league,market=market,as_of=when)
+        revised=market_predict(fixture,history,league_history=league,market=market,as_of=market_observed)
         if not revised or not revised.get("market_used"):
             outcome["reason"]="market_model_unavailable"
             return outcome
-        row=_record(fixture,evidence,revised,"v9",when,market=market)
+        completed=max(market_observed,utc(datetime.now(timezone.utc)))
+        if completed>=kickoff:
+            outcome["reason"]="market_calculation_finished_after_kickoff"
+            return outcome
+        row=_record(fixture,evidence,revised,"v9",completed,market=market)
         outcome["v9_recorded"]=bool(append_file_record(row,root=root,kind="forecasts"))
         outcome["reason"]="market_verified_and_archived" if outcome["v9_recorded"] else "market_already_archived"
         return outcome
