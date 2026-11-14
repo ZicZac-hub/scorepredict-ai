@@ -295,50 +295,71 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
 
 
 def evaluate(root=ROOT, results_path=V10_ROOT/"verified_results.json"):
-    """Observed comparisons only, with identity-matched final regulation scores."""
+    """Compare five- and ten-provider panels on genuinely matched completed fixtures."""
     results = load_json(Path(results_path), {})
+    stats = {size: {"complete": 0, "paired": 0, "panel_exact": 0,
+                    "baseline_exact": 0, "panel_outcome": 0,
+                    "baseline_outcome": 0}
+             for size in ("five", "ten")}
     seen = set()
-    complete = 0
-    eligible_n = 0
-    panel_exact = baseline_exact = panel_outcome = baseline_outcome = 0
-    # Multiple genuinely frozen evidence updates may exist for one fixture.
-    # Grade the first published panel, never whichever digest sorts first.
+    # First historically frozen panel per fixture; never select a later
+    # favourable vote after seeing the final result.
     entries = [load_json(path, {}) for path in (Path(root)/"forecasts").glob("*.json")]
     entries = [row for row in entries if row.get("captured_at_utc")]
     entries.sort(key=lambda row: utc(row["captured_at_utc"]))
     for row in entries:
         fixture_id = str(row.get("fixture_id"))
-        unique = (row.get("provider"), fixture_id)
-        if unique in seen:
+        identity = (row.get("provider"), fixture_id)
+        if identity in seen:
             continue
         actual = results.get(fixture_id)
         if not verified_result(row, actual, fixture_id):
             continue
         if utc(row["captured_at_utc"]) >= utc(row["kickoff_utc"]):
             continue
-        seen.add(unique)
-        consensus_row = row.get("consensus") or {}
-        if not consensus_row.get("complete_five_provider_panel"):
-            continue
-        complete += 1
-        home, away = actual["home_goals"],actual["away_goals"]
-        score = consensus_row.get("suggested_score")
-        if score is None:
-            continue
-        eligible_n += 1
-        panel_exact += int(score == [home, away])
-        baseline_exact += int(row.get("baseline_predicted_score") == [home, away])
+        seen.add(identity)
+        votes = row.get("votes") or {}
+        home, away = actual["home_goals"], actual["away_goals"]
+        actual_score = [home,away]
         outcome = "home" if home > away else "away" if home < away else "draw"
-        panel_outcome += int(consensus_row["outcome"] == outcome)
-        baseline_outcome += int(max(row["baseline_probabilities"],key=row["baseline_probabilities"].get) == outcome)
-    report = {"complete_panels_with_verified_results": complete,
-              "paired_verified_scores": eligible_n,
-              "panel_exact_hits": panel_exact, "baseline_exact_hits": baseline_exact,
-              "panel_outcome_hits": panel_outcome, "baseline_outcome_hits": baseline_outcome,
-              "panel_exact_rate": panel_exact/eligible_n if eligible_n else None,
-              "baseline_exact_rate": baseline_exact/eligible_n if eligible_n else None,
-              "note": "Same-fixture verified regulation scores only; partial panels and "
-                      "panels without an aligned score are excluded. Not a production model."}
+        baseline = row.get("baseline_probabilities") or {}
+        for size,names in (("five",PROVIDERS[:5]), ("ten",PROVIDERS)):
+            if not all(name in votes for name in names):
+                continue
+            item = stats[size]
+            item["complete"] += 1
+            panel = consensus({name:votes[name] for name in names})
+            if panel is None or panel["suggested_score"] is None:
+                continue
+            if not all(k in baseline for k in ("home","draw","away")):
+                continue
+            item["paired"] += 1
+            item["panel_exact"] += int(panel["suggested_score"] == actual_score)
+            item["baseline_exact"] += int(row.get("baseline_predicted_score") == actual_score)
+            item["panel_outcome"] += int(panel["outcome"] == outcome)
+            item["baseline_outcome"] += int(max(baseline, key=baseline.get) == outcome)
+    five,ten = stats["five"],stats["ten"]
+    report = {
+        # Stable legacy keys measure the original first five providers only.
+        "complete_panels_with_verified_results":five["complete"],
+        "paired_verified_scores":five["paired"],
+        "panel_exact_hits":five["panel_exact"],
+        "baseline_exact_hits":five["baseline_exact"],
+        "panel_outcome_hits":five["panel_outcome"],
+        "baseline_outcome_hits":five["baseline_outcome"],
+        "panel_exact_rate":five["panel_exact"]/five["paired"] if five["paired"] else None,
+        "baseline_exact_rate":five["baseline_exact"]/five["paired"] if five["paired"] else None,
+        "ten_provider_complete_verified":ten["complete"],
+        "ten_provider_paired_verified":ten["paired"],
+        "ten_provider_exact_hits":ten["panel_exact"],
+        "ten_provider_baseline_exact_hits":ten["baseline_exact"],
+        "ten_provider_outcome_hits":ten["panel_outcome"],
+        "ten_provider_baseline_outcome_hits":ten["baseline_outcome"],
+        "ten_provider_exact_rate":ten["panel_exact"]/ten["paired"] if ten["paired"] else None,
+        "ten_provider_baseline_exact_rate":ten["baseline_exact"]/ten["paired"] if ten["paired"] else None,
+        "note": "First five and all ten are measured separately on complete, earlier-frozen "
+                "panels for the same verified 90-minute fixtures. Not a live model."
+    }
     write_json(Path(root)/"evaluation.json",report)
     return report
 
