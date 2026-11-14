@@ -120,3 +120,21 @@ def test_unsupported_credentials_dont_leak_into_errors():
     assert "openai" in result["errors"]
     assert "PRIVATE_KEY_IN_ERROR" not in str(result)
     assert "secret-string" not in str(result)
+
+def test_excludes_unrelated_league_results_and_120_minute_scores():
+    rows=history()+[
+        {"status":"FINISHED","utcDate":"2031-11-18T07:00:00Z",
+         "homeTeam":{"id":83,"name":"Unrelated"},
+         "awayTeam":{"id":84,"name":"Another"},
+         "score":{"fullTime":{"home":9,"away":0}}},
+        {"status":"FINISHED","utcDate":"2031-11-17T07:00:00Z",
+         "homeTeam":{"id":11,"name":"Home Eleven"},
+         "awayTeam":{"id":15,"name":"Cup Rival"},
+         "score":{"duration":"EXTRA_TIME","fullTime":{"home":3,"away":2},
+                  "regularTime":{"home":1,"away":1}}}
+    ]
+    now=datetime(2031,11,20,8,tzinfo=timezone.utc)
+    output=_verified_history(match(),rows,now)
+    assert len(output)==2
+    assert all(x["home"]!="Unrelated" for x in output)
+    assert next(x for x in output if x["away"]=="Cup Rival")["full_time_90min"]==[1,1]
