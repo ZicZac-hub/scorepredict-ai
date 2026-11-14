@@ -10,6 +10,7 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from llm_research_panel import (
     PROVIDERS, SECRETS, ask, classify_provider_error, consensus, settings
@@ -40,6 +41,82 @@ def fixture_key(fixture):
         return None
     return (provider, str(fixture_id), kickoff.isoformat())
 
+
+
+def frozen_for_fixture(fixture, root=Path("data/llm_research")):
+    """Find the first genuinely pre-kickoff GitHub AI record for this fixture.
+
+    Match source provider, original provider fixture ID, teams and kickoff.
+    Never reinterpret an ID from another source, and never use future or
+    post-kickoff votes as prospective pre-match research.
+    """
+    identity = fixture_key(fixture)
+    if identity is None:
+        return None
+    home = fixture.get("homeTeam") or {}
+    away = fixture.get("awayTeam") or {}
+    eligible_records = []
+    for path in (Path(root) / "forecasts").glob("*.json"):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(record, dict) or record.get("research_only") is not True:
+                continue
+            if str(record.get("provider")) != identity[0] or str(record.get("fixture_id")) != identity[1]:
+                continue
+            saved_kickoff = utc(record.get("kickoff_utc"))
+            captured = utc(record.get("captured_at_utc"))
+            if saved_kickoff is None or captured is None or not captured < saved_kickoff:
+                continue
+            if saved_kickoff.isoformat() != identity[2]:
+                continue
+            for side,team in (("home",home),("away",away)):
+                source_id = record.get(side+"_team_id")
+                selected_id = team.get("id")
+                if source_id is None or selected_id is None or str(source_id) != str(selected_id):
+                    break
+            else:
+                if isinstance(record.get("votes"), dict) and record.get("votes"):
+                    eligible_records.append((captured,path.name,record))
+        except (OSError,ValueError,TypeError):
+            continue
+    if not eligible_records:
+        return None
+    earliest = min(eligible_records,key=lambda item:(item[0],item[1]))[2]
+    return earliest
+
+
+def show_frozen(st, record):
+    """Show already-saved GitHub analysis without asking for credentials."""
+    if not record:
+        st.caption("No earlier frozen external-AI research matches this exact "
+                   "provider fixture ID, teams and kickoff. Existing GitHub "
+                   "API keys still work separately for scheduled research.")
+        return
+    votes = record.get("votes") or {}
+    st.markdown("#### 📌 Earlier pre-match AI research for this match")
+    st.caption("Saved automatically by GitHub before kickoff: "+
+               str(record.get("captured_at_utc") or "unknown")+
+               " UTC. This is an archived opinion, not a new paid API call.")
+    for name in PROVIDERS:
+        vote = votes.get(name)
+        if not isinstance(vote,dict):
+            continue
+        score = vote.get("score")
+        if not isinstance(score,list) or len(score)!=2 or any(type(x) is not int or x<0 for x in score):
+            continue
+        st.write("**"+name.title()+"** · "+str(score[0])+"–"+str(score[1]))
+        st.caption("Home / Draw / Away: "+ " / ".join(
+            f"{vote[k]:.1%}" if type(vote.get(k)) in (int,float) and 0<=vote[k]<=1
+            else "unavailable" for k in ("home","draw","away")))
+    panel = record.get("consensus") or {}
+    combined = panel.get("suggested_score")
+    if isinstance(combined,list) and len(combined)==2 and all(type(v) is int for v in combined):
+        st.caption("Aligned multi-AI score: "+str(combined[0])+"–"+str(combined[1]))
+    else:
+        st.caption("No aligned multi-AI exact score; individual valid opinions "
+                   "are shown instead.")
+    st.caption("Archived AI advice does not change the original prediction or "
+               "prove any improvement in verified correct-score accuracy.")
 
 def _secret(st, name, environ):
     try:
