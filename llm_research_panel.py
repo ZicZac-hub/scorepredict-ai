@@ -222,6 +222,25 @@ def consensus(votes):
                     "not measured exact-score accuracy or a substitute for the baseline."}
 
 
+def classify_provider_error(exc):
+    """Safe diagnostics: no credential, URL query, request body or provider text."""
+    response = getattr(exc, "response", None)
+    code = getattr(response, "status_code", None) if response is not None else None
+    reason = {400:"invalid_request_or_model", 401:"invalid_or_expired_key",
+              402:"billing_required", 403:"insufficient_permissions_or_plan",
+              404:"model_or_endpoint_unavailable",
+              408:"provider_timeout", 409:"provider_conflict",
+              422:"invalid_request_or_model", 429:"quota_or_rate_limit"}.get(code)
+    if code is not None:
+        return {"type": type(exc).__name__, "http_status": code,
+                "reason":reason or ("provider_server_error" if code >= 500 else "provider_http_error")}
+    if isinstance(exc, requests.Timeout):
+        return {"type":type(exc).__name__, "reason":"provider_timeout"}
+    if isinstance(exc, ValueError):
+        return {"type":type(exc).__name__, "reason":"response_format_or_model_configuration"}
+    return {"type":type(exc).__name__, "reason":"provider_request_failed"}
+
+
 def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
             max_matches=MAX_MATCHES_PER_RUN):
     clock = utc(now or datetime.now(timezone.utc))
@@ -229,7 +248,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
     configured = settings(env)
     status = {"checked_at_utc": clock.isoformat(), "enabled": env.get("LLM_RESEARCH_ENABLED") == "true",
               "configured_providers": list(configured), "captured": 0, "attempted": 0,
-              "provider_error_types": {}, "reason": ""}
+              "provider_error_types": {}, "provider_error_details": {}, "reason": ""}
     if not status["enabled"] or not configured:
         status["reason"] = "disabled" if not status["enabled"] else "provider_keys_or_models_missing"
         write_json(Path(root)/"status.json", status)
@@ -261,6 +280,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                 models[name] = model
             except (requests.RequestException, ValueError, KeyError, TypeError, RuntimeError) as exc:
                 status["provider_error_types"][name] = type(exc).__name__
+                status["provider_error_details"][name] = classify_provider_error(exc)
         frozen = datetime.now(timezone.utc)
         if not votes or frozen >= utc(row["kickoff_utc"]):
             continue
