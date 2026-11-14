@@ -1,0 +1,61 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-14T01:28:30.164394+00:00",
+  "estimated_coverage": 0.059237574736583476,
+  "first": {
+    "away_team": "Vasco DA Gama",
+    "away_team_id": "133",
+    "fixture_id": "1492312",
+    "forecast_id": "66e64afc13a03b6c919fbae15dea588eb380a057ee829751eee56887fbd5a31d",
+    "home_team": "Chapecoense-sc",
+    "home_team_id": "132",
+    "kickoff_utc": "2026-11-14T23:30:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.013886759581838139,
+      "score1": "1-1",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.012256410609211638,
+      "score1": "1-2",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.012232942295627328,
+      "score1": "1-1",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.010796756640770951,
+      "score1": "1-2",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.01006470560913542,
+      "score1": "0-1",
+      "score2": "1-1"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v1",
+  "second": {
+    "away_team": "Atletico-MG",
+    "away_team_id": "1062",
+    "fixture_id": "1492455",
+    "forecast_id": "7ea3a1929a7a8b9f8dce449445e4af37d2d3a7859a7343a837c1097f579356a9",
+    "home_team": "Mirassol",
+    "home_team_id": "7848",
+    "kickoff_utc": "2026-11-14T21:30:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-15"
+}
