@@ -98,19 +98,37 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
     instant=utc(now or datetime.now(timezone.utc))
     options=forecasts if forecasts is not None else read_latest(root)
     eligible=defaultdict(list)
+    # The original frozen v8 score remains the reference forecast.
+    # For FUTURE pair selection, use a separately frozen v8_near model
+    # where that verified before-kickoff research is genuinely newer.
+    # An early snapshot must never be silently rewritten as "fresh".
+    per_fixture={}
     for key,row in options.items():
-        if row.get("model_key")!="v8":
+        model=row.get("model_key")
+        if model not in ("v8","v8_near"):
             continue
         if (len(row.get("component_weights") or {})<2
                 or int(row.get("history_matches") or 0)<10
                 or len(row.get("top10_scores") or [])<5):
             continue
         kickoff=utc(row["kickoff_utc"])
-        if kickoff<=instant:
+        recorded=utc(row["captured_at_utc"])
+        if kickoff<=instant or recorded>instant or recorded>=kickoff:
             continue
+        identity=(row["provider"],str(row["fixture_id"]))
+        current=per_fixture.get(identity)
+        # Prefer genuinely fresher evidence when it exists. A near-kickoff
+        # model is NOT automatically assumed to outperform the old model.
+        if (current is None or
+            (model=="v8_near" and current["model_key"]!="v8_near") or
+            (model==current["model_key"] and recorded>utc(current["captured_at_utc"]))):
+            per_fixture[identity]=row
+    for row in per_fixture.values():
+        kickoff=utc(row["kickoff_utc"])
         day=kickoff.astimezone(SYDNEY).date().isoformat()
         eligible[day].append(row)
-    stats={"days_evaluated":0,"days_saved":[],"abstained":{}}
+    stats={"days_evaluated":0,"days_saved":[],"abstained":{},
+           "near_research_available":sum(r["model_key"]=="v8_near" for r in per_fixture.values())}
     for day,rows in sorted(eligible.items()):
         target=Path(root)/"doubles"/(day+".json")
         if target.exists():
@@ -150,30 +168,55 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
             continue
         picks=[{"score1":p["Score 1"],"score2":p["Score 2"],
                 "joint_probability":float(p["Joint"])} for p in best["doubles"]]
-        # Freeze v9/v10 challengers for the IDENTICAL v8-selected pair
-        # only when both alternate model snapshots already exist now.
+        # Score combinations for challengers are only a FAIR same-history
+        # comparison if each match has an immutable v8 or v8_control with
+        # the same input_digest. Never mix historical-v8 and updated-v9.
         challenger_picks={}
+        ignored_challengers={}
         for challenger in ("v9","v10"):
             candidates=[options.get((provider,fixture_id,challenger))
                         for provider,fixture_id in ids]
-            if all(candidates) and all(utc(c["captured_at_utc"])<=instant
-                                       for c in candidates):
-                alternatives=five_doubles(_match(candidates[0]),_match(candidates[1]))
-                if len(alternatives)==5:
-                    challenger_picks[challenger]=[{
-                        "score1":p["Score 1"],"score2":p["Score 2"],
-                        "joint_probability":float(p["Joint"])} for p in alternatives]
-        result={"policy":"v10-evidence-ranked-shadow-v1",
+            if not all(candidates):
+                ignored_challengers[challenger]="missing_both_market_forecasts"
+                continue
+            if not all(utc(c["captured_at_utc"])<=instant for c in candidates):
+                ignored_challengers[challenger]="forecast_not_frozen_at_selection_time"
+                continue
+            fair=True
+            for candidate in candidates:
+                match_key=(candidate["provider"],str(candidate["fixture_id"]))
+                digest=candidate.get("input_digest")
+                if not any(other and other.get("input_digest")==digest
+                           and utc(other["captured_at_utc"])<=utc(candidate["captured_at_utc"])
+                           for other in (
+                               options.get((*match_key,"v8_near")),
+                               options.get((*match_key,"v8_control")),
+                               options.get((*match_key,"v8")))):
+                    fair=False
+            if not fair:
+                ignored_challengers[challenger]="no_matching_v8_evidence"
+                continue
+            alternatives=five_doubles(_match(candidates[0]),_match(candidates[1]))
+            if len(alternatives)==5:
+                challenger_picks[challenger]=[{
+                    "score1":p["Score 1"],"score2":p["Score 2"],
+                    "joint_probability":float(p["Joint"])} for p in alternatives]
+        result={"policy":"v10-evidence-ranked-shadow-v2-fresh-research",
                 "mode":"prospective", "status":"frozen_pre_kickoff",
                 "sydney_date":day,"captured_at_utc":instant.isoformat(),
                 "first":{field:first[field] for field in
                          ("provider","fixture_id","kickoff_utc","home_team_id","away_team_id",
-                          "home_team","away_team","forecast_id","model_version")},
+                          "home_team","away_team","forecast_id","model_key","model_version")},
                 "second":{field:second[field] for field in
                           ("provider","fixture_id","kickoff_utc","home_team_id","away_team_id",
-                           "home_team","away_team","forecast_id","model_version")},
+                           "home_team","away_team","forecast_id","model_key","model_version")},
                 "five_doubles":picks,"estimated_coverage":float(best["coverage"]),
                 "same_pair_challengers":challenger_picks,
+                "challenger_exclusions":ignored_challengers,
+                "selected_forecasts":{str(key):{
+                    "source":r["model_key"],"input_digest":r.get("input_digest"),
+                    "captured_at_utc":r["captured_at_utc"]}
+                    for key,r in zip((1,2),(first,second))},
                 "independence_assumption":True,
                 "accuracy_status":"pending_verified_final_scores",
                 "selection_note":"Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
