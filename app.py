@@ -1108,6 +1108,9 @@ st.markdown("""<style>
 
 with active_page_slot:
     if view=='finished':
+        from v10_status_ui import render as render_v10_status
+        render_v10_status(st)
+        st.divider()
         from revision_ui import render_revision_panel
         render_revision_panel(st, _revision_status, sydney_kickoff, _retry_archive_revisions)
         st.divider()
@@ -1415,6 +1418,9 @@ with active_page_slot:
                 from daily_pick_ui import render as render_prediction_of_the_day
                 render_prediction_of_the_day(st, eligible, st.session_state,
                                              api_key=secondary_key)
+                with st.expander('🔬 V10 · Frozen research accuracy & five doubles'):
+                    from v10_status_ui import render as render_v10_status
+                    render_v10_status(st,compact=True)
                 st.divider()
             st.subheader('🔴 Live scores · Your predicted matches')
             st.caption('Live API-Football scores are matched only to fixtures predicted by ZicZac. Scores are not predictions.')
