@@ -58,6 +58,7 @@ def test_navigation_opens_selected_content_without_home_cards(offline_app):
     assert {'studio_auto', 'studio_manual', 'feature_research'} <= _buttons(app)
 
     for route, title in [('predict', 'Daily Predictions'), ('deep', 'Deep Research AI'),
+                         ('ai_five', 'AI Five-Double Studio'),
                          ('archive', 'Prediction History'), ('finished', 'Real Performance'),
                          ('private', 'Private Access'), ('more', 'Settings &amp; Methods')]:
         app.button(key='zz_route_' + route).click().run()
@@ -98,3 +99,41 @@ def test_pwa_deep_link_selects_doubles_mode(offline_app, mode, label):
     _assert_page(app, 'doubles', 'Five Score Doubles')
     assert app.radio(key='smart_double_mode').value == label
     assert 'studio_auto' not in _buttons(app)
+
+
+def test_ai_five_button_opens_fast_studio_and_generates_five_no_cost_doubles(offline_app,monkeypatch):
+    """A nav tap must not wait for primary, worldwide, or premium API calls."""
+    import ai_five_double_ui
+    from datetime import datetime,timedelta,timezone
+    from zoneinfo import ZoneInfo
+
+    day=datetime.now(ZoneInfo("Australia/Sydney")).date()+timedelta(days=2)
+    def row(fid, home, away, hour):
+        kick=datetime(day.year,day.month,day.day,hour,
+                      tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc).isoformat()
+        return {
+            "fixture":{"provider":"API-Football","id":fid,"utcDate":kick,
+                       "homeTeam":{"id":fid*2,"name":home},
+                       "awayTeam":{"id":fid*2+1,"name":away}},
+            "kickoff":kick,"league":"PL","past":[],
+            "result":{"model_version":"offline-v8",
+                      "scores":[[1,1,.13],[1,0,.115],[2,1,.104],
+                                [0,0,.092],[2,0,.089],[0,1,.073]],
+                      "home_xg":1.2,"away_xg":1.0}
+        }
+
+    monkeypatch.setattr(ai_five_double_ui,"_minute_archived_candidates",
+                        lambda minute: [row(101,"Alpha","Beta",12),
+                                        row(102,"Gamma","Delta",14)])
+    monkeypatch.setattr(ai_five_double_ui,"frozen_for_fixture",lambda fixture:None)
+    app=offline_app.run()
+    app.button(key="zz_route_ai_five").click().run()
+    _assert_page(app,"ai_five","AI Five-Double Studio")
+    assert _param(app,"view")=="ai_five"
+    assert "ziczac_ai_five_run" in _buttons(app)
+    assert "zz_ai_five_live_feed" in {x.key for x in app.toggle}
+    assert not {'studio_auto','studio_manual'} & _buttons(app)
+
+    app.button(key="ziczac_ai_five_run").click().run()
+    assert not app.exception
+    assert any("Final five exact-score doubles" in x.value for x in app.markdown)
