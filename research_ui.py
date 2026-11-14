@@ -140,6 +140,7 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
     # Separate server-only provider credentials are required for on-demand
     # Streamlit calls. GitHub Actions secrets are not readable by this app.
     from on_demand_ai import (server_settings, server_qwen_url, run_selected,
+                              frozen_for_fixture, show_frozen,
                               view as show_external_ai)
     external_configs = server_settings(st)
     use_external = st.checkbox(
@@ -256,6 +257,9 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
         st.info("Choose this match and press **Run Deep Research AI** to open its report.")
         return
     report = current["result"]
+    # Always show same-fixture GitHub research after the purple button click.
+    # It uses published, read-only pre-kickoff records and costs no new calls.
+    show_frozen(st, frozen_for_fixture(fixture))
     external_current = (st.session_state.get("ziczac_external_ai_runs") or {}).get(identifier)
     if use_external and external_current:
         show_external_ai(st, external_current)
