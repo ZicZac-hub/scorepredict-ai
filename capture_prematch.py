@@ -175,7 +175,8 @@ def _legacy_record(fixture, forecast, code, evidence, captured_at, report):
 def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             ledger_root=LEDGER_ROOT, database_url=None, max_api_calls=120, api_request=None,
             evidence_loader=None, pair_builder=None, clock=None,
-            daily_recorder=None, research_recorder=None):
+            daily_recorder=None, research_recorder=None,
+            research_backfill_limit=0):
     """Return old-format snapshots and full-grid ledger coverage without fake history.
 
     Optional callbacks make data policy, timing and budget tests independent of
@@ -231,7 +232,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             if store is not None:
                 store.close()
                 store = None
-    known = known_captures(read_file_records(root=ledger_root, kind='forecasts'))
+    old_forecasts=read_file_records(root=ledger_root,kind='forecasts')
+    known = known_captures(old_forecasts)
     fixtures, fixture_sources = {}, {}
     for code in codes:
         diagnostics['leagues_checked'] += 1
@@ -383,6 +385,55 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
     finally:
         if store is not None:
             store.close()
+    # Existing v6/v7 snapshots are NOT recreated or modified. When a fixture
+    # is still upcoming but its original research horizon was captured days
+    # earlier, record an independent *new* v10 as-of snapshot today.
+    # This is deliberately bounded and only enabled on heavy runs.
+    diagnostics['v10_research_backfill_checked']=0
+    diagnostics['v10_research_backfill_saved']=0
+    diagnostics['v10_research_backfill_errors']=[]
+    if research_recorder is not None and research_backfill_limit>0:
+        try:
+            from forecast_ledger import read_file_records as _read_shadow
+            old_ids={(row.get('provider'),str(row.get('fixture_id')))
+                     for row in old_forecasts if row.get('model_key') in ('v6','v7')}
+            already={(row.get('provider'),str(row.get('fixture_id')))
+                     for row in _read_shadow(root='data/v10_prospective',kind='forecasts')
+                     if row.get('model_key')=='v8'}
+            backfill=[(kickoff,fixture,code) for kickoff,fixture,code in fixtures.values()
+                      if ((fixture.get('provider'),str(fixture['id'])) in old_ids
+                          and (fixture.get('provider'),str(fixture['id'])) not in already
+                          and kickoff>_time(current_time()))]
+            backfill.sort(key=lambda x:(x[0],str(x[1]['id'])))
+            for kickoff,fixture,code in backfill[:research_backfill_limit]:
+                if max_seconds and time.monotonic()-monotonic_start>=max_seconds:
+                    break
+                diagnostics['v10_research_backfill_checked']+=1
+                try:
+                    now=_time(current_time())
+                    if now>=kickoff:
+                        continue
+                    evidence=evidence_loader(fixture,as_of=now,api_key=key,
+                                             api_request=request,cache=history_cache)
+                    result=research_recorder(fixture,evidence,_time(current_time()),code,
+                                             request,max(0,4-diagnostics['v10_market_calls']))
+                    diagnostics['v10_market_calls']+=int(result.get('market_calls',0))
+                    saved=int(bool(result.get('v8_recorded')))
+                    diagnostics['v10_shadow_v8_saved']+=saved
+                    diagnostics['v10_shadow_v9_saved']+=int(bool(result.get('v9_recorded')))
+                    diagnostics['v10_research_backfill_saved']+=saved
+                    if saved and daily_recorder is not None:
+                        daily_recorder(fixture,evidence,_time(current_time()),code)
+                except CaptureBudgetExceeded:
+                    diagnostics['v10_research_backfill_errors'].append({
+                        'fixture_id':fixture['id'],'error_type':'provider_call_budget'})
+                    break
+                except Exception as exc:
+                    diagnostics['v10_research_backfill_errors'].append({
+                        'fixture_id':fixture['id'],'error_type':type(exc).__name__})
+        except Exception as exc:
+            diagnostics['v10_research_backfill_errors'].append({
+                'error_type':type(exc).__name__,'stage':'backfill_discovery'})
     diagnostics['provider_adapter_calls'] = provider_calls
     diagnostics['news_coverage_complete'] = not diagnostics['news_errors']
     diagnostics['coverage_complete'] = not (diagnostics['discovery_budget_skipped'] or diagnostics['budget_skipped'] or diagnostics['league_errors'] or diagnostics['prediction_errors'] or diagnostics['prediction_unavailable'] or diagnostics['history_source_errors'])
@@ -408,7 +459,8 @@ def main():
         max_seconds=_positive_limit(os.environ.get('CAPTURE_MAX_SECONDS'), 600),
         database_url=os.environ.get('DATABASE_URL') or None,
         max_api_calls=_positive_limit(os.environ.get('CAPTURE_MAX_API_CALLS'),120),
-        daily_recorder=_record_daily,research_recorder=_record_v10)
+        daily_recorder=_record_daily,research_recorder=_record_v10,
+        research_backfill_limit=_positive_limit(os.environ.get('V10_BACKFILL_LIMIT'),0))
     saved_days=save_for_dates(_daily_candidates)
     payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)
     payload['diagnostics']['daily_pick_days_written']=saved_days
