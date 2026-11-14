@@ -69,7 +69,7 @@ jobs:
               handle.write('heavy='+str(heavy).lower()+'\n')
           PYCODE
       - name: Check snapshot script
-        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py v10_prospective.py v10_evaluate.py automatic_doubles_ui.py smart_double_v8.py v10_settlement.py multi_market_v10.py verified_features_v10.py reconcile_capture_conflicts.py
+        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py v10_prospective.py v10_evaluate.py automatic_doubles_ui.py smart_double_v8.py v10_settlement.py llm_research_panel.py multi_market_v10.py verified_features_v10.py reconcile_capture_conflicts.py
       - name: Capture verified pre-kickoff snapshots
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -111,6 +111,21 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           V10_RESULT_LIMIT: '20'
         run: python v10_settlement.py
+      - name: Optional independent five-AI research panel (shadow only)
+        if: steps.cadence.outputs.heavy == 'true'
+        env:
+          LLM_RESEARCH_ENABLED: ${{ vars.LLM_RESEARCH_ENABLED }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
+        run: python llm_research_panel.py
       - name: Freeze v10 research doubles and grade independent prospective forecasts
         if: always()
         run: python v10_evaluate.py
@@ -130,8 +145,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
