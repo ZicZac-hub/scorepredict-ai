@@ -15,7 +15,7 @@ def _json(path):
 def render(st, root=ROOT):
     st.markdown("### 🧠 Ten-Provider Independent AI Research Panel")
     st.caption("OpenAI · Claude · Gemini · Grok · DeepSeek · Perplexity · Mistral · "
-               "Qwen · GroqCloud (Llama) · Cohere. Same frozen pre-match evidence; "
+               "Qwen · GroqCloud (hosted models) · Cohere. Same frozen pre-match evidence; "
                "not a proven score-accuracy upgrade.")
     status = _json(root/"status.json")
     if not status.get("enabled"):
@@ -29,7 +29,20 @@ def render(st, root=ROOT):
         st.caption("Configured AI services: "+", ".join(status["configured_providers"])+
                    ". A full ten-provider consensus requires all ten; partial results are marked.")
         errors = status.get("provider_error_types") or {}
-        if errors:
+        details = status.get("last_attempt_errors") or status.get("provider_error_details") or {}
+        if details:
+            last = status.get("last_attempt_at_utc") or status.get("checked_at_utc")
+            st.warning("Last attempted provider check ("+str(last)+" UTC) had "
+                       +str(len(details))+" provider error(s). These are not football losses.")
+            for provider, error in sorted(details.items()):
+                reason = str(error.get("reason") or "provider_error")
+                code = error.get("http_status")
+                st.caption(provider.upper()+": "+reason+
+                           ((" · HTTP "+str(code)) if code is not None else ""))
+            st.caption("HTTP 429 can mean rate limits or missing credits; 400 usually "
+                       "requires checking the provider model ID and request format. "
+                       "API keys are never shown.")
+        elif errors:
             st.warning("Some providers did not return valid research: "+
                        ", ".join(sorted(errors))+". The system does not invent votes.")
     report = _json(root/"evaluation.json")
