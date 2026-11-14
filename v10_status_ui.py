@@ -20,9 +20,9 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
             st.metric(label+" frozen",int(item.get("frozen_fixtures") or 0))
             n=int(item.get("verified_fixtures") or 0)
             hits=int(item.get("exact_score_hits") or 0)
-            st.caption(f"Exact hits: {hits}/{n}" + (
-                f" · {item['exact_score_rate']:.1%}" if n and item.get("exact_score_rate") is not None
-                else " · No verified outcomes yet"))
+            st.caption((f"Verified exact hits: {hits}/{n} · {item['exact_score_rate']:.1%}"
+                        if n and item.get("exact_score_rate") is not None
+                        else "⏳ Pending verification — accuracy not yet measured"))
     near=models.get("v8_near") or {}
     near_count=int(near.get("frozen_fixtures") or 0)
     near_checked=int(near.get("verified_fixtures") or 0)
@@ -36,9 +36,9 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
         st.metric("Five doubles frozen",int(doubles.get("frozen_pairs") or 0))
         n=int(doubles.get("verified_pairs") or 0)
         wins=int(doubles.get("wins") or 0)
-        st.caption(f"Verified wins: {wins}/{n}"+(
-            f" · {doubles['hit_rate']:.1%}" if n and doubles.get("hit_rate") is not None
-            else " · No verified pairs yet"))
+        st.caption((f"Verified five-double wins: {wins}/{n} · {doubles['hit_rate']:.1%}"
+                    if n and doubles.get("hit_rate") is not None
+                    else "⏳ Pending both match results — not zero accuracy"))
     near_pair=report.get("paired_original_v8_vs_near_v8") or {}
     near_verified=int(near_pair.get("same_fixture_verified") or 0)
     if near_verified:
@@ -91,3 +91,6 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                 st.caption("No collector diagnostics have been published in this deployment yet.")
         st.caption("Accuracy fixes v10.1: near-kickoff odds refresh · same-evidence market controls · matchday double freeze · timestamp-based bookmaker selection.")
         st.caption("Market-informed v9 and multi-book v10 are challengers, not proven superior models. Better historical-looking predictions do not justify changing the recorded champion without prospective evidence.")
+        st.divider()
+        from llm_research_ui import render as render_five_ai
+        render_five_ai(st)
