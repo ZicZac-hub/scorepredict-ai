@@ -20,6 +20,8 @@ from v10_prospective import ROOT, read_latest, utc
 REPORT = ROOT / "performance.json"
 PAIRS = ROOT / "doubles"
 MIN_COVERAGE = 0.04  # conservative untuned guardrail, NOT a calibrated hit rate
+FREEZE_MAX_LEAD_HOURS = 24  # do not freeze a week early before full fixture discovery
+FREEZE_MIN_LEAD_MINUTES = 45  # avoid selecting a pair as kickoff starts
 
 
 def _qualified(row, result):
@@ -114,6 +116,20 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
         if target.exists():
             continue
         stats["days_evaluated"]+=1
+        # A discovered pair several days early is NOT necessarily the best
+        # pair: the complete day's slate may not be available or researched.
+        # Delay first frozen publication until the first eligible kickoff is
+        # at most 24 hours away, while preserving a 45-minute safety lead.
+        first_kickoff=min(utc(row["kickoff_utc"]) for row in rows)
+        if first_kickoff-instant>timedelta(hours=FREEZE_MAX_LEAD_HOURS):
+            stats["abstained"][day]="waiting_for_near_matchday_fixture_research"
+            continue
+        recent=[row for row in rows if
+                utc(row["kickoff_utc"])-instant>=timedelta(minutes=FREEZE_MIN_LEAD_MINUTES)]
+        if len(recent)<2:
+            stats["abstained"][day]="insufficient_two_pre_kickoff_legs"
+            continue
+        rows=recent
         if len(rows)<2:
             stats["abstained"][day]="fewer_than_two_qualified_matches"
             continue
@@ -161,7 +177,10 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
                 "independence_assumption":True,
                 "accuracy_status":"pending_verified_final_scores",
                 "selection_note":"Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
-                "minimum_coverage_policy":MIN_COVERAGE}
+                "minimum_coverage_policy":MIN_COVERAGE,
+                "selection_window":{
+                    "max_hours_before_first_eligible_kickoff":FREEZE_MAX_LEAD_HOURS,
+                    "minimum_minutes_before_each_selected_match":FREEZE_MIN_LEAD_MINUTES}}
         if _write_once(target,result):
             stats["days_saved"].append(day)
     return stats
