@@ -1,0 +1,62 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-14T01:30:43.869581+00:00",
+  "estimated_coverage": 0.07619753996352728,
+  "first": {
+    "away_team": "Cagliari",
+    "away_team_id": "490",
+    "fixture_id": "1550200",
+    "forecast_id": "2aee5b572e1e44d95989c7dd4fb1980f47917deb095ae16e97c5de9a649f4ab5",
+    "home_team": "Como",
+    "home_team_id": "895",
+    "kickoff_utc": "2026-11-21T14:00:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.01854850022126541,
+      "score1": "1-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.01598410000759785,
+      "score1": "2-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.015041855657410237,
+      "score1": "1-0",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.013660821777887449,
+      "score1": "1-1",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.012962262299366336,
+      "score1": "2-0",
+      "score2": "1-0"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v1",
+  "same_pair_challengers": {},
+  "second": {
+    "away_team": "Deportivo La Coruna",
+    "away_team_id": "544",
+    "fixture_id": "1570453",
+    "forecast_id": "4d154e25633736f7adb2b8fe9a3e4107141c8916fd38142dea019f5f36ad6311",
+    "home_team": "Alaves",
+    "home_team_id": "542",
+    "kickoff_utc": "2026-11-21T13:00:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-22"
+}

@@ -1,0 +1,62 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-14T01:30:43.869581+00:00",
+  "estimated_coverage": 0.07529590723862892,
+  "first": {
+    "away_team": "Fulham",
+    "away_team_id": "36",
+    "fixture_id": "1557474",
+    "forecast_id": "c2bfc0a8391ac1a34975acc230868d5fd3c72f34f3c23606c7b1a7e7efd0f56b",
+    "home_team": "Manchester City",
+    "home_team_id": "50",
+    "kickoff_utc": "2026-11-21T12:30:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.016286121800377834,
+      "score1": "1-0",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.015595156945042469,
+      "score1": "1-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.014739388080938743,
+      "score1": "1-1",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.014561194526232403,
+      "score1": "2-0",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.014114045886037476,
+      "score1": "1-1",
+      "score2": "1-1"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v1",
+  "same_pair_challengers": {},
+  "second": {
+    "away_team": "Espanyol",
+    "away_team_id": "540",
+    "fixture_id": "1570454",
+    "forecast_id": "60a1283dbc4c0da2eda65136ad864d554eb3846f6d62cca737ae2f1a3f016ed9",
+    "home_team": "Athletic Club",
+    "home_team_id": "531",
+    "kickoff_utc": "2026-11-20T20:00:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-21"
+}
