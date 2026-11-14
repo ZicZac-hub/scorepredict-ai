@@ -13,6 +13,9 @@ on:
       - 'prospective_ledger.py'
       - 'evaluate_prospective_ledger.py'
       - 'capture_prematch.py'
+      - 'v10_prospective.py'
+      - 'v10_evaluate.py'
+      - 'reconcile_capture_conflicts.py'
       - 'api_football.py'
       - 'reference_model.py'
       - 'rescore_predictions.py'
@@ -61,7 +64,7 @@ jobs:
               handle.write('heavy='+str(heavy).lower()+'\n')
           PYCODE
       - name: Check snapshot script
-        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py
+        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py v10_prospective.py v10_evaluate.py reconcile_capture_conflicts.py
       - name: Capture verified pre-kickoff snapshots
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
@@ -95,6 +98,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python evaluate_prospective_ledger.py
+      - name: Freeze v10 research doubles and grade independent prospective forecasts
+        if: always()
+        run: python v10_evaluate.py
       - name: Mark the completed six-hour refresh
         if: success() && steps.cadence.outputs.heavy == 'true'
         run: |
@@ -111,28 +117,36 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
-            # Source-code edits may land while the 15-minute capture runs.
-            # Rebase the DATA commit onto the latest main rather than losing it
-            # to a non-fast-forward rejection. Never force-push or overwrite.
-            for attempt in 1 2 3; do
+            # Source edits or another data run can land during capture.
+            # Conflicting generated reports choose the newer upstream copy;
+            # verified results are unioned only on matching source identity.
+            # Immutable captures NEVER accept silent overwrites.
+            for attempt in 1 2 3 4; do
               git fetch origin main
               if ! git rebase origin/main; then
-                git rebase --abort || true
-                echo "A concurrent data edit caused a real rebase conflict; originals were not overwritten."
-                exit 1
+                if ! python reconcile_capture_conflicts.py; then
+                  git rebase --abort || true
+                  echo "An immutable conflict needs review. All originals remain unchanged."
+                  exit 1
+                fi
+                if git diff --cached --quiet; then
+                  git rebase --skip
+                else
+                  GIT_EDITOR=true git -c core.editor=true rebase --continue
+                fi
               fi
               if git push origin HEAD:main; then
                 echo "Permanent research history committed successfully."
                 exit 0
               fi
-              echo "Concurrent GitHub update; retrying safe rebase ($attempt/3)"
+              echo "Another GitHub commit landed. Retrying safely ($attempt/4)"
               sleep 3
             done
-            echo "Failed to safely publish historical evidence after three attempts."
+            echo "Failed to safely publish historical evidence after four attempts."
             exit 1
           else
             echo "No new research history to commit"
@@ -154,6 +168,7 @@ jobs:
             data/prematch/rescores/latest_report.json
             data/prospective_ledger/
             data/daily_picks/
+            data/v10_prospective/
             data/prematch/double_rescores/latest_report.json
           if-no-files-found: warn
           retention-days: 90
