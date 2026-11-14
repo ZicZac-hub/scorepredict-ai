@@ -67,11 +67,11 @@
     "v8": {
       "exact_score_hits": 0,
       "exact_score_rate": null,
-      "frozen_fixtures": 48,
+      "frozen_fixtures": 60,
       "mean_expected_exact_hits": null,
       "mean_outcome_brier": null,
       "mean_score_log_loss": null,
-      "pending_fixtures": 48,
+      "pending_fixtures": 60,
       "top3_hit_rate": null,
       "verified_fixtures": 0
     },
@@ -100,6 +100,6 @@
     "verified_same_fixture_count": 0
   },
   "promotion_gate": "Never promote v9/v10 as more accurate without enough paired prospective results, calibration and uncertainty checks.",
-  "verified_result_source": "data/prematch/verified_results.json",
+  "verified_result_source": "verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
   "version": "v10-shadow-performance-v1"
 }
