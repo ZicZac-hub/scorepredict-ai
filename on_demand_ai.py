@@ -84,18 +84,29 @@ def _scores(stats, fallback):
 
 def _verified_history(fixture, history, now):
     kickoff = utc(fixture.get("utcDate"))
+    team_ids = {str((fixture.get(side+"Team") or {}).get("id"))
+                for side in ("home","away")}
+    team_ids.discard("None")
     seen, matches = set(), []
     for m in history or []:
         when = utc(m.get("utcDate"))
         if (m.get("status") != "FINISHED" or when is None or
                 kickoff is None or when >= min(now, kickoff)):
             continue
-        goals = (m.get("score") or {}).get("fullTime") or {}
+        home = m.get("homeTeam") or {}
+        away = m.get("awayTeam") or {}
+        if team_ids and not ({str(home.get("id")), str(away.get("id"))} & team_ids):
+            continue
+        score = m.get("score") or {}
+        # Some feeds use fullTime for 120-minute or penalty results.
+        # Use explicitly saved regulation-time goals or skip the sample.
+        if score.get("duration") in ("EXTRA_TIME","PENALTY_SHOOTOUT"):
+            goals = score.get("regularTime") or {}
+        else:
+            goals = score.get("fullTime") or {}
         h,a = goals.get("home"), goals.get("away")
         if type(h) is not int or type(a) is not int or min(h,a)<0:
             continue
-        home = m.get("homeTeam") or {}
-        away = m.get("awayTeam") or {}
         identity = (when.isoformat(), str(home.get("id")), str(away.get("id")))
         if identity in seen:
             continue
@@ -219,6 +230,11 @@ def view(st, result):
         return
     if state=="invalid_fixture":
         st.warning("Selected match has no verified fixture ID or kickoff.")
+        return
+    if state=="request_failed":
+        st.warning("This on-demand research request could not complete. "
+                   "Please check the server configuration and latest tests. "
+                   "API keys are never displayed.")
         return
     if state=="disabled_by_owner":
         st.caption("External API research was not requested. Statistical research "
