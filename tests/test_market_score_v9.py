@@ -84,3 +84,15 @@ def test_market_cannot_be_paired_with_wrong_fixture_or_future_timestamp(monkeypa
         v9.predict({**fixture,"id":999},[],market=market,as_of=now)
     with pytest.raises(ValueError):
         v9.predict(fixture,[],market={**market,"snapshot_utc":(now+timedelta(hours=2)).isoformat()},as_of=now)
+
+
+def test_market_uses_recent_comparable_odds_over_older_complete_market():
+    now=datetime.now(timezone.utc)
+    old=_response(now-timedelta(hours=9))
+    newer=_response(now-timedelta(hours=1))
+    newer[0]["bookmakers"][0]["name"]="Fresh Market"
+    newer[0]["bookmakers"][0]["bets"]=newer[0]["bookmakers"][0]["bets"][:1]
+    picked=v9.select_market_response(old+newer,_fixture(now),now)
+    assert picked["bookmaker"]=="Fresh Market"
+    assert picked["totals"] is None
+    assert v9.select_market_response(_response(now-timedelta(hours=13)),_fixture(now),now) is None
