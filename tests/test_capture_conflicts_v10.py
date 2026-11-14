@@ -21,8 +21,11 @@ def test_daily_pick_first_publication_must_be_pre_kickoff():
 
 
 def test_five_double_original_is_pre_match_and_unique():
-    now=datetime.now(timezone.utc)
+    # Fixed Sydney noon means both +2h and +4h fixtures belong to one
+    # Sydney date, regardless of when GitHub Actions happens to run.
+    now=datetime(2026,11,14,12,0,tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc)
     day=(now+timedelta(hours=2)).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()
+    assert (now+timedelta(hours=4)).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()==day
     path="data/v10_prospective/doubles/"+day+".json"
     packet={"sydney_date":day,
             "status":"frozen_pre_kickoff","captured_at_utc":now.isoformat(),
