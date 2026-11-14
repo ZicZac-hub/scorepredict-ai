@@ -1,0 +1,62 @@
+{
+  "away_team": "Vasco DA Gama",
+  "away_team_id": "133",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.48683339034027334,
+    "draw": 0.23457516039819767,
+    "home": 0.27859144926152896
+  },
+  "captured_at_utc": "2026-11-14T08:56:17.480954+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "away",
+    "outcome_probabilities": {
+      "away": 0.48683339034027334,
+      "draw": 0.23457516039819767,
+      "home": 0.27859144926152896
+    },
+    "provider_count": 1,
+    "suggested_score": null
+  },
+  "disclaimer": "No real-time web access by LLMs; source packet is frozen statistical evidence. Shadow-only and not verified as superior.",
+  "fixture_id": "1492312",
+  "home_team": "Chapecoense-sc",
+  "home_team_id": "132",
+  "input_digest": "4a1b267c0eb4e638bc43ed9a748f94e7ce984b3e9a56e57b4114b823738a610d",
+  "kickoff_utc": "2026-11-14T23:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite"
+  },
+  "provider": "API-Football",
+  "provider_count": 1,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "source_captured_at_utc": "2026-11-14T02:30:15.730587Z",
+  "source_forecast_id": "9aa11505d6c664ad87eb137af21d3f1782a42a0ba3a8c63a814b2dadde62311e",
+  "source_model": "v8_near",
+  "votes": {
+    "gemini": {
+      "away": 0.48683339034027334,
+      "draw": 0.23457516039819767,
+      "factors": [
+        "Away team model estimate shows higher expected goals (1.80 vs 1.32).",
+        "Prior statistical forecast favors Vasco da Gama with an away win probability of ~48.7%.",
+        "Rest days differential is minimal (1 day in favor of home team), keeping typical baseline metrics aligned."
+      ],
+      "home": 0.27859144926152896,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty due to reliance on frozen statistical goal expectations without verified true xG or lineup data."
+    }
+  }
+}

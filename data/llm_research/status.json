@@ -1,7 +1,7 @@
 {
   "attempted": 1,
   "captured": 1,
-  "checked_at_utc": "2026-11-14T08:52:17.413521+00:00",
+  "checked_at_utc": "2026-11-14T08:56:11.135305+00:00",
   "configured_providers": [
     "openai",
     "claude",
@@ -11,6 +11,31 @@
     "cohere"
   ],
   "enabled": true,
+  "provider_error_details": {
+    "claude": {
+      "http_status": 400,
+      "reason": "invalid_request_or_model",
+      "type": "HTTPError"
+    },
+    "cohere": {
+      "reason": "response_format_or_model_configuration",
+      "type": "ValueError"
+    },
+    "grok": {
+      "http_status": 400,
+      "reason": "invalid_request_or_model",
+      "type": "HTTPError"
+    },
+    "groqcloud": {
+      "reason": "response_format_or_model_configuration",
+      "type": "JSONDecodeError"
+    },
+    "openai": {
+      "http_status": 429,
+      "reason": "quota_or_rate_limit",
+      "type": "HTTPError"
+    }
+  },
   "provider_error_types": {
     "claude": "HTTPError",
     "cohere": "ValueError",
