@@ -14,8 +14,10 @@ def _row(id_, kickoff):
 
 def test_sydney_pairing_across_utc_midnight():
     # Both fixtures occur on 15 Nov in Sydney despite different UTC dates.
-    rows = [_row(1, "2026-11-14T12:00:00Z"),
+    rows = [_row(1, "2026-11-14T13:00:00Z"),
             _row(2, "2026-11-15T02:00:00Z")]
+    assert str(_sydney_day(rows[0]["kickoff"])) == "2026-11-15"
+    assert _sydney_day(rows[0]["kickoff"]) == _sydney_day(rows[1]["kickoff"])
     ranked = rank_pairs(rows)
     assert len(ranked) == 1
     assert len(ranked[0]["doubles"]) == 5
