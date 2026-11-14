@@ -132,7 +132,7 @@ def reconcile():
             local=json.loads(_git("show",":3:"+path))
             merged=merge_verified(upstream,local)
             Path(path).parent.mkdir(parents=True,exist_ok=True)
-            Path(path).write_text(json.dumps(merged,indent=2,sort_keys=True)+"\\n",
+            Path(path).write_text(json.dumps(merged,indent=2,sort_keys=True)+"\n",
                                   encoding="utf-8")
         else:
             # REBASE semantics: --ours means first already published on main.
