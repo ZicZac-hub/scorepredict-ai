@@ -12,8 +12,9 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
         st.info("The new v10 research collector has not published a verified performance report yet. Original predictions remain available.")
         return
     models=report.get("models") or {}
-    cols=st.columns(3)
-    for column,key,label in zip(cols,("v8","v9"),("v8 · Statistical","v9 · Verified market")):
+    cols=st.columns(4)
+    for column,key,label in zip(cols,("v8","v9","v10"),
+                                ("v8 · Statistical","v9 · Market","v10 · Multi-book")):
         item=models.get(key) or {}
         with column:
             st.metric(label+" frozen",int(item.get("frozen_fixtures") or 0))
@@ -23,7 +24,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                 f" · {item['exact_score_rate']:.1%}" if n and item.get("exact_score_rate") is not None
                 else " · No verified outcomes yet"))
     doubles=report.get("five_doubles") or {}
-    with cols[2]:
+    with cols[3]:
         st.metric("Five doubles frozen",int(doubles.get("frozen_pairs") or 0))
         n=int(doubles.get("verified_pairs") or 0)
         wins=int(doubles.get("wins") or 0)
@@ -31,9 +32,16 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
             f" · {doubles['hit_rate']:.1%}" if n and doubles.get("hit_rate") is not None
             else " · No verified pairs yet"))
     common=(report.get("paired_v8_v9") or {}).get("verified_same_fixture_count",0)
-    st.caption(f"Same-fixture v8 versus v9 verified comparison: {common} pairs. Pending games are neither hits nor losses.")
+    common_v10=(report.get("paired_v8_v10") or {}).get("verified_same_fixture_count",0)
+    st.caption(f"Fair same-fixture verification: v8 vs v9 = {common} matches · v8 vs v10 = {common_v10} matches. Pending games are neither hits nor losses.")
+    comparisons=doubles.get("same_pair_challengers") or {}
+    if any((data.get("same_pair_verified_days") or 0)>0 for data in comparisons.values()):
+        st.caption("Same frozen match-pair five-double comparisons: "+
+                   " · ".join(name.upper()+": "+str(item["challenger_wins"])+"/"+
+                              str(item["same_pair_verified_days"])+ " hits"
+                              for name,item in comparisons.items() if item.get("same_pair_verified_days")) )
     if not compact:
-        for name in ("v8","v9"):
+        for name in ("v8","v9","v10"):
             m=models.get(name) or {}
             with st.expander(name.upper()+" · Full probability-quality breakdown"):
                 if not m.get("verified_fixtures"):
@@ -44,4 +52,4 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                               "Top-three coverage":f"{m['top3_hit_rate']:.2%}",
                               "Score log loss (lower better)":round(m["mean_score_log_loss"],3),
                               "1X2 Brier score (lower better)":round(m["mean_outcome_brier"],3)})
-        st.caption("Market-informed v9 is a challenger, not a proven superior model. Better historical-looking predictions do not justify changing the recorded champion without prospective evidence.")
+        st.caption("Market-informed v9 and multi-book v10 are challengers, not proven superior models. Better historical-looking predictions do not justify changing the recorded champion without prospective evidence.")
