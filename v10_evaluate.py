@@ -196,18 +196,38 @@ def evaluate(root=ROOT,results=None):
                                                   [result["home_goals"],result["away_goals"]])
         else:
             pending[model]+=1
+    # Pair each market score ONLY against a historical v8 forecast built
+    # from the identical evidence packet. If the original v8 was frozen days
+    # earlier, the optional v8_control captures the SAME new history and
+    # time as the market challenger; no unfair old-vs-new comparison.
     common=[]
     common_v10=[]
+    control_count=0
+    comparison_excluded=0
     for (provider,fixture_id,model),row in latest.items():
         if model!="v8":
             continue
-        first=hits.get((provider,fixture_id,"v8"))
-        second=hits.get((provider,fixture_id,"v9"))
-        third=hits.get((provider,fixture_id,"v10"))
-        if first is not None and second is not None:
-            common.append((first,second))
-        if first is not None and third is not None:
-            common_v10.append((first,third))
+        for challenger, cohort in (("v9",common),("v10",common_v10)):
+            alt=latest.get((provider,fixture_id,challenger))
+            if alt is None or hits.get((provider,fixture_id,challenger)) is None:
+                continue
+            matched=next((
+                source for source in (
+                    latest.get((provider,fixture_id,"v8_control")),
+                    row)
+                if source is not None
+                and source.get("input_digest")==alt.get("input_digest")
+                and utc(source["captured_at_utc"])<=utc(alt["captured_at_utc"])
+            ),None)
+            if matched is None:
+                comparison_excluded+=1
+                continue
+            baseline_hit=hits.get((provider,fixture_id,matched["model_key"]))
+            challenger_hit=hits.get((provider,fixture_id,challenger))
+            if baseline_hit is None:
+                continue
+            cohort.append((baseline_hit,challenger_hit))
+            control_count+=int(matched["model_key"]=="v8_control")
     pairs=[]
     for path in sorted((Path(root)/"doubles").glob("*.json")):
         packet=load_json(path,{})
@@ -255,6 +275,10 @@ def evaluate(root=ROOT,results=None):
         "evidence":"genuinely_frozen_pre_kickoff_only",
         "verified_result_source":"verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
         "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v9","v10")},
+        "comparison_diagnostics":{
+            "matched_market_time_controls":control_count,
+            "excluded_mismatched_evidence_pairs":comparison_excluded,
+            "policy":"Only compare v8 versus v9/v10 when input_digest and original evidence match; use preserved v8_control for a later market snapshot."},
         "paired_v8_v9":{"verified_same_fixture_count":len(common),
                         "v8_only_hits":sum(a and not b for a,b in common),
                         "v9_only_hits":sum(b and not a for a,b in common),
