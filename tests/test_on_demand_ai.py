@@ -1,0 +1,122 @@
+"""Selected-match AI calls: no secrets in UI, no after-kickoff or fake evidence."""
+import json
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
+from on_demand_ai import (
+    _verified_history, briefing, fixture_key, run_selected, server_settings
+)
+
+
+def match(start="2031-11-20T12:00:00Z"):
+    return {"provider": "API-Football", "id": 991,
+            "utcDate": start,
+            "homeTeam": {"id": 11, "name": "Home Eleven"},
+            "awayTeam": {"id": 12, "name": "Away United"},
+            "competition": {"name": "Friendly Test League"}}
+
+
+def history():
+    return [
+        {"status": "FINISHED", "utcDate": "2031-11-18T09:00:00Z",
+         "homeTeam": {"id": 11, "name": "Home Eleven"},
+         "awayTeam": {"id": 44, "name": "Rival"},
+         "score": {"fullTime": {"home": 2, "away": 0}}},
+        {"status": "FINISHED", "utcDate": "2031-11-21T09:00:00Z",
+         "homeTeam": {"id": 12, "name": "Away United"},
+         "awayTeam": {"id": 44, "name": "Rival"},
+         "score": {"fullTime": {"home": 5, "away": 0}}},
+        {"status": "SCHEDULED", "utcDate": "2031-11-18T10:00:00Z",
+         "homeTeam": {"id": 11, "name": "Home Eleven"},
+         "awayTeam": {"id": 12, "name": "Away United"},
+         "score": {"fullTime": {"home": 0, "away": 0}}},
+    ]
+
+
+def test_pre_match_prompt_includes_real_history_only():
+    now=datetime(2031,11,20,8,tzinfo=timezone.utc)
+    prompt=briefing(match(),history(),{
+        "model_version":"v8-test",
+        "scores":[[1,0,.17],[1,1,.15]],
+        "home_xg":1.2,"away_xg":0.9,
+        "outcome_probabilities":{"home":0.47,"draw":0.30,"away":0.23}
+    },now=now)
+    assert "2, 0" in prompt
+    assert "5, 0" not in prompt
+    assert "unavailable" not in prompt.lower() or "not_provided" in prompt
+    assert "REPLACE-WITH-SECRET" not in prompt
+    assert len(_verified_history(match(),history(),now))==1
+
+
+@pytest.mark.parametrize("start,now",[
+    ("2031-11-20T12:00:00Z","2031-11-20T12:00:00Z"),
+    ("2031-11-20T12:00:00Z","2031-11-20T11:57:00Z"),
+    ("2031-11-20T12:00:00Z","2031-11-20T13:00:00Z"),
+])
+def test_no_external_api_calls_near_or_after_kickoff(start,now):
+    def forbid(*args,**kwargs):
+        raise AssertionError("No API requests allowed near kickoff")
+    result=run_selected(match(start),history(),{}, {},{
+        "openai":("fake-key","test-model")},
+        now=datetime.fromisoformat(now.replace("Z","+00:00")),request=forbid)
+    assert result["status"]=="kickoff_too_close"
+    assert result["votes"]=={}
+
+
+def test_requires_both_server_side_key_and_model():
+    class Fake:
+        secrets={"OPENAI_API_KEY":"not-real",
+                 "OPENAI_MODEL":"gpt-4o-mini",
+                 "GEMINI_API_KEY":"not-real"}
+    configured=server_settings(Fake(),environ={})
+    assert list(configured)==["openai"]
+    assert configured["openai"]==("not-real","gpt-4o-mini")
+
+
+def test_selected_match_consults_two_configured_providers_without_leaking_secrets():
+    requests_seen=[]
+    vote={"home_win":.5,"draw":.3,"away_win":.2,
+          "exact_home":2,"exact_away":1,"factors":["verified historical form"]}
+    def stub(url, **kwargs):
+        requests_seen.append((url,kwargs))
+        class Response:
+            def raise_for_status(self): pass
+            def json(self):
+                return {"choices":[{"message":{"content":json.dumps(vote)}}]}
+        return Response()
+    result=run_selected(match(),history(),{
+        "model_version":"historical",
+        "scores":[[2,1,.14]],
+        "outcome_probabilities":{"home":.5,"draw":.25,"away":.25},
+        "home_xg":1.5, "away_xg":1.1,
+    },{},{
+        "openai":("supersecret-openai","test-model"),
+        "groqcloud":("supersecret-groq","test-model"),
+    },now=datetime(2031,11,20,8,tzinfo=timezone.utc),request=stub)
+    assert set(result["votes"])=={"openai","groqcloud"}
+    assert result["consensus"]["suggested_score"]==[2,1]
+    assert len(requests_seen)==2
+    assert result["ephemeral"] is True
+    assert result["evaluated_as_frozen_five_double"] is False
+    assert "supersecret-" not in str(result)
+    assert "supersecret-" not in str([x[1]["json"] for x in requests_seen])
+    assert fixture_key(match())==("API-Football","991","2031-11-20T12:00:00+00:00")
+
+
+def test_no_unavailable_credentials_masquerading_as_live_ai():
+    result=run_selected(match(),history(),{}, {},{},
+                        now=datetime(2031,11,20,8,tzinfo=timezone.utc))
+    assert result["status"]=="no_streamlit_api_credentials"
+    assert result["votes"]=={}
+
+
+def test_unsupported_credentials_dont_leak_into_errors():
+    def fail(url,**kwargs):
+        raise ValueError("PRIVATE_KEY_IN_ERROR")
+    result=run_selected(match(),history(),{}, {},{
+        "openai":("secret-string","test-model")},
+        now=datetime(2031,11,20,8,tzinfo=timezone.utc),request=fail)
+    assert "openai" in result["errors"]
+    assert "PRIVATE_KEY_IN_ERROR" not in str(result)
+    assert "secret-string" not in str(result)
