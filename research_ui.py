@@ -83,6 +83,21 @@ def _stats(records):
 
 def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
     st.markdown('<div class="zz-research-hero"><div class="zz-research-kicker">🧠 DEEP RESEARCH LAB · EXPERIMENTAL</div><h2>Know the match. <span>See the evidence.</span></h2><p>Recent form, venue performance, opponent-adjusted models and honest score probabilities. No invented injuries or guaranteed scores.</p></div>', unsafe_allow_html=True)
+    with st.expander("📈 Verified historical replay · v6 versus v8 (not live accuracy)"):
+        from pathlib import Path
+        import json
+        saved = Path("data/research_v8/first_historical_validation.json")
+        if saved.exists():
+            report = json.loads(saved.read_text(encoding="utf-8"))
+            st.caption(report["method"])
+            _old, _new, _double = st.columns(3)
+            _old.metric("Original v6 exact hits",f"{report['preserved_v6']['exact_hits']}/{report['matched']}")
+            _new.metric("Research v8 exact hits",f"{report['research_v8']['exact_hits']}/{report['matched']}")
+            _double.metric("V8 five-double hits",f"{report['five_doubles']['v8_hits']}/{report['five_doubles']['days']}")
+            st.caption(report["release_status"])
+            st.link_button("Open historical validation workflow",report["source_workflow"])
+        else:
+            st.caption("The retrospective evaluation has not been bundled in this deployment.")
     choices = {}
     for row in rows:
         if not row.get("result"):
