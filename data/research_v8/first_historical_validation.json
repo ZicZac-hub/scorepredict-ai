@@ -1,0 +1,41 @@
+{
+  "comparison_version": "v8_first_frozen_holdout",
+  "source_workflow": "https://github.com/ZicZac-hub/scorepredict-ai/actions/runs/43531811844",
+  "generated_date": "2026-11-14",
+  "method": "Historical pre-kickoff replay on latest 160 2026 eligible fixtures with at least 60-minute forecast lead; compared against preserved v6 using identical available history. Parameters fixed before evaluating this sample. Not prospective results.",
+  "source_results": 2255,
+  "matched": 160,
+  "leagues": {
+    "PD": 33,
+    "SA": 42,
+    "PL": 31,
+    "BL1": 27,
+    "FL1": 27
+  },
+  "preserved_v6": {
+    "exact_hits": 18,
+    "exact_accuracy": 0.1125,
+    "top_three_rate": 0.30625,
+    "score_log_loss": 3.00680705316507,
+    "outcome_brier": 0.5908650640181434,
+    "one_one_share": 0.8125
+  },
+  "research_v8": {
+    "exact_hits": 19,
+    "exact_accuracy": 0.11875,
+    "top_three_rate": 0.31875,
+    "score_log_loss": 2.979217354766257,
+    "outcome_brier": 0.5711084848008466,
+    "one_one_share": 0.69375
+  },
+  "paired": {
+    "v8_only_hits": 4,
+    "v6_only_hits": 3
+  },
+  "five_doubles": {
+    "days": 12,
+    "v8_hits": 0,
+    "v6_same_pair_hits": 0
+  },
+  "release_status": "No production promotion: difference in exact hits is one match; 12 double days are too small for confidence."
+}
