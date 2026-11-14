@@ -1,13 +1,14 @@
 """Freeze conflict rules: keep FIRST valid published pick, never rewrite."""
 from datetime import datetime,timedelta,timezone
-import copy
+from zoneinfo import ZoneInfo
 from reconcile_capture_conflicts import valid_freeze
 
 
 def test_daily_pick_first_publication_must_be_pre_kickoff():
     now=datetime.now(timezone.utc)
-    path="data/daily_picks/"+now.date().isoformat()+".json"
-    row={"prediction_date":now.date().isoformat(),
+    day=(now+timedelta(hours=2)).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()
+    path="data/daily_picks/"+day+".json"
+    row={"prediction_date":day,
          "status":"frozen_in_capture_workflow",
          "captured_at_utc":now.isoformat(),
          "kickoff_utc":(now+timedelta(hours=2)).isoformat(),
@@ -21,8 +22,9 @@ def test_daily_pick_first_publication_must_be_pre_kickoff():
 
 def test_five_double_original_is_pre_match_and_unique():
     now=datetime.now(timezone.utc)
-    path="data/v10_prospective/doubles/"+now.date().isoformat()+".json"
-    packet={"sydney_date":now.date().isoformat(),
+    day=(now+timedelta(hours=2)).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()
+    path="data/v10_prospective/doubles/"+day+".json"
+    packet={"sydney_date":day,
             "status":"frozen_pre_kickoff","captured_at_utc":now.isoformat(),
             "first":{"fixture_id":10,
                      "kickoff_utc":(now+timedelta(hours=2)).isoformat()},
