@@ -94,27 +94,41 @@ def briefing(row):
 
 
 def _extract(response, name):
+    """Accept documented provider response shapes; require JSON, no prose guesses."""
     payload = response.json()
+    if not isinstance(payload, dict):
+        raise ValueError("Provider response must be an object")
     if name == "perplexity":
         text = "".join(part.get("text", "") for item in payload.get("output", [])
-                       if item.get("type") == "message"
+                       if isinstance(item, dict) and item.get("type") == "message"
                        for part in item.get("content", [])
-                       if part.get("type") == "output_text")
+                       if isinstance(part, dict) and part.get("type") == "output_text")
     elif name == "cohere":
         text = "".join(part.get("text", "") for part in
                        (payload.get("message") or {}).get("content", [])
-                       if part.get("type") == "text")
+                       if isinstance(part, dict) and part.get("type") == "text")
     elif name == "claude":
         parts = payload.get("content") or []
-        text = "".join(part.get("text", "") for part in parts if part.get("type") == "text")
+        text = "".join(part.get("text", "") for part in parts
+                       if isinstance(part, dict) and part.get("type") == "text")
     elif name == "gemini":
         parts = ((payload.get("candidates") or [{}])[0].get("content") or {}).get("parts") or []
-        text = "".join(part.get("text", "") for part in parts)
+        text = "".join(part.get("text", "") for part in parts if isinstance(part, dict))
     else:
-        text = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+        message = ((payload.get("choices") or [{}])[0].get("message") or {})
+        answer = message.get("content") or ""
+        # Some OpenAI-compatible providers represent message content as
+        # separate text segments. Reasoning text is intentionally ignored.
+        text = "".join(p.get("text", "") for p in answer if
+                       isinstance(p, dict) and p.get("type") == "text") if isinstance(answer, list) else answer
+    if not isinstance(text, str):
+        raise ValueError("Provider answer is not plain text")
     text = text.strip()
     if text.startswith("```"):
-        text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        text = re.sub(r"^\`\`\`(?:json)?\\s*", "", text, flags=re.I)
+        text = re.sub(r"\\s*\`\`\`$", "", text).strip()
+    if not text or len(text) > 30000:
+        raise ValueError("Empty or oversized AI answer")
     return json.loads(text)
 
 
@@ -247,6 +261,8 @@ def classify_provider_error(exc):
                 "reason":reason or ("provider_server_error" if code >= 500 else "provider_http_error")}
     if isinstance(exc, requests.Timeout):
         return {"type":type(exc).__name__, "reason":"provider_timeout"}
+    if isinstance(exc, json.JSONDecodeError):
+        return {"type":type(exc).__name__, "reason":"invalid_json_response"}
     if isinstance(exc, ValueError):
         return {"type":type(exc).__name__, "reason":"response_format_or_model_configuration"}
     return {"type":type(exc).__name__, "reason":"provider_request_failed"}
