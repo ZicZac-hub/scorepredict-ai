@@ -52,6 +52,7 @@ def test_two_match_model_baseline_survives_no_external_ai():
 
 def test_ai_votes_adjust_order_without_inventing_probabilities():
     a,b=pair()
+    a["result"]["scores"][1][2]=.119
     base=merged_five(a,b,now=NOW)
     ai_a={"status":"completed","votes":{
         "openai":{"score":[1,0],"home":.49,"draw":.25,"away":.26},
@@ -64,7 +65,7 @@ def test_ai_votes_adjust_order_without_inventing_probabilities():
     assert merged["doubles"][0]["Score 1"]=="1-0"
     assert merged["doubles"][0]["Score 2"]=="1-1"
     assert merged["doubles"][0]["AI endorsements 1"]==2
-    assert merged["doubles"][0]["Model joint"]==pytest.approx(.115*.13)
+    assert merged["doubles"][0]["Model joint"]==pytest.approx(.119*.13)
     assert merged["doubles"][0]["Model joint"]<=1
     assert merged["selected_model_coverage"]<=1
     assert merged["baseline_coverage"]>=merged["selected_model_coverage"]
@@ -88,10 +89,11 @@ def test_same_sydney_day_required_including_utc_midnight():
     a["fixture"]["utcDate"]=a["kickoff"]
     b["kickoff"]="2031-11-20T03:00:00Z"
     b["fixture"]["utcDate"]=b["kickoff"]
-    assert pair_check(a,b,now=NOW) is None  # Sydney 20 Nov
+    earlier=datetime(2031,11,19,20,tzinfo=timezone.utc)
+    assert pair_check(a,b,now=earlier) is None  # Sydney 20 Nov
     b["kickoff"]="2031-11-20T13:30:00Z"
     b["fixture"]["utcDate"]=b["kickoff"]
-    assert "same Sydney" in pair_check(a,b,now=NOW)
+    assert "same Sydney" in pair_check(a,b,now=earlier)
 
 
 def test_no_duplicate_fixture_or_shared_team():
