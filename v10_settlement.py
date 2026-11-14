@@ -7,7 +7,7 @@ changing any original predictions. The request budget is deliberately small.
 """
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import requests
@@ -19,6 +19,14 @@ from v10_prospective import ROOT, read_latest, utc
 
 RESULTS=ROOT/"verified_results.json"
 STATUS=ROOT/"settlement_status.json"
+ATTEMPTS=ROOT/"result_attempts.json"
+# Football is generally 90 minutes plus stoppage; avoid querying the
+# provider before its regulation-time final could plausibly exist.
+MIN_FINAL_LAG=timedelta(minutes=105)
+# An unfinished or temporarily unavailable result must not trigger the
+# same billable API request on every 15-minute collection pass.
+RETRY_WAIT=timedelta(minutes=60)
+
 
 
 def _reference_rows(forecasts):
@@ -80,17 +88,16 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
     own_file=Path(root)/"verified_results.json"
     own=load_json(own_file,{})
     old=legacy_results if legacy_results is not None else load_json(LEGACY_RESULTS,{})
+    attempts_file=Path(root)/"result_attempts.json"
+    attempts=load_json(attempts_file,{})
     status={"eligible_frozen_fixtures":len(references),
             "already_verified":0,"checked":0,"newly_verified":0,
             "still_pending":0,"rejected_or_unavailable":0,
+            "waiting_for_full_time":0,"retry_cooldown":0,
             "source_errors":[]}
     merged=merge_verified(old,own)
     for fixture_id,reference in sorted(
             references.items(),key=lambda p:utc(p[1]["kickoff_utc"])):
-        # Never verify a fixture before its full-time result could be final.
-        if utc(reference["kickoff_utc"])>=clock:
-            status["still_pending"]+=1
-            continue
         known=merged.get(str(fixture_id))
         if known is not None:
             if not verified_result(reference,known,fixture_id):
@@ -100,10 +107,24 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
             if fixture_id not in own:
                 own[fixture_id]=known
             continue
+        # A frozen forecast alone does not justify a premature provider call.
+        if utc(reference["kickoff_utc"])+MIN_FINAL_LAG>clock:
+            status["waiting_for_full_time"]+=1
+            continue
+        try:
+            last_check=utc(attempts[fixture_id])
+        except (KeyError,ValueError,TypeError):
+            last_check=None
+        if last_check is not None and clock-last_check<RETRY_WAIT:
+            status["retry_cooldown"]+=1
+            continue
         if status["checked"]>=limit:
             status["still_pending"]+=1
             continue
         status["checked"]+=1
+        # Persist the attempt even when no verified final is available.
+        # This records a retry window, never an inferred match result.
+        attempts[fixture_id]=clock.isoformat()
         try:
             row=_provider_match(key,fixture_id,reference,request=request)
             if row and verified_result(reference,row,fixture_id):
@@ -115,10 +136,15 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
         except (requests.RequestException,ValueError,TypeError,RuntimeError,KeyError) as exc:
             status["source_errors"].append({"fixture_id":fixture_id,
                                              "error_type":type(exc).__name__})
+    # All not-yet-verified references remain pending, including early
+    # kickoffs, missing provider scores and cooldowns: never mislabel losses.
+    status["still_pending"]=max(0,len(references)-status["already_verified"]-
+                                status["newly_verified"])
     # The destination contains verified results ONLY; a re-run never changes
     # an already published result's score or timestamp.
     own_file.parent.mkdir(parents=True,exist_ok=True)
     write_json(own_file,own)
+    write_json(attempts_file,attempts)
     write_json(Path(root)/"settlement_status.json",status)
     return status
 
