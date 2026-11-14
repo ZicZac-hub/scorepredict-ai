@@ -173,7 +173,15 @@ def _pair_verified(leg,verified):
 
 
 def evaluate(root=ROOT,results=None):
-    verified=results if results is not None else load_json(RESULTS,{})
+    if results is not None:
+        verified=results
+    else:
+        from reconcile_capture_conflicts import merge_verified
+        # Legacy and research-only providers share the same verifiable
+        # identity standard. Never silently favour conflicting final scores.
+        old=load_json(RESULTS,{})
+        independent=load_json(Path(root)/"verified_results.json",{})
+        verified=merge_verified(old,independent)
     latest=read_latest(root)
     model_rows=defaultdict(list)
     frozen=defaultdict(int)
@@ -245,7 +253,7 @@ def evaluate(root=ROOT,results=None):
     report={
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
-        "verified_result_source":"data/prematch/verified_results.json",
+        "verified_result_source":"verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
         "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v9","v10")},
         "paired_v8_v9":{"verified_same_fixture_count":len(common),
                         "v8_only_hits":sum(a and not b for a,b in common),
