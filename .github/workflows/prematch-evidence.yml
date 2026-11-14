@@ -115,7 +115,25 @@ jobs:
           git add data/prematch/ data/prospective_ledger/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
-            git push
+            # Source-code edits may land while the 15-minute capture runs.
+            # Rebase the DATA commit onto the latest main rather than losing it
+            # to a non-fast-forward rejection. Never force-push or overwrite.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "A concurrent data edit caused a real rebase conflict; originals were not overwritten."
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "Permanent research history committed successfully."
+                exit 0
+              fi
+              echo "Concurrent GitHub update; retrying safe rebase ($attempt/3)"
+              sleep 3
+            done
+            echo "Failed to safely publish historical evidence after three attempts."
+            exit 1
           else
             echo "No new research history to commit"
           fi
