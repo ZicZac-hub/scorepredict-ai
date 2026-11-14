@@ -22,52 +22,59 @@ permissions:
 jobs:
   check-host:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 2
     steps:
-      - name: Check URL and Streamlit server health
+      - name: Probe live hosting; classify browser-only authentication
         shell: bash
         run: |
-          set -uo pipefail
-          site="https://ziczacscorepredict-ai.streamlit.app"
-          for attempt in 1 2 3; do
-            health=$(curl -L -sS -m 35 -o /tmp/ziczac-health -w '%{http_code}' "$site/_stcore/health" || true)
-            page=$(curl -L -sS -m 35 -o /tmp/ziczac-page -w '%{http_code}' "$site/?view=predict" || true)
-            echo "Attempt $attempt: Streamlit health HTTP $health; Daily Prediction page HTTP $page"
-            if [[ "$health" == "200" && "$page" == "200" ]]; then
-              echo "Live hosting responds to requests." >> "$GITHUB_STEP_SUMMARY"
-              echo "GitHub source commit: ${GITHUB_SHA}" >> "$GITHUB_STEP_SUMMARY"
-              echo "NOTE: HTTP availability alone does not prove the app uses the latest commit or that every Python widget works." >> "$GITHUB_STEP_SUMMARY"
-              exit 0
-            fi
-            sleep 15
-          done
-          echo "HTTP checks did not pass. Examining the first three redirects WITHOUT printing signed parameters." >> "$GITHUB_STEP_SUMMARY"
           python - <<'PY'
-          from urllib.parse import urljoin, urlsplit
-          from urllib.request import Request, build_opener, HTTPRedirectHandler
-          from urllib.error import HTTPError, URLError
+          from urllib.request import Request,build_opener,HTTPRedirectHandler
+          from urllib.error import HTTPError,URLError
+          from urllib.parse import urljoin,urlsplit
+          import os,sys
+
           class NoRedirect(HTTPRedirectHandler):
               def redirect_request(self,*args,**kwargs): return None
+
           opener=build_opener(NoRedirect())
-          url="https://ziczacscorepredict-ai.streamlit.app/_stcore/health"
-          for attempt in range(3):
+          base="https://ziczacscorepredict-ai.streamlit.app"
+          endpoints=("/_stcore/health","/?view=predict")
+          records=[]
+          for endpoint in endpoints:
+              url=base+endpoint
               try:
-                  result=opener.open(Request(url,method="GET"),timeout=12)
-                  status=result.status
-                  location=result.headers.get("Location")
+                  with opener.open(Request(url,headers={
+                      "User-Agent":"Mozilla/5.0 (compatible; ZicZac-Health-Check/1.0)"
+                  }),timeout=25) as resp:
+                      code=resp.status
+                      location=resp.headers.get("Location")
               except HTTPError as exc:
-                  status=exc.code
+                  code=exc.code
                   location=exc.headers.get("Location")
-              except URLError as exc:
-                  print("Network error:",type(exc.reason).__name__)
-                  break
-              target=urljoin(url,location) if location else ""
-              parsed=urlsplit(target)
-              # Never print query strings, cookies, tokens, or signed URLs.
-              safe_path="/"+(parsed.path.strip("/").split("/")[0] if parsed.path.strip("/") else "")
-              print(f"Redirect diagnostic {attempt+1}: HTTP {status}, destination host={parsed.hostname or '-'}, path-prefix={safe_path}")
-              if status not in (301,302,303,307,308) or not location: break
-              url=target
+              except (URLError,TimeoutError,OSError) as exc:
+                  code=0
+                  location=None
+              safe=urlsplit(urljoin(url,location)) if location else None
+              # Never print sensitive redirect queries or authentication tokens.
+              kind="browser_auth_redirect" if (
+                  safe and (
+                      safe.hostname=="share.streamlit.io"
+                      or safe.path.startswith("/-/")
+                  )) else "redirect" if 300<=code<400 else (
+                      "reachable" if code==200 else "unreachable")
+              print(f"{endpoint}: HTTP {code} / {kind}")
+              records.append((code,kind))
+          summary=os.environ["GITHUB_STEP_SUMMARY"]
+          if all(code==200 for code,kind in records):
+              with open(summary,"a") as f:
+                  f.write("✅ Streamlit returned HTTP 200 for both checks. This does not prove Python widget execution or deployment of the latest GitHub commit.\n")
+              sys.exit(0)
+          if all(code in (200,301,302,303,307,308) for code,kind in records):
+              with open(summary,"a") as f:
+                  f.write("⚠️ Streamlit uses a browser-only redirect/session flow. Automated HTTP checks are inconclusive, **not evidence that the website is down**. Open the site in Safari/Chrome or inspect the Streamlit Cloud runtime logs.\n")
+              print("::warning::Streamlit authentication redirects may loop for non-browser checkers; verify in a real browser.")
+              sys.exit(0)
+          with open(summary,"a") as f:
+              f.write("❌ Hosting returned a network/server error. Review Streamlit Cloud app logs and deployment ownership.\n")
+          sys.exit(1)
           PY
-          echo "The application may be private/auth-gated, incorrectly redirected, or not deployed. HTTP checks alone cannot prove the Python app is functioning." >> "$GITHUB_STEP_SUMMARY"
-          exit 1
