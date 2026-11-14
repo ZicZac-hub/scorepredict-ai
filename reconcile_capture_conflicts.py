@@ -9,6 +9,7 @@ only after matching exact source identities.
 """
 import json
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 import subprocess
 import sys
@@ -75,6 +76,7 @@ def valid_freeze(path,row):
             return bool(row.get("prediction_date")==day
                         and row.get("status")=="frozen_in_capture_workflow"
                         and original<kickoff
+                        and kickoff.astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()==day
                         and isinstance(row.get("exact_score"),list)
                         and len(row["exact_score"])==2
                         and all(type(n) is int and n>=0 for n in row["exact_score"]))
@@ -90,6 +92,8 @@ def valid_freeze(path,row):
             return bool(row.get("sydney_date")==day
                         and row.get("status")=="frozen_pre_kickoff"
                         and original<min(first,second)
+                        and first.astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()==day
+                        and second.astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()==day
                         and len(pairs)==5
                         and str(row["first"]["fixture_id"])!=str(row["second"]["fixture_id"]))
     except (ValueError,TypeError,KeyError,AttributeError):
