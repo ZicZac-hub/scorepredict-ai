@@ -140,8 +140,11 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
     # Separate server-only provider credentials are required for on-demand
     # Streamlit calls. GitHub Actions secrets are not readable by this app.
     from on_demand_ai import (server_settings, server_qwen_url, run_selected,
-                              frozen_for_fixture, show_frozen,
+                              frozen_for_fixture, show_frozen, private_gate_ready,
                               view as show_external_ai)
+    # Do not rely on a keyword argument passed by app.py: older deployments
+    # may cache a previous module version. Confirm the real password session.
+    external_private = private_gate_ready(st)
     external_configs = server_settings(st)
     use_external = st.checkbox(
         "Also consult my connected external AI models (API charges may apply)",
