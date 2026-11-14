@@ -76,7 +76,8 @@ def _record(fixture, evidence, forecast, model_key, captured_at, market=None):
         "research_context":research_context,
         "market_used":bool(market),
         "market_snapshot":({key:market[key] for key in (
-            "bookmaker","snapshot_utc","winner","winner_overround",
+            "bookmaker","bookmaker_count","bookmaker_names","aggregation",
+            "snapshot_utc","winner","winner_overround",
             "totals","totals_overround","settlement")
             if key in market} if market else None),
         "unavailable_features":["verified_xg","player_strength",
@@ -111,7 +112,7 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
     base=_record(fixture,evidence,forecast,"v8",frozen_at)
     written_v8=append_file_record(base,root=root,kind="forecasts")
     outcome={"v8_recorded":bool(written_v8),"v9_recorded":False,
-             "reason":"market_not_queried","market_calls":0}
+             "v10_recorded":False,"reason":"market_not_queried","market_calls":0}
     # Do not use quota for distant games, unsupported providers or re-recording
     # the same slot: v8 remains the only stored prediction when odds are absent.
     if (not api_key or request is None or market_calls_remaining<=0
@@ -152,7 +153,21 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
             return outcome
         row=_record(fixture,evidence,revised,"v9",completed,market=market)
         outcome["v9_recorded"]=bool(append_file_record(row,root=root,kind="forecasts"))
-        outcome["reason"]="market_verified_and_archived" if outcome["v9_recorded"] else "market_already_archived"
+        # A separate multi-bookmaker challenger only exists if at least
+        # THREE independent vendor quotes are observed for this exact match.
+        # Reuse the SAME provider response; never spend more API requests.
+        from multi_market_v10 import market_consensus, predict as predict_multi
+        consensus=market_consensus(packet.get("data") or [],fixture,as_of=market_observed)
+        if consensus:
+            combined=predict_multi(fixture,history,league_history=league,
+                                   market=consensus,as_of=market_observed)
+            complete=utc(datetime.now(timezone.utc))
+            if combined and complete<kickoff:
+                candidate=_record(fixture,evidence,combined,"v10",
+                                  max(complete,market_observed),market=consensus)
+                outcome["v10_recorded"]=bool(append_file_record(
+                    candidate,root=root,kind="forecasts"))
+        outcome["reason"]="verified_market_models_archived" if outcome["v9_recorded"] else "market_already_archived"
         return outcome
     except (ValueError,TypeError,KeyError,RuntimeError,LookupError) as exc:
         outcome["reason"]="market_unavailable_"+type(exc).__name__
@@ -163,7 +178,7 @@ def read_latest(root=ROOT):
     """Return earliest independently saved forecast for each model/fixture."""
     found={}
     for row in read_file_records(root=root,kind="forecasts"):
-        if row.get("model_key") not in ("v8","v9"):
+        if row.get("model_key") not in ("v8","v9","v10"):
             continue
         try:
             key=(row["provider"],str(row["fixture_id"]),row["model_key"])
