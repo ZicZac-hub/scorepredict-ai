@@ -109,6 +109,10 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
     provider = str(fixture.get("provider") or "football-data.org")
     identifier = (provider, str(fixture.get("id")), str(fixture.get("utcDate")))
     st.caption(str(selected.get("league") or "Football") + " · " + sydney_kickoff(selected.get("kickoff")))
+    method = st.radio("Prediction method",
+        ["Evidence Ensemble v8 · new challenger", "Preserved Deep Research v2"],
+        horizontal=True, key="deep_prediction_method",
+        help="Compare the new opponent/Elo ensemble with the previous research model. Existing saved predictions are never changed.")
     cols = st.columns(2)
     with cols[0]:
         run = st.button("🧠 Run Deep Research AI", type="primary",
@@ -121,12 +125,36 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
         compatible = [m for m in prior if str(m.get("provider") or "football-data.org") == provider]
         with st.spinner("Reviewing verified results and model probabilities..."):
             try:
-                result = research_prediction(fixture, compatible)
+                if method.startswith("Evidence Ensemble v8"):
+                    from research_ensemble_v8 import predict as candidate_predict
+                    league_history = histories.get(selected.get("league"), compatible)
+                    candidate = candidate_predict(fixture, compatible, league_history=league_history)
+                    if candidate:
+                        probabilities = {
+                            "home":candidate["home_win"],"draw":candidate["draw"],
+                            "away":candidate["away_win"]}
+                        result = {
+                            "available":True,"model_version":candidate["model_version"],
+                            "predicted_score":list(candidate["scores"][0][:2]),
+                            "scores":candidate["scores"],"home_xg":candidate["home_xg"],
+                            "away_xg":candidate["away_xg"],"outcome_probabilities":probabilities,
+                            "variants_used":list(candidate["component_weights"]),
+                            "component_weights":candidate["component_weights"],
+                            "baseline_score":candidate["original_baseline_score"],
+                            "baseline_probability":candidate["original_baseline_score_probability"],
+                            "elo":candidate["elo"],
+                            "agreement":f"{candidate['component_top_score_agreement']}/{candidate['component_count']}",
+                            "difference":candidate["baseline_to_challenger_total_variation"],
+                            "limitations":candidate["limitations"]}
+                    else:
+                        result = {"available":False,"reason":"Insufficient pre-kickoff verified match history for the v8 challenger."}
+                else:
+                    result = research_prediction(fixture, compatible)
             except (TypeError, KeyError, ValueError, ZeroDivisionError) as exc:
                 result = {"available": False, "reason": "Research could not be completed: " + str(exc)[:160]}
-        st.session_state["ziczac_deep_report"] = {"fixture": identifier, "result": result}
+        st.session_state["ziczac_deep_report"] = {"fixture": identifier, "method": method, "result": result}
     current = st.session_state.get("ziczac_deep_report") or {}
-    if current.get("fixture") != identifier:
+    if current.get("fixture") != identifier or current.get("method") != method:
         st.info("Choose this match and press **Run Deep Research AI** to open its report.")
         return
     report = current["result"]
@@ -143,7 +171,18 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report):
     cards[0].metric("Model's top exact score", score)
     cards[1].metric("Estimated score probability", f"{best_prob:.1%}")
     cards[2].metric("Expected goals (H / A)", f"{report['home_xg']:.2f} / {report['away_xg']:.2f}")
-    st.caption("This is an unvalidated challenger estimate, not a promised result. It does not replace predictions already saved before kickoff.")
+    st.caption("Experimental statistical estimate, not a promised result. No original pre-kickoff predictions are changed.")
+    if report.get("baseline_score"):
+        st.info("Preserved v6 score: **" + "-".join(map(str,report["baseline_score"])) +
+                "** (" + f"{report['baseline_probability']:.1%}" + " modal probability) · v8 challenger: **" +
+                score + "**. A changed score is not proof of increased accuracy.")
+        st.caption("Model agreement on v8 modal score: " + str(report["agreement"]) +
+                   " contributors · Probability-distribution difference from original: " + f"{report['difference']:.1%}")
+        st.write("**Statistical contributors / declared weights:**",
+                 {name: f"{weight:.0%}" for name,weight in report["component_weights"].items()})
+        if report.get("elo"):
+            st.caption("Historical Elo signal · Home: " + str(report["elo"]["home"]) +
+                       " · Away: " + str(report["elo"]["away"]) + " · Home-advantage adjustment included")
 
     section = st.selectbox("Explore this match", SECTIONS, key="ziczac_deep_section")
     hid = (fixture.get("homeTeam") or {}).get("id")
