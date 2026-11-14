@@ -125,8 +125,11 @@ def _extract(response, name):
         raise ValueError("Provider answer is not plain text")
     text = text.strip()
     if text.startswith("```"):
-        text = re.sub(r"^\`\`\`(?:json)?\\s*", "", text, flags=re.I)
-        text = re.sub(r"\\s*\`\`\`$", "", text).strip()
+        text = text[3:].lstrip()
+        if text[:4].lower() == "json":
+            text = text[4:].lstrip()
+        if text.endswith("```"):
+            text = text[:-3].rstrip()
     if not text or len(text) > 30000:
         raise ValueError("Empty or oversized AI answer")
     return json.loads(text)
