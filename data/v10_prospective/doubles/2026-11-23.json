@@ -1,0 +1,62 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-14T01:55:29.319743+00:00",
+  "estimated_coverage": 0.06544467166796027,
+  "first": {
+    "away_team": "Angers",
+    "away_team_id": "77",
+    "fixture_id": "1552825",
+    "forecast_id": "169b1dc5d6f939a3bd8a304f9891c4351a70f5f31bfc04991bc3ba7b436c8529",
+    "home_team": "Paris FC",
+    "home_team_id": "114",
+    "kickoff_utc": "2026-11-22T14:00:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.014482219590876163,
+      "score1": "2-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.01337307640137742,
+      "score1": "1-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.013372717099585556,
+      "score1": "2-0",
+      "score2": "0-1"
+    },
+    {
+      "joint_probability": 0.01234854687463999,
+      "score1": "1-0",
+      "score2": "0-1"
+    },
+    {
+      "joint_probability": 0.011868111701481136,
+      "score1": "2-1",
+      "score2": "1-1"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v1",
+  "same_pair_challengers": {},
+  "second": {
+    "away_team": "Brighton",
+    "away_team_id": "51",
+    "fixture_id": "1557472",
+    "forecast_id": "7809f6ab1e1ec9f31c23492f52e7855843606d9be5ae1fc20f510663a4081815",
+    "home_team": "Hull City",
+    "home_team_id": "64",
+    "kickoff_utc": "2026-11-22T14:00:00.000000Z",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-23"
+}
