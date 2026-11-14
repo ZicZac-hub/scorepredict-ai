@@ -6,6 +6,9 @@ mutually exclusive; their summed mass is coverage, not a measured win rate.
 import math
 from datetime import datetime, timezone
 from itertools import combinations
+from zoneinfo import ZoneInfo
+
+SYDNEY = ZoneInfo('Australia/Sydney')
 
 
 def fixture_identity(row):
@@ -72,20 +75,21 @@ def _instant(value):
         return None
 
 
-def _utc_day(value):
+def _sydney_day(value):
+    """Use the user's Sydney matchday, including daylight saving changes."""
     result = _instant(value)
-    return result.date() if result is not None else None
+    return result.astimezone(SYDNEY).date() if result is not None else None
 
 
 def rank_pairs(rows, limit=5):
-    """Compare same-UTC-day pairs by five distinct exact-outcome coverage."""
+    """Compare same-Sydney-day pairs by five distinct exact-outcome coverage."""
     eligible = [r for r in rows if _scores(r)]
     candidates = []
     for first, second in combinations(eligible, 2):
         if same_fixture(first, second):
             continue
-        day = _utc_day(first.get('kickoff'))
-        if day is None or day != _utc_day(second.get('kickoff')):
+        day = _sydney_day(first.get('kickoff'))
+        if day is None or day != _sydney_day(second.get('kickoff')):
             continue
         picks = five_doubles(first, second)
         if len(picks) < 5:
