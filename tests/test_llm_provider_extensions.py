@@ -99,3 +99,67 @@ def test_safe_provider_errors_never_reveal_keys_or_provider_body():
     assert classify_provider_error(error)["reason"] == "quota_or_rate_limit"
     assert classify_provider_error(ValueError("sensitive response")) == {
         "type":"ValueError", "reason":"response_format_or_model_configuration"}
+
+@pytest.mark.parametrize("name", ["openai", "grok", "mistral", "groqcloud", "cohere"])
+def test_structured_json_requested_for_supported_providers(name):
+    seen = {}
+    def post(url, **kwargs):
+        seen.update(kwargs)
+        if name == "cohere":
+            return response({"message": {"content": [{"type": "text", "text": json.dumps(VOTE)}]}})
+        return response({"choices": [{"message": {"content": json.dumps(VOTE)}}]})
+    ask(name, "placeholder", "test-model", "Return only JSON", request=post)
+    assert seen["json"]["response_format"] == {"type": "json_object"}
+    assert seen["allow_redirects"] is False
+
+
+def test_groq_gpt_oss_limits_reasoning_to_leave_room_for_json():
+    seen = {}
+    def post(url, **kwargs):
+        seen.update(kwargs)
+        return response({"choices": [{"message": {"content": json.dumps(VOTE)}}]})
+    ask("groqcloud", "placeholder", "openai/gpt-oss-20b", "Return JSON", request=post)
+    assert seen["json"]["reasoning_effort"] == "low"
+    assert seen["json"]["reasoning_format"] == "hidden"
+    assert seen["json"]["max_tokens"] >= 800
+
+
+def test_plain_and_fenced_json_responses_without_guessing_prose():
+    fenced = response({"choices": [{"message": {"content": "```JSON\n" + json.dumps(VOTE) + "\n```"}}]})
+    assert _extract(fenced, "openai") == VOTE
+    import pytest
+    empty = response({"choices": [{"message": {"content": None}}]})
+    with pytest.raises(ValueError):
+        _extract(empty, "groqcloud")
+    segments = response({"choices": [{"message": {"content": [
+        {"type": "text", "text": json.dumps(VOTE)}
+    ]}}]})
+    assert _extract(segments, "openai") == VOTE
+
+
+def test_existing_immutable_panel_prevents_duplicate_paid_calls(tmp_path, monkeypatch):
+    import llm_research_panel as panel
+    from datetime import datetime, timezone
+    kickoff = "2026-11-15T12:00:00Z"
+    row = {"provider": "API-Football", "fixture_id": "321",
+           "model_key": "v8", "forecast_id": "original",
+           "input_digest": "a"*64, "captured_at_utc": "2026-11-14T00:00:00Z",
+           "kickoff_utc": kickoff, "expected_goals": {"home": 1.2, "away": 1.0},
+           "top10_scores": [[1,1,.12]]}
+    monkeypatch.setattr(panel, "read_latest", lambda source: {("API-Football","321","v8"): row})
+    root = tmp_path / "research"
+    (root / "forecasts").mkdir(parents=True)
+    (root / "forecasts" / "API-Football_321_prior.json").write_text(json.dumps({
+        "research_only": True, "provider": "API-Football",
+        "fixture_id": "321", "captured_at_utc": "2026-11-14T03:00:00Z",
+        "kickoff_utc": kickoff
+    }))
+    def network(*args, **kwargs):
+        raise AssertionError("A published fixture must not incur repeated AI calls")
+    result = panel.capture(
+        now=datetime(2026,11,15,1,tzinfo=timezone.utc),
+        environ={"LLM_RESEARCH_ENABLED": "true", "OPENAI_API_KEY": "placeholder",
+                 "OPENAI_MODEL": "gpt-4o-mini"},
+        root=root, source=tmp_path, request=network)
+    assert result["attempted"] == 0
+    assert result["captured"] == 0
