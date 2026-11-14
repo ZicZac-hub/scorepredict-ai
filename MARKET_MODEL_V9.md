@@ -42,8 +42,14 @@
    it fell back to the historical v8 score model.
 3. **Five doubles:** Open the dedicated Doubles navigation.
    The experimentally ranked v8 automatic/manual options are separate from
-   the old production list. Every double requires *both* exact scores
-   to match; estimated probability mass is never a verified hit rate.
+   the old production list. Under **Market-Informed v9 · Manual five-double
+   comparison**, choose two researched, same-Sydney-day, four-distinct-team
+   API-Football fixtures and click its research button. Only **two market
+   requests** are made, and missing odds cause an explicitly labelled
+   historical v8 fallback. Broad automatic v9 market requests are intentionally
+   disabled to protect API quotas and first-page load time.
+   Every double requires *both* exact scores to match; estimated probability
+   mass is never a verified hit rate.
 
 ## Publicly documented methodological references
 
