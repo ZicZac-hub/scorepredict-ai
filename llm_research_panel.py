@@ -26,7 +26,7 @@ SECRETS = {"openai": "OPENAI", "claude": "ANTHROPIC",
            "gemini": "GEMINI", "grok": "XAI", "deepseek": "DEEPSEEK",
            "perplexity": "PERPLEXITY", "mistral": "MISTRAL",
            "qwen": "QWEN", "groqcloud": "GROQ", "cohere": "COHERE"}
-MAX_MATCHES_PER_RUN = 2
+MAX_MATCHES_PER_RUN = 1
 MIN_LEAD = timedelta(minutes=45)
 MAX_LEAD = timedelta(hours=36)
 
@@ -190,11 +190,13 @@ def ask(name, key, model, prompt, request=None, endpoint=None):
                "deepseek": "https://api.deepseek.com/chat/completions",
                "mistral": "https://api.mistral.ai/v1/chat/completions",
                "groqcloud": "https://api.groq.com/openai/v1/chat/completions",
-               "qwen": _qwen_url(endpoint)}[name]
+               "qwen": None}[name]
+        if name == "qwen":
+            url = _qwen_url(endpoint)
         headers = {"Authorization": "Bearer " + key}
         body = {"model": model, "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": 650}
-    response = post(url, headers=headers, json=body, timeout=40, allow_redirects=False)
+    response = post(url, headers=headers, json=body, timeout=25, allow_redirects=False)
     response.raise_for_status()
     return validate_vote(_extract(response, name))
 
