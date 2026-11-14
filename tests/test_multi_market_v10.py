@@ -106,3 +106,21 @@ def test_a_frozen_double_compares_v10_on_the_same_pair(tmp_path):
     assert report["models"]["v10"]["verified_fixtures"]==2
     assert report["five_doubles"]["same_pair_challengers"]["v10"]["same_pair_verified_days"]==1
     assert report["paired_v8_v10"]["verified_same_fixture_count"]==2
+
+
+def test_multibook_does_not_blend_stale_and_fresh_snapshot_populations():
+    now=when()
+    game=fixture(9011,now,"Home","Away",36)
+    recently=packet(now-timedelta(hours=1))
+    old=packet(now-timedelta(hours=9))
+    old[0]["bookmakers"][0]["name"]="Oldbook A"
+    old[0]["bookmakers"][1]["name"]="Oldbook B"
+    old[0]["bookmakers"][2]["name"]="Oldbook C"
+    only_recent=recently[0]["bookmakers"][:2]
+    recently[0]["bookmakers"]=only_recent
+    assert multi.market_consensus(old+recently,game,as_of=now) is None
+    recently[0]["bookmakers"].append(packet(now)[0]["bookmakers"][2])
+    found=multi.market_consensus(old+recently,game,as_of=now)
+    assert found is not None
+    assert found["bookmaker_count"]==3
+    assert all(not name.startswith("Oldbook") for name in found["bookmaker_names"])
