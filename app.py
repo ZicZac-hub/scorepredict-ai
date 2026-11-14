@@ -1111,6 +1111,11 @@ st.markdown("""<style>
 
 with active_page_slot:
     if view=='deep':
+        # Supply the ten-AI panel with the same current, already-discovered
+        # fixture rows as the statistical Deep Research screen. Keep render(st)
+        # backward-compatible with existing Streamlit cached modules.
+        st.session_state["ziczac_ten_ai_context"] = {
+            "rows": eligible, "histories": histories}
         from llm_research_ui import render as render_five_ai
         render_five_ai(st)
         st.divider()
