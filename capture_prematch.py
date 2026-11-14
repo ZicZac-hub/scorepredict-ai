@@ -174,7 +174,8 @@ def _legacy_record(fixture, forecast, code, evidence, captured_at, report):
 
 def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             ledger_root=LEDGER_ROOT, database_url=None, max_api_calls=120, api_request=None,
-            evidence_loader=None, pair_builder=None, clock=None):
+            evidence_loader=None, pair_builder=None, clock=None,
+            daily_recorder=None):
     """Return old-format snapshots and full-grid ledger coverage without fake history.
 
     Optional callbacks make data policy, timing and budget tests independent of
@@ -346,6 +347,14 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                 known.add(pair[0].get('slot_key') or pair_slot_key(fixture,horizon,POLICY_VERSION))
                 captured_at = pair[0].get('captured_at_utc') or observed.isoformat()
                 records.append(_legacy_record(fixture, forecast, code, evidence, captured_at, report))
+                # Daily v8 research is independent of the immutable original.
+                # Capture failures must never interrupt v6/v7 ledger recording.
+                if daily_recorder is not None:
+                    try:
+                        daily_recorder(fixture, evidence, observed, code)
+                    except Exception as exc:
+                        diagnostics.setdefault('daily_pick_errors',[]).append({
+                            'fixture_id':fixture['id'],'error_type':type(exc).__name__})
                 diagnostics['captured_fixtures'] += 1
             except CaptureBudgetExceeded:
                 diagnostics['budget_skipped'].append({'fixture_id':fixture['id'],'provider':fixture.get('provider'),'horizon':horizon,'reason':'configured_api_call_budget'})
@@ -365,10 +374,20 @@ def main():
     key = os.environ.get('API_FOOTBALL_KEY', '')
     if not key:
         raise RuntimeError('API_FOOTBALL_KEY secret required')
+    from daily_pick_capture import candidate as daily_candidate, save_for_dates
+    _daily_candidates=[]
+    def _record_daily(fixture, evidence, observed, code):
+        result=daily_candidate(fixture,evidence,observed,code)
+        if result:
+            _daily_candidates.append(result)
     payload = collect(key, max_fixtures=_positive_limit(os.environ.get('CAPTURE_MAX_FIXTURES'), 0),
         max_seconds=_positive_limit(os.environ.get('CAPTURE_MAX_SECONDS'), 600),
         database_url=os.environ.get('DATABASE_URL') or None,
-        max_api_calls=_positive_limit(os.environ.get('CAPTURE_MAX_API_CALLS'),120))
+        max_api_calls=_positive_limit(os.environ.get('CAPTURE_MAX_API_CALLS'),120),
+        daily_recorder=_record_daily)
+    saved_days=save_for_dates(_daily_candidates)
+    payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)
+    payload['diagnostics']['daily_pick_days_written']=saved_days
     OUTPUT.mkdir(parents=True, exist_ok=True)
     timestamp = _time(payload['captured_at_utc']).strftime('%Y%m%dT%H%M%S%fZ')
     path = OUTPUT / ('prematch_'+timestamp+'.json')
