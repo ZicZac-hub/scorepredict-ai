@@ -5,7 +5,9 @@ Never invents injuries, odds, or a fixture. The first view freezes a
 pre-match candidate IN THE CURRENT SESSION only; it is not yet a
 cross-device verified prospective record.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
+import json
 from zoneinfo import ZoneInfo
 import html
 import math
@@ -118,8 +120,8 @@ def build_snapshot(row,as_of,forecast=None):
     return snapshot
 
 
-def choose_daily_snapshot(rows,session,as_of=None,api_key=None):
-    """Freeze one researched score per session, using genuine v9 odds if available."""
+def choose_daily_snapshot(rows,session,as_of=None,api_key=None,snapshot_dir=None):
+    """Prefer a verified global pre-match frozen pick; otherwise freeze locally."""
     now=_when(as_of or datetime.now(timezone.utc))
     if now is None:
         return None
@@ -130,6 +132,31 @@ def choose_daily_snapshot(rows,session,as_of=None,api_key=None):
             and _when(previous.get("kickoff_utc"))
             and _when(previous["captured_at_utc"])<_when(previous["kickoff_utc"])):
         return previous
+    # The scheduled evidence collector writes each daily pick only once.
+    # Reading this file makes the same exact-score forecast visible on iPhone
+    # and MacBook independently of each browser's competition/date filters.
+    folder=Path(snapshot_dir) if snapshot_dir is not None else Path("data/daily_picks")
+    for day in (now.astimezone(SYDNEY).date(),
+                now.astimezone(SYDNEY).date()+timedelta(days=1)):
+        path=folder/(day.isoformat()+".json")
+        try:
+            shared=json.loads(path.read_text(encoding="utf-8"))
+            before=_when(shared.get("captured_at_utc"))
+            kickoff=_when(shared.get("kickoff_utc"))
+            if (shared.get("prediction_date") != day.isoformat()
+                    or shared.get("status") != "frozen_in_capture_workflow"
+                    or not before or not kickoff or before>=kickoff
+                    or not isinstance(shared.get("exact_score"),list)
+                    or len(shared["exact_score"])!=2
+                    or any(type(v) is not int or v<0 for v in shared["exact_score"])
+                    or not isinstance(shared.get("outcomes"),dict)
+                    or not isinstance(shared.get("top_scores"),list)):
+                continue
+            session[STATE_KEY]=shared
+            session.pop(ODDS_KEY,None)
+            return shared
+        except (OSError,ValueError,TypeError,KeyError):
+            pass
     for row in daily_candidates(rows,now):
         try:
             from research_ensemble_v8 import predict as research_v8
@@ -239,8 +266,10 @@ def render(st,rows,session,api_key=None,now=None):
         st.caption("Historical v8 only. No valid recent bookmaker prices were available or the provider odds feed was not configured; no market signal was invented.")
     if now>=_when(snapshot["kickoff_utc"]):
         st.warning("Kickoff has passed. This original estimate is unchanged; check verified match results in Performance.")
+    elif snapshot.get("status") == "frozen_in_capture_workflow":
+        st.caption("🔒 Frozen before kickoff by the automated evidence workflow. Shared across devices and kept in the prediction archive without later score edits.")
     else:
-        st.caption("Locked within this browser session before kickoff. A new browser session may make a different selection; this card is not yet a globally archived Prediction of the Day.")
+        st.caption("Frozen in this browser session before kickoff. The automated shared daily archive will take priority in new sessions once its snapshot is available.")
     with st.expander("🔬 Why this match? Verified research and alternative scores"):
         st.write("**Research coverage:** "+snapshot["home"]+" last "+str(snapshot["home_recent"])+" matches; "+
                  snapshot["away"]+" last "+str(snapshot["away_recent"])+" matches.")
