@@ -507,6 +507,32 @@ def render(st,rows,histories=None):
                        ". Missing data are not converted into scores.")
         st.caption("AI forecasts and new goal models remain research-only "
                    "until independently proven to outperform the original.")
+    with st.expander("🧪 V22 source coverage and verified model comparisons", expanded=False):
+        from persist_prematch import load_json as _load_v22
+        board=_load_v22(Path("data/v22_prospective")/"quality_report.json",{})
+        if not board:
+            st.caption("V22 has not published a verified performance dashboard yet. "
+                       "No retrospective result is being displayed as a live win.")
+        else:
+            files=board.get("source_completeness") or {}
+            st.caption("Source packets: "+str(files.get("packets_checked",0))+
+                       " · Genuine past xG: "+str(files.get("with_historical_xg",0))+
+                       " · at least 6 per team: "+str(files.get("with_6_per_team",0))+
+                       " · 2+ markets: "+str(files.get("with_2_market_types",0))+
+                       " · confirmed both starting XIs: "+
+                       str(files.get("with_both_starting_XIs",0)))
+            for name,stat in (board.get("frozen_v22_vs_v8") or {}).items():
+                n=int(stat.get("verified") or 0)
+                hits=int(stat.get("hits") or 0)
+                st.caption(name+" · "+(f"{hits}/{n} = {hits/n:.1%}" if n else
+                                       "no verified pairs")+
+                           " · pending "+str(stat.get("pending",0)))
+            ai=board.get("matched_ai_provider_results") or {}
+            st.caption("Verified matched AI panels: "+(
+                ", ".join(name+"="+str(v.get("source_matched_verified_fixtures",0))
+                          for name,v in ai.items()) if ai else "none yet"))
+            st.caption("Model promotion disabled. V22 accuracy is unknown until "
+                       "qualified pre-match forecasts have verified finals.")
     minute=int(datetime.now(timezone.utc).timestamp()//60)
     from ai_five_live_finder import research_day
     from on_demand_ai import utc
