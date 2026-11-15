@@ -139,7 +139,7 @@ def calibrate_matrix(base_matrix, rows, *, as_of):
     }
 
 
-def predict(fixture, history, league_history=None, *, as_of=None, max_goals=10):
+def predict(fixture, history, league_history=None, *, as_of=None, max_goals=10, reference_forecast=None):
     """Experimental pre-match v12, requiring a properly qualified league sample.
 
     Returns None when history is insufficient. Existing v8 records are not
@@ -149,8 +149,11 @@ def predict(fixture, history, league_history=None, *, as_of=None, max_goals=10):
     kickoff = engine._date(fixture.get("utcDate"))
     if as_of is None or kickoff is None or as_of >= kickoff:
         return None
-    baseline = v8_predict(fixture, history, league_history=league_history,
-                          as_of=as_of, max_goals=max_goals)
+    # Reuse the already-computed same-evidence v8 grid inside the automatic
+    # collector. This does not trigger an extra provider or model run.
+    baseline = (reference_forecast if reference_forecast is not None else
+                v8_predict(fixture, history, league_history=league_history,
+                           as_of=as_of, max_goals=max_goals))
     if baseline is None:
         return None
     prior = _league_rows(fixture, history if league_history is None else league_history, as_of)
