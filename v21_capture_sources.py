@@ -118,7 +118,10 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             # Never claim matching historical input_digest after refreshing
             # league history. The packet is supplemental source evidence.
             provider=capture(fixture,evidence["history"],key,
-                             now=clock,request=cb,max_history_per_team=1)
+                             now=clock,request=cb,
+                             max_history_per_team=(8 if
+                                 os.environ.get("V22_DEEP_XG_ENABLED")=="true"
+                                 else 1))
             if not valid_snapshot(provider,fixture,now=clock):
                 result["skipped"].append(str(leg["fixture_id"])+":no_qualified_packet")
                 continue
