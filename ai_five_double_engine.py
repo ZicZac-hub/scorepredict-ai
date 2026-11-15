@@ -139,6 +139,6 @@ def merged_five(first,second,first_research=None,second_research=None,*,now=None
         "ai_rank_influence":"experimental, capped at 12% per leg endorsement share",
         "ai_votes":{str(i):n for i,n in ((1,n1),(2,n2))},
         "fixtures":[identity(first),identity(second)],
-        "sydney_date":_instant(first.get("kickoff")).astimezone(SYDNEY).date().isoformat(),
+        "sydney_date":_instant(first.get("kickoff") or (first.get("fixture") or {}).get("utcDate")).astimezone(SYDNEY).date().isoformat(),
         "original_immutable_predictions_changed":False,
     }
