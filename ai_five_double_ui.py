@@ -605,7 +605,9 @@ def render(st,rows,histories=None):
                 try:
                     _choices=[{"score1":x["Score 1"],"score2":x["Score 2"]}
                               for x in report["model_and_ai_result"]["doubles"]]
-                    _audit_ui(st,_audit_pair(first["fixture"],second["fixture"],_choices))
+                    _audit_ui(st,_audit_pair(
+                        first["fixture"],second["fixture"],_choices,
+                        method=(selection_mode if selection_mode != "probability" else "")))
                 except (ValueError,TypeError,KeyError):
                     st.warning("This five-double result was not eligible for "
                                "permanent pre-match tracking.")
