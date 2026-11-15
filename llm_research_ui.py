@@ -171,6 +171,21 @@ def render(st, root=ROOT):
     v15root=Path("data/v15_ai_double")
     v15status=_json(v15root/"status.json")
     v15report=_json(v15root/"evaluation.json")
+    source_audit=_json(v15root/"source_audit.json")
+    if source_audit:
+        st.caption(
+            "V16 source audit · "+str(source_audit.get("frozen_original_double_sets_checked",0))+
+            " original double sets checked · "+
+            str(source_audit.get("original_sets_with_at_least_two_ai_votes_on_both_legs",0))+
+            " with >=2 genuine source-matched AI votes on BOTH matches."
+        )
+        if source_audit.get("source_rows"):
+            with st.expander("V16: source-matched AI coverage by double"):
+                for item in source_audit["source_rows"][-8:]:
+                    st.write(str(item.get("sydney_day"))+" · Match 1 / Match 2: "+
+                             " / ".join(str(n) for n in item.get("actual_provider_votes_per_leg",[]))+
+                             " valid AI responses")
+                    st.caption(" / ".join(item.get("leg_reasons",[])))
     attempted=v15status.get("existing_original_days")
     if attempted is not None:
         st.caption("Original daily pairs inspected: "+str(attempted)+
