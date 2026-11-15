@@ -118,7 +118,7 @@ def merged_five(first,second,first_research=None,second_research=None,*,now=None
     # probability-maximising original untouched, and never manufacture a score
     # outside the underlying model's verified, deduplicated top-ten grid.
     # This declared weight has NOT passed a prospective win-rate gate.
-    candidate_selection=(select_balanced(combined,limit=5,diversity_weight=0.15,
+    candidate_selection=(select_balanced(combined,limit=5,diversity_weight=0.18,
                           probability="_rank") if selection_mode=="balanced_challenger"
                          else combined[:5])
     chosen=[{k:v for k,v in item.items() if k!="_rank"}
@@ -127,7 +127,7 @@ def merged_five(first,second,first_research=None,second_research=None,*,now=None
         "status":"ready","doubles":chosen,
         "baseline":baseline,
         "selection_mode":selection_mode,
-        "selection_weight":0.15 if selection_mode=="balanced_challenger" else 0.0,
+        "selection_weight":0.18 if selection_mode=="balanced_challenger" else 0.0,
         "baseline_diversity":score_coverage(baseline),
         "selected_diversity":score_coverage(chosen),
         "diversity_is_experimental":selection_mode=="balanced_challenger",
