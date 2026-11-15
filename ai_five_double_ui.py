@@ -314,13 +314,21 @@ def render(st,rows,histories=None):
         if day>=local_today.isoformat():
             status=entry.get("last") or {}
             if status:
-                st.caption("Direct search "+day+": "+str(status.get("discovered",0))+
-                           " eligible upcoming fixtures found, "+
-                           str(len(entry.get("checked_ids") or []))+
-                           " checked, "+str(len(entry.get("rows") or []))+
-                           " fully modelled; "+
-                           str(status.get("remaining",0))+
-                           " more unprocessed. No missing results were fabricated.")
+                if status.get("quota_limited"):
+                    st.error("⚠️ API-Football quota/rate limit stopped the "+
+                             day+" search. **0 returned fixtures is NOT a "
+                             "confirmed empty football schedule.** Do not "
+                             "keep retrying: check your API-Sports account "
+                             "usage or wait for the provider allowance to reset. "
+                             "Previously saved forecasts remain available.")
+                else:
+                    st.caption("Direct search "+day+": "+str(status.get("discovered",0))+
+                               " eligible upcoming fixtures found, "+
+                               str(len(entry.get("checked_ids") or []))+
+                               " checked, "+str(len(entry.get("rows") or []))+
+                               " fully modelled; "+
+                               str(status.get("remaining",0))+
+                               " more unprocessed. No missing results were fabricated.")
                 for e in (status.get("errors") or [])[:2]:
                     st.caption("Provider/model limitation: "+str(e)[:160])
     targeted=[row for day,entry in fetched.items()
