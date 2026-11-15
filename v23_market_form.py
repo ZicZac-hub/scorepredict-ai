@@ -70,17 +70,17 @@ def shadow(row, packet, *, as_of, history=None, min_league_history=45):
     elif history:
         form=goal_form_challenger(row,history,clock)
         if form.get("available"):
-            # Research-only small blend, V20 is not demonstrated to beat V8.
-            grid=.8*grid+.2*np.asarray(form["matrix"],dtype=float)
-            grid/=grid.sum()
-            applied.append("venue_goal_form_conservative_shadow")
+            # Matched 393-fixture replay found V20 goal-form slightly WORSE
+            # than original V8 in proper score log loss, despite two more
+            # top-five score hits. Do NOT silently weight this weaker model.
             context["goal_form_observations"]={
                 key:form["profile"][key]["matches"] for key in
                 ("home_last10","away_last10",
                  "home_at_home_last10","away_away_last10")}
+            applied.append("venue_form_research_context_only_not_score_weight")
     else:
         context["goal_form_observations"]="not_supplied; original V8 prior only"
-    if not applied:
+    if not has_xg:
         applied.append("unchanged_original_goal_prior")
 
     grid_before=grid.copy()
