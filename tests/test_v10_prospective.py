@@ -198,8 +198,10 @@ def test_new_research_snapshots_are_separate_from_original_and_selected_if_fresh
     local_now=now.astimezone(syd)
     first_local=local_now+timedelta(hours=4)
     if first_local.hour>20:
+        # The frozen-pair policy starts at most 24h before first kickoff.
+        # 18:00 tomorrow can be >24h away when CI runs in the afternoon.
         first_local=(local_now+timedelta(days=1)).replace(
-            hour=18,minute=0,second=0,microsecond=0)
+            hour=15,minute=0,second=0,microsecond=0)
     second_local=first_local+timedelta(hours=1)
     first=fixture(83501,now,"Club Q","Club R",12)
     second=fixture(83502,now,"Club S","Club T",13)
