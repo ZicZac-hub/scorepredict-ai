@@ -95,6 +95,10 @@ def predict(fixture, history, league_history=None, *, as_of=None,
         "component_versions":{
             name:str(components[name].get("model_version") or "unknown")
             for name in weights},
+        "component_score_distributions":{
+            name:[[int(h),int(a),float(p)]
+                  for h,a,p in components[name]["scores"][:10]]
+            for name in weights},
         "available_models":list(weights),
         "missing_optional_models":[k for k in WEIGHTS if k not in weights],
         "forecast_as_of":now.astimezone(timezone.utc).isoformat(),
@@ -159,7 +163,8 @@ def pair(a,b,*,mode="top5",now=None):
                                for x in choices})!=5:
         return None
     return {
-        "model_version":VERSION,"selection_mode":mode,"doubles":choices,
+        "model_version":str((a.get("result") or {}).get("model_version") or VERSION),
+        "selection_mode":mode,"doubles":choices,
         "estimated_joint_coverage":sum(x["Joint"] for x in choices),
         "top5_estimated_coverage":sum(x["Joint"] for x in top),
         "estimated_coverage_is_not_hit_rate":True,
