@@ -14,6 +14,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 import json
 import math
+import hashlib
 
 from persist_prematch import load_json, verified_result, write_json
 from v10_prospective import ROOT as SOURCE_ROOT, read_latest, utc
@@ -49,6 +50,13 @@ def _grid(row):
     if abs(math.fsum(values) - 1) > 1e-6:
         raise ValueError("unnormalized_score_grid")
     return matrix
+
+
+def _score_digest(row):
+    """Write-once fingerprint of the complete matrix, not just a market label."""
+    cells=_grid(row)
+    payload=json.dumps(cells,sort_keys=True,separators=(",",":"),allow_nan=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _original_market_file(root, row):
@@ -133,6 +141,7 @@ def qualified_market(source, candidate, *, root=SOURCE_ROOT, cutoff=None):
                 "source_forecast_id":source["forecast_id"],
                 "market_forecast_id":candidate["forecast_id"],
                 "input_digest":source["input_digest"],
+                "market_score_matrix_sha256":_score_digest(candidate),
                 "snapshot_utc":timestamp.isoformat(),
                 "capture_utc":observed.isoformat(),
                 "source_scope":"archived_model_and_odds_metadata_not_raw_market_api_payload",
@@ -307,10 +316,13 @@ def evaluate(root=ROOT,source_root=SOURCE_ROOT,verified=None):
             originally=_pair_sources(source_pair,source_root)
             for index,side in enumerate(("first","second")):
                 provenance=packet[side+"_market_provenance"]
+                market_id=str(provenance.get("market_forecast_id") or "")
+                if not SAFE.fullmatch(market_id) or market_id in (".",".."):
+                    raise ValueError("unsafe_market_source_identity")
                 mpath=(Path(source_root)/"forecasts"/
                        packet[side]["provider"]/
                        str(packet[side]["fixture_id"])/
-                       (provenance["market_forecast_id"]+".json"))
+                       (market_id+".json"))
                 model=load_json(mpath,{})
                 record,reason=qualified_market(originally[index],model,root=source_root,
                                                cutoff=packet["captured_at_utc"])
@@ -352,14 +364,23 @@ def evaluate(root=ROOT,source_root=SOURCE_ROOT,verified=None):
 
 def readiness(source_root=SOURCE_ROOT,root=ROOT):
     saved=load_json(Path(root)/"performance.json",{})
-    market_rows=[z for z in read_latest(source_root).values()
-                 if z.get("model_key") in SUPPORTED_MARKETS]
+    read_error=None
+    try:
+        market_rows=[z for z in read_latest(source_root).values()
+                     if z.get("model_key") in SUPPORTED_MARKETS]
+    except (ValueError,OSError,TypeError) as exc:
+        # Fail closed: an invalid stored forecast cannot be quietly counted
+        # as genuine evidence or bring down all scheduled status reporting.
+        read_error="immutable_market_forecast_ledger_invalid"
+        market_rows=[]
     models=Counter(z["model_key"] for z in market_rows)
     ai=load_json(Path("data/v15_ai_double/source_audit.json"),{})
     sport=load_json(Path("data/independent_football/status.json"),{})
     v18=load_json(Path("data/v18_accuracy/accuracy_report.json"),{})
     return {"version":VERSION,"archived_prematch_market_models":dict(models),
-            "qualified_source_matched_original_double_sets":saved.get("frozen_sets",0),
+            "qualified_source_matched_original_double_sets":(
+                int(saved.get("verified_sets") or 0)+int(saved.get("pending_sets") or 0)),
+            "market_source_read_error":read_error,
             "market_challenger_verified_pairs":saved.get("verified_sets",0),
             "qualified_two_match_ai_pairs":ai.get(
                 "original_sets_with_at_least_two_ai_votes_on_both_legs",0),
