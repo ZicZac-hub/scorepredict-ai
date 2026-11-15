@@ -1,0 +1,40 @@
+name: Index immutable prediction evidence
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: prediction-evidence-index
+  cancel-in-progress: false
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Create searchable file-path manifest (no forecast modifications)
+        run: |
+          python - <<'PY'
+          import json, pathlib, subprocess
+          roots = ('data/v10_prospective/', 'data/prematch/')
+          files = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], text=True).splitlines()
+          paths = sorted(p for p in files if p.startswith(roots) and pathlib.Path(p).is_file())
+          out = pathlib.Path('data/prediction_evidence_index.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps({'schema_version': 1, 'paths': paths, 'count': len(paths)}, indent=2) + '\n')
+          print(f'Indexed {len(paths)} evidence files; no forecast contents changed.')
+          PY
+      - name: Commit manifest only if changed
+        run: |
+          if git diff --quiet -- data/prediction_evidence_index.json && ! git ls-files --others --exclude-standard -- data/prediction_evidence_index.json | grep -q .; then
+            echo "Manifest unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/prediction_evidence_index.json
+          git commit -m "chore: index immutable prediction evidence paths"
+          git push
