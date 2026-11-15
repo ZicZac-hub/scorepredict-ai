@@ -17,6 +17,7 @@ from llm_research_panel import PROVIDERS
 from smart_double_ai import _scores
 from goal_research_v20 import goal_profile, goal_form_challenger
 from v21_provider_evidence import valid_snapshot
+from v22_shadow import shadow as v22_shadow
 
 
 def archive_rows(now=None, root=None):
@@ -149,6 +150,25 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
     research_models = [goal_form_challenger(row, dated_history[i], now)
                        for i, row in enumerate(pair_rows)]
     effective_rows = pair_rows
+    v22_models = []
+    if selection_mode == "v22_xg_market":
+        v22_models = [v22_shadow(row,provider_packets[i],as_of=now)
+                      for i,row in enumerate(pair_rows)]
+        blocked = [f"Match {i+1}: {x.get('reason','unavailable')}"
+                   for i,x in enumerate(v22_models) if not x.get("ready")]
+        if blocked:
+            return {"status":"insufficient_v22_evidence",
+                    "reason":"V22 cannot create verified xG + market doubles: " +
+                             " | ".join(blocked) +
+                             ". Use the original baseline when any source is missing; "
+                             "V22 never invents lineups or historical xG."}
+        effective_rows = []
+        for row,model in zip(pair_rows,v22_models):
+            adjusted = dict(row.get("result") or {})
+            adjusted.update({"scores":model["scores"],"matrix":model["matrix"],
+                             "home_xg":model["home_xg"],"away_xg":model["away_xg"],
+                             "model_version":model["prediction_method"]})
+            effective_rows.append({**row,"result":adjusted})
     if selection_mode == "goal_form_research":
         missing = [str(i+1)+": "+str(m.get("reason") or "insufficient evidence")
                    for i, m in enumerate(research_models) if not m.get("available")]
@@ -191,15 +211,22 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
     # Until a source-matched AI panel beats statistical-only picks on
     # independent future games, V21 never promotes AI opinions to numerical
     # weighting. The validated votes remain visible for review.
-    applied_evidence = ([{},{}] if selection_mode=="goal_form_research"
-                        else evidence)
+    applied_evidence = ([{},{}] if selection_mode in
+                        ("goal_form_research","v22_xg_market") else evidence)
     combined = merged_five(effective_rows[0], effective_rows[1],
                            applied_evidence[0], applied_evidence[1], now=now,
                            selection_mode=("probability" if
-                                           selection_mode == "goal_form_research"
+                                           selection_mode in ("goal_form_research",
+                                                              "v22_xg_market")
                                            else selection_mode))
     if combined["status"] != "ready":
         return combined
+    if selection_mode == "v22_xg_market":
+        combined["selection_mode"]="v22_xg_market"
+        combined["v22_shadow_coverage"]=combined["selected_model_coverage"]
+        combined["baseline_coverage"]=original.get("selected_model_coverage")
+        combined["baseline_diversity"]=original.get("selected_diversity")
+        combined["estimated_coverage_is_not_observed_accuracy"]=True
     if selection_mode == "goal_form_research":
         # The two values use different distributions; never imply the
         # challenger coverage is an observed or directly comparable win rate.
@@ -220,8 +247,9 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
         "archived_history_counts": [r.get("history_matches_reported")
                                     for r in pair_rows],
         "historical_profiles": profiles, "research_models": research_models,
+        "v22_shadow_models":v22_models,
         "v21_provider_packets": provider_packets,
-        "research_ai_votes_weighted": selection_mode!="goal_form_research",
+        "research_ai_votes_weighted": selection_mode not in ("goal_form_research","v22_xg_market"),
         "provider_context": [r.get("research_context") or {} for r in pair_rows],
         "ai_research": evidence, "api_errors": errors,
         "model_and_ai_result": combined,
@@ -248,7 +276,9 @@ def _display(st,report,first,second):
     calc=report["model_and_ai_result"]
     challenger = calc.get("selection_mode") == "balanced_challenger"
     form_research = calc.get("selection_mode") == "goal_form_research"
-    method = ("research goal-form challenger" if form_research else
+    v22_mode = calc.get("selection_mode") == "v22_xg_market"
+    method = ("V22 verified xG + market challenger" if v22_mode else
+              "research goal-form challenger" if form_research else
               "balanced challenger" if challenger else "original baseline")
     st.markdown("### ✅ Final five exact-score doubles · " + method)
     st.caption("Match 1: "+label(first))
@@ -258,6 +288,11 @@ def _display(st,report,first,second):
     a,b=st.columns(2)
     a.metric("Original coverage estimate", f"{calc['baseline_coverage']:.2%}")
     b.metric("Selected model coverage estimate", f"{calc['selected_model_coverage']:.2%}")
+    if v22_mode:
+        st.warning("V22 uses independent historical API-provided expected goals "
+                   "and time-checked market odds. Results are an experimental "
+                   "shadow prediction, NOT verified higher accuracy. "
+                   "Confirmed lineups are shown without invented player effect.")
     if form_research:
         st.warning("Research form model is a separate, unvalidated probability "
                    "distribution. Original and research coverage estimates are "
@@ -279,6 +314,10 @@ def _display(st,report,first,second):
                    "probability-maximising estimated coverage. This is NOT a proven "
                    "accuracy gain. The original frozen records and automated "
                    "Five Doubles remain unchanged.")
+    if v22_mode:
+        st.caption("V22 ignores unproven AI score votes numerically. "
+                   "It requires real xG and at least two market types for BOTH "
+                   "fixtures; no source means no new prediction.")
     if form_research:
         st.caption("V21 AI verdicts are recorded as advisory only; they do NOT "
                    "change research score probabilities until verified future "
@@ -621,7 +660,8 @@ def render(st,rows,histories=None):
     mode_label=st.selectbox(
         "Choose five-double scoring method",
         ["Research goal-form challenger (experimental)", "Original top-probability baseline",
-         "Balanced challenger (experimental)"],
+         "Balanced challenger (experimental)",
+         "V22 Verified xG + Markets (research-only)"],
         index=0 if research_ready else 1,key="ziczac_ai_five_selection_mode",
         help="Research goal-form recomputes a shadow score grid from verified "
              "last-ten home/away scoring and opposition concessions, only if "
@@ -631,7 +671,8 @@ def render(st,rows,histories=None):
         st.caption("Experimental goal-form mode needs more verified past home/away "
                    "matches for both teams plus complete score grids. "
                    "Original five doubles remain available without inventing research.")
-    selection_mode = ("goal_form_research" if mode_label.startswith("Research") else
+    selection_mode = ("v22_xg_market" if mode_label.startswith("V22") else
+                      "goal_form_research" if mode_label.startswith("Research") else
                       "balanced_challenger" if mode_label.startswith("Balanced")
                       else "probability")
     st.caption("Research mode tests real goal strength and wider score scenarios; "
@@ -657,6 +698,13 @@ def render(st,rows,histories=None):
              "Past-fixture expected goals are sampled only where available; "
              "market quotes must be timestamped and lineups provider-reported. "
              "No API key or missing data is fabricated.")
+    xg_depth=st.selectbox(
+        "Past xG fixtures to check per team (only if research-source consent is ticked)",
+        [2,6,8,12],index=2 if selection_mode=="v22_xg_market" else 0,
+        key="ziczac_v22_xg_depth",
+        help="Up to twice this many additional historical fixture-statistics "
+             "requests PER selected match, plus lineup/injury/odds calls. "
+             "API quota or fees may apply. Choose 2 for minimal usage.")
     if source_consent and not private:
         st.warning("Verified provider source collection requires your private "
                    "ZicZac login. No extra provider calls will be made without it.")
@@ -704,7 +752,8 @@ def render(st,rows,histories=None):
                     if source_consent and private and football_key and packet is None:
                         packet=_capture_provider(item["fixture"],
                                                 _history(item,histories or {}),
-                                                football_key,now=clock)
+                                                football_key,now=clock,
+                                                max_history_per_team=xg_depth)
                         if not valid_snapshot(packet,item["fixture"],now=clock):
                             packet=None
                         elif db_url:
