@@ -87,7 +87,8 @@ def source_observations(root=SOURCE_ROOT,verified=None,forecast_rows=None):
             if (orig is None or orig.get("input_digest")!=row["input_digest"]
                     or orig.get("model_key")!="v8" or
                     orig.get("score_matrix")!=row.get("score_matrix") or
-                    utc(orig["captured_at_utc"])!=utc(row["captured_at_utc"])):
+                    utc(orig["captured_at_utc"])!=utc(row["captured_at_utc"]) or
+                    utc(orig["evidence_as_of_utc"])!=utc(row["evidence_as_of_utc"])):
                 missing["original_forecast_id_or_digest_unverified"]+=1
                 continue
             if (int(row.get("history_matches") or 0)<30 or
