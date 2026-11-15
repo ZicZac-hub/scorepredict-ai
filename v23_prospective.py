@@ -40,7 +40,7 @@ def frozen_candidates(*,now,source_root=V8_ROOT,provider_root=SOURCE_ROOT,
                 continue
             if int(source.get("league_history_matches") or 0)<45:
                 continue
-            evidence=best_packet(provider_root,source,now=clock)
+            evidence=best_packet(provider_root,source,now=clock,priority="market")
             if not evidence:
                 continue
             packet=evidence["provider_snapshot"]
