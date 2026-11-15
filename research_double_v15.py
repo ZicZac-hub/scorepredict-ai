@@ -239,7 +239,7 @@ def freeze(*,now=None,root=ROOT,source_root=BASE_ROOT,ai_root=AI_ROOT,
             continue
         record,reason=assemble_pair(original,source,ai_root=ai_root,
                                     now=when,min_votes=min_votes,
-                                    source_root=source_root)
+                                    source_root=source_root if model_rows is None else None)
         if record is None:
             status["abstentions"][path.stem]=reason
         elif _write_once(dest,record):
