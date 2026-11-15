@@ -81,7 +81,11 @@ def _freeze(source,record,now):
         fingerprint.append(record.get("method"))
     if source=="ten_ai":
         fingerprint.append(record.get("ai_provider"))
-    # First original per source / fixture (or original ordered pair) wins.
+    if source=="ai_five_double" and record.get("method"):
+        # Preserve existing baseline IDs. Distinct predeclared research
+        # methods must not overwrite each other on the same fixture pair.
+        fingerprint.append(record["method"])
+    # First original per source / fixture (or per declared method) wins.
     key=hashlib.sha256(json.dumps(fingerprint,sort_keys=True).encode()).hexdigest()
     return {"record_id":key,"source":source,
             "provider":legs[0]["provider"],"fixture_id":legs[0]["fixture_id"],
@@ -104,7 +108,7 @@ def single(fixture,predicted,source,*,method="",ai_provider="",now=None):
     return _freeze(source,record,instant)
 
 
-def pair(first,second,choices,*,now=None):
+def pair(first,second,choices,*,now=None,method=""):
     instant=utc(now or datetime.now(timezone.utc))
     legs=[leg(first,instant),leg(second,instant)]
     if (legs[0]["provider"],legs[0]["fixture_id"]) == (
@@ -117,11 +121,16 @@ def pair(first,second,choices,*,now=None):
         raise ValueError("Doubles must have the same Sydney match date")
     if not isinstance(choices,list) or len(choices)!=5:
         raise ValueError("Exactly five score combinations are required")
+    if method not in ("", "balanced_challenger", "goal_form_research"):
+        raise ValueError("Unrecognized five-double research method")
     frozen=[{"score1":score(x["score1"]),"score2":score(x["score2"])}
             for x in choices]
     if len({(x["score1"],x["score2"]) for x in frozen})!=5:
         raise ValueError("Five unique score combinations are required")
-    return _freeze("ai_five_double",{"legs":legs,"choices":frozen},instant)
+    record = {"legs": legs, "choices": frozen}
+    if method:
+        record["method"] = method
+    return _freeze("ai_five_double",record,instant)
 
 
 def store(record,database_url=None):
