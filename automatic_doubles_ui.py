@@ -22,18 +22,23 @@ def _time(value):
         return None
 
 
-def read_upcoming(root=ROOT,now=None):
+def read_upcoming(root=ROOT,now=None,mode="original"):
     now=_time(now or datetime.now(timezone.utc))
     if now is None:
         return None
     today=now.astimezone(SYDNEY).date().isoformat()
     options=[]
-    for path in sorted((Path(root)/"doubles").glob("*.json")):
+    if mode not in ("original","robust_v14"):
+        return None
+    subdir="robust_doubles" if mode=="robust_v14" else "doubles"
+    expected_mode="prospective_robust_v14" if mode=="robust_v14" else "prospective"
+    coverage_field="lower_envelope_score" if mode=="robust_v14" else "estimated_coverage"
+    for path in sorted((Path(root)/subdir).glob("*.json")):
         if path.stem<today:
             continue
         try:
             packet=json.loads(path.read_text(encoding="utf-8"))
-            if packet.get("mode")!="prospective" or packet.get("status")!="frozen_pre_kickoff":
+            if packet.get("mode")!=expected_mode or packet.get("status")!="frozen_pre_kickoff":
                 continue
             captured=_time(packet["captured_at_utc"])
             first=_time(packet["first"]["kickoff_utc"])
@@ -45,7 +50,7 @@ def read_upcoming(root=ROOT,now=None):
                 continue
             scores=packet["five_doubles"]
             if (len(scores)!=5 or len({(x["score1"],x["score2"]) for x in scores})!=5
-                    or not 0<float(packet.get("estimated_coverage",0))<1):
+                    or not 0<float(packet.get(coverage_field,0))<1):
                 continue
             options.append((packet["sydney_date"],first,packet))
         except (OSError,TypeError,ValueError,KeyError):
@@ -56,7 +61,10 @@ def read_upcoming(root=ROOT,now=None):
 def result_status(packet,report_path=RESULTS):
     try:
         report=json.loads(Path(report_path).read_text(encoding="utf-8"))
-        for result in (report.get("five_doubles") or {}).get("rows") or []:
+        section=("v14_independently_selected_five_doubles"
+                 if packet.get("mode")=="prospective_robust_v14"
+                 else "five_doubles")
+        for result in (report.get(section) or {}).get("rows") or []:
             if result.get("sydney_date")==packet["sydney_date"]:
                 return result
     except (OSError,ValueError,TypeError):
@@ -108,3 +116,31 @@ def render(st,root=ROOT):
             st.caption("Other models are shown only when their pre-kickoff evidence is genuinely comparable.")
             st.write(packet["challenger_exclusions"])
     st.caption("Original frozen selection · every result is graded after completion · alternative models remain experimental.")
+    alternate=read_upcoming(root,mode="robust_v14")
+    if alternate:
+        st.divider()
+        st.markdown("#### 🧪 V14 Robust Agreement · separately frozen auto double")
+        st.caption("Experimental, independent pair selection using genuine "
+                   "full V7 and V8 pre-match distributions. The pair below "
+                   "may differ from the original V8 pair. It is never "
+                   "retroactively generated after kickoff.")
+        st.write("Match 1: **"+str(alternate["first"]["home_team"])+
+                 " vs "+str(alternate["first"]["away_team"])+"**")
+        st.write("Match 2: **"+str(alternate["second"]["home_team"])+
+                 " vs "+str(alternate["second"]["away_team"])+"**")
+        st.metric("Conservative lower-envelope model score",
+                  f"{float(alternate['lower_envelope_score']):.2%}")
+        st.caption("This is NOT a calibrated probability, verified accuracy "
+                   "or guaranteed lower bound on the true outcome.")
+        for number,option in enumerate(alternate["five_doubles"],1):
+            st.markdown("**Robust Double "+str(number)+":** "+
+                        str(option["score1"])+" & "+str(option["score2"]))
+            st.caption("V7 joint: "+f"{float(option['v7_joint']):.2%}"+
+                       " · V8 joint: "+f"{float(option['v8_joint']):.2%}")
+        checked=result_status(alternate,Path(root)/"performance.json")
+        if checked.get("status")=="verified":
+            st.caption("Independently verified V14 result: "+
+                       ("HIT" if checked.get("hit") else "MISS")+
+                       " · actual scores "+", ".join(checked.get("actual_scores") or []))
+        else:
+            st.caption("V14 pending: both full-time scores must be independently verified.")
