@@ -24,9 +24,9 @@ def same_fixture(first, second):
     names_a = tuple(' '.join(str((a.get(side+'Team') or {}).get('name') or '').casefold().split()) for side in ('home','away'))
     names_b = tuple(' '.join(str((b.get(side+'Team') or {}).get('name') or '').casefold().split()) for side in ('home','away'))
     # A duplicate event from two providers is still one match, not two legs.
-    kickoff = _instant(first.get('kickoff'))
+    kickoff = _instant(first.get('kickoff') or a.get('utcDate'))
     return bool(all(names_a) and names_a == names_b and kickoff is not None and
-                kickoff == _instant(second.get('kickoff')))
+                kickoff == _instant(second.get('kickoff') or b.get('utcDate')))
 
 
 def _scores(row):
@@ -88,8 +88,8 @@ def rank_pairs(rows, limit=5):
     for first, second in combinations(eligible, 2):
         if same_fixture(first, second):
             continue
-        day = _sydney_day(first.get('kickoff'))
-        if day is None or day != _sydney_day(second.get('kickoff')):
+        day = _sydney_day(first.get('kickoff') or (first.get('fixture') or {}).get('utcDate'))
+        if day is None or day != _sydney_day(second.get('kickoff') or (second.get('fixture') or {}).get('utcDate')):
             continue
         picks = five_doubles(first, second)
         if len(picks) < 5:
