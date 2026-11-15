@@ -81,12 +81,30 @@ def _sydney_day(value):
     return result.astimezone(SYDNEY).date() if result is not None else None
 
 
-def rank_pairs(rows, limit=5):
-    """Compare same-Sydney-day pairs by five distinct exact-outcome coverage."""
+def rank_pairs(rows, limit=5, *, now=None):
+    """Compare distinct-team same-Sydney-day pairs by modeled coverage.
+
+    Live callers supply ``now`` so cached fixtures that have started cannot
+    become new predictions. Omitting it supports dated historical replays.
+    """
+    clock = _instant(now) if now is not None else None
+    if now is not None and clock is None:
+        return []
     eligible = [r for r in rows if _scores(r)]
     candidates = []
     for first, second in combinations(eligible, 2):
         if same_fixture(first, second):
+            continue
+        names = [' '.join(str(((row.get('fixture') or {}).get(side+'Team') or {})
+                                  .get('name') or '').casefold().split())
+                 for row in (first, second) for side in ('home', 'away')]
+        if not all(names) or len(set(names)) != 4:
+            continue
+        if clock is not None and any(
+                (kick := _instant(row.get('kickoff') or
+                                  (row.get('fixture') or {}).get('utcDate'))) is None
+                or (kick-clock).total_seconds() <= 300
+                for row in (first, second)):
             continue
         day = _sydney_day(first.get('kickoff') or (first.get('fixture') or {}).get('utcDate'))
         if day is None or day != _sydney_day(second.get('kickoff') or (second.get('fixture') or {}).get('utcDate')):

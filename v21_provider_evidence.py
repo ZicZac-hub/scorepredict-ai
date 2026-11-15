@@ -11,6 +11,7 @@ import json
 import math
 
 from v10_prospective import utc
+from source_capture_clock import capture_clock
 
 
 def _timestamp(value):
@@ -40,6 +41,7 @@ def _identity(fixture):
 
 
 def _fetch(request, key, endpoint, args, diagnostics, *, with_fetch_metadata=False):
+    diagnostics["queries"] += 1
     try:
         # Only the unmodified, first-party request helper supports certified
         # API-response timestamps. An injected request with no metadata may
@@ -47,7 +49,6 @@ def _fetch(request, key, endpoint, args, diagnostics, *, with_fetch_metadata=Fal
         from api_football import _request
         if with_fetch_metadata and request is _request:
             envelope=request(key,endpoint,args,with_metadata=True)
-            diagnostics["queries"] += 1
             meta=envelope.get("metadata") or {}
             if meta.get("stale") or not meta.get("fetched_at_utc"):
                 diagnostics["unavailable"][endpoint]="stale_or_undated_api_response"
@@ -58,12 +59,10 @@ def _fetch(request, key, endpoint, args, diagnostics, *, with_fetch_metadata=Fal
             result=envelope.get("data")
         else:
             result = request(key, endpoint, args)
-            diagnostics["queries"] += 1
         if isinstance(result, (dict, list)):
             return result
         raise ValueError("Malformed API response")
     except Exception as exc:
-        diagnostics["queries"] += 1
         diagnostics["unavailable"][endpoint] = type(exc).__name__
         return None
 
@@ -122,7 +121,8 @@ def _market(raw, now):
     return max(choices, key=lambda row: row["updated_at_utc"]) if choices else None
 
 
-def capture(fixture, history, api_key, *, now=None, request=None, max_history_per_team=2):
+def capture(fixture, history, api_key, *, now=None, request=None, max_history_per_team=2,
+            clock=None):
     """Fetch up to 3 fixture-level sources + 2*N historical xG queries.
 
     Caller must enforce owner consent or an opt-in scheduled policy. Historical
@@ -130,7 +130,8 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     the snapshot. No post-kickoff snapshot may be labelled as pre-match.
     """
     from api_football import _request
-    clock = utc(now or datetime.now(timezone.utc))
+    started, observation_time = capture_clock(now, clock)
+    clock = started
     ident = _identity(fixture)
     if not ident or not api_key:
         return {"status": "unavailable", "reason": "matching_api_key_or_fixture_required"}
@@ -142,7 +143,13 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     diag = {"queries": 0, "unavailable": {}}
     # All HTTP calls occur only after pre-match identity/consent gates.
     lineup_raw = _fetch(request, api_key, "/fixtures/lineups", {"fixture": fid}, diag)
+    if observation_time() >= kickoff:
+        return {"status": "unavailable", "reason": "capture_completed_after_kickoff",
+                "diagnostics": diag}
     injury_raw = _fetch(request, api_key, "/injuries", {"fixture": fid}, diag)
+    if observation_time() >= kickoff:
+        return {"status": "unavailable", "reason": "capture_completed_after_kickoff",
+                "diagnostics": diag}
     odds_raw = _fetch(request, api_key, "/odds", {"fixture": fid}, diag,
                       with_fetch_metadata=True)
     lineups = []
@@ -198,6 +205,9 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
             break
     verified_xg = []
     for at, match_id, h, a in selected:
+        if observation_time() >= kickoff:
+            return {"status": "unavailable", "reason": "capture_completed_after_kickoff",
+                    "diagnostics": diag}
         raw = _fetch(request, api_key, "/fixtures/statistics",
                      {"fixture": match_id}, diag)
         stats = _goals_statistics(raw, h, a)
@@ -206,6 +216,12 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
                                 "home_team_id": h, "away_team_id": a,
                                 "home_xg": stats[h], "away_xg": stats[a],
                                 "type": "api_football_reported_expected_goals"})
+    # A source is observed only once its response has arrived. Do not stamp
+    # later/live information with the earlier click or job-start timestamp.
+    clock = observation_time()
+    if clock >= kickoff:
+        return {"status": "unavailable", "reason": "capture_completed_after_kickoff",
+                "diagnostics": diag}
     market = _market(odds_raw, clock)
     # V22: extract complete, source-timestamped totals and BTTS prices
     # from the SAME already-approved /odds call. No extra paid endpoint.
@@ -242,6 +258,7 @@ def valid_snapshot(packet, fixture, *, now=None):
         fid, home, away, kickoff = ident
         captured = utc(packet["captured_at_utc"])
         if (packet.get("status") != "captured_pre_kickoff" or
+            packet.get("provider") != "API-Football" or
             str(packet["fixture_id"]) != fid or
             str(packet["home_team_id"]) != home or
             str(packet["away_team_id"]) != away or

@@ -22,6 +22,7 @@ from v16_pair_research import original_model
 from v21_capture_sources import source_packet_path,best_packet
 from v21_provider_evidence import valid_snapshot
 from v22_evidence_models import parse_markets
+from source_capture_clock import capture_clock
 
 ROOT=Path("data/v24_market_catalog")
 SOURCE_ROOT=Path("data/v21_sources")
@@ -267,7 +268,7 @@ def bind_catalog(*,now,root=ROOT,original_root=ORIGINAL_ROOT,
     return summary
 
 
-def _request_dates(root,clock,max_requests,daily_budget,request,key):
+def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_time=None):
     run={"queries":0,"new_catalog_fixtures":[],"empty_pages":0,
          "skipped_stale":0,"provider_errors":[],"attempts":[]}
     days=_day_priority(clock)
@@ -326,8 +327,9 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key):
                         results=result
                 if not isinstance(results,list):
                     results=[]
+                observed=observation_time() if observation_time is not None else clock
                 for item in results:
-                    saved=_save_fixture_market(item,clock=clock,fetched=fetched,
+                    saved=_save_fixture_market(item,clock=observed,fetched=fetched,
                                                root=root,query_date=date)
                     if saved is not None:
                         run["new_catalog_fixtures"].append(saved)
@@ -360,8 +362,8 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key):
 def capture(*,now=None,enabled=None,api_key=None,root=ROOT,
             original_root=ORIGINAL_ROOT,source_root=SOURCE_ROOT,
             request=None,max_per_run=MAX_PER_RUN,daily_limit=None,
-            originals=None):
-    clock=utc(now or datetime.now(timezone.utc))
+            originals=None,clock=None):
+    clock,observation_time=capture_clock(now,clock)
     active=(os.environ.get("V23_EARLY_ODDS_ENABLED")=="true"
             if enabled is None else bool(enabled))
     key=api_key if api_key is not None else os.environ.get("API_FOOTBALL_KEY","")
@@ -383,10 +385,12 @@ def capture(*,now=None,enabled=None,api_key=None,root=ROOT,
     status["daily_limit"]=daily_limit
     cb=request or _request
     run=_request_dates(root,clock,min(MAX_PER_RUN,max(0,int(max_per_run))),
-                       daily_limit,cb,key)
+                       daily_limit,cb,key,observation_time)
     status.update(run)
     status["requests_used_today"]=_day_count(root,clock)
-    bound=bind_catalog(now=clock,root=root,original_root=original_root,
+    completed=observation_time()
+    status["completed_at_utc"]=completed.isoformat()
+    bound=bind_catalog(now=completed,root=root,original_root=original_root,
                        source_root=source_root,originals=originals)
     status["binding"]=bound
     status["new_source_bindings"]=bound["new_bindings"]

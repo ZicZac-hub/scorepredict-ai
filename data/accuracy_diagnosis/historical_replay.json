@@ -1,0 +1,1531 @@
+{
+  "archived_verified_results": 2255,
+  "excluded_counts": {
+    "original_research_history_insufficient": 64,
+    "v20_goal_form_insufficient": 43
+  },
+  "kind": "retrospective_walk_forward_replay_not_genuine_future_accuracy",
+  "matched_fixtures": 436,
+  "model_promoted": false,
+  "note": "Retrospective and same dataset may have informed prior V8 model choices. Independent future verification is still required.",
+  "one_hour_pre_kickoff_evidence": true,
+  "paired_v8_v20_same_fixtures": {
+    "common_fixtures": 393,
+    "no_automatic_model_promotion": true,
+    "original_v8_on_eligible_fixtures": {
+      "actual_high_score_rate": 0.33078880407124683,
+      "actual_over_2_5_rate": 0.5776081424936387,
+      "evaluated": 393,
+      "exact_hit_rate": 0.10941475826972011,
+      "exact_hits": 43,
+      "goal_mae": 0.9534074737327163,
+      "high_score_underprediction": -0.0009032980458315021,
+      "outcome_brier": 0.5775009620667668,
+      "over_2_5_brier": 0.23792360948489896,
+      "predicted_high_score_mass": 0.33169210211707834,
+      "predicted_over_2_5_rate": 0.5469223359072046,
+      "score_log_loss": 3.011831898401708,
+      "top5_hits": 183,
+      "top5_rate": 0.46564885496183206
+    },
+    "retrospective_only_not_prospective": true,
+    "score_log_loss_advantage_positive_means_form_better": {
+      "approx_95pct_ci": [
+        -0.005378258190988557,
+        -0.0006749222270057528
+      ],
+      "mean_original_minus_form": -0.003026590208997155,
+      "paired_fixtures": 393
+    },
+    "top5_accuracy_delta_positive_means_original_better": {
+      "approx_95pct_ci": [
+        -0.015063613231552163,
+        0.004885496183206106
+      ],
+      "mean_original_minus_form": -0.005089058524173028,
+      "paired_fixtures": 393
+    },
+    "v20_form_on_same_fixtures": {
+      "actual_high_score_rate": 0.33078880407124683,
+      "actual_over_2_5_rate": 0.5776081424936387,
+      "evaluated": 393,
+      "exact_hit_rate": 0.10432569974554708,
+      "exact_hits": 41,
+      "goal_mae": 0.9550823764823301,
+      "high_score_underprediction": -0.0012558361278440788,
+      "outcome_brier": 0.579364457473159,
+      "over_2_5_brier": 0.23783840582386484,
+      "predicted_high_score_mass": 0.3320446401990909,
+      "predicted_over_2_5_rate": 0.5476718200722089,
+      "score_log_loss": 3.014858488610705,
+      "top5_hits": 185,
+      "top5_rate": 0.4707379134860051
+    }
+  },
+  "same_fixture_original_vs_challenger": true,
+  "same_pair_exact_five": {
+    "candidate_sydney_days": 54,
+    "cutoff_policy": "one_hour_before_earliest_kickoff_in_daily_candidate_slate",
+    "days": [
+      {
+        "actual_scores": [
+          [
+            3,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-08-15T17:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1570333",
+          "1570341"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-08-15T16:30:00+00:00",
+          "2026-08-15T16:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-08-15T16:30:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "evaluated",
+        "sydney_date": "2026-08-16"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-08-16T15:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-16T14:00:00+00:00",
+        "source_qualified_forecast_count": 1,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-17"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 1,
+        "first_slate_kickoff_utc": "2026-08-17T19:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-17T18:00:00+00:00",
+        "source_qualified_forecast_count": 0,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-18"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 1,
+        "first_slate_kickoff_utc": "2026-08-19T19:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-19T18:00:00+00:00",
+        "source_qualified_forecast_count": 0,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-20"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 1,
+        "first_slate_kickoff_utc": "2026-08-20T19:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-20T18:00:00+00:00",
+        "source_qualified_forecast_count": 1,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-21"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 4,
+        "first_slate_kickoff_utc": "2026-08-21T18:45:00+00:00",
+        "slate_cutoff_utc": "2026-08-21T17:45:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-22"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            1
+          ],
+          [
+            5,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-08-22T14:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1557371",
+          "1552732"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-08-22T13:00:00+00:00",
+          "2026-08-22T13:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-08-22T13:00:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-08-23"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-08-23T15:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-23T14:00:00+00:00",
+        "source_qualified_forecast_count": 3,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-24"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            1
+          ],
+          [
+            4,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 5,
+        "first_slate_kickoff_utc": "2026-08-24T16:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550089",
+          "1550087"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-08-24T15:30:00+00:00",
+          "2026-08-24T15:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-08-24T15:30:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-08-25"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 1,
+        "first_slate_kickoff_utc": "2026-08-25T19:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-25T18:00:00+00:00",
+        "source_qualified_forecast_count": 1,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-26"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 1,
+        "first_slate_kickoff_utc": "2026-08-26T19:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-26T18:00:00+00:00",
+        "source_qualified_forecast_count": 1,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-27"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-08-27T18:30:00+00:00",
+        "slate_cutoff_utc": "2026-08-27T17:30:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-28"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            2
+          ],
+          [
+            1,
+            4
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-08-28T17:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1552746",
+          "1557381"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-08-28T16:00:00+00:00",
+          "2026-08-28T16:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-08-28T16:00:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-08-29"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            1
+          ],
+          [
+            5,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-08-29T14:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1557378",
+          "1570357"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-08-29T13:00:00+00:00",
+          "2026-08-29T13:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-08-29T13:00:00+00:00",
+        "source_qualified_forecast_count": 3,
+        "status": "evaluated",
+        "sydney_date": "2026-08-30"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-08-30T15:00:00+00:00",
+        "slate_cutoff_utc": "2026-08-30T14:00:00+00:00",
+        "source_qualified_forecast_count": 1,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-08-31"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 5,
+        "first_slate_kickoff_utc": "2026-08-31T16:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550103",
+          "1570358"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-08-31T15:30:00+00:00",
+          "2026-08-31T15:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-08-31T15:30:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-09-01"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-09-03T18:45:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": true,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1552754",
+          "1570392"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-03T17:45:00+00:00",
+          "2026-09-03T17:45:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-03T17:45:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "evaluated",
+        "sydney_date": "2026-09-04"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-04T17:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550112",
+          "1570365"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-04T16:00:00+00:00",
+          "2026-09-04T16:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-04T16:00:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-09-05"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-05T14:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1557391",
+          "1557396"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-05T13:00:00+00:00",
+          "2026-09-05T13:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-05T13:00:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-09-06"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            2
+          ],
+          [
+            5,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-06T14:15:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550108",
+          "1570363"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-06T13:15:00+00:00",
+          "2026-09-06T13:15:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-06T13:15:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-09-07"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 4,
+        "first_slate_kickoff_utc": "2026-09-07T16:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1570368",
+          "1550116"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-07T15:30:00+00:00",
+          "2026-09-07T15:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-07T15:30:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-09-08"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-11T18:30:00+00:00",
+        "slate_cutoff_utc": "2026-09-11T17:30:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-09-12"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-12T14:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1557398",
+          "1570377"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-12T13:00:00+00:00",
+          "2026-09-12T13:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-12T13:00:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-09-13"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-13T14:15:00+00:00",
+        "slate_cutoff_utc": "2026-09-13T13:15:00+00:00",
+        "source_qualified_forecast_count": 3,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-09-14"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 5,
+        "first_slate_kickoff_utc": "2026-09-14T16:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550118",
+          "1557402"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-14T15:30:00+00:00",
+          "2026-09-14T15:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-14T15:30:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-09-15"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 3,
+        "first_slate_kickoff_utc": "2026-09-15T17:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1570391",
+          "1570383"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-15T16:00:00+00:00",
+          "2026-09-15T16:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-15T16:00:00+00:00",
+        "source_qualified_forecast_count": 3,
+        "status": "evaluated",
+        "sydney_date": "2026-09-16"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 3,
+        "first_slate_kickoff_utc": "2026-09-16T17:00:00+00:00",
+        "slate_cutoff_utc": "2026-09-16T16:00:00+00:00",
+        "source_qualified_forecast_count": 3,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-09-17"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-09-17T17:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false
+        },
+        "selected_fixture_ids": [
+          "1570386",
+          "1570390"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-17T16:00:00+00:00",
+          "2026-09-17T16:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-17T16:00:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "evaluated",
+        "sydney_date": "2026-09-18"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-18T18:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1570397",
+          "1557416"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-18T17:30:00+00:00",
+          "2026-09-18T17:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-18T17:30:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-09-19"
+      },
+      {
+        "actual_scores": [
+          [
+            3,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-19T14:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1557409",
+          "1570393"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-19T13:00:00+00:00",
+          "2026-09-19T13:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-19T13:00:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-09-20"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-09-20T14:15:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1552770",
+          "1550132"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-09-20T13:15:00+00:00",
+          "2026-09-20T13:15:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-09-20T13:15:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-09-21"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 4,
+        "first_slate_kickoff_utc": "2026-10-09T18:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false
+        },
+        "selected_fixture_ids": [
+          "1570408",
+          "1557417"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-09T17:30:00+00:00",
+          "2026-10-09T17:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-09T17:30:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-10-10"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-10T13:00:00+00:00",
+        "slate_cutoff_utc": "2026-10-10T12:00:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-10-11"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-11T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false
+        },
+        "selected_fixture_ids": [
+          "1550143",
+          "1557422"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-11T12:00:00+00:00",
+          "2026-10-11T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-11T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-12"
+      },
+      {
+        "actual_scores": [
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 4,
+        "first_slate_kickoff_utc": "2026-10-12T16:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false
+        },
+        "selected_fixture_ids": [
+          "1550137",
+          "1557420"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-12T15:30:00+00:00",
+          "2026-10-12T15:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-12T15:30:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-10-13"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-16T18:30:00+00:00",
+        "slate_cutoff_utc": "2026-10-16T17:30:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-10-17"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-17T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false
+        },
+        "selected_fixture_ids": [
+          "1575191",
+          "1575192"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-17T12:00:00+00:00",
+          "2026-10-17T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-17T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-18"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            5
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-18T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550150",
+          "1552783"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-18T12:00:00+00:00",
+          "2026-10-18T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-18T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-19"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 4,
+        "first_slate_kickoff_utc": "2026-10-19T16:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550154",
+          "1570417"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-19T15:30:00+00:00",
+          "2026-10-19T15:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-19T15:30:00+00:00",
+        "source_qualified_forecast_count": 4,
+        "status": "evaluated",
+        "sydney_date": "2026-10-20"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 1,
+        "first_slate_kickoff_utc": "2026-10-21T18:00:00+00:00",
+        "slate_cutoff_utc": "2026-10-21T17:00:00+00:00",
+        "source_qualified_forecast_count": 1,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-10-22"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-23T18:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1552794",
+          "1570423"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-23T17:30:00+00:00",
+          "2026-10-23T17:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-23T17:30:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-24"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-24T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false
+        },
+        "selected_fixture_ids": [
+          "1550158",
+          "1575201"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-24T12:00:00+00:00",
+          "2026-10-24T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-24T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-25"
+      },
+      {
+        "actual_scores": [
+          [
+            4,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-25T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1570424",
+          "1552797"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-25T12:00:00+00:00",
+          "2026-10-25T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-25T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-26"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-10-26T19:30:00+00:00",
+        "slate_cutoff_utc": "2026-10-26T18:30:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-10-27"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            6
+          ],
+          [
+            4,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 3,
+        "first_slate_kickoff_utc": "2026-10-27T17:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550174",
+          "1550168"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-27T16:30:00+00:00",
+          "2026-10-27T16:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-27T16:30:00+00:00",
+        "source_qualified_forecast_count": 3,
+        "status": "evaluated",
+        "sydney_date": "2026-10-28"
+      },
+      {
+        "actual_scores": [
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 5,
+        "first_slate_kickoff_utc": "2026-10-28T17:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550167",
+          "1550171"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-28T16:30:00+00:00",
+          "2026-10-28T16:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-28T16:30:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-10-29"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 2,
+        "first_slate_kickoff_utc": "2026-10-29T17:30:00+00:00",
+        "slate_cutoff_utc": "2026-10-29T16:30:00+00:00",
+        "source_qualified_forecast_count": 2,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-10-30"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-30T18:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1552801",
+          "1552802"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-10-30T17:00:00+00:00",
+          "2026-10-30T17:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-10-30T17:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-10-31"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-10-31T13:00:00+00:00",
+        "slate_cutoff_utc": "2026-10-31T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-11-01"
+      },
+      {
+        "actual_scores": [
+          [
+            3,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-11-01T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1570438",
+          "1550183"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-11-01T12:00:00+00:00",
+          "2026-11-01T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-11-01T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-11-02"
+      },
+      {
+        "actual_scores": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 5,
+        "first_slate_kickoff_utc": "2026-11-02T17:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550178",
+          "1552803"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-11-02T16:30:00+00:00",
+          "2026-11-02T16:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-11-02T16:30:00+00:00",
+        "source_qualified_forecast_count": 5,
+        "status": "evaluated",
+        "sydney_date": "2026-11-03"
+      },
+      {
+        "actual_scores": [
+          [
+            3,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-11-06T19:30:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1557460",
+          "1557463"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-11-06T18:30:00+00:00",
+          "2026-11-06T18:30:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-11-06T18:30:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-11-07"
+      },
+      {
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-11-07T13:00:00+00:00",
+        "slate_cutoff_utc": "2026-11-07T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "abstained_no_qualified_pair",
+        "sydney_date": "2026-11-08"
+      },
+      {
+        "actual_scores": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "all_candidate_forecasts_share_cutoff": true,
+        "candidate_fixture_count": 6,
+        "first_slate_kickoff_utc": "2026-11-08T13:00:00+00:00",
+        "hits": {
+          "baseline_v8": false,
+          "bivariate_poisson_c012": false,
+          "negative_binomial_r3": false,
+          "poisson_marginal": false,
+          "v20_goal_form": false
+        },
+        "selected_fixture_ids": [
+          "1550190",
+          "1557458"
+        ],
+        "selected_forecasts_as_of_utc": [
+          "2026-11-08T12:00:00+00:00",
+          "2026-11-08T12:00:00+00:00"
+        ],
+        "slate_cutoff_utc": "2026-11-08T12:00:00+00:00",
+        "source_qualified_forecast_count": 6,
+        "status": "evaluated",
+        "sydney_date": "2026-11-09"
+      }
+    ],
+    "days_abstained": 20,
+    "eligible_pair_days": 34,
+    "excluded_counts": {
+      "original_research_history_insufficient": 37,
+      "v20_goal_form_insufficient": 27
+    },
+    "individual_fixture_forecasts_not_reused": true,
+    "methods": {
+      "baseline_v8": {
+        "issued": 34,
+        "rate_per_eligible_day": 0.0,
+        "rate_per_issued": 0.0,
+        "wins": 0
+      },
+      "bivariate_poisson_c012": {
+        "issued": 34,
+        "rate_per_eligible_day": 0.0,
+        "rate_per_issued": 0.0,
+        "wins": 0
+      },
+      "negative_binomial_r3": {
+        "issued": 34,
+        "rate_per_eligible_day": 0.029411764705882353,
+        "rate_per_issued": 0.029411764705882353,
+        "wins": 1
+      },
+      "poisson_marginal": {
+        "issued": 34,
+        "rate_per_eligible_day": 0.0,
+        "rate_per_issued": 0.0,
+        "wins": 0
+      },
+      "v20_goal_form": {
+        "issued": 28,
+        "rate_per_eligible_day": 0.0,
+        "rate_per_issued": 0.0,
+        "wins": 0
+      }
+    },
+    "pair_models_rebuilt_at_common_cutoff": true,
+    "prior_result_settlement_delay_hours": 3,
+    "selection_min_estimated_coverage": 0.055
+  },
+  "schema_version": 2,
+  "single_fixture_cutoff_policy": "one_hour_before_each_individual_fixture",
+  "single_match_metrics": {
+    "baseline_v8": {
+      "actual_high_score_rate": 0.35091743119266056,
+      "actual_over_2_5_rate": 0.5802752293577982,
+      "evaluated": 436,
+      "exact_hit_rate": 0.11238532110091744,
+      "exact_hits": 49,
+      "goal_mae": 0.9635602197919767,
+      "high_score_underprediction": 0.01846290263300343,
+      "outcome_brier": 0.5799837439259994,
+      "over_2_5_brier": 0.23589975149287504,
+      "predicted_high_score_mass": 0.3324545285596571,
+      "predicted_over_2_5_rate": 0.547298691613615,
+      "score_log_loss": 3.032067906892304,
+      "top5_hits": 198,
+      "top5_rate": 0.4541284403669725
+    },
+    "bivariate_poisson_c012": {
+      "actual_high_score_rate": 0.35091743119266056,
+      "actual_over_2_5_rate": 0.5802752293577982,
+      "evaluated": 436,
+      "exact_hit_rate": 0.10321100917431193,
+      "exact_hits": 45,
+      "goal_mae": 0.9635602197879533,
+      "high_score_underprediction": 0.016909527303858585,
+      "outcome_brier": 0.5791873641097015,
+      "over_2_5_brier": 0.23633411952387037,
+      "predicted_high_score_mass": 0.33400790388880197,
+      "predicted_over_2_5_rate": 0.5412476179693543,
+      "score_log_loss": 3.032368427274246,
+      "top5_hits": 202,
+      "top5_rate": 0.463302752293578
+    },
+    "negative_binomial_r3": {
+      "actual_high_score_rate": 0.35091743119266056,
+      "actual_over_2_5_rate": 0.5802752293577982,
+      "evaluated": 436,
+      "exact_hit_rate": 0.0779816513761468,
+      "exact_hits": 34,
+      "goal_mae": 0.9635603440106375,
+      "high_score_underprediction": 0.02061999493388822,
+      "outcome_brier": 0.587433433704808,
+      "over_2_5_brier": 0.24039988965493161,
+      "predicted_high_score_mass": 0.33029743625877234,
+      "predicted_over_2_5_rate": 0.5067846577522127,
+      "score_log_loss": 3.1023914951704166,
+      "top5_hits": 183,
+      "top5_rate": 0.4197247706422018
+    },
+    "poisson_marginal": {
+      "actual_high_score_rate": 0.35091743119266056,
+      "actual_over_2_5_rate": 0.5802752293577982,
+      "evaluated": 436,
+      "exact_hit_rate": 0.10550458715596331,
+      "exact_hits": 46,
+      "goal_mae": 0.9635602197917464,
+      "high_score_underprediction": 0.01854810581971017,
+      "outcome_brier": 0.5797275324136298,
+      "over_2_5_brier": 0.2359109868583832,
+      "predicted_high_score_mass": 0.3323693253729504,
+      "predicted_over_2_5_rate": 0.5483346409345832,
+      "score_log_loss": 3.0324211828264245,
+      "top5_hits": 195,
+      "top5_rate": 0.44724770642201833
+    },
+    "v20_goal_form": {
+      "actual_high_score_rate": 0.33078880407124683,
+      "actual_over_2_5_rate": 0.5776081424936387,
+      "evaluated": 393,
+      "exact_hit_rate": 0.10432569974554708,
+      "exact_hits": 41,
+      "goal_mae": 0.9550823764823301,
+      "high_score_underprediction": -0.0012558361278440788,
+      "outcome_brier": 0.579364457473159,
+      "over_2_5_brier": 0.23783840582386484,
+      "predicted_high_score_mass": 0.3320446401990909,
+      "predicted_over_2_5_rate": 0.5476718200722089,
+      "score_log_loss": 3.014858488610705,
+      "top5_hits": 185,
+      "top5_rate": 0.4707379134860051
+    }
+  },
+  "target_fixtures": 500,
+  "three_hour_prior_result_delay": true,
+  "year": 2026
+}

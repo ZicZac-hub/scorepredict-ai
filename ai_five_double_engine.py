@@ -1,8 +1,8 @@
 """AI-assisted manual five-double selection without altering original models.
 
-Exact-score probability mass ALWAYS comes from the existing ZicZac score
-model. Independent AI votes are qualitative opinions, not calibrated
-likelihoods, and receive at most a small experimental ranking adjustment.
+Exact-score probability mass and ranking come from the existing ZicZac score
+model. Independent AI votes are qualitative annotations, not calibrated
+likelihoods, and never alter the chosen score pairs.
 The immutable prospective ledger is never changed by this module.
 """
 from collections import Counter
@@ -14,7 +14,6 @@ from double_score_selection import select_balanced, score_coverage
 
 SYDNEY = ZoneInfo("Australia/Sydney")
 MIN_LEAD_SECONDS = 300
-AI_RANKING_MAX_BOOST = 0.12
 
 
 def identity(row):
@@ -102,16 +101,14 @@ def merged_five(first,second,first_research=None,second_research=None,*,now=None
     for h,a,p in left:
         for j,k,q in right:
             original=p*q
-            # Votes only break/rerank closely ranked model candidates:
-            # never replace or relabel the statistical joint probability.
-            boost1=1+AI_RANKING_MAX_BOOST*count1.get((h,a),0)/n1 if n1 else 1
-            boost2=1+AI_RANKING_MAX_BOOST*count2.get((j,k),0)/n2 if n2 else 1
+            # An unvalidated endorsement must not displace a more probable
+            # model outcome in the original top-probability baseline.
             combined.append({
                 "Score 1":f"{h}-{a}", "Score 2":f"{j}-{k}",
                 "Model joint":original, "Model P1":p, "Model P2":q,
                 "AI endorsements 1":count1.get((h,a),0),
                 "AI endorsements 2":count2.get((j,k),0),
-                "_rank":original*boost1*boost2
+                "_rank":original
             })
     combined.sort(key=lambda x:(-x["_rank"],-x["Model joint"],x["Score 1"],x["Score 2"]))
     # An experimental, probability-aware diversity alternative. Keep the
@@ -136,7 +133,8 @@ def merged_five(first,second,first_research=None,second_research=None,*,now=None
         "selected_model_coverage":sum(d["Model joint"] for d in chosen),
         "model_probability_source":"ZicZac existing model score grid",
         "estimated_coverage_is_not_observed_win_rate":True,
-        "ai_rank_influence":"experimental, capped at 12% per leg endorsement share",
+        "ai_rank_influence":"none; endorsements are annotations only",
+        "ai_votes_numerical_weight":0.0,
         "ai_votes":{str(i):n for i,n in ((1,n1),(2,n2))},
         "fixtures":[identity(first),identity(second)],
         "sydney_date":_instant(first.get("kickoff") or (first.get("fixture") or {}).get("utcDate")).astimezone(SYDNEY).date().isoformat(),

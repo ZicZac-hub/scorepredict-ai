@@ -16,6 +16,7 @@ from v21_capture_sources import source_packet_path
 from v21_provider_evidence import valid_snapshot
 from v22_evidence_models import parse_markets
 from persist_prematch import load_json,write_json
+from source_capture_clock import capture_clock
 
 ROOT=Path("data/v21_sources")
 START_HOURS=6
@@ -87,9 +88,9 @@ def eligible_legs(root, now):
 
 
 def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
-            root=ROOT,request=None):
+            root=ROOT,request=None,clock=None):
     from api_football import _request
-    clock=utc(now or datetime.now(timezone.utc))
+    clock,observation_time=capture_clock(now,clock)
     active=(os.environ.get("V23_EARLY_ODDS_ENABLED")=="true"
             if enabled is None else bool(enabled))
     key=api_key if api_key is not None else os.environ.get("API_FOOTBALL_KEY","")
@@ -160,7 +161,11 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
                 # never infer provenance from an unaudited callback.
                 raw=cb(key,"/odds",{"fixture":int(leg["fixture_id"])})
                 fetched_at=None
-            markets=parse_markets(raw,observed_at=clock,
+            observed=observation_time()
+            if observed>=utc(leg["kickoff_utc"]):
+                status["skipped"].append(str(leg["fixture_id"])+":response_after_kickoff")
+                continue
+            markets=parse_markets(raw,observed_at=observed,
                                  verified_provider_fetched_at=fetched_at)
             if "1x2" not in markets or not ({"over_2_5","over_3_5"} & set(markets)):
                 status["skipped"].append(str(leg["fixture_id"])+":complete_odds_unavailable")
@@ -169,7 +174,7 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
                     "provider":leg["provider"],"fixture_id":str(leg["fixture_id"]),
                     "home_team_id":str(leg["home_team_id"]),
                     "away_team_id":str(leg["away_team_id"]),
-                    "kickoff_utc":leg["kickoff_utc"],"captured_at_utc":clock.isoformat(),
+                    "kickoff_utc":leg["kickoff_utc"],"captured_at_utc":observed.isoformat(),
                     "market":None,"multi_market":markets,
                     "verified_historical_fixture_xg":[],
                     "confirmed_starting_xi":[],"reported_injuries":[],
@@ -186,7 +191,7 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
                      "homeTeam":{"id":leg["home_team_id"]},
                      "awayTeam":{"id":leg["away_team_id"]},
                      "utcDate":leg["kickoff_utc"]}
-            if not valid_snapshot(packet,fixture,now=clock):
+            if not valid_snapshot(packet,fixture,now=observed):
                 status["skipped"].append(str(leg["fixture_id"])+":identity_validation_failed")
                 continue
             record={"schema":1,
@@ -209,6 +214,7 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
                 status["skipped"].append(str(leg["fixture_id"])+":identical_snapshot_preserved")
         except (KeyError,TypeError,ValueError,RuntimeError,OSError) as exc:
             status["skipped"].append(str(leg.get("fixture_id"))+":"+type(exc).__name__)
+    status["completed_at_utc"]=observation_time().isoformat()
     write_json(Path(root)/"market_early_status.json",status)
     return status
 

@@ -75,6 +75,8 @@ def result_status(packet,report_path=RESULTS):
 def render(st,root=ROOT):
     st.subheader("⚡ Automatically Frozen Five Doubles")
     st.caption("Created by ZicZac's pre-match research workflow; no manual research button needed.")
+    from five_double_accuracy_ui import render as render_diagnosis
+    render_diagnosis(st)
     packet=read_upcoming(root)
     if not packet:
         st.info("No qualified upcoming automatic five-double selection has been frozen yet. ZicZac can abstain when the match data or modeled coverage is insufficient.")

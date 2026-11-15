@@ -1768,7 +1768,8 @@ with active_page_slot:
                 ['AI Auto Select', 'Manual Select'], horizontal=True,
                 key='smart_double_mode', on_change=_sync_double_mode)
             if smart_mode == 'AI Auto Select':
-                _fast_pair = rank_pairs([r for r in eligible if r.get('result')], limit=1)
+                _fast_pair = rank_pairs([r for r in eligible if r.get('result')],
+                                        limit=1, now=datetime.now(timezone.utc))
                 if _fast_pair:
                     _leader = _fast_pair[0]
                     st.markdown('**🏆 AI-selected match pair · based on available researched fixtures**')
@@ -2039,9 +2040,9 @@ with active_page_slot:
             st.subheader('🧠 ZicZac Smart Double AI · experimental')
             st.caption('AI Auto Select ranks researched same-day fixtures by estimated probability covered by five distinct exact-score combinations. It does not scan unresearched fixtures or guarantee wins. Manual Select uses your two choices above.')
             if smart_mode=='AI Auto Select':
-                smart_pairs=rank_pairs(chosen_rows)
+                smart_pairs=rank_pairs(chosen_rows,now=datetime.now(timezone.utc))
                 if not smart_pairs:
-                    st.info('No two model-ready fixtures on the same UTC date in this selection. Choose All leagues / All teams, extend the date range, or use Manual Select.')
+                    st.info('No eligible pair of future model-ready fixtures with four distinct teams on the same Sydney date. Choose All leagues / All teams or extend the date range.')
                 else:
                     smart=smart_pairs[0]
                     st.write('**AI selected Match 1:** '+fixture_label(smart['first']))

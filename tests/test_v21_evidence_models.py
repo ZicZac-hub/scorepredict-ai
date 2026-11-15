@@ -46,7 +46,7 @@ def test_source_capture_real_xg_lineup_injury_and_de_vig_market():
             return [{"team":{"id":11},"statistics":[{"type":"expected_goals","value":"2.19"}]},
                     {"team":{"id":44},"statistics":[{"type":"Expected Goals","value":1.07}]}]
         raise AssertionError(endpoint)
-    result=capture(FIXTURE,[old],"sample-key",now=NOW,request=req)
+    result=capture(FIXTURE,[old],"sample-key",now=NOW,request=req,clock=lambda:NOW)
     assert result["status"]=="captured_pre_kickoff"
     assert result["confirmed_starting_xi"][0]["formation"]=="4-3-3"
     assert result["verified_historical_fixture_xg"][0]["home_xg"]==pytest.approx(2.19)

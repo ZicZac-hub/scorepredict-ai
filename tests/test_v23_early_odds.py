@@ -32,7 +32,7 @@ def test_one_real_source_market_snapshot_and_no_recapture(monkeypatch,tmp_path):
         requests.append((endpoint,params))
         return odds()
     first=capture(now=NOW,enabled=True,api_key="stub-no-network",
-                  source_root=tmp_path,root=tmp_path,request=req)
+                  source_root=tmp_path,root=tmp_path,request=req,clock=lambda:NOW)
     assert first["queries"]==1
     assert first["new_packets"]==["3001"]
     assert len(requests)==1
