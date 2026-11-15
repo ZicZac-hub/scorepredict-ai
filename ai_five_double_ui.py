@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 import csv
 import io
 from functools import lru_cache
+from pathlib import Path
 
 from ai_five_double_engine import eligible, identity, merged_five, pair_check, teams, SYDNEY
 from on_demand_ai import (frozen_for_fixture, private_gate_ready, run_selected,
@@ -441,6 +442,30 @@ def render(st,rows,histories=None):
              "fresh calls to connected ChatGPT/OpenAI, Gemini and other providers.")
     st.caption("The original Five Doubles page and frozen prediction history "
                "remain unchanged.")
+    with st.expander("📊 V21 verified research tournament", expanded=False):
+        from persist_prematch import load_json as _read_report
+        status=_read_report(Path("data/v21_prospective")/"performance.json",{})
+        if status.get("methods"):
+            st.caption("Real, independently verified five-double pairs. "
+                       "Pending sets do NOT count as losses. "
+                       "A model needs sufficient future results before promotion.")
+            for name,stats in sorted(status["methods"].items()):
+                rate=stats.get("observed_hit_rate")
+                st.caption(name.replace("_"," ") + ": " +
+                           str(stats.get("wins",0)) + "/" +
+                           str(stats.get("verified",0)) + " verified wins · " +
+                           (f"{rate:.1%}" if rate is not None else "unmeasured") +
+                           " · "+str(stats.get("pending",0))+" pending")
+        else:
+            st.caption("No V21 genuinely frozen five-double match pairs have "
+                       "yet been settled. This is NOT evidence of a win or loss.")
+        source_status=_read_report(Path("data/v21_sources")/"status.json",{})
+        if source_status:
+            st.caption("Timestamped external provider packets on latest run: "+
+                       str(len(source_status.get("new_packets") or []))+
+                       ". Missing data are not converted into scores.")
+        st.caption("AI forecasts and new goal models remain research-only "
+                   "until independently proven to outperform the original.")
     minute=int(datetime.now(timezone.utc).timestamp()//60)
     from ai_five_live_finder import research_day
     from on_demand_ai import utc
