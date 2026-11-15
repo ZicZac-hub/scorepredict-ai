@@ -316,11 +316,9 @@ def _display(st,report,first,second):
                 if season:
                     st.caption(title + " goals, home/away splits and team form are "
                                "available from the provider; see detailed source packet.")
-                    with st.expander(title + " API team statistics", expanded=False):
-                        st.json({"form": season.get("form"),
-                                 "goals": season.get("goals"),
-                                 "clean_sheet": season.get("clean_sheet"),
-                                 "failed_to_score": season.get("failed_to_score")})
+                    st.caption("Provider-reported " + title + " goals: " +
+                               str(season.get("goals") or "unavailable")[:450] +
+                               " · form " + str(season.get("form") or "unavailable")[:50])
             if ctx.get("injuries"):
                 st.caption("Provider-reported injuries: " +
                            "; ".join(str(x.get("team")) + " — " + str(x.get("player"))
