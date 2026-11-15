@@ -89,14 +89,14 @@ def fitted_temperature(rows, verified, *,as_of,league,min_samples=MIN_PER_LEAGUE
             "not_out_of_sample_evidence":True,"promoted_to_production":False}
 
 
-def chronological_evaluation(rows, verified, *,min_samples=MIN_PER_LEAGUE):
+def chronological_evaluation(rows, verified, *,min_samples=MIN_PER_LEAGUE, as_of=None):
     """Actual prequential evaluation of a temporal calibration algorithm.
 
     At each prediction, only ORIGINAL records whose final scores were
     verifiably known before that match's forecast could influence fitting.
     Multiple outputs from a single fixture never inflate sample size.
     """
-    records=_training_rows(rows,verified,datetime.now(timezone.utc))
+    records=_training_rows(rows,verified,as_of or datetime.now(timezone.utc))
     by_league=defaultdict(list)
     for item in records:
         by_league[item["league"]].append(item)
