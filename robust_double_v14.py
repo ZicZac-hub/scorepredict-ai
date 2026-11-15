@@ -42,7 +42,16 @@ def grids(row):
             return None
         found[name] = matrix
     if found["v7"].shape != found["v8"].shape:
-        return None
+        # Real stronger-attack forecasts can extend their goal grid beyond
+        # 10. A shape mismatch is not missing data. Preserve each probability
+        # exactly, and pad ONLY unrepresented tail cells with zero.
+        shape=tuple(max(found[name].shape[axis] for name in MODELS)
+                    for axis in (0,1))
+        for name in MODELS:
+            padded=np.zeros(shape,dtype=float)
+            matrix=found[name]
+            padded[:matrix.shape[0],:matrix.shape[1]]=matrix
+            found[name]=padded
     return found
 
 
@@ -62,8 +71,8 @@ def robust_pair(a, b, *, now=None, min_coverage=MIN_SCORE):
     first, second = grids(a), grids(b)
     if first is None or second is None:
         return None
-    if first["v7"].shape != second["v7"].shape:
-        return None
+    # Different fixtures can have different valid goal-grid dimensions.
+    # Their complete score vectors form a rectangular joint distribution.
     p7 = _joint(first["v7"], second["v7"])
     p8 = _joint(first["v8"], second["v8"])
     envelope = np.minimum(p7, p8)
