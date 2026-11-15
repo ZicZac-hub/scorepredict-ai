@@ -201,6 +201,16 @@ def render(st, root=ROOT):
                   "AI-assisted exact double wins":v15report["ai_assisted_hits"],
                   "Original V8 wins on those identical pairs":
                       v15report["original_v8_hits_same_pairs"]})
+        bounds=v15report.get("v15_win_rate_wilson_95")
+        if isinstance(bounds,list) and len(bounds)==2:
+            st.caption("AI-assisted observed win-rate uncertainty (95% Wilson): "+
+                       _pct(bounds[0])+"–"+_pct(bounds[1])+
+                       ". Only genuinely settled same-pair predictions count; "
+                       "this is not a guarantee of future accuracy.")
+        st.caption("Paired disagreement · V15-only wins: "+
+                   str(v15report.get("v15_only_wins",0))+
+                   " · V8-only wins: "+str(v15report.get("v8_only_wins",0))+
+                   ". Original V8 remains production.")
     else:
         st.caption("No verified two-match multi-AI win rate yet. "
                    "No matched paired results means no accuracy claim.")
