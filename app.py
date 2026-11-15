@@ -1161,9 +1161,6 @@ with active_page_slot:
         from v17_confidence_ui import render as render_v17_confidence
         render_v17_confidence(st)
         st.divider()
-        from v18_accuracy_ui import render as render_v18_accuracy
-        render_v18_accuracy(st)
-        st.divider()
         from revision_ui import render_revision_panel
         render_revision_panel(st, _revision_status, sydney_kickoff, _retry_archive_revisions)
         st.divider()
