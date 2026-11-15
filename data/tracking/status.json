@@ -20,24 +20,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 29,
-      "recorded": 29,
+      "pending": 30,
+      "recorded": 30,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 29,
-      "recorded": 29,
+      "pending": 30,
+      "recorded": 30,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 192,
-      "recorded": 194,
+      "pending": 193,
+      "recorded": 195,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -60,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 164,
-      "recorded": 164,
+      "pending": 165,
+      "recorded": 165,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-15T20:11:18.153053+00:00",
+  "checked_at_utc": "2026-11-15T20:55:35.728780+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -80,6 +80,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T20:55:28.920451+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1575549')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Sporting CP",
+          "away_team_id": "228",
+          "fixture_id": "1575549",
+          "home_team": "FC Porto",
+          "home_team_id": "212",
+          "kickoff_utc": "2026-11-29T20:30:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T20:30:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T20:55:28.803228+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575549', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Sporting CP",
+          "away_team_id": "228",
+          "fixture_id": "1575549",
+          "home_team": "FC Porto",
+          "home_team_id": "212",
+          "kickoff_utc": "2026-11-29T20:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T20:30:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T20:55:28.813011+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575549', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Sporting CP",
+          "away_team_id": "228",
+          "fixture_id": "1575549",
+          "home_team": "FC Porto",
+          "home_team_id": "212",
+          "kickoff_utc": "2026-11-29T20:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T20:30:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T20:55:28.835805+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575549', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Sporting CP",
+          "away_team_id": "228",
+          "fixture_id": "1575549",
+          "home_team": "FC Porto",
+          "home_team_id": "212",
+          "kickoff_utc": "2026-11-29T20:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T20:30:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T20:11:11.518061+00:00",
@@ -12695,8 +12811,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 414,
-    "recorded": 422,
+    "pending": 418,
+    "recorded": 426,
     "verified": 8
   }
 }
