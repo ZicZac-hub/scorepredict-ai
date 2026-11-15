@@ -23,7 +23,7 @@ from zoneinfo import ZoneInfo
 
 import engine
 from history_pipeline import build_evidence
-from hybrid_five_v13 import predict as v13_predict
+from hybrid_five_v13 import predict as v13_predict, best_pairs as rank_model_pairs
 from robust_double_v14 import rank_robust_pairs, robust_pair, VERSION
 from smart_double_v8 import rank_research_pairs
 from smart_double_ai import five_doubles
@@ -133,6 +133,13 @@ def evaluate(matches,*,year=2026,max_fixtures=700,max_pair_days=100,
             diagnostics["no_two_qualified_forecasts"]+=1
             continue
         baseline=rank_research_pairs([_v8_row(x) for x in candidates],limit=1)
+        # Additional predeclared V7 pair-selection challengers, not an
+        # after-the-fact pick among winning games. Both see precisely the
+        # same fixtures and pre-match history as the V8 baseline.
+        v7_candidates=[_v7_row(x) for x in candidates]
+        v7_ranked=rank_research_pairs(v7_candidates,limit=1)
+        v7_diversified_ranked=rank_model_pairs(
+            v7_candidates,mode="diversified",now=as_of,limit=1)
         if not baseline:
             diagnostics["no_valid_v8_pair"]+=1
             continue
@@ -154,6 +161,18 @@ def evaluate(matches,*,year=2026,max_fixtures=700,max_pair_days=100,
         best_robust=rank_robust_pairs(
             candidates,now=as_of,limit=1,min_coverage=min_robust_envelope)
         selected=best_robust[0] if best_robust else None
+        selected_v7=v7_ranked[0] if v7_ranked else None
+        selected_diverse=v7_diversified_ranked[0] if v7_diversified_ranked else None
+        if selected_v7 is not None:
+            v7auto_first,v7auto_second=selected_v7["first"],selected_v7["second"]
+            v7_auto_options=[
+                {"Score 1":f"{h}-{a}","Score 2":f"{j}-{k}",
+                 "Joint":float(p)*float(q)}
+                for h,a,p in v7auto_first["result"]["scores"][:10]
+                for j,k,q in v7auto_second["result"]["scores"][:10]]
+            v7_auto_diverse_picks=select_diversified(v7_auto_options,5)
+        else:
+            v7_auto_diverse_picks=[]
         record={
             "sydney_day":day,
             "cutoff_utc":as_of.isoformat(),
@@ -163,6 +182,17 @@ def evaluate(matches,*,year=2026,max_fixtures=700,max_pair_days=100,
             "v8_top5_hit":baseline_hit,
             "v7_diversified_same_pair_hit":_hit(v7_picks,choice["first"],
                                                choice["second"],actuals),
+            "v7_diversified_on_v7_coverage_selected_pair_hit":(
+                _hit(v7_auto_diverse_picks,v7auto_first,v7auto_second,actuals)
+                if len(v7_auto_diverse_picks)==5 else None),
+            "v7_diversified_on_diverse_coverage_selected_pair_hit":(
+                _hit(selected_diverse["doubles"],selected_diverse["first"],
+                     selected_diverse["second"],actuals)
+                if selected_diverse is not None else None),
+            "v7_auto_pair_matches_v8_pair":(
+                {_key(v7auto_first),_key(v7auto_second)}==
+                {_key(original_a),_key(original_b)}
+                if selected_v7 is not None else None),
             "v14_robust_same_pair_hit":(
                 _hit(robust_same["doubles"],original_a,original_b,actuals)
                 if robust_same is not None else None),
@@ -196,10 +226,16 @@ def evaluate(matches,*,year=2026,max_fixtures=700,max_pair_days=100,
         "min_v14_envelope_for_auto_selection":min_robust_envelope,
         "v8_original_top5":_result(rows,"v8_top5_hit"),
         "v7_diversified_on_v8_pair":_result(rows,"v7_diversified_same_pair_hit"),
+        "v7_diversified_on_v7_top5_selected_pair":_result(
+            rows,"v7_diversified_on_v7_coverage_selected_pair_hit"),
+        "v7_diversified_on_v7_diverse_selected_pair":_result(
+            rows,"v7_diversified_on_diverse_coverage_selected_pair_hit"),
         "v14_robust_on_same_v8_pair":_result(rows,"v14_robust_same_pair_hit"),
         "v14_independently_selected_pair":_result(rows,"v14_auto_pair_hit"),
         "auto_v14_selected_the_same_two_matches_as_v8":sum(
             r["v14_same_as_v8_pair"] is True for r in rows),
+        "v7_auto_top5_pair_same_as_v8":sum(
+            r["v7_auto_pair_matches_v8_pair"] is True for r in rows),
         "diagnostics":dict(diagnostics),
         "status":"EXPERIMENTAL historical reconstruction, 2026 already explored",
         "not_independent_holdout":True,
