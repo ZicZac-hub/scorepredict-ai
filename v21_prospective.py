@@ -153,7 +153,7 @@ def rank_pairs(rows,min_coverage=MIN_FIVE_COVERAGE):
                    str(r["first"]["fixture_id"]),str(r["second"]["fixture_id"])))
 
 
-def freeze_pairs(*,root=ROOT,now=None):
+def freeze_pairs(*,root=ROOT,now=None,min_coverage=MIN_FIVE_COVERAGE):
     clock=utc(now or datetime.now(timezone.utc))
     rows=[load_json(x,{}) for x in sorted((Path(root)/"forecasts").glob("*.json"))]
     eligible=[]
@@ -165,7 +165,7 @@ def freeze_pairs(*,root=ROOT,now=None):
                 eligible.append(row)
         except (KeyError,ValueError,TypeError):
             continue
-    proposals=rank_pairs(eligible)
+    proposals=rank_pairs(eligible,min_coverage=min_coverage)
     chosen={}
     for result in proposals:
         if result["day"] in chosen:
