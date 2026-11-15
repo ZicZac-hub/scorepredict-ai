@@ -159,16 +159,42 @@ def _minute_archived_candidates(minute):
     return archive_rows()
 
 
+def _has_complete_score_grid(row):
+    """Separate ten score suggestions from a real normalized joint score grid."""
+    try:
+        import numpy as np
+        raw=(row.get("result") or {}).get("matrix")
+        if raw is None:
+            return False
+        matrix=np.asarray(raw,dtype=float)
+        return (matrix.ndim==2 and min(matrix.shape)>=5 and
+                bool(np.isfinite(matrix).all()) and bool((matrix>=0).all()) and
+                abs(float(matrix.sum())-1.0)<1e-5)
+    except (TypeError,ValueError,AttributeError):
+        return False
+
+
 def options(rows, *, now=None, archived=None):
-    """Prefer valid current modelled fixtures; fill missing fixtures from archive."""
+    """Prefer current forecasts when equally complete; recover archived grids.
+
+    A current ten-score-only record cannot support researched V23 market
+    adjustments. Prefer a fully saved original grid over silently discarding
+    a genuine, pre-match, source-matched archival model.
+    """
     chosen={}
     for row in rows or []:
         if isinstance(row,dict) and eligible(row,now=now):
             chosen.setdefault(identity(row),row)
     for row in archived if archived is not None else archive_rows(now=now):
         if eligible(row,now=now):
-            chosen.setdefault(identity(row),row)
-    return sorted(chosen.values(),key=lambda row:(utc(row["kickoff"]),identity(row)))
+            key=identity(row)
+            current=chosen.get(key)
+            if current is None or (
+                    not _has_complete_score_grid(current) and
+                    _has_complete_score_grid(row)):
+                chosen[key]=row
+    return sorted(chosen.values(),key=lambda row:(utc(
+        row.get("kickoff") or row["fixture"]["utcDate"]),identity(row)))
 
 
 def label(row):
