@@ -81,10 +81,12 @@ evidence and does not prove a better future strategy.
 1. Open **Five Doubles** in the Streamlit ZicZac website.
 2. Find **V13 Hybrid AI · Combined Five Doubles**.
 3. Choose **AI Auto Select** or **Manual Select**.
-4. Select **Top five**, **Balanced**, or **Fully diversified**, and run the
-   research button.
-5. The interface displays the five score pairs, estimated joint coverage,
-   each match's actual participating component weights, and CSV download.
+4. Choose **V13 combined**, **V8 evidence**, or **V7 fitted** model. V7
+   and V8 have their own independently computed full-score probabilities.
+5. Select **Top five**, **Balanced**, or **Fully diversified**, then run
+   the research button.
+6. View the five combinations, estimated joint coverage, applicable
+   individual-model or hybrid weights, and download the CSV.
 
 Auto Select searches the already-loaded fixture list, limited to 12
 researchable matches in three Sydney matchdays; it will not silently call
