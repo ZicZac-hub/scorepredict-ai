@@ -39,6 +39,18 @@ def shadow(row, packet, *, as_of=None, min_xg=6):
     if not with_xg.get("ready"):
         return {"ready":False,"reason":"xg_combination_unavailable"}
     prices=packet.get("multi_market") or {}
+    # Quotes must remain fresh at the ACTUAL prediction time, not merely
+    # when an earlier source packet was collected.
+    from datetime import timedelta
+    valid_prices={}
+    for kind,market in prices.items():
+        try:
+            source_time=utc(market["last_source_update_utc"])
+            if source_time<=when and when-source_time<=timedelta(hours=12):
+                valid_prices[kind]=market
+        except (KeyError,ValueError,TypeError):
+            continue
+    prices=valid_prices
     # One bookmaker with two independent market types is an allowed
     # research signal; number of independent bookmakers disclosed separately.
     tuned=calibrate_markets(with_xg["matrix"],prices)
