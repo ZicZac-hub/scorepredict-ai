@@ -39,10 +39,26 @@ def _identity(fixture):
         return None
 
 
-def _fetch(request, key, endpoint, args, diagnostics):
+def _fetch(request, key, endpoint, args, diagnostics, *, with_fetch_metadata=False):
     try:
-        result = request(key, endpoint, args)
-        diagnostics["queries"] += 1
+        # Only the unmodified, first-party request helper supports certified
+        # API-response timestamps. An injected request with no metadata may
+        # still supply bookmaker timestamps, but never a guessed fetch time.
+        from api_football import _request
+        if with_fetch_metadata and request is _request:
+            envelope=request(key,endpoint,args,with_metadata=True)
+            diagnostics["queries"] += 1
+            meta=envelope.get("metadata") or {}
+            if meta.get("stale") or not meta.get("fetched_at_utc"):
+                diagnostics["unavailable"][endpoint]="stale_or_undated_api_response"
+                return None
+            diagnostics.setdefault("fetch_metadata",{})[endpoint]={
+                "fetched_at_utc":meta["fetched_at_utc"],
+                "cache_status":meta.get("cache_status")}
+            result=envelope.get("data")
+        else:
+            result = request(key, endpoint, args)
+            diagnostics["queries"] += 1
         if isinstance(result, (dict, list)):
             return result
         raise ValueError("Malformed API response")
@@ -127,7 +143,8 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     # All HTTP calls occur only after pre-match identity/consent gates.
     lineup_raw = _fetch(request, api_key, "/fixtures/lineups", {"fixture": fid}, diag)
     injury_raw = _fetch(request, api_key, "/injuries", {"fixture": fid}, diag)
-    odds_raw = _fetch(request, api_key, "/odds", {"fixture": fid}, diag)
+    odds_raw = _fetch(request, api_key, "/odds", {"fixture": fid}, diag,
+                      with_fetch_metadata=True)
     lineups = []
     for data in lineup_raw if isinstance(lineup_raw, list) else []:
         tid = str((data.get("team") or {}).get("id"))
@@ -193,7 +210,9 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     # V22: extract complete, source-timestamped totals and BTTS prices
     # from the SAME already-approved /odds call. No extra paid endpoint.
     from v22_evidence_models import parse_markets
-    multi_market = parse_markets(odds_raw,observed_at=clock)
+    odds_time=(diag.get("fetch_metadata",{}).get("/odds",{}).get("fetched_at_utc"))
+    multi_market = parse_markets(odds_raw,observed_at=clock,
+                                 verified_provider_fetched_at=odds_time)
     payload = {"schema": 1, "status": "captured_pre_kickoff", "provider": "API-Football",
                "fixture_id": fid, "home_team_id": home, "away_team_id": away,
                "kickoff_utc": kickoff.isoformat(), "captured_at_utc": clock.isoformat(),
