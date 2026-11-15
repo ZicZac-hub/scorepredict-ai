@@ -188,9 +188,20 @@ def goal_form_challenger(row, history, now):
     def high_score_mass(grid):
         return float(sum(grid[i, j] for i in range(grid.shape[0])
                          for j in range(grid.shape[1]) if i+j >= 4))
+    def goal_bands(marginal):
+        return {
+            "0": float(marginal[0]),
+            "1": float(marginal[1]),
+            "2": float(marginal[2]),
+            "3+": float(marginal[3:].sum())
+        }
     return {
         "available": True, "profile": profile,
         "scores": scores, "matrix": candidate,
+        "goal_count_probabilities": {
+            "home": goal_bands(candidate.sum(axis=1)),
+            "away": goal_bands(candidate.sum(axis=0))
+        },
         "original_expected_goals": [original_h, original_a],
         "research_expected_goals": [float((candidate*x[:, None]).sum()),
                                    float((candidate*y[None, :]).sum())],
