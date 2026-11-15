@@ -421,6 +421,37 @@ def render(st,rows,histories=None):
                     configs={k:configs[k] for k in selected} if permitted else {},
                     use_live=permitted,qwen_url=server_qwen_url(st))
             cache[pair]=report
+            # Preserve this five-option user selection and all validated AI
+            # opinions *as they were returned before kickoff*. A later rerun
+            # cannot alter the original score combinations.
+            if report.get("status")=="ready":
+                import os
+                from ziczac_interactive_capture import (
+                    pair as _audit_pair, single as _audit_single,
+                    store as _audit_store, store_ui as _audit_ui)
+                try:
+                    _choices=[{"score1":x["Score 1"],"score2":x["Score 2"]}
+                              for x in report["model_and_ai_result"]["doubles"]]
+                    _audit_ui(st,_audit_pair(first["fixture"],second["fixture"],_choices))
+                except (ValueError,TypeError,KeyError):
+                    st.warning("This five-double result was not eligible for "
+                               "permanent pre-match tracking.")
+                try:
+                    _db=st.secrets.get("DATABASE_URL","") or os.environ.get("DATABASE_URL","")
+                except (OSError,KeyError,RuntimeError,AttributeError):
+                    _db=os.environ.get("DATABASE_URL","")
+                _ai_votes_saved=0
+                for _leg,_research in zip((first,second),report["ai_research"]):
+                    for _provider,_vote in (_research.get("votes") or {}).items():
+                        try:
+                            _ai_votes_saved+=int(_audit_store(_audit_single(
+                                _leg["fixture"],_vote["score"],"ten_ai",
+                                ai_provider=_provider),_db).get("durable",False))
+                        except (ValueError,TypeError,KeyError):
+                            continue
+                if _ai_votes_saved:
+                    st.caption(str(_ai_votes_saved)+" individual model votes "
+                               "preserved alongside this five-double selection.")
         else:
             st.info("Showing the existing session result for this match pair. "
                     "No duplicate paid API calls were made.")
