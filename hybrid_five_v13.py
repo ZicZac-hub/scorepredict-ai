@@ -61,6 +61,9 @@ def predict(fixture, history, league_history=None, *, as_of=None,
         components["v7"]=v7
     if v12 is not None and v12.get("v12_diagnostics"):
         components["v12"]=v12
+    if len(components)<2:
+        # A lone V8 score grid is not a genuinely combined model.
+        return None
     # Renormalise without making up unavailable components or giving a
     # fallback-V6 forecast a second, misleading independent model vote.
     total=sum(WEIGHTS[key] for key in components)
