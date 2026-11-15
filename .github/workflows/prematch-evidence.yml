@@ -157,6 +157,11 @@ jobs:
       - name: Freeze and verify V22 xG + time-checked market five doubles (no API calls)
         if: always()
         run: python v22_prospective.py
+      - name: Freeze and evaluate V23 market-and-goal-form five doubles
+        # Uses only captured, source-verified odds and frozen existing V8 grids.
+        # No additional external API calls; records never overwrite prior picks.
+        if: always()
+        run: python v23_prospective.py
       - name: Audit V22 source coverage, AI performance and chronological calibration
         if: always()
         run: python v22_quality_report.py
@@ -185,8 +190,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
@@ -248,6 +253,7 @@ jobs:
             data/v21_sources/
             data/v21_prospective/
             data/v22_prospective/
+            data/v23_prospective/
             data/independent_football/status.json
             data/independent_football/evaluation.json
             data/independent_football/forecasts/*.json
