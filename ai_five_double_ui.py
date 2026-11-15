@@ -636,12 +636,53 @@ def render(st,rows,histories=None):
             st.caption("First available eligible saved/modelled fixture: "+next_label)
         return
     ids={label(r):r for r in found}
+    auto_v22=st.checkbox("🔬 V22 Auto Select · genuine xG and markets on BOTH matches",
+                         value=False,key="ziczac_v22_auto_pair",
+                         help="Ranks every eligible same-day pair with already saved "
+                              "verified historical xG and time-stamped bookmaker data. "
+                              "Requires private login and a central database. "
+                              "No external API calls and no unverified guesses.")
     auto_pick=st.checkbox("🤖 V21 AI Auto Select · evidence-qualified best pair",
                           value=False,key="ziczac_v21_auto_pair",
                           help="Compare ALL eligible same-day pairs using dated team and "
                                "home/away goal form. If none meet the evidence and "
                                "minimum estimated coverage requirements, abstain.")
-    if auto_pick:
+    if auto_v22:
+        from v22_pair_selector import candidates as _rank_v22_pairs
+        from v21_evidence_store import latest as _source_snapshot
+        if not private_gate_ready(st):
+            st.warning("V22 auto selection needs your private ZicZac login "
+                       "to access previously saved source packets.")
+            return
+        import os
+        try:
+            _database=st.secrets.get("DATABASE_URL","") or os.environ.get("DATABASE_URL","")
+        except (OSError,KeyError,RuntimeError,AttributeError):
+            _database=os.environ.get("DATABASE_URL","")
+        if not _database:
+            st.warning("V22 Auto Select cannot inspect previous research because "
+                       "private DATABASE_URL is not configured. It will not "
+                       "pretend to have live xG or bookmaker odds.")
+            return
+        ranking=_rank_v22_pairs(found,
+            lambda f:_source_snapshot(f,_database,before=clock),now=clock)
+        if ranking["abstained"]:
+            st.warning("V22 Auto Select abstained: no same-day pair has "
+                       "source-matched historical xG, 2+ dated goal markets and "
+                       "sufficient estimated probability coverage.")
+            st.caption("Eligible source-backed fixtures: "+
+                       str(ranking["source_qualified_fixtures"])+
+                       " · reasons: "+str(ranking["reasons"]))
+            return
+        best=ranking["pairs"][0]
+        first,second=best["first"],best["second"]
+        st.caption("V22 selected from "+
+                   str(ranking["total_qualifying_pairs"])+
+                   " genuinely qualified pairs. Conservative estimated "
+                   "five-double coverage: "+
+                   f"{best['conservative_coverage_estimate']:.2%}"+
+                   ". This is not a verified hit rate.")
+    elif auto_pick:
         from v21_pair_selector import candidates as _rank_researched_pairs
         ranking=_rank_researched_pairs(found,histories,now=clock)
         if ranking["abstained"]:
@@ -697,10 +738,13 @@ def render(st,rows,histories=None):
         st.caption("Experimental goal-form mode needs more verified past home/away "
                    "matches for both teams plus complete score grids. "
                    "Original five doubles remain available without inventing research.")
-    selection_mode = ("v22_xg_market" if mode_label.startswith("V22") else
+    selection_mode = ("v22_xg_market" if auto_v22 or mode_label.startswith("V22") else
                       "goal_form_research" if mode_label.startswith("Research") else
                       "balanced_challenger" if mode_label.startswith("Balanced")
                       else "probability")
+    if auto_v22:
+        st.caption("V22 research scoring is automatically selected because "
+                   "V22 source-qualified Auto Select is enabled.")
     st.caption("Research mode tests real goal strength and wider score scenarios; "
                "it never forces a win or a 3-goal score. No result is shown "
                "when essential evidence is missing. Existing Five Doubles "
