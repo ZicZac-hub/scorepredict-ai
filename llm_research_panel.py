@@ -369,6 +369,8 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
     status["eligible_fixture_count"]=len(eligible_rows)
     status["model_request_budget"]=budget*len(configured)
     status["selected_fixture_ids"]=[str(r["fixture_id"]) for r in rows]
+    status["planned_model_requests"]=len(rows)*len(configured)
+    status["actual_successful_ai_votes"]=0
     status["source_quality"]="statistical_frozen_packet_only_no_external_facts"
     for row in rows:
         path = panel_path(row, root)
@@ -384,6 +386,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                 votes[name] = ask(name, key, model, prompt, request=request,
                                   endpoint=env.get("QWEN_API_URL") if name == "qwen" else None)
                 models[name] = model
+                status["actual_successful_ai_votes"]+=1
             except (requests.RequestException, ValueError, KeyError, TypeError, RuntimeError) as exc:
                 status["provider_error_types"][name] = type(exc).__name__
                 status["provider_error_details"][name] = classify_provider_error(exc)
@@ -418,7 +421,8 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
     if status["attempted"]:
         status["last_attempt_at_utc"] = clock.isoformat()
         status["last_attempt_errors"] = dict(status["provider_error_details"])
-    status["reason"] = "frozen_or_no_eligible_upcoming_fixtures"
+    status["reason"] = ("frozen_pre_match_ai_research_saved" if status["captured"]
+                        else "frozen_or_no_eligible_upcoming_fixtures")
     write_json(Path(root)/"status.json",status)
     return status
 
