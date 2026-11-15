@@ -670,6 +670,20 @@ def render(st,rows,histories=None):
                 st.caption(name+" · "+(f"{hits}/{n} = {hits/n:.1%}" if n else
                                        "no verified pairs")+
                            " · pending "+str(stat.get("pending",0)))
+            wide=board.get("v24_broad_market_collection") or {}
+            if wide:
+                st.caption("V24 worldwide date-market discovery: "+
+                           ("enabled" if wide.get("enabled") else "not enabled")+
+                           " · API requests this run: "+str(wide.get("queries_last_run",0))+
+                           " · requests tracked today: "+str(wide.get("requests_used_today",0))+
+                           " / "+str(wide.get("max_requests_per_day") or "not reported")+
+                           " · new fixture-market snapshots: "+
+                           str(wide.get("new_fixture_markets_last_run",0))+
+                           " · matched original V8 packets: "+
+                           str(wide.get("new_v8_source_bindings_last_run",0)))
+                st.caption("Not every league/provider has bookmaker odds. "
+                           "Unmatched market records remain in the source catalog "
+                           "until a genuine V8 fixture identity is saved.")
             st.caption("V23 early market collector: "+
                        ("enabled" if board.get("v23_early_market_capture_enabled")
                         else "not confirmed enabled")+
