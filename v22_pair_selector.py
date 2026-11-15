@@ -14,7 +14,7 @@ from v10_prospective import utc
 
 
 def candidates(rows,packet_for,*,now,min_coverage=.055,
-               max_pair_disagreement=.20,max_results=5):
+               max_pair_disagreement=.20,max_results=5, shadow_fn=None):
     valid=[]
     reasons={"not_eligible":0,"source_not_saved":0,"incomplete_xg_or_market":0,
              "model_disagreement":0,"below_coverage":0,"invalid_pair":0}
@@ -27,7 +27,7 @@ def candidates(rows,packet_for,*,now,min_coverage=.055,
         if not packet:
             reasons["source_not_saved"]+=1
             continue
-        forecast=shadow(row,packet,as_of=utc(now))
+        forecast=(shadow_fn or shadow)(row,packet,as_of=utc(now))
         if not forecast.get("ready"):
             reasons["incomplete_xg_or_market"]+=1
             continue
