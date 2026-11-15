@@ -20,24 +20,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 15,
-      "recorded": 15,
+      "pending": 16,
+      "recorded": 16,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 15,
-      "recorded": 15,
+      "pending": 16,
+      "recorded": 16,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 178,
-      "recorded": 180,
+      "pending": 179,
+      "recorded": 181,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -60,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 150,
-      "recorded": 150,
+      "pending": 151,
+      "recorded": 151,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-15T15:24:10.859951+00:00",
+  "checked_at_utc": "2026-11-15T16:13:53.985422+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -80,6 +80,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T16:13:49.385095+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1552242')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "AZ Alkmaar",
+          "away_team_id": "201",
+          "fixture_id": "1552242",
+          "home_team": "PEC Zwolle",
+          "home_team_id": "193",
+          "kickoff_utc": "2026-11-29T15:45:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T15:45:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T16:13:49.288861+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1552242', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "AZ Alkmaar",
+          "away_team_id": "201",
+          "fixture_id": "1552242",
+          "home_team": "PEC Zwolle",
+          "home_team_id": "193",
+          "kickoff_utc": "2026-11-29T15:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T15:45:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T16:13:49.319429+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1552242', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "AZ Alkmaar",
+          "away_team_id": "201",
+          "fixture_id": "1552242",
+          "home_team": "PEC Zwolle",
+          "home_team_id": "193",
+          "kickoff_utc": "2026-11-29T15:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T15:45:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T16:13:49.278575+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1552242', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "AZ Alkmaar",
+          "away_team_id": "201",
+          "fixture_id": "1552242",
+          "home_team": "PEC Zwolle",
+          "home_team_id": "193",
+          "kickoff_utc": "2026-11-29T15:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T15:45:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T15:24:06.110202+00:00",
@@ -11071,8 +11187,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 358,
-    "recorded": 366,
+    "pending": 362,
+    "recorded": 370,
     "verified": 8
   }
 }
