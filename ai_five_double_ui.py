@@ -122,7 +122,8 @@ def _as_research(archive, fresh):
 
 
 def analyze_pair(first,second,histories,*,configs=None,use_live=False,
-                 request=None,now=None,qwen_url=None,archiver=frozen_for_fixture):
+                 request=None,now=None,qwen_url=None,archiver=frozen_for_fixture,
+                 selection_mode="probability"):
     """Return one session-only report for an explicitly chosen pair."""
     now=utc(now or datetime.now(timezone.utc))
     issue=pair_check(first,second,now=now)
@@ -148,7 +149,8 @@ def analyze_pair(first,second,histories,*,configs=None,use_live=False,
             except Exception:
                 errors[i]={"research":{"reason":"provider_request_failed"}}
     evidence=[_as_research(archives[i],fresh[i]) for i in (0,1)]
-    combined=merged_five(first,second,evidence[0],evidence[1],now=now)
+    combined=merged_five(first,second,evidence[0],evidence[1],now=now,
+                         selection_mode=selection_mode)
     if combined["status"]!="ready":
         return combined
     return {
@@ -185,8 +187,10 @@ def _csv_bytes(data):
 
 
 def _display(st,report,first,second):
-    st.markdown("### ✅ Final five exact-score doubles")
     calc=report["model_and_ai_result"]
+    challenger=calc.get("selection_mode")=="balanced_challenger"
+    st.markdown("### ✅ Five exact-score doubles"+
+                (" · balanced challenger" if challenger else " · original baseline"))
     st.caption("Match 1: "+label(first))
     st.caption("Match 2: "+label(second))
     st.caption("Research compiled "+str(report["generated_at_utc"])+
@@ -198,6 +202,23 @@ def _display(st,report,first,second):
                "independent-matches assumption, NOT observed accuracy. "
                "External AI votes affect candidate order conservatively; "
                "they are NOT added as probabilities.")
+    old=calc.get("baseline_diversity") or {}
+    new=calc.get("selected_diversity") or {}
+    st.caption("Different scores covered (match 1 / match 2): original "+
+               str(old.get("match_1_scores","?"))+" / "+str(old.get("match_2_scores","?"))+
+               " · selected "+str(new.get("match_1_scores","?"))+" / "+
+               str(new.get("match_2_scores","?")))
+    if challenger:
+        st.warning("Experimental diversity challenger: it may spread five guesses across "
+                   "more model-supported scorelines, but normally reduces the "
+                   "probability-maximising estimated coverage. This is NOT a proven "
+                   "accuracy gain. The original frozen records and automated "
+                   "Five Doubles remain unchanged.")
+    with st.expander("🔎 All top-ten model scorelines for each match",expanded=False):
+        for i,row in enumerate((first,second),1):
+            st.markdown("**Match "+str(i)+" · existing statistical model**")
+            for home,away,p in (row.get("result") or {}).get("scores",[])[:10]:
+                st.caption(str(home)+"–"+str(away)+" · "+f"{float(p):.2%}")
     for num,pick in enumerate(calc["doubles"],1):
         with st.container(border=True):
             st.markdown("**Double "+str(num)+"**")
@@ -381,6 +402,17 @@ def render(st,rows,histories=None):
     if base["status"]!="ready":
         st.warning(base.get("reason") or "The statistical model cannot form five valid doubles.")
         return
+    mode_label=st.selectbox(
+        "Choose five-double scoring method",
+        ["Balanced challenger (experimental)", "Original top-probability baseline"],
+        index=0,key="ziczac_ai_five_selection_mode",
+        help="Balanced uses the same measured model score probabilities, "
+             "but tests wider coverage across two matches. It may lower the "
+             "estimated probability of hitting one of the five doubles.")
+    selection_mode=("balanced_challenger" if mode_label.startswith("Balanced")
+                    else "probability")
+    st.caption("This selection applies to this AI Studio only. Automatic "
+               "Five Doubles and previously saved forecasts are not changed.")
     configs=server_settings(st)
     private=private_gate_ready(st)
     st.markdown("#### Connected research sources")
@@ -412,14 +444,16 @@ def render(st,rows,histories=None):
     cache=st.session_state.setdefault("ziczac_ai_five_session",{})
     pair=(identity(first),identity(second),
           str((first.get("result") or {}).get("model_version")),
-          str((second.get("result") or {}).get("model_version")))
+          str((second.get("result") or {}).get("model_version")),
+          selection_mode)
     if clicked:
         if pair not in cache:
             permitted=bool(consent and private and selected and configs)
             with st.spinner("Comparing statistical scores and available AI research..."):
                 report=analyze_pair(first,second,histories or {},
                     configs={k:configs[k] for k in selected} if permitted else {},
-                    use_live=permitted,qwen_url=server_qwen_url(st))
+                    use_live=permitted,qwen_url=server_qwen_url(st),
+                    selection_mode=selection_mode)
             cache[pair]=report
             # Preserve this five-option user selection and all validated AI
             # opinions *as they were returned before kickoff*. A later rerun
