@@ -286,6 +286,10 @@ def _display(st,report,first,second):
                              " conceded/game · 2+ scored " +
                              f"{sample['scored_2plus']:.0%}" +
                              " · 3+ total " + f"{sample['match_over_2_5']:.0%}")
+                    st.caption("Most recent scored–conceded results: " +
+                               " | ".join(str(x["gf"])+"–"+str(x["ga"]) +
+                                          " ("+x["venue"]+")"
+                                          for x in sample["last_scores"][:5]))
                 else:
                     st.caption(title + ": no verified result available")
             h2h = p.get("h2h_last6") or []
@@ -301,6 +305,13 @@ def _display(st,report,first,second):
                            f"{adjusted[0]:.2f} / {adjusted[1]:.2f}" +
                            " · P(total 4+) " +
                            f"{model['four_plus_goal_probability_research']:.1%}")
+                for side in ("home", "away"):
+                    bands = model["goal_count_probabilities"][side]
+                    st.caption(side.title() + " possible goals · 0: " +
+                               f"{bands['0']:.0%}" + " · 1: " +
+                               f"{bands['1']:.0%}" + " · 2: " +
+                               f"{bands['2']:.0%}" + " · 3+: " +
+                               f"{bands['3+']:.0%}")
             else:
                 st.caption("Goal-form model abstained: " + str(model.get("reason")))
             ctx = report["provider_context"][i]
