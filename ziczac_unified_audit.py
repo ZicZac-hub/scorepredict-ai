@@ -241,9 +241,14 @@ def private_records(rows):
                      for row in (record.get("choices") or [])]
             if len(choices)!=5:
                 continue
-            entry=_item("ai_five_double",record.get("record_id"),legs,choices,
-                        record.get("captured_at_utc"),detail="website_on_demand",
-                        is_private=True)
+            method = record.get("method") or "probability"
+            if method not in ("probability", "balanced_challenger", "goal_form_research"):
+                continue
+            source_name = ("ai_five_double" if method == "probability" else
+                           "ai_five_double_" + method)
+            entry=_item(source_name,record.get("record_id"),legs,choices,
+                        record.get("captured_at_utc"),model=method,
+                        detail="website_on_demand",is_private=True)
         else:
             continue
         if entry:
