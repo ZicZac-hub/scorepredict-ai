@@ -1150,6 +1150,11 @@ with active_page_slot:
         render_five_ai(st)
         st.divider()
     if view=='finished':
+        # One truthful, identity-verified scoreboard across scheduled and
+        # privately saved website, Deep Research and individual AI forecasts.
+        from ziczac_unified_audit_ui import render as render_unified_tracker
+        render_unified_tracker(st, database_url=_database_url)
+        st.divider()
         from v10_status_ui import render as render_v10_status
         render_v10_status(st)
         st.divider()
