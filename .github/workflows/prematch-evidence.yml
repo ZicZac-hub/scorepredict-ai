@@ -142,6 +142,17 @@ jobs:
         # when BOTH original V8 pair legs qualify before their kickoffs.
         if: always()
         run: python v19_match_intelligence.py
+      - name: Optional V21 pre-match xG, lineup, injury and market source capture
+        # New requests consume API quota. Opt-in Actions variable only.
+        if: steps.cadence.outputs.heavy == 'true' && github.event_name != 'push' && vars.V21_EVIDENCE_ENABLED == 'true'
+        env:
+          V21_EVIDENCE_ENABLED: "true"
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python v21_capture_sources.py
+      - name: Freeze and score V21 same-day three-model pair tournament
+        # Zero extra provider calls; immutable, never promoted automatically.
+        if: always()
+        run: python v21_prospective.py
       - name: Produce unified immutable hit/miss/pending evidence report
         # Run even after a provider quota failure; no new external requests.
         # The published GitHub status contains ONLY already-public scheduled
@@ -167,8 +178,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
@@ -227,6 +238,8 @@ jobs:
             data/v17_confidence/
             data/v18_accuracy/
             data/v19_intelligence/
+            data/v21_sources/
+            data/v21_prospective/
             data/independent_football/status.json
             data/independent_football/evaluation.json
             data/independent_football/forecasts/*.json
