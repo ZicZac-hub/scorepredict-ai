@@ -131,7 +131,7 @@ def audit(base_root=MATCH_ROOT, ai_root=AI_ROOT):
                 "shared_provider_names":sorted(set(left[1])&set(right[1])),
                 "leg_reasons":[left[2],right[2]],
                 "both_legs_have_at_least_two_providers":valid,
-                "exact_frozen_source_and_digest_validated":True})
+                "exact_frozen_source_and_digest_validation_enforced":True})
         except (TypeError,KeyError,ValueError):
             continue
     doubles=performance.get("five_doubles") or {}
