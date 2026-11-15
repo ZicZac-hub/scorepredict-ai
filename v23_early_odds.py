@@ -1,4 +1,4 @@
-"""V23 optional early pre-match bookmaker capture (one request/leg).
+"""V23 optional two-window pre-match bookmaker capture (at most two requests/leg).
 
 No silent API spending: requires V23_EARLY_ODDS_ENABLED=true plus API key.
 Keeps the original V8 forecasts and all later provider packets immutable.
@@ -19,7 +19,20 @@ from persist_prematch import load_json,write_json
 
 ROOT=Path("data/v21_sources")
 START_HOURS=6
-END_HOURS=10
+END_HOURS=36
+MAX_REQUESTS_PER_RUN=2
+
+def _window(hours_until_kickoff):
+    """Provider odds often exist earlier than the old 6–10h-only window.
+
+    A later retry is allowed only when the earlier window had no still-fresh
+    qualified data. Each stage is attempted at most once per fixture.
+    """
+    if 18 <= hours_until_kickoff <= 36:
+        return "early"
+    if 6 <= hours_until_kickoff <= 12:
+        return "late"
+    return None
 
 
 def eligible_legs(root, now):
@@ -32,7 +45,8 @@ def eligible_legs(root, now):
                 continue
             for leg in (pair["first"],pair["second"]):
                 kickoff=utc(leg["kickoff_utc"])
-                if not clock+timedelta(hours=START_HOURS)<=kickoff<=clock+timedelta(hours=END_HOURS):
+                hours=(kickoff-clock).total_seconds()/3600
+                if _window(hours) is None:
                     continue
                 model=original_model(root,leg)
                 if not model or model.get("input_digest")!=leg.get("input_digest"):
@@ -41,7 +55,9 @@ def eligible_legs(root, now):
                 selected.setdefault(key,(kickoff,model))
         except (TypeError,ValueError,KeyError):
             continue
-    return [x[1] for x in sorted(selected.values(),key=lambda t:(t[0],str(t[1]["fixture_id"])))][:2]
+    # Do not repeatedly reselect only the earliest two after their attempts
+    # have been spent; the capture loop itself caps ACTUAL provider calls.
+    return [x[1] for x in sorted(selected.values(),key=lambda t:(t[0],str(t[1]["fixture_id"])))]
 
 
 def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
@@ -57,19 +73,51 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
         status["reason"]="not_opted_in_or_api_key_missing"
         return status
     cb=request or _request
+    from v21_capture_sources import best_packet
     for leg in eligible_legs(source_root,clock):
+        if status["queries"] >= MAX_REQUESTS_PER_RUN:
+            break
         try:
             canonical=source_packet_path(root,leg)
-            marker=Path(root)/"early_attempts"/(canonical.stem+".json")
+            hours=(utc(leg["kickoff_utc"])-clock).total_seconds()/3600
+            phase=_window(hours)
+            if phase is None:
+                continue
+            marker=Path(root)/"early_attempts"/(canonical.stem+"_"+phase+".json")
+            legacy_marker=Path(root)/"early_attempts"/(canonical.stem+".json")
+            if marker.exists() or (phase=="early" and legacy_marker.exists()):
+                status["skipped"].append(str(leg["fixture_id"])+":"+phase+"_already_attempted")
+                continue
+            # A separate frozen packet may already have fully qualifying
+            # 1X2 + goal-total prices; do not spend another API request.
+            saved=best_packet(root,leg,now=clock,priority="market")
+            saved_markets=((saved or {}).get("provider_snapshot") or {}).get("multi_market") or {}
+            if ("1x2" in saved_markets and
+                    ("over_2_5" in saved_markets or "over_3_5" in saved_markets)):
+                current=True
+                for name in ("1x2","over_2_5","over_3_5"):
+                    if name not in saved_markets:
+                        continue
+                    try:
+                        updated=utc(saved_markets[name]["last_source_update_utc"])
+                        if updated>clock or clock-updated>timedelta(hours=12):
+                            current=False
+                    except (KeyError,TypeError,ValueError):
+                        current=False
+                if current:
+                    status["skipped"].append(str(leg["fixture_id"])+":current_market_packet_already_saved")
+                    continue
             marker.parent.mkdir(parents=True,exist_ok=True)
             try:
                 with marker.open("x",encoding="utf-8") as file:
                     file.write(json.dumps({"attempted_at_utc":clock.isoformat(),
                                            "fixture_id":leg["fixture_id"],
-                                           "policy":"one_pre_match_request_per_leg"})+"\n")
+                                           "policy":"one_request_each_early_and_late_window",
+                                           "stage":phase})+"\n")
             except FileExistsError:
-                status["skipped"].append(str(leg["fixture_id"])+":already_attempted")
+                status["skipped"].append(str(leg["fixture_id"])+":concurrent_attempt")
                 continue
+            status["queries"]+=1
             # Bookmaker prices are useful earlier than confirmed starting
             # lineups; no expensive historical stats or AI calls here.
             if request is None:
@@ -86,7 +134,6 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
                 # never infer provenance from an unaudited callback.
                 raw=cb(key,"/odds",{"fixture":int(leg["fixture_id"])})
                 fetched_at=None
-            status["queries"]+=1
             markets=parse_markets(raw,observed_at=clock,
                                  verified_provider_fetched_at=fetched_at)
             if "1x2" not in markets or not ({"over_2_5","over_3_5"} & set(markets)):
