@@ -347,6 +347,12 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key):
                 write_json(marker,{"date":date,"page":page,
                                    "result_count":0,"provider_error_type":type(exc).__name__,
                                    "reserved_at_utc":clock.isoformat()})
+                # Stop for the whole run on access/quota failure. Subsequent
+                # fixture dates cannot fix a provider-wide credential issue;
+                # repeated calls would only consume more allowance.
+                if type(exc).__name__ in ("ProviderQuotaError","ProviderAccessError"):
+                    run["stopped_for_provider_limit"]=True
+                    return run
                 break
     return run
 
