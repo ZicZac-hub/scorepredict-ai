@@ -46,12 +46,13 @@ def research(rows, histories, *, now=None, limit=12):
 
 def _display(st,candidate,labeler):
     first,second=candidate["first"],candidate["second"]
-    st.markdown("#### V13 Hybrid · Five exact-score doubles")
+    st.markdown("#### Five exact-score doubles · "+candidate.get("model_choice","V13 combined"))
     st.caption("Match 1: "+labeler(first))
     st.caption("Match 2: "+labeler(second))
     st.metric("Estimated model coverage",f"{candidate['estimated_joint_coverage']:.2%}")
     st.caption("Independent-match model estimate, NOT historical hit rate. "
-               "Both exact scores in the SAME row must match.")
+               "Both exact scores in the SAME row must match. Selection method: "+
+               str(candidate.get("selection_mode","unknown"))+".")
     for i,choice in enumerate(candidate["doubles"],1):
         with st.container(border=True):
             st.markdown("**Double "+str(i)+"**")
@@ -87,9 +88,9 @@ def _display(st,candidate,labeler):
 
 def render(st,rows,histories,labeler):
     st.markdown("### 🧠 V13 Hybrid AI · Combined Five Doubles")
-    st.caption("Combines pre-match V8 + fitted V7 + original V6 + optional "
-               "league-calibrated V12. External AI/market odds are NOT included "
-               "unless independently verified; no fake votes.")
+    st.caption("Compare the pre-match V8 baseline, fitted V7 and the new V13 "
+               "blend (V8 + V7 + original V6 + optional V12). External AI and "
+               "bookmaker odds are NOT counted as real model votes.")
     st.warning("V13 is a new research challenger, NOT proven more accurate. "
                "In the previous 20-pair test, V7 diversified won 2/20 and "
                "many methods won 0/20. This does not prove future performance.")
@@ -100,6 +101,11 @@ def render(st,rows,histories,labeler):
     mode_label=st.radio("Hybrid match selection",
         ["AI Auto Select · Hybrid", "Manual Select · Hybrid"],
         horizontal=True,key="v13_mode")
+    model_choice=st.selectbox("Statistical model for the five doubles",[
+        "V13 combined model (new experiment)",
+        "V8 evidence ensemble (strongest tested exact-score model)",
+        "V7 fitted Dixon–Coles (best diversified result in 20 historical pairs)"],
+        key="v13_model_choice")
     strategy=st.selectbox("Five-double selection strategy",[
         "Top five by joint probability (maximum model coverage)",
         "Balanced (experimental)",
@@ -107,7 +113,7 @@ def render(st,rows,histories,labeler):
     mode=("top5" if strategy.startswith("Top") else
           "balanced" if strategy.startswith("Balanced") else "diversified")
     now=datetime.now(timezone.utc)
-    identity=(mode_label,strategy,
+    identity=(mode_label,strategy,model_choice,
               tuple((str(r["fixture"].get("provider")),
                      str(r["fixture"].get("id"))) for r in eligible))
     if mode_label.startswith("AI"):
@@ -134,7 +140,24 @@ def render(st,rows,histories,labeler):
             else:
                 pool=list(selection)
             researched,reasons=research(pool,histories,now=now,limit=12)
-            candidates=best_pairs(researched,mode=mode,now=now,limit=1)
+            # Use the REAL same-evidence full-score component chosen by the
+            # user; a model name is not a replacement for numerical evidence.
+            chosen_key=("v7" if model_choice.startswith("V7") else
+                        "v8" if model_choice.startswith("V8") else None)
+            candidates_pool=[]
+            for row in researched:
+                original=row["result"]
+                if chosen_key is None:
+                    candidates_pool.append(row)
+                else:
+                    scores=original.get("component_score_distributions",{}).get(chosen_key)
+                    version=original.get("component_versions",{}).get(chosen_key)
+                    if scores and version:
+                        candidates_pool.append({**row,"result":{
+                            **original,"scores":scores,"model_version":version}})
+            candidates=best_pairs(candidates_pool,mode=mode,now=now,limit=1)
+            if candidates:
+                candidates[0]["model_choice"]=model_choice
             st.session_state["v13_hybrid_result"]={
                 "identity":identity,"candidate":candidates[0] if candidates else None,
                 "searched":len(pool),"researched":len(researched),
