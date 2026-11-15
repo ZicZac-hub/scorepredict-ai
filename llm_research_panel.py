@@ -72,8 +72,8 @@ def panel_path(row, root=ROOT):
     return Path(root) / "forecasts" / (provider + "_" + identifier + "_" + digest + ".json")
 
 
-def briefing(row):
-    """Identical source packet: no invented injuries, bookmaker values or xG."""
+def briefing(row, provider_packet=None):
+    """Same dated frozen source packet to ALL AI providers, no invented facts."""
     info = {
         "home_team": row["home_team"], "away_team": row["away_team"],
         "league": row.get("competition"), "kickoff_utc": row["kickoff_utc"],
@@ -84,9 +84,19 @@ def briefing(row):
         "available_schedule_and_form_context": row.get("research_context", {}),
         "unavailable_features": row.get("unavailable_features", []),
     }
+    if isinstance(provider_packet,dict) and provider_packet.get("snapshot_sha256"):
+        info["verified_additional_pre_match_sources"]={
+            "source_sha256":provider_packet["snapshot_sha256"],
+            "captured_at_utc":provider_packet["captured_at_utc"],
+            "past_fixture_observed_xg":provider_packet.get("verified_historical_fixture_xg") or [],
+            "source_reported_starting_lineups":provider_packet.get("confirmed_starting_xi") or [],
+            "source_reported_injuries":provider_packet.get("reported_injuries") or [],
+            "timestamped_1x2":provider_packet.get("market"),
+            "timestamped_goal_markets":provider_packet.get("multi_market") or {},
+        }
     return (
         "Independently assess this football fixture using ONLY these frozen "
-        "pre-match facts. Do not claim access to external browsing, real xG, "
+        "pre-match facts. Do not claim independent live browsing or make up xG, "
         "injuries, confirmed lineups or odds not in the packet. Distinguish "
         "the prior statistical forecast from your own judgement. Return ONLY "
         "JSON with keys home_win, draw, away_win (probabilities summing to 1), "
@@ -397,7 +407,13 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         if status["attempted"] >= budget:
             break
         status["attempted"] += 1
-        prompt = briefing(row)
+        # V22: provide the same independently captured, source- and
+        # forecast-matched pre-match data to every enabled AI adapter.
+        from v21_capture_sources import source_packet_path,qualified_packet
+        extra_record=load_json(source_packet_path(Path("data/v21_sources"),row),{})
+        extra=(extra_record.get("provider_snapshot") if
+               qualified_packet(extra_record,row,now=clock) else None)
+        prompt = briefing(row,provider_packet=extra)
         votes, models = {}, {}
         for name, (key, model) in configured.items():
             try:
@@ -425,10 +441,12 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                   "votes": votes, "consensus": consensus(votes),
                   "baseline_predicted_score": row["predicted_score"],
                   "baseline_probabilities": row["outcome_probabilities"],
+                  "verified_source_packet_sha256":extra.get("snapshot_sha256") if extra else None,
                   "provider_count": len(votes),
                   "configured_provider_count": len(configured),
-                  "disclaimer": "No real-time web access by LLMs; source packet is frozen "
-                                "statistical evidence. Shadow-only and not verified as superior."}
+                  "disclaimer": "No independent browsing by LLMs. All provider facts "
+                                "were supplied in the same time-checked packet; "
+                                "AI-only exact scores are not validated as superior."}
         path.parent.mkdir(parents=True, exist_ok=True)
         try:
             with path.open("x", encoding="utf-8") as file:
