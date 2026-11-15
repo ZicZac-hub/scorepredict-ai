@@ -31,6 +31,15 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                " separately frozen v8 snapshots · "+str(near_hits)+"/"+
                str(near_checked)+" exact-score hits on completed matches. "+
                "Original v8 predictions are never rewritten.")
+    v12=models.get("v12") or {}
+    v12_count=int(v12.get("frozen_fixtures") or 0)
+    v12_checked=int(v12.get("verified_fixtures") or 0)
+    v12_hits=int(v12.get("exact_score_hits") or 0)
+    st.caption("🧪 V12 league score calibration (shadow only): "+
+               str(v12_count)+" separate frozen forecasts · "+
+               str(v12_hits)+"/"+str(v12_checked)+
+               " verified exact-score hits. This experiment has not been "+
+               "promoted into the main predictions.")
     doubles=report.get("five_doubles") or {}
     with cols[3]:
         st.metric("Five doubles frozen",int(doubles.get("frozen_pairs") or 0))
@@ -50,7 +59,8 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                    ". These forecasts used different available information.")
     common=(report.get("paired_v8_v9") or {}).get("verified_same_fixture_count",0)
     common_v10=(report.get("paired_v8_v10") or {}).get("verified_same_fixture_count",0)
-    st.caption(f"Fair same-fixture verification: v8 vs v9 = {common} matches · v8 vs v10 = {common_v10} matches. Pending games are neither hits nor losses.")
+    common_v12=(report.get("paired_v8_v12") or {}).get("verified_same_fixture_count",0)
+    st.caption(f"Fair same-fixture verification: v8 vs v9 = {common} matches · v8 vs v10 = {common_v10} matches · v8 vs v12 = {common_v12} matches. Pending games are neither hits nor losses.")
     comparisons=doubles.get("same_pair_challengers") or {}
     if any((data.get("same_pair_verified_days") or 0)>0 for data in comparisons.values()):
         st.caption("Same frozen match-pair five-double comparisons: "+
@@ -58,7 +68,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                               str(item["same_pair_verified_days"])+ " hits"
                               for name,item in comparisons.items() if item.get("same_pair_verified_days")) )
     if not compact:
-        for name in ("v8","v8_near","v9","v10"):
+        for name in ("v8","v8_near","v9","v10","v12"):
             m=models.get(name) or {}
             with st.expander(name.upper()+" · Full probability-quality breakdown"):
                 if not m.get("verified_fixtures"):
@@ -79,6 +89,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                     "v8 saved by latest collection":int(status.get("v10_shadow_v8_saved") or 0),
                     "v9 saved by latest collection":int(status.get("v10_shadow_v9_saved") or 0),
                     "v10 saved by latest collection":int(status.get("v10_shadow_v10_saved") or 0),
+                    "V12 score calibration shadows saved":int(status.get("v10_shadow_v12_saved") or 0),
                     "new near-kickoff research forecasts":int(status.get("v10_near_research_saved") or 0),
                     "new near-kickoff market checks":int(status.get("v10_market_refresh_checked") or 0),
                     "new near-kickoff v9 forecasts":int(status.get("v10_market_refresh_v9_saved") or 0),
@@ -90,7 +101,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
             else:
                 st.caption("No collector diagnostics have been published in this deployment yet.")
         st.caption("Accuracy fixes v10.1: near-kickoff odds refresh · same-evidence market controls · matchday double freeze · timestamp-based bookmaker selection.")
-        st.caption("Market-informed v9 and multi-book v10 are challengers, not proven superior models. Better historical-looking predictions do not justify changing the recorded champion without prospective evidence.")
+        st.caption("Market-informed v9, multi-book v10 and league-calibration v12 are experimental challengers, not proven superior models. More different-looking scorelines do not justify changing the production champion without prospective evidence.")
         st.divider()
         from llm_research_ui import render as render_five_ai
         render_five_ai(st)
