@@ -46,8 +46,8 @@ def pair_check(first, second, *, now=None):
         return "Both matches need valid pre-kickoff fixture IDs and at least five statistical exact scores."
     if same_fixture(first,second) or identity(first)==identity(second):
         return "Choose two different matches, not the same fixture."
-    first_day = _instant(first.get("kickoff")).astimezone(SYDNEY).date()
-    second_day = _instant(second.get("kickoff")).astimezone(SYDNEY).date()
+    first_day = _instant(first.get("kickoff") or (first.get("fixture") or {}).get("utcDate")).astimezone(SYDNEY).date()
+    second_day = _instant(second.get("kickoff") or (second.get("fixture") or {}).get("utcDate")).astimezone(SYDNEY).date()
     if first_day != second_day:
         return "Choose two matches on the same Sydney calendar date."
     names = teams(first)+teams(second)
