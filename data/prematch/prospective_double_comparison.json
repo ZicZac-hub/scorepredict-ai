@@ -2,23 +2,23 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 57
+    "awaiting_both_verified_results": 56
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": null,
-      "win_rate": null,
+      "mean_estimated_probability_coverage": 0.05796557165401896,
+      "win_rate": 0.0,
       "wins": 0
     },
     "diversified": {
-      "mean_estimated_probability_coverage": null,
-      "win_rate": null,
+      "mean_estimated_probability_coverage": 0.0431348366690791,
+      "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": null,
-      "win_rate": null,
+      "mean_estimated_probability_coverage": 0.05796557165401896,
+      "win_rate": 0.0,
       "wins": 0
     }
   },
@@ -26,6 +26,38 @@
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 0,
   "pairs_frozen": 57,
-  "pairs_verified": 0,
-  "rows": []
+  "pairs_verified": 1,
+  "rows": [
+    {
+      "actual_scores": [
+        "0-0",
+        "0-2"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05796557165401896,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.0431348366690791,
+      "first_match": "Mirassol vs Atletico-MG",
+      "league": "BSA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05796557165401896,
+      "pair_key": "BSA_1492312_1492455",
+      "second_match": "Chapecoense-sc vs Vasco DA Gama"
+    }
+  ]
 }
