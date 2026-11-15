@@ -264,6 +264,7 @@ def evaluate(root=ROOT,results=None):
     # time as the market challenger; no unfair old-vs-new comparison.
     common=[]
     common_v10=[]
+    common_v12=[]
     original_vs_near=[]
     control_count=0
     comparison_excluded=0
@@ -276,6 +277,18 @@ def evaluate(root=ROOT,results=None):
             # This tests whether genuinely newer available information
             # helped the SAME real fixture; not a same-as-of model contest.
             original_vs_near.append((early,near))
+        # V12 and V8 use exactly the SAME historical input digest and are
+        # frozen together, so they can be compared without market-as-of
+        # controls or post-hoc fixture selection.
+        alt12=latest.get((provider,fixture_id,"v12"))
+        if (alt12 is not None and
+            alt12.get("input_digest")==row.get("input_digest") and
+            utc(row["captured_at_utc"])<=utc(alt12["captured_at_utc"]) and
+            hits.get((provider,fixture_id,"v8")) is not None and
+            hits.get((provider,fixture_id,"v12")) is not None):
+            common_v12.append((
+                hits[(provider,fixture_id,"v8")],
+                hits[(provider,fixture_id,"v12")]))
         for challenger, cohort in (("v9",common),("v10",common_v10)):
             alt=latest.get((provider,fixture_id,challenger))
             if alt is None or hits.get((provider,fixture_id,challenger)) is None:
@@ -343,7 +356,7 @@ def evaluate(root=ROOT,results=None):
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
         "verified_result_source":"verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
-        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v8_near","v9","v10")},
+        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v8_near","v9","v10","v12")},
         "paired_original_v8_vs_near_v8":{
             "same_fixture_verified":len(original_vs_near),
             "original_only_exact_hits":sum(a and not b for a,b in original_vs_near),
@@ -362,6 +375,12 @@ def evaluate(root=ROOT,results=None):
                          "v8_only_hits":sum(a and not b for a,b in common_v10),
                          "v10_only_hits":sum(b and not a for a,b in common_v10),
                          "insufficient_to_claim_improvement":len(common_v10)<200},
+        "paired_v8_v12":{"verified_same_fixture_count":len(common_v12),
+                         "v8_only_hits":sum(a and not b for a,b in common_v12),
+                         "v12_only_hits":sum(b and not a for a,b in common_v12),
+                         "insufficient_to_claim_improvement":len(common_v12)<200,
+                         "same_evidence_required":True,
+                         "v12_is_shadow_only":True},
         "five_doubles":{"frozen_pairs":len(pairs),"verified_pairs":len(completed),
                         "same_pair_challengers":comparison,
                         "awaiting_both_results":len(pairs)-len(completed),
@@ -371,7 +390,7 @@ def evaluate(root=ROOT,results=None):
                             sum(p["estimated_coverage"] for p in completed)/len(completed)
                             if completed else None,"rows":pairs},
         "limitations":"Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
-        "promotion_gate":"Never promote v9/v10 as more accurate without enough paired prospective results, calibration and uncertainty checks."}
+        "promotion_gate":"Never promote v9/v10/v12 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks."}
     return report
 
 
