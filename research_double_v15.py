@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from ai_five_double_engine import merged_five
+from v16_pair_research import original_model
 from llm_research_panel import PROVIDERS
 from v10_prospective import ROOT as BASE_ROOT, read_latest, utc
 from persist_prematch import load_json, RESULTS
@@ -41,9 +42,13 @@ def _fixture(leg):
     }
 
 
-def _source(leg,models):
+def _source(leg,models,root=None):
+    # In the live ledger, the original archived file (not today's latest
+    # per-fixture V8 refresh) is authoritative. Never swap source digests.
+    if root is not None:
+        return original_model(root,leg)
     key=(str(leg.get("provider")),str(leg.get("fixture_id")))
-    for version in ("v8_near","v8"):
+    for version in ("v8","v8_near"):
         original=models.get((*key,version))
         if original and original.get("forecast_id")==leg.get("forecast_id"):
             return original
@@ -125,7 +130,7 @@ def _vote_records(leg,root,now,allowed_sources=None,min_votes=1):
 
 
 def assemble_pair(packet,models,*,ai_root=AI_ROOT,now=None,
-                  min_votes=MIN_PROVIDERS_PER_LEG):
+                  min_votes=MIN_PROVIDERS_PER_LEG,source_root=None):
     """Return (record, abstention diagnostic) from archived historical facts."""
     when=utc(now or datetime.now(timezone.utc))
     if packet.get("mode")!="prospective" or packet.get("status")!="frozen_pre_kickoff":
@@ -136,7 +141,7 @@ def assemble_pair(packet,models,*,ai_root=AI_ROOT,now=None,
         captured=utc(packet["captured_at_utc"])
         if not captured<when<min(first_kick,second_kick):
             return None,"past_kickoff_or_not_yet_frozen"
-        sources=[_source(leg,models) for leg in (first,second)]
+        sources=[_source(leg,models,root=source_root) for leg in (first,second)]
         if any(not source for source in sources):
             return None,"original_statistical_forecast_missing"
         votes=[]
@@ -233,7 +238,8 @@ def freeze(*,now=None,root=ROOT,source_root=BASE_ROOT,ai_root=AI_ROOT,
             status["previously_frozen"]+=1
             continue
         record,reason=assemble_pair(original,source,ai_root=ai_root,
-                                    now=when,min_votes=min_votes)
+                                    now=when,min_votes=min_votes,
+                                    source_root=source_root)
         if record is None:
             status["abstentions"][path.stem]=reason
         elif _write_once(dest,record):
