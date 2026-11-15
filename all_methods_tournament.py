@@ -22,6 +22,7 @@ from history_pipeline import build_evidence, POLICY_VERSION
 from forecast_model import predict as versioned_predict
 from research_ensemble_v8 import predict as v8_predict
 from score_calibration_v12 import predict as v12_predict
+from hybrid_five_v13 import predict as v13_predict
 from smart_double_ai import five_doubles
 from double_score_selection import select_balanced, select_diversified
 
@@ -38,7 +39,7 @@ VARIANTS={
     "v6_dixon_coles":"dixon_coles",
     "v6_temperature":"temperature_candidate",
 }
-CORE=("v6_baseline","v7_fitted","v8_ensemble","v12_calibrated")
+CORE=("v6_baseline","v7_fitted","v8_ensemble","v12_calibrated","v13_hybrid")
 NOT_COMPARABLE={
     "v9_market_odds":"No timestamped, authentic pre-match bookmaker market quotes for the 2026 holdout.",
     "v10_multi_market":"No three timestamped pre-match quotes from independent bookmakers for the 2026 holdout.",
@@ -128,6 +129,18 @@ def _predict_models(fixture, history, league, as_of, mode_keys):
         except (ValueError,TypeError,KeyError,ZeroDivisionError,OverflowError,
                 ArithmeticError,ImportError) as exc:
             errors["v12_calibrated"]=type(exc).__name__
+    if "v13_hybrid" in mode_keys and v8 is not None:
+        try:
+            candidate=v13_predict(
+                fixture,history,league_history=league,as_of=as_of,
+                reference_v8=v8,reference_v6=found.get("v6_baseline"),
+                reference_v7=found.get("v7_fitted"),
+                reference_v12=found.get("v12_calibrated"))
+            if candidate is not None:
+                found["v13_hybrid"]=candidate
+        except (ValueError,TypeError,KeyError,ZeroDivisionError,OverflowError,
+                ArithmeticError,ImportError) as exc:
+            errors["v13_hybrid"]=type(exc).__name__
     return found,errors
 
 
@@ -259,7 +272,7 @@ def evaluate(matches,*,year=2026,max_fixtures=220,max_pair_days=24):
         "target_year":year,
         "target_latest_fixtures":len(target),
         "asof":"Each fixture kickoff minus 60 minutes. Prior results available by finishedAt or kickoff plus three hours. Competition and provider matched.",
-        "testing_risks":"Historical replay, not prospective; V12 formula authored after seeing earlier 2026 aggregate results. Treat 2026 as explored development evidence for V12, not independent untouched holdout.",
+        "testing_risks":"Historical replay, not prospective; V12 and V13 choices were authored after observing earlier 2026 aggregate results. Treat 2026 as development evidence, NOT a clean untouched confirmation of V13 superiority.",
         "core_common_fixtures":len(common),
         "common_core_models":common_report,
         "by_model_own_eligible":all_report,
@@ -269,6 +282,7 @@ def evaluate(matches,*,year=2026,max_fixtures=220,max_pair_days=24):
         "double_same_pair_days":len(double_records),
         "double_models":double_summary,
         "double_records":double_records,
+        "v13_weights_frozen_before_this_run":True,
         "promote_any_model":False,
         "no_production_forecast_mutated":True,
     }
