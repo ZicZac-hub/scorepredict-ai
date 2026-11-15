@@ -199,7 +199,7 @@ def options(rows, *, now=None, archived=None):
 
 def label(row):
     fixture=row["fixture"]
-    kickoff=utc(row["kickoff"]).astimezone(SYDNEY)
+    kickoff=utc(row.get("kickoff") or fixture["utcDate"]).astimezone(SYDNEY)
     home=fixture["homeTeam"]["name"]
     away=fixture["awayTeam"]["name"]
     source="Saved v8" if row.get("archive_frozen") else "Current model"
@@ -771,7 +771,7 @@ def render(st,rows,histories=None):
     found_all=options(rows+targeted, archived=_minute_archived_candidates(minute))
     until=local_today+timedelta(days=7)
     def in_scope(row):
-        day=utc(row["kickoff"]).astimezone(SYDNEY).date()
+        day=utc(row.get("kickoff") or row["fixture"]["utcDate"]).astimezone(SYDNEY).date()
         if date_scope=="Today only":
             return day==local_today
         if date_scope=="Tomorrow only":
