@@ -6,13 +6,20 @@
   },
   "evidence": "genuinely_frozen_pre_kickoff_only",
   "five_doubles": {
-    "average_estimated_coverage": null,
-    "awaiting_both_results": 6,
+    "average_estimated_coverage": 0.059237574736583476,
+    "awaiting_both_results": 5,
     "frozen_pairs": 6,
-    "hit_rate": null,
+    "hit_rate": 0.0,
     "rows": [
       {
-        "status": "awaiting_verified_results",
+        "actual_scores": [
+          "0-2",
+          "0-0"
+        ],
+        "estimated_coverage": 0.059237574736583476,
+        "hit": false,
+        "same_pair_challengers": {},
+        "status": "verified",
         "sydney_date": "2026-11-15"
       },
       {
@@ -52,7 +59,7 @@
         "v8_wins_on_those_days": 0
       }
     },
-    "verified_pairs": 0,
+    "verified_pairs": 1,
     "wins": 0
   },
   "freeze_diagnostics": {
@@ -83,36 +90,36 @@
     },
     "v8": {
       "exact_score_hits": 0,
-      "exact_score_rate": null,
+      "exact_score_rate": 0.0,
       "frozen_fixtures": 165,
-      "mean_expected_exact_hits": null,
-      "mean_outcome_brier": null,
-      "mean_score_log_loss": null,
-      "pending_fixtures": 165,
-      "top3_hit_rate": null,
-      "verified_fixtures": 0
+      "mean_expected_exact_hits": 0.23678328452241099,
+      "mean_outcome_brier": 0.5973195574887458,
+      "mean_score_log_loss": 2.5299585667027795,
+      "pending_fixtures": 163,
+      "top3_hit_rate": 0.0,
+      "verified_fixtures": 2
     },
     "v8_near": {
       "exact_score_hits": 0,
-      "exact_score_rate": null,
+      "exact_score_rate": 0.0,
       "frozen_fixtures": 2,
-      "mean_expected_exact_hits": null,
-      "mean_outcome_brier": null,
-      "mean_score_log_loss": null,
-      "pending_fixtures": 2,
-      "top3_hit_rate": null,
-      "verified_fixtures": 0
+      "mean_expected_exact_hits": 0.23678328452241099,
+      "mean_outcome_brier": 0.5973195574887458,
+      "mean_score_log_loss": 2.5299585667027795,
+      "pending_fixtures": 0,
+      "top3_hit_rate": 0.0,
+      "verified_fixtures": 2
     },
     "v9": {
       "exact_score_hits": 0,
-      "exact_score_rate": null,
+      "exact_score_rate": 0.0,
       "frozen_fixtures": 2,
-      "mean_expected_exact_hits": null,
-      "mean_outcome_brier": null,
-      "mean_score_log_loss": null,
-      "pending_fixtures": 2,
-      "top3_hit_rate": null,
-      "verified_fixtures": 0
+      "mean_expected_exact_hits": 0.23400366599371203,
+      "mean_outcome_brier": 0.5420156905954618,
+      "mean_score_log_loss": 2.449918848068497,
+      "pending_fixtures": 0,
+      "top3_hit_rate": 0.0,
+      "verified_fixtures": 2
     }
   },
   "paired_original_v8_vs_near_v8": {
@@ -120,7 +127,7 @@
     "insufficient_to_claim_improvement": true,
     "original_only_exact_hits": 0,
     "purpose": "Observe the effect of newer verified pre-match information; NOT an equal-information model comparison.",
-    "same_fixture_verified": 0
+    "same_fixture_verified": 2
   },
   "paired_v8_v10": {
     "insufficient_to_claim_improvement": true,
@@ -132,7 +139,7 @@
     "insufficient_to_claim_improvement": true,
     "v8_only_hits": 0,
     "v9_only_hits": 0,
-    "verified_same_fixture_count": 0
+    "verified_same_fixture_count": 2
   },
   "promotion_gate": "Never promote v9/v10 as more accurate without enough paired prospective results, calibration and uncertainty checks.",
   "verified_result_source": "verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
