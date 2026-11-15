@@ -81,6 +81,7 @@ def replay(matches,*,year=2026,max_eval=500,max_per_day=6,
     rows.sort(key=lambda p:(p[0],str(p[1].get("id"))))
     targets=[(at,row) for at,row in rows if at.year==year][-max_eval:]
     observed={name:[] for name in NAMES}
+    paired_form=[]  # strict identical-fixture subset; no selection by outcomes
     by_day=defaultdict(list)
     excluded=defaultdict(int)
     processed=0
@@ -109,6 +110,10 @@ def replay(matches,*,year=2026,max_eval=500,max_per_day=6,
             goals=match["score"]["fullTime"]
             for name,matrix in models.items():
                 observed[name].append(inspect_prediction(matrix,goals["home"],goals["away"]))
+            if "v20_goal_form" in models:
+                paired_form.append((
+                    inspect_prediction(models["baseline_v8"],goals["home"],goals["away"]),
+                    inspect_prediction(models["v20_goal_form"],goals["home"],goals["away"])))
             day=at.astimezone(SYDNEY).date().isoformat()
             by_day[day].append({"fixture_id":str(match["id"]),
                                 "home_id":str(fixture["homeTeam"]["id"]),
@@ -155,6 +160,32 @@ def replay(matches,*,year=2026,max_eval=500,max_per_day=6,
     for stats in pair_observed.values():
         stats["rate_per_issued"]=stats["wins"]/stats["issued"] if stats["issued"] else None
         stats["rate_per_eligible_day"]=stats["wins"]/valid_pair_days if valid_pair_days else None
+    # A single paired cohort fixes the previous unbalanced 436 versus
+    # 393 comparison; statistical uncertainty must stay visible.
+    n_paired=len(paired_form)
+    def paired_metric(field):
+        deltas=[first[field]-second[field] for first,second in paired_form]
+        n=len(deltas)
+        if not n:
+            return {"paired_fixtures":0,"mean_original_minus_form":None,
+                    "approx_95pct_ci":None}
+        avg=sum(deltas)/n
+        variance=sum((d-avg)**2 for d in deltas)/(n-1) if n>1 else float("inf")
+        se=(variance/n)**.5 if n>1 else float("inf")
+        return {"paired_fixtures":n,"mean_original_minus_form":avg,
+                "approx_95pct_ci":[avg-1.96*se,avg+1.96*se]
+                if n>1 else None}
+    paired_comparison={
+        "common_fixtures":n_paired,
+        "original_v8_on_eligible_fixtures":_metrics([a for a,b in paired_form]),
+        "v20_form_on_same_fixtures":_metrics([b for a,b in paired_form]),
+        "score_log_loss_advantage_positive_means_form_better":
+            paired_metric("exact_log_loss"),
+        "top5_accuracy_delta_positive_means_form_better":
+            paired_metric("top5_hit"),
+        "retrospective_only_not_prospective":True,
+        "no_automatic_model_promotion":True
+    }
     return {"kind":"retrospective_walk_forward_replay_not_genuine_future_accuracy",
             "year":year,"archived_verified_results":len(rows),
             "target_fixtures":len(targets),
@@ -163,6 +194,7 @@ def replay(matches,*,year=2026,max_eval=500,max_per_day=6,
             "three_hour_prior_result_delay":True,
             "same_fixture_original_vs_challenger":True,
             "single_match_metrics":{n:_metrics(observed[n]) for n in NAMES},
+            "paired_v8_v20_same_fixtures":paired_comparison,
             "same_pair_exact_five":{"eligible_pair_days":valid_pair_days,
                                    "days_abstained":abstained,
                                    "methods":pair_observed,
