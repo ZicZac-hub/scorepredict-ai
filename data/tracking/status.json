@@ -20,24 +20,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 1,
-      "recorded": 1,
+      "pending": 2,
+      "recorded": 2,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 1,
-      "recorded": 1,
+      "pending": 2,
+      "recorded": 2,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 164,
-      "recorded": 166,
+      "pending": 165,
+      "recorded": 167,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -60,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 136,
-      "recorded": 136,
+      "pending": 137,
+      "recorded": 137,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-15T11:15:26.332372+00:00",
+  "checked_at_utc": "2026-11-15T12:00:46.972692+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -80,6 +80,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:59:30.770088+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1550215')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fiorentina",
+          "away_team_id": "502",
+          "fixture_id": "1550215",
+          "home_team": "Udinese",
+          "home_team_id": "494",
+          "kickoff_utc": "2026-11-29T11:30:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:30:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:59:30.670793+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550215', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fiorentina",
+          "away_team_id": "502",
+          "fixture_id": "1550215",
+          "home_team": "Udinese",
+          "home_team_id": "494",
+          "kickoff_utc": "2026-11-29T11:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:30:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:59:30.635307+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550215', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fiorentina",
+          "away_team_id": "502",
+          "fixture_id": "1550215",
+          "home_team": "Udinese",
+          "home_team_id": "494",
+          "kickoff_utc": "2026-11-29T11:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:30:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:59:30.645849+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550215', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fiorentina",
+          "away_team_id": "502",
+          "fixture_id": "1550215",
+          "home_team": "Udinese",
+          "home_team_id": "494",
+          "kickoff_utc": "2026-11-29T11:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:30:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T11:15:23.646235+00:00",
@@ -9447,8 +9563,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 302,
-    "recorded": 310,
+    "pending": 306,
+    "recorded": 314,
     "verified": 8
   }
 }
