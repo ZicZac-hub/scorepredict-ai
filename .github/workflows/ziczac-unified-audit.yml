@@ -42,8 +42,13 @@ jobs:
             exit 0
           fi
           git commit -m "data: publish independently verified prediction status [skip ci]"
+          original_head=$(git rev-parse HEAD^)
           for attempt in 1 2 3; do
             git fetch origin main
+            if ! git diff --quiet "$original_head" origin/main -- data/tracking/status.json; then
+              echo "A newer tracking report was already published. Do not overwrite it."
+              exit 0
+            fi
             git rebase origin/main || { git rebase --abort; exit 1; }
             if git push origin HEAD:main; then
               echo "Published scheduled-frozen, public evidence audit."
