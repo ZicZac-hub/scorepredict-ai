@@ -103,16 +103,41 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
     league=evidence.get("league_history") or history
     forecast=research_predict(fixture,history,league_history=league,as_of=cutoff)
     if forecast is None or len(forecast.get("component_weights") or {})<2:
-        return {"v8_recorded":False,"v9_recorded":False,
+        return {"v8_recorded":False,"v9_recorded":False,"v12_recorded":False,
                 "reason":"insufficient_verified_research_evidence","market_calls":0}
     frozen_at=max(when,utc(datetime.now(timezone.utc)))
     if frozen_at>=kickoff:
-        return {"v8_recorded":False,"v9_recorded":False,
+        return {"v8_recorded":False,"v9_recorded":False,"v12_recorded":False,
                 "reason":"calculation_finished_after_kickoff","market_calls":0}
     base=_record(fixture,evidence,forecast,"v8",frozen_at)
     written_v8=append_file_record(base,root=root,kind="forecasts")
     outcome={"v8_recorded":bool(written_v8),"v9_recorded":False,
-             "v10_recorded":False,"reason":"market_not_queried","market_calls":0}
+             "v10_recorded":False,"v12_recorded":False,
+             "reason":"market_not_queried","market_calls":0}
+    # A distinct, write-once v12 calibration forecast. It uses this precise
+    # pre-match v8 matrix and the same already-verified league history.
+    # It never changes v8, consumes no external API calls, and abstains if
+    # 80 qualified league results are unavailable.
+    if written_v8:
+        try:
+            from score_calibration_v12 import predict as calibrated_predict
+            calibrated=calibrated_predict(
+                fixture,history,league_history=league,as_of=cutoff,
+                reference_forecast=forecast)
+            completed=utc(datetime.now(timezone.utc))
+            if calibrated is not None and completed<kickoff:
+                row=_record(fixture,evidence,calibrated,"v12",completed)
+                row["v12_diagnostics"]=calibrated["v12_diagnostics"]
+                row["release_status"]="experimental_shadow_only_not_promoted"
+                outcome["v12_recorded"]=bool(append_file_record(
+                    row,root=root,kind="forecasts"))
+            else:
+                outcome["v12_status"]=("insufficient_historical_league_data"
+                                      if calibrated is None else
+                                      "calculation_finished_after_kickoff")
+        except (ValueError,TypeError,KeyError,RuntimeError,OverflowError) as exc:
+            # A candidate may fail; do not block the original collector.
+            outcome["v12_status"]="calibration_unavailable_"+type(exc).__name__
     # Do not use quota for distant games, unsupported providers or re-recording
     # the same slot: v8 remains the only stored prediction when odds are absent.
     if (not api_key or request is None or market_calls_remaining<=0
