@@ -297,10 +297,18 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key):
                         fetched=meta["fetched_at_utc"]
                         results=envelope.get("data") or []
                 else:
-                    # Test callbacks must supply source bookmaker update
-                    # timestamps. They cannot invent an API fetch timestamp.
-                    results=request(key,"/odds",{"date":date,"page":page})
-                    fetched=None
+                    # Test/provider-adapter callbacks may supply an auditable
+                    # response envelope. Never assign the current clock as
+                    # a fictitious provider fetch time.
+                    result=request(key,"/odds",{"date":date,"page":page})
+                    if isinstance(result,dict):
+                        meta=result.get("metadata") or {}
+                        fetched=(None if meta.get("stale") else
+                                 meta.get("fetched_at_utc"))
+                        results=(result.get("data") or []) if fetched else []
+                    else:
+                        fetched=None
+                        results=result
                 if not isinstance(results,list):
                     results=[]
                 for item in results:
