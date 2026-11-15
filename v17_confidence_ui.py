@@ -35,6 +35,9 @@ def render(st,root=ROOT):
         st.caption("Configured keys, historical scores, estimated goals and "
                    "LLM opinions cannot be substituted for verified xG, "
                    "confirmed lineups or independent market probabilities.")
+    from v18_accuracy_ui import render as render_v18_accuracy
+    render_v18_accuracy(st)
+    st.divider()
     single=(p.get("single") or {})
     pair=(p.get("two_match_double_chance") or {})
     a,b=st.columns(2)

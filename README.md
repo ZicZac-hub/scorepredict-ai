@@ -1,3 +1,5 @@
+> **V18 real-data reliability research:** Automatically audits original frozen V8 predictions against independently verified full-time outcomes, counts missing evidence, shows confidence-bin accuracy and tests time-safe calibration without promoting unproven forecasts. See [V18 real-accuracy research](V18_REAL_ACCURACY_EVIDENCE.md).
+
 > **V17 evidence-gated confidence research:** a separate, prospective 1X / X2 / 12 outcome mode is available in **Five Doubles** and **Performance**, with automatic source validation, abstentions and verified 70% reporting gate. This is **not** 70% proven accuracy or a replacement for five exact-score doubles. See [V17 evidence research](V17_EVIDENCE_CONFIDENCE_RESEARCH.md).\n\n# ScorePredict AI Worldwide Pro
 
 A free, transparent football score forecasting Streamlit application. No fabricated fixtures, paid services or hidden prediction guarantees.
