@@ -13,6 +13,7 @@ from ai_five_double_engine import eligible, identity, merged_five, pair_check, t
 from on_demand_ai import (frozen_for_fixture, private_gate_ready, run_selected,
                           server_qwen_url, server_settings, utc)
 from llm_research_panel import PROVIDERS
+from smart_double_ai import _scores
 
 
 def archive_rows(now=None, root=None):
@@ -217,7 +218,7 @@ def _display(st,report,first,second):
     with st.expander("🔎 All top-ten model scorelines for each match",expanded=False):
         for i,row in enumerate((first,second),1):
             st.markdown("**Match "+str(i)+" · existing statistical model**")
-            for home,away,p in (row.get("result") or {}).get("scores",[])[:10]:
+            for home,away,p in _scores(row)[:10]:
                 st.caption(str(home)+"–"+str(away)+" · "+f"{float(p):.2%}")
     for num,pick in enumerate(calc["doubles"],1):
         with st.container(border=True):
