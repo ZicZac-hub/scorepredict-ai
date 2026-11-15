@@ -46,6 +46,37 @@ def qualified_packet(record,leg,now=None):
     return valid_snapshot(record.get("provider_snapshot"),fixture,now=now)
 
 
+
+def best_packet(root, leg, *, now=None):
+    """Best currently valid write-once packet for a NEW forecast.
+
+    First frozen forecasts retain their own source hash; selecting stronger
+    pre-match evidence for a new forecast never rewrites those outcomes.
+    Priority uses only source availability and timestamps, NEVER match results.
+    """
+    root=Path(root)
+    base=source_packet_path(root,leg)
+    paths=[base]
+    paths.extend(sorted((root/"versions").glob(base.stem+"_*.json")))
+    valid=[]
+    for path in paths:
+        record=load_json(path,{})
+        if not qualified_packet(record,leg,now=now):
+            continue
+        snap=record["provider_snapshot"]
+        xg=snap.get("verified_historical_fixture_xg") or []
+        ids=(str(leg["home_team_id"]),str(leg["away_team_id"]))
+        counts=[len({str(r.get("fixture_id")) for r in xg
+                     if team_id in (str(r.get("home_team_id")),
+                                    str(r.get("away_team_id")))})
+                for team_id in ids]
+        nmarkets=len(snap.get("multi_market") or {})
+        quality=(int(min(counts)>=6 and nmarkets>=2),
+                 min(counts),nmarkets,str(snap.get("captured_at_utc") or ""))
+        valid.append((quality,record))
+    return max(valid,key=lambda x:x[0])[1] if valid else None
+
+
 def current_pair(root=ORIGINAL_ROOT,now=None):
     """Select frozen-original pair LEGS 8-35 min before each kickoff.
 
@@ -100,8 +131,16 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
     for leg in models:
         try:
             path=source_packet_path(root,leg)
-            if path.exists():
-                result["skipped"].append(str(leg["fixture_id"])+":already_frozen")
+            deep=(os.environ.get("V22_DEEP_XG_ENABLED")=="true")
+            previous=best_packet(root,leg,now=clock)
+            existing=(previous or {}).get("provider_snapshot") or {}
+            prior_xg=existing.get("verified_historical_fixture_xg") or []
+            prior_market=existing.get("multi_market") or {}
+            upgrade_needed=bool(deep and path.exists() and
+                (len(prior_xg)<12 or len(prior_market)<2))
+            deep_marker=Path(root)/"deep_attempts"/path.name
+            if path.exists() and (not upgrade_needed or deep_marker.exists()):
+                result["skipped"].append(str(leg["fixture_id"])+":original_preserved")
                 continue
             comp=str(leg.get("competition") or "")
             league=LEAGUES.get(comp)
@@ -135,6 +174,20 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                 "supplemental_history_digest":evidence.get("input_digest"),
                 "not_baseline_forecast_digest":True,
                 "source_scope":"API-Football endpoints, not arbitrary live websites"}
+            if upgrade_needed:
+                # Freeze a SECOND source packet by its content hash. Never
+                # replace the earlier original path or use a postkickoff file.
+                path=Path(root)/"versions"/(path.stem+"_"+
+                     provider["snapshot_sha256"][:16]+".json")
+                deep_marker.parent.mkdir(parents=True,exist_ok=True)
+                try:
+                    with deep_marker.open("x",encoding="utf-8") as marker:
+                        marker.write(json.dumps({"attempted_at_utc":clock.isoformat(),
+                            "fixture_id":str(leg["fixture_id"]),
+                            "reason":"explicit_V22_deep_xg_opt_in"},sort_keys=True)+"\n")
+                except FileExistsError:
+                    result["skipped"].append(str(leg["fixture_id"])+":deep_attempt_preserved")
+                    continue
             path.parent.mkdir(parents=True,exist_ok=True)
             try:
                 with path.open("x",encoding="utf-8") as fh:
