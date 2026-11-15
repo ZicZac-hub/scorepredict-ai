@@ -24,6 +24,8 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     ai_results_path=Path(root)/"ai_status.json"
     providers=load_json(ai_results_path,{})
     prospective=load_json(Path(root)/"performance.json",{})
+    v23_report=load_json(Path("data/v23_prospective")/"performance.json",{})
+    v23_status=load_json(Path("data/v23_prospective")/"status.json",{})
     source_files=(list(Path(source_root).glob("API-Football_*.json"))+
                   list((Path(source_root)/"versions").glob("API-Football_*.json")))
     status=load_json(Path(source_root)/"status.json",{})
@@ -54,6 +56,11 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
         "source_capture_enabled":status.get("enabled") if status else None,
         "source_capture_last_run":status.get("at_utc") if status else None,
         "frozen_v22_vs_v8":stats,
+        "v23_market_form_vs_v8":v23_report.get("methods") or {},
+        "v23_source_qualified_pairs":v23_status.get("qualifying_pairs",0),
+        "v23_not_observed_success_without_verified_pairs":not bool(
+            ((v23_report.get("methods") or {}).get("v23_market_form") or {})
+            .get("verified")),
         "calibration_prequential_by_league":calibration["leagues"],
         "matched_ai_provider_results":providers.get("provider_metrics") or {},
         "model_promoted":False,"ai_weight_applied":0.0,
