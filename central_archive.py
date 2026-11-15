@@ -21,6 +21,7 @@ DOUBLE_COLUMNS = (
     'snapshot_key', 'saved_at', 'first_id', 'second_id', 'first_name', 'second_name',
     'predictions_json', 'first_provider', 'second_provider', 'first_kickoff',
     'second_kickoff', 'first_model', 'second_model',
+    'first_home_id', 'first_away_id', 'second_home_id', 'second_away_id',
 )
 LEGACY_PROVIDER = 'legacy-unknown'
 
