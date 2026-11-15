@@ -544,18 +544,42 @@ def render(st,rows,histories=None):
             st.caption("First available eligible saved/modelled fixture: "+next_label)
         return
     ids={label(r):r for r in found}
-    first_label=st.selectbox("1. Select Match 1",list(ids),key="ziczac_ai_five_first")
-    first=ids[first_label]
-    second_options={k:v for k,v in ids.items() if v is not first and
-                    pair_check(first,v) is None}
-    if not second_options:
-        st.info("No eligible second match on the same Sydney date with four "
-                "different teams. Choose a different first match or a wider "
-                "fixture window.")
-        return
-    second_label=st.selectbox("2. Select Match 2",list(second_options),
-                              key="ziczac_ai_five_second")
-    second=second_options[second_label]
+    auto_pick=st.checkbox("🤖 V21 AI Auto Select · evidence-qualified best pair",
+                          value=False,key="ziczac_v21_auto_pair",
+                          help="Compare ALL eligible same-day pairs using dated team and "
+                               "home/away goal form. If none meet the evidence and "
+                               "minimum estimated coverage requirements, abstain.")
+    if auto_pick:
+        from v21_pair_selector import candidates as _rank_researched_pairs
+        ranking=_rank_researched_pairs(found,histories,now=clock)
+        if ranking["abstained"]:
+            st.warning("V21 Auto Select abstained: no pair had sufficient "
+                       "verified team/venue history and model-estimated coverage. "
+                       "This is not a football-data failure or a predicted loss.")
+            st.caption("Screened "+str(ranking["screened_fixtures"])+
+                       " fixtures; fully researched "+str(ranking["eligible_fixtures"])+
+                       ". Reasons: "+str(ranking["reasons"]))
+            return
+        best=ranking["pairs"][0]
+        first,second=best["first"],best["second"]
+        st.caption("Compared "+str(ranking["pairs_above_threshold"])+
+                   " qualifying pairs. Selected using the lower of baseline "
+                   "and research goal-model estimated coverage: "+
+                   f"{best['conservative_coverage']:.2%}"+
+                   ". This is NOT observed accuracy.")
+    else:
+        first_label=st.selectbox("1. Select Match 1",list(ids),key="ziczac_ai_five_first")
+        first=ids[first_label]
+        second_options={k:v for k,v in ids.items() if v is not first and
+                        pair_check(first,v) is None}
+        if not second_options:
+            st.info("No eligible second match on the same Sydney date with four "
+                    "different teams. Choose a different first match or a wider "
+                    "fixture window.")
+            return
+        second_label=st.selectbox("2. Select Match 2",list(second_options),
+                                  key="ziczac_ai_five_second")
+        second=second_options[second_label]
     st.caption("Selected: "+first["fixture"]["homeTeam"]["name"]+" / "+
                first["fixture"]["awayTeam"]["name"]+" and "+
                second["fixture"]["homeTeam"]["name"]+" / "+
@@ -599,6 +623,16 @@ def render(st,rows,histories=None):
         [p for p in PROVIDERS if p in configs],
         default=[p for p in PROVIDERS if p in configs],
         key="ziczac_ai_five_providers")
+    source_consent=st.checkbox(
+        "📡 Collect verified xG, lineups, injuries and odds for BOTH matches (API quota)",
+        value=False,key="ziczac_v21_source_consent",
+        help="Optional authenticated, user-approved API-Football calls. "
+             "Past-fixture expected goals are sampled only where available; "
+             "market quotes must be timestamped and lineups provider-reported. "
+             "No API key or missing data is fabricated.")
+    if source_consent and not private:
+        st.warning("Verified provider source collection requires your private "
+                   "ZicZac login. No extra provider calls will be made without it.")
     consent=st.checkbox(
         "Use fresh external AI API calls for BOTH matches (charges may apply)",
         value=False,key="ziczac_ai_five_cost_consent",
@@ -624,10 +658,46 @@ def render(st,rows,histories=None):
         if pair not in cache:
             permitted=bool(consent and private and selected and configs)
             with st.spinner("Comparing statistical scores and available AI research..."):
+                import os
+                from v21_provider_evidence import capture as _capture_provider
+                from v21_evidence_store import earliest as _load_packet, persist as _save_packet
+                try:
+                    db_url=str(st.secrets.get("DATABASE_URL") or
+                               os.environ.get("DATABASE_URL") or "")
+                    football_key=str(st.secrets.get("API_FOOTBALL_KEY") or
+                                     os.environ.get("API_FOOTBALL_KEY") or "")
+                except (OSError,KeyError,RuntimeError,AttributeError):
+                    db_url=str(os.environ.get("DATABASE_URL") or "")
+                    football_key=str(os.environ.get("API_FOOTBALL_KEY") or "")
+                packets=[]
+                for item in (first,second):
+                    existing_packet=(_load_packet(item["fixture"],db_url,before=clock)
+                                     if private and db_url else None)
+                    packet=existing_packet
+                    if source_consent and private and football_key and packet is None:
+                        packet=_capture_provider(item["fixture"],
+                                                _history(item,histories or {}),
+                                                football_key,now=clock)
+                        if not valid_snapshot(packet,item["fixture"],now=clock):
+                            packet=None
+                        elif db_url:
+                            stored=_save_packet(packet,item["fixture"],db_url)
+                            if not stored.get("durable"):
+                                st.warning("Source evidence for "+
+                                           item["fixture"]["homeTeam"]["name"]+
+                                           " is NOT permanently stored ("+
+                                           str(stored.get("state"))+").")
+                        else:
+                            st.warning("Source evidence is session-only. Configure "
+                                       "a private DATABASE_URL to retain the packet.")
+                    packets.append(packet)
+                if source_consent and private and not football_key:
+                    st.warning("API_FOOTBALL_KEY is missing from Streamlit Secrets. "
+                               "No xG/lineup/odds calls were made.")
                 report=analyze_pair(first,second,histories or {},
                     configs={k:configs[k] for k in selected} if permitted else {},
                     use_live=permitted,qwen_url=server_qwen_url(st),
-                    selection_mode=selection_mode)
+                    selection_mode=selection_mode,provider_packets=packets)
             cache[pair]=report
             # Preserve this five-option user selection and all validated AI
             # opinions *as they were returned before kickoff*. A later rerun
