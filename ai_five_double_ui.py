@@ -297,7 +297,7 @@ def _display(st,report,first,second):
                 str(len(packet.get("confirmed_starting_xi") or []))+
                 " · Injury reports: "+str(len(packet.get("reported_injuries") or []))+
                 " · Timestamped 1X2 odds: "+("yes" if available.get("timestamped_1x2") else "no"))
-        with st.expander("📋 Actual team research: last 10, venue, H2H, goals, injuries", expanded=True):
+    with st.expander("📋 Actual team research: last 10, venue, H2H, goals, injuries", expanded=True):
         for i, row in enumerate((first, second)):
             st.markdown("**Match " + str(i+1) + ": " +
                         row["fixture"]["homeTeam"]["name"] + " vs " +
