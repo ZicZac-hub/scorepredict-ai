@@ -143,8 +143,8 @@ jobs:
         if: always()
         run: python v19_match_intelligence.py
       - name: Optional V21 pre-match xG, lineup, injury and market source capture
-        # New requests consume API quota. Opt-in Actions variable only.
-        if: steps.cadence.outputs.heavy == 'true' && github.event_name != 'push' && vars.V21_EVIDENCE_ENABLED == 'true'
+        # Near-kickoff (8–35m) per-leg capture; requests consume API quota. Opt-in only.
+        if: github.event_name != 'push' && vars.V21_EVIDENCE_ENABLED == 'true'
         env:
           V21_EVIDENCE_ENABLED: "true"
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
