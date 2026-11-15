@@ -47,25 +47,35 @@ def qualified_packet(record,leg,now=None):
 
 
 def current_pair(root=ORIGINAL_ROOT,now=None):
+    """Select frozen-original pair LEGS 8-35 min before each kickoff.
+
+    A pair's two matches need not kick off simultaneously. A later match
+    remains eligible after the earlier one has started, but it must itself
+    still be pre-match and match the ORIGINAL frozen source.
+    """
     clock=utc(now or datetime.now(timezone.utc))
-    rows=[]
+    options=[]
+    seen=set()
     for path in sorted((Path(root)/"doubles").glob("*.json")):
         pair=load_json(path,{})
         try:
             if pair.get("status")!="frozen_pre_kickoff" or utc(pair["captured_at_utc"])>clock:
                 continue
-            legs=(pair["first"],pair["second"])
-            if any(not clock+timedelta(minutes=45)<utc(x["kickoff_utc"])<=
-                   clock+timedelta(hours=36) for x in legs):
-                continue
-            models=[original_model(root,leg) for leg in legs]
-            if not all(models):
-                continue
-            coverage=float(pair.get("estimated_coverage") or 0)
-            rows.append((-coverage,str(pair.get("sydney_date")),models))
+            for leg in (pair["first"],pair["second"]):
+                kickoff=utc(leg["kickoff_utc"])
+                if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(minutes=35):
+                    continue
+                key=(str(leg["provider"]),str(leg["fixture_id"]))
+                if key in seen:
+                    continue
+                model=original_model(root,leg)
+                if model is not None and model.get("input_digest")==leg.get("input_digest"):
+                    seen.add(key)
+                    options.append((kickoff,model))
         except (KeyError,TypeError,ValueError):
             continue
-    return min(rows,key=lambda x:x[:2])[2] if rows else []
+    options.sort(key=lambda x:(x[0],str(x[1]["fixture_id"])))
+    return [x[1] for x in options[:2]]
 
 
 def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
@@ -81,8 +91,8 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
     from api_football import _request,LEAGUES
     cb=api_request or _request
     models=current_pair(source_root,clock)
-    if len(models)!=2:
-        result["reason"]="no_original_pair_both_pre_match"
+    if not models:
+        result["reason"]="no_original_frozen_leg_in_8_to_35_minute_window"
         return result
     cache={}
     # Do not partially present a pair as complete, but valid single-leg
@@ -108,9 +118,12 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             # Never claim matching historical input_digest after refreshing
             # league history. The packet is supplemental source evidence.
             provider=capture(fixture,evidence["history"],key,
-                             now=clock,request=cb,max_history_per_team=2)
+                             now=clock,request=cb,max_history_per_team=1)
             if not valid_snapshot(provider,fixture,now=clock):
                 result["skipped"].append(str(leg["fixture_id"])+":no_qualified_packet")
+                continue
+            if not any((provider.get("available_sources") or {}).values()):
+                result["skipped"].append(str(leg["fixture_id"])+":all_sources_unavailable")
                 continue
             record={"schema":1,"source_forecast":{k:leg[k] for k in (
                 "provider","fixture_id","forecast_id","input_digest",
