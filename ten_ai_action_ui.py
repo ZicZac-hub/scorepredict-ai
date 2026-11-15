@@ -122,6 +122,29 @@ def render(st, rows=None, histories=None, *, now=None):
                                 "votes": {}, "errors": {}}
             prior[identity] = response
             cached = response
+            # One immutable per-provider record for every returned pre-match
+            # score. Transient API failures are never graded as predictions.
+            if response.get("status")=="completed":
+                import os
+                from ziczac_interactive_capture import single as _single, store as _store
+                try:
+                    _db=st.secrets.get("DATABASE_URL","") or os.environ.get("DATABASE_URL","")
+                except (OSError,KeyError,RuntimeError,AttributeError):
+                    _db=os.environ.get("DATABASE_URL","")
+                _stored=0
+                for _name,_vote in (response.get("votes") or {}).items():
+                    try:
+                        _record=_single(fixture,_vote["score"],"ten_ai",ai_provider=_name)
+                        _stored+=int(_store(_record,_db).get("durable",False))
+                    except (ValueError,KeyError,TypeError):
+                        continue
+                if _stored:
+                    st.success(str(_stored)+" individual AI model prediction(s) "
+                               "saved to the permanent tracking database.")
+                else:
+                    st.warning("No individual AI predictions were confirmed "
+                               "in permanent storage. A working DATABASE_URL "
+                               "is required for result tracking.")
 
     if cached is not None:
         view(st, cached)
