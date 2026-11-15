@@ -17,6 +17,8 @@ from v16_pair_research import original_model
 from v21_capture_sources import source_packet_path,qualified_packet
 from v21_prospective import _write_once,_verified
 from v22_shadow import shadow
+from v22_calibration import fitted_temperature,scale
+from v21_goal_model_comparison import top_scores
 
 ROOT=Path("data/v22_prospective")
 SOURCES=Path("data/v21_sources")
@@ -52,7 +54,10 @@ def frozen_candidates(*,now,source_root=V8_ROOT,provider_root=SOURCES,
     clock=utc(now)
     eligible={}
     rows=(originals if originals is not None else read_latest(source_root))
-    for row in rows.values() if isinstance(rows,dict) else rows:
+    source_rows=list(rows.values()) if isinstance(rows,dict) else list(rows)
+    finals=load_json(Path(source_root)/"verified_results.json",{})
+    per_league_fit={}
+    for row in source_rows:
         try:
             if row["model_key"] not in ("v8","v8_near"):continue
             kickoff=utc(row["kickoff_utc"])
@@ -70,6 +75,25 @@ def frozen_candidates(*,now,source_root=V8_ROOT,provider_root=SOURCES,
             forecast=shadow(shaped,packet,as_of=clock)
             if not forecast.get("ready"):
                 continue
+            league=str(source.get("competition") or "unknown")
+            if league not in per_league_fit:
+                per_league_fit[league]=fitted_temperature(
+                    source_rows,finals,as_of=clock,league=league)
+            fit=per_league_fit[league]
+            if fit.get("ready"):
+                adjusted=scale(forecast["matrix"],fit["temperature"])
+                forecast={**forecast,"matrix":adjusted,
+                          "scores":top_scores(adjusted),
+                          "temporal_calibration":{
+                              "training_samples":fit["sample_size"],
+                              "training_ended_at_utc":fit["training_end_at_utc"],
+                              "temperature":fit["temperature"],
+                              "status":"past_only_shadow_not_promoted"}}
+            else:
+                forecast={**forecast,"temporal_calibration":{
+                    "status":"abstained_insufficient_verified_history",
+                    "training_samples":fit.get("sample_size",0),
+                    "minimum_required":fit.get("min_required")}}
             baseline={"scores":[[int(h),int(a),float(p)] for h,a,p in source["top10_scores"]]}
             key=(str(row["provider"]),str(row["fixture_id"]))
             prior=eligible.get(key)
@@ -128,6 +152,9 @@ def freeze(*,now=None,root=ROOT,source_root=V8_ROOT,provider_root=SOURCES):
                 "status":"frozen_pre_kickoff","captured_at_utc":clock.isoformat(),
                 "sydney_date":day,"first":_short(legs[0]),"second":_short(legs[1]),
                 "source_packet_hashes":[first["snapshot_hash"],second["snapshot_hash"]],
+                "calibration": [
+                    first["v22"].get("temporal_calibration"),
+                    second["v22"].get("temporal_calibration")],
                 "doubles":{"baseline_v8":choice["baseline"],
                            "v22_research":choice["challenger"]},
                 "model_estimated_coverage":{
