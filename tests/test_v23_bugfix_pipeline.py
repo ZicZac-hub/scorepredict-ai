@@ -120,3 +120,12 @@ def test_top_ten_only_current_row_does_not_hide_complete_frozen_v8_grid():
     chosen=options([live],now=NOW,archived=[archived])
     assert len(chosen)==1
     assert not chosen[0].get("archive_frozen",False)
+
+
+def test_fixture_only_date_is_displayable_in_mobile_studio():
+    from ai_five_double_ui import label,options
+    row=match(777,41,42)
+    out=options([row],now=NOW,archived=[])
+    assert len(out)==1
+    assert "Sydney" in label(out[0])
+    assert "Team-41" in label(out[0])
