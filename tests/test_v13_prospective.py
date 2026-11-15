@@ -84,11 +84,22 @@ def test_v13_shadow_and_alternates_are_frozen_before_kickoff(tmp_path,monkeypatc
         assert set(saved13["v14_component_versions"])=={"v7","v8"}
         assert len(saved13["v7_fitted_top10_scores"])>=5
         assert saved8["score_matrix"]==v8()["matrix"].tolist()
+    # The test guarantees a V14 archive even if a conservative operational
+    # threshold would otherwise abstain in this synthetic artificial league.
+    monkeypatch.setattr(verify,"MIN_COVERAGE",0.0)
     frozen=verify.freeze_doubles(root=tmp_path,now=NOW)
     assert len(frozen["days_saved"])==1
+    assert len(frozen["v14_robust_days_saved"])==1
     import json
     saved_day=frozen["days_saved"][0]
     packet=json.loads((tmp_path/"doubles"/(saved_day+".json")).read_text())
+    own=json.loads((tmp_path/"robust_doubles"/(saved_day+".json")).read_text())
+    assert own["mode"]=="prospective_robust_v14"
+    assert own["status"]=="frozen_pre_kickoff"
+    assert own["original_five_doubles_modified"] is False
+    assert own["lower_envelope_is_not_calibrated_probability"] is True
+    assert len(own["five_doubles"])==5
+    assert own["captured_at_utc"]<own["first"]["kickoff_utc"]
     selectors=("v13","v13_balanced","v13_diversified",
                "v7_diversified_same_pair","v14_robust_same_pair")
     assert set(selectors).issubset(packet["same_pair_challengers"])
@@ -104,6 +115,9 @@ def test_v13_shadow_and_alternates_are_frozen_before_kickoff(tmp_path,monkeypatc
     scored=verify.evaluate(root=tmp_path,results=verified)
     assert scored["models"]["v13"]["verified_fixtures"]==2
     assert scored["paired_v8_v13"]["verified_same_fixture_count"]==2
+    assert scored["v14_independently_selected_five_doubles"]["verified_pairs"]==1
+    assert scored["v14_independently_selected_five_doubles"][
+        "same_sydney_day_v8_comparison_count"]==1
     for name in selectors:
         assert scored["five_doubles"]["same_pair_challengers"][name]["same_pair_verified_days"]==1
     assert scored["promotion_gate"].startswith("Never promote")
