@@ -80,15 +80,19 @@ def test_v13_shadow_and_alternates_are_frozen_before_kickoff(tmp_path,monkeypatc
         assert saved13["model_key"]=="v13"
         assert saved13["captured_at_utc"]<=saved13["kickoff_utc"]
         assert saved13["release_status"]=="experimental_shadow_only_not_promoted"
+        assert set(saved13["v14_component_grids"])=={"v7","v8"}
+        assert set(saved13["v14_component_versions"])=={"v7","v8"}
+        assert len(saved13["v7_fitted_top10_scores"])>=5
         assert saved8["score_matrix"]==v8()["matrix"].tolist()
     frozen=verify.freeze_doubles(root=tmp_path,now=NOW)
     assert len(frozen["days_saved"])==1
     import json
     saved_day=frozen["days_saved"][0]
     packet=json.loads((tmp_path/"doubles"/(saved_day+".json")).read_text())
-    assert set(["v13","v13_balanced","v13_diversified"]).issubset(
-        packet["same_pair_challengers"])
-    for name in ("v13","v13_balanced","v13_diversified"):
+    selectors=("v13","v13_balanced","v13_diversified",
+               "v7_diversified_same_pair","v14_robust_same_pair")
+    assert set(selectors).issubset(packet["same_pair_challengers"])
+    for name in selectors:
         choices=packet["same_pair_challengers"][name]
         assert len(choices)==5
         assert len({(x["score1"],x["score2"]) for x in choices})==5
@@ -100,7 +104,7 @@ def test_v13_shadow_and_alternates_are_frozen_before_kickoff(tmp_path,monkeypatc
     scored=verify.evaluate(root=tmp_path,results=verified)
     assert scored["models"]["v13"]["verified_fixtures"]==2
     assert scored["paired_v8_v13"]["verified_same_fixture_count"]==2
-    for name in ("v13","v13_balanced","v13_diversified"):
+    for name in selectors:
         assert scored["five_doubles"]["same_pair_challengers"][name]["same_pair_verified_days"]==1
     assert scored["promotion_gate"].startswith("Never promote")
 
