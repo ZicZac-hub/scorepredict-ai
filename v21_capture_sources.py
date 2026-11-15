@@ -124,6 +124,27 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
                     options.append((kickoff,model))
         except (KeyError,TypeError,ValueError):
             continue
+    # Include all individual V8 fixtures, not just already-formed doubles.
+    # This only runs after the separate explicit V21_EVIDENCE_ENABLED opt-in.
+    from v10_prospective import read_latest
+    rows=read_latest(root)
+    for leg in rows.values() if isinstance(rows,dict) else rows:
+        try:
+            if (leg.get("model_key") not in ("v8","v8_near") or
+                    leg.get("provider")!="API-Football"):
+                continue
+            kickoff=utc(leg["kickoff_utc"])
+            if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(minutes=35):
+                continue
+            key=(str(leg["provider"]),str(leg["fixture_id"]))
+            if key in seen:
+                continue
+            model=original_model(root,leg)
+            if model is not None and model.get("input_digest")==leg.get("input_digest"):
+                seen.add(key)
+                options.append((kickoff,model))
+        except (KeyError,TypeError,ValueError):
+            continue
     options.sort(key=lambda x:(x[0],str(x[1]["fixture_id"])))
     return [x[1] for x in options[:2]]
 
