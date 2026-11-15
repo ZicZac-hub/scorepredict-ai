@@ -82,7 +82,13 @@ def calibrate_matrix(base_matrix, rows, *, as_of):
         d = engine._date(match.get("utcDate"))
         goals = (match.get("score") or {}).get("fullTime") or {}
         h, a = goals.get("home"), goals.get("away")
-        if (d is None or d > instant or type(h) is not int or
+        # Enforce availability even for direct callers that bypass
+        # _league_rows: a match is not known at its kickoff time.
+        available = engine._date(match.get("finishedAt")) if d else None
+        if d and available is None:
+            available = d + timedelta(hours=3)
+        if (not engine.finished(match) or d is None or available is None or
+            available > instant or d >= instant or type(h) is not int or
             type(a) is not int or min(h, a) < 0):
             continue
         age = max(0.0, (instant-d).total_seconds()/86400.0)
