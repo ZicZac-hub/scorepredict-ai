@@ -99,6 +99,13 @@ def predict(fixture, history, league_history=None, *, as_of=None,
             name:[[int(h),int(a),float(p)]
                   for h,a,p in components[name]["scores"][:10]]
             for name in weights},
+        # Full V7/V8 grids permit exact robust five-pair optimisation
+        # without treating missing top-ten scores as probability zero.
+        # The arrays are unmodified reference forecasts; archive only their
+        # numeric values, never an output derived from future results.
+        "component_score_matrices":{
+            name:np.asarray(components[name]["matrix"],dtype=float).copy()
+            for name in ("v7","v8") if name in components},
         "available_models":list(weights),
         "missing_optional_models":[k for k in WEIGHTS if k not in weights],
         "forecast_as_of":now.astimezone(timezone.utc).isoformat(),
