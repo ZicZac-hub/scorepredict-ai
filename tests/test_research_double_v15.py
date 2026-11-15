@@ -41,7 +41,7 @@ def setup(tmp_path):
         models[("API-Football",entry["fixture_id"],"v8")]={
             **entry,"top10_scores":deepcopy(SCORES),"model_version":"ziczac-v8",
             "input_digest":"frozen-digest-"+entry["fixture_id"],
-            "captured_at_utc":"2031-11-19T11:00:00Z"
+            "captured_at_utc":"2031-11-19T11:00:00Z"}
     return frozen,models,base
 
 
