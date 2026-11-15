@@ -153,5 +153,73 @@ def render(st, root=ROOT):
                        "These are not real-time updates or verified hits. "
                        "A missing vote is not a zero-percent prediction.")
     st.divider()
+    st.markdown("#### ⚽ V15 Two-Match AI-Assisted Five Doubles")
+    st.caption("Requires two genuine pre-match statistical forecasts AND at "
+               "least two successful independent AI API responses per match. "
+               "Six configured keys do not mean six successful votes. "
+               "Existing V8 predictions are preserved.")
+    if status.get("two_match_research_enabled"):
+        st.caption("Two-match GitHub AI research mode: enabled by its "
+                   "additional request budget. Same-day pair selected: "+
+                   ("yes" if status.get("same_day_pair_selected") else "not this run"))
+    else:
+        st.info("Scheduled AI research is currently limited to one fixture "
+                "per heavy run. For two-match research, set GitHub Actions "
+                "variable LLM_RESEARCH_MAX_MATCHES to 2 after reviewing "
+                "provider costs. This can approximately double calls per "
+                "heavy run, so it stays opt-in.")
+    v15root=Path("data/v15_ai_double")
+    v15status=_json(v15root/"status.json")
+    v15report=_json(v15root/"evaluation.json")
+    attempted=v15status.get("existing_original_days")
+    if attempted is not None:
+        st.caption("Original daily pairs inspected: "+str(attempted)+
+                   " · New eligible AI-assisted pairs frozen: "+
+                   str(v15status.get("frozen_new") or 0)+
+                   " · Existing frozen AI-assisted pairs: "+
+                   str(v15status.get("previously_frozen") or 0))
+        if v15status.get("abstentions"):
+            with st.expander("Why multi-AI five doubles may be unavailable"):
+                st.write(v15status["abstentions"])
+    if v15report.get("verified_pairs"):
+        st.write({"Verified AI-assisted pairs":v15report["verified_pairs"],
+                  "AI-assisted exact double wins":v15report["ai_assisted_hits"],
+                  "Original V8 wins on those identical pairs":
+                      v15report["original_v8_hits_same_pairs"]})
+    else:
+        st.caption("No verified two-match multi-AI win rate yet. "
+                   "No matched paired results means no accuracy claim.")
+    archives=[]
+    for filepath in (v15root/"forecasts").glob("*.json"):
+        entry=_json(filepath)
+        if (entry.get("mode")=="v15_ai_supported_double_shadow" and
+            entry.get("status")=="frozen_pre_kickoff"):
+            archives.append(entry)
+    archives.sort(key=lambda row:str(row.get("captured_at_utc") or ""),
+                  reverse=True)
+    for item in archives[:2]:
+        with st.expander("AI-assisted frozen five doubles · "+
+                         str(item.get("sydney_date") or ""),expanded=True):
+            st.caption(str(item["first"]["home_team"])+" vs "+
+                       str(item["first"]["away_team"])+" | "+
+                       str(item["second"]["home_team"])+" vs "+
+                       str(item["second"]["away_team"]))
+            st.caption("Verified provider votes: "+str(len(item["ai_provider_names"]["first"]))+
+                       " on match 1 and "+
+                       str(len(item["ai_provider_names"]["second"]))+
+                       " on match 2. These models used the same briefing and "
+                       "are not independent calibrated predictors.")
+            for i,p in enumerate(item["five_doubles"],1):
+                st.write("**Double "+str(i)+"** · "+
+                         p["score1"]+" & "+p["score2"])
+                st.caption("Statistical joint estimate: "+
+                           f"{p['statistical_joint_estimate']:.2%}"+
+                           " · AI endorsements "+
+                           str(p["supporting_ai_votes_match1"])+"/"+
+                           str(p["supporting_ai_votes_match2"]))
+            st.caption("This is a separately frozen research challenger. "
+                       "AI endorsements do not make the joint probability "
+                       "larger or prove greater accuracy.")
+    st.divider()
     from sportmonks_probability_ui import render as render_sportmonks
     render_sportmonks(st)
