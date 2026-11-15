@@ -173,11 +173,11 @@ def freeze(*,now=None,root=ROOT,source_root=V8_ROOT,provider_root=SOURCES):
     return status
 
 
-def evaluate(*,root=ROOT,source_root=V8_ROOT,verified=None):
+def evaluate(*,root=ROOT,source_root=V8_ROOT,verified=None,research_method="v22_research"):
     finals=verified if verified is not None else load_json(
         Path(source_root)/"verified_results.json",{})
     counts={k:{"verified":0,"hits":0,"pending":0}
-            for k in ("baseline_v8","v22_research")}
+            for k in ("baseline_v8",research_method)}
     records=[]
     for path in sorted((Path(root)/"pairs").glob("*.json")):
         pair=load_json(path,{})
@@ -217,6 +217,7 @@ def evaluate(*,root=ROOT,source_root=V8_ROOT,verified=None):
     return {"schema":1,"evaluated_at_utc":datetime.now(timezone.utc).isoformat(),
             "kind":"only_immutable_frozen_matching_verified_final",
             "pairs":records,"methods":counts,
+            "research_method":research_method,
             "calibration_and_promotion":"unproven_shadow_only",
             "ai_panel_promoted":False,"model_promoted":False}
 
