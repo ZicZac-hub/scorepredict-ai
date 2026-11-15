@@ -11,6 +11,8 @@ import re
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from itertools import combinations
+from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 
 import requests
@@ -26,7 +28,8 @@ SECRETS = {"openai": "OPENAI", "claude": "ANTHROPIC",
            "gemini": "GEMINI", "grok": "XAI", "deepseek": "DEEPSEEK",
            "perplexity": "PERPLEXITY", "mistral": "MISTRAL",
            "qwen": "QWEN", "groqcloud": "GROQ", "cohere": "COHERE"}
-MAX_MATCHES_PER_RUN = 1
+MAX_MATCHES_PER_RUN = 1  # safeguard: extra paid two-match calls require explicit Actions variable
+SYDNEY = ZoneInfo("Australia/Sydney")
 MIN_LEAD = timedelta(minutes=45)
 MAX_LEAD = timedelta(hours=36)
 
@@ -271,6 +274,36 @@ def classify_provider_error(exc):
     return {"type":type(exc).__name__, "reason":"provider_request_failed"}
 
 
+def paired_candidates(rows,limit=1):
+    """Prefer two different same-Sydney-day fixtures when explicitly enabled.
+
+    Selection uses ONLY fixture identity, team identity and pre-match
+    timestamps. No scores, future match results or AI output influence it.
+    """
+    ordered=sorted(rows,key=lambda r:(utc(r["kickoff_utc"]),str(r["fixture_id"])))
+    if limit<2:
+        return ordered[:max(0,limit)],False
+    for a,b in combinations(ordered,2):
+        if (utc(a["kickoff_utc"]).astimezone(SYDNEY).date()!=
+            utc(b["kickoff_utc"]).astimezone(SYDNEY).date()):
+            continue
+        if str(a["fixture_id"])==str(b["fixture_id"]):
+            continue
+        teams=[str(r.get(k) or "").strip().casefold()
+               for r in (a,b) for k in ("home_team","away_team")]
+        if len(teams)!=4 or not all(teams) or len(set(teams))!=4:
+            continue
+        prioritized=[a,b]
+        identities={(r["provider"],str(r["fixture_id"])) for r in prioritized}
+        for other in ordered:
+            key=(other["provider"],str(other["fixture_id"]))
+            if key not in identities:
+                prioritized.append(other)
+                identities.add(key)
+        return prioritized[:limit],True
+    return ordered[:limit],False
+
+
 def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
             max_matches=MAX_MATCHES_PER_RUN):
     clock = utc(now or datetime.now(timezone.utc))
@@ -316,12 +349,29 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         old = eligible_rows.get(identity)
         if old is None or (row["model_key"] == "v8_near" and old["model_key"] != "v8_near"):
             eligible_rows[identity] = row
-    rows = sorted(eligible_rows.values(), key=lambda r: (utc(r["kickoff_utc"]),str(r["fixture_id"])))
+    requested=max_matches
+    # The second match could invoke all configured paid AI services again.
+    # Never increase API spending silently; owner must opt in via GitHub
+    # Actions variable LLM_RESEARCH_MAX_MATCHES=2.
+    raw_limit=str(env.get("LLM_RESEARCH_MAX_MATCHES") or "").strip()
+    if raw_limit:
+        try:
+            requested=int(raw_limit)
+        except (ValueError,TypeError):
+            requested=MAX_MATCHES_PER_RUN
+    budget=max(0,min(2,int(requested)))
+    rows,paired=paired_candidates(list(eligible_rows.values()),limit=budget)
+    status["two_match_research_enabled"]=budget==2
+    status["same_day_pair_selected"]=paired
+    status["eligible_fixture_count"]=len(eligible_rows)
+    status["model_request_budget"]=budget*len(configured)
+    status["selected_fixture_ids"]=[str(r["fixture_id"]) for r in rows]
+    status["source_quality"]="statistical_frozen_packet_only_no_external_facts"
     for row in rows:
         path = panel_path(row, root)
         if path.exists():
             continue
-        if status["attempted"] >= max(0, min(5, int(max_matches))):
+        if status["attempted"] >= budget:
             break
         status["attempted"] += 1
         prompt = briefing(row)
