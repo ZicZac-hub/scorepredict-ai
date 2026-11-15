@@ -81,11 +81,12 @@ def test_v12_shadow_saves_separately_from_v8_and_grades_fairly(tmp_path,monkeypa
     v8=saved[("API-Football",str(record["id"]),"v8")]
     v12=saved[("API-Football",str(record["id"]),"v12")]
     assert v8["input_digest"]==v12["input_digest"]
+    assert saved[("API-Football",str(record["id"]),"v13")]["input_digest"]==v8["input_digest"]
     assert v8["score_matrix"]==baseline()["matrix"].tolist()
     assert v12["model_version"]==VERSION
     assert v12["release_status"]=="experimental_shadow_only_not_promoted"
     assert v8["captured_at_utc"]<=v12["captured_at_utc"]<v8["kickoff_utc"]
-    assert len(read_file_records(root=tmp_path,kind="forecasts"))==2
+    assert {r["model_key"] for r in read_file_records(root=tmp_path,kind="forecasts")}=={"v8","v12","v13"}
     # The write-once ledger rejects another snapshot with same model identity.
     assert shadow.capture(record,data,NOW,root=tmp_path)["v8_recorded"] is False
     report=evaluate.evaluate(
