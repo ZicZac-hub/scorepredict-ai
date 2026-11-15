@@ -60,6 +60,19 @@ ensure `API_FOOTBALL_KEY` exists as a repository secret. The separate
 to conserve provider requests. The scheduled research requires a previously
 frozen original two-match selection.
 
+For **earlier market collection** (the most useful V23 option if odds vanish
+near kickoff), optionally set another GitHub Actions variable,
+`V23_EARLY_ODDS_ENABLED=true`. It captures at most two original frozen
+fixture legs with kickoffs 6–10 hours away, makes at most **one** odds API
+request per fixture, and stores a write-once price snapshot. This is
+**disabled by default** and can consume API quota. It never claims the
+quote was updated at the moment it was retrieved: provider-fetched time
+and bookmaker update time are labelled separately.
+
+For prospective V23 score prediction, the freshest valid 1X2 + goal-total
+market snapshot is preferred over unrelated historical statistical fields.
+Older original snapshots remain immutable.
+
 Manual source capture is durable only if private `DATABASE_URL` is
 configured in Streamlit Secrets. The app warns when a new packet is
 session-only. GitHub-scheduled forecasts are saved to
