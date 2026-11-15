@@ -85,15 +85,19 @@ def source_observations(root=SOURCE_ROOT,verified=None,forecast_rows=None):
             p=probabilities(row)
             orig=original_model(root,row)
             if (orig is None or orig.get("input_digest")!=row["input_digest"]
-                    or orig.get("model_key")!="v8"):
+                    or orig.get("model_key")!="v8" or
+                    orig.get("score_matrix")!=row.get("score_matrix") or
+                    utc(orig["captured_at_utc"])!=utc(row["captured_at_utc"])):
                 missing["original_forecast_id_or_digest_unverified"]+=1
                 continue
             if (int(row.get("history_matches") or 0)<30 or
                     int(row.get("league_history_matches") or 0)<30):
                 quality["insufficient_history_under_30"]+=1
-            context=row.get("research_context") or {}
-            hx=(context.get("home") or {}) if isinstance(context,dict) else {}
-            ax=(context.get("away") or {}) if isinstance(context,dict) else {}
+            context=row.get("research_context")
+            if not isinstance(context,dict):
+                context={}
+            hx=context.get("home") or {}
+            ax=context.get("away") or {}
             if ((hx.get("last10_observed") or 0)<8 or
                 (ax.get("last10_observed") or 0)<8):
                 quality["short_last_ten_sample"]+=1
