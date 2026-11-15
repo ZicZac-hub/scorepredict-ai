@@ -142,6 +142,13 @@ jobs:
         # when BOTH original V8 pair legs qualify before their kickoffs.
         if: always()
         run: python v19_match_intelligence.py
+      - name: Optional V23 earlier time-checked bookmaker market snapshots
+        # One source request per eligible leg if owner opted in; no auto-spend.
+        if: github.event_name != 'push' && vars.V23_EARLY_ODDS_ENABLED == 'true'
+        env:
+          V23_EARLY_ODDS_ENABLED: "true"
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python v23_early_odds.py
       - name: Optional V21 pre-match xG, lineup, injury and market source capture
         # Near-kickoff (8–35m) per-leg capture; requests consume API quota. Opt-in only.
         if: github.event_name != 'push' && vars.V21_EVIDENCE_ENABLED == 'true'
