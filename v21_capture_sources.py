@@ -47,7 +47,7 @@ def qualified_packet(record,leg,now=None):
 
 
 
-def best_packet(root, leg, *, now=None):
+def best_packet(root, leg, *, now=None, priority="research"):
     """Best currently valid write-once packet for a NEW forecast.
 
     First frozen forecasts retain their own source hash; selecting stronger
@@ -70,9 +70,28 @@ def best_packet(root, leg, *, now=None):
                      if team_id in (str(r.get("home_team_id")),
                                     str(r.get("away_team_id")))})
                 for team_id in ids]
-        nmarkets=len(snap.get("multi_market") or {})
-        quality=(int(min(counts)>=6 and nmarkets>=2),
-                 min(counts),nmarkets,str(snap.get("captured_at_utc") or ""))
+        markets=snap.get("multi_market") or {}
+        nmarkets=len(markets)
+        valid_market=False
+        latest_market=""
+        try:
+            if ("1x2" in markets and
+                ("over_2_5" in markets or "over_3_5" in markets)):
+                times=[utc(markets[k]["last_source_update_utc"])
+                       for k in markets if k in ("1x2","over_2_5","over_3_5")]
+                clock=utc(now or datetime.now(timezone.utc))
+                valid_market=all(t<=clock and clock-t<=timedelta(hours=12)
+                                 for t in times) and bool(times)
+                latest_market=max(t.isoformat() for t in times)
+        except (KeyError,TypeError,ValueError):
+            valid_market=False
+        if priority=="market":
+            quality=(int(valid_market),latest_market,nmarkets,
+                     min(counts),str(snap.get("captured_at_utc") or ""))
+        else:
+            quality=(int(min(counts)>=6 and valid_market),
+                     min(counts),int(valid_market),nmarkets,
+                     str(snap.get("captured_at_utc") or ""))
         valid.append((quality,record))
     return max(valid,key=lambda x:x[0])[1] if valid else None
 
