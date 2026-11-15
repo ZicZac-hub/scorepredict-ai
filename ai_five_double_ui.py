@@ -84,6 +84,74 @@ def archive_rows(now=None, root=None):
     return sorted(output.values(),key=lambda row:row["kickoff"])
 
 
+
+@lru_cache(maxsize=4)
+def _minute_repository_originals(minute):
+    """Read source identities once per minute, not for each Streamlit rerun."""
+    from v10_prospective import read_latest
+    return list(read_latest().values())
+
+
+def repository_provider_packet(fixture, *, now=None, originals=None,
+                               packet_root=None, priority="market"):
+    """Use the same genuine GitHub-scheduled provider evidence in the Studio.
+
+    The source packet must match an immutable original forecast's provider,
+    fixture/team IDs and kickoff, plus its exact forecast ID/input digest.
+    This never adds paid API requests or invents data. For private databases
+    the existing owner-authorized database path remains an alternative.
+    """
+    from v21_capture_sources import best_packet
+    clock = utc(now or datetime.now(timezone.utc))
+    kickoff = utc(fixture.get("utcDate"))
+    if kickoff <= clock:
+        return None
+    provider = str(fixture.get("provider") or "football-data.org")
+    fixture_id = str(fixture.get("id"))
+    home = str((fixture.get("homeTeam") or {}).get("id"))
+    away = str((fixture.get("awayTeam") or {}).get("id"))
+    if any(value in ("None", "", "null") for value in (fixture_id, home, away)):
+        return None
+    if originals is None:
+        originals = _minute_repository_originals(int(clock.timestamp() // 60))
+    if isinstance(originals, dict):
+        originals = originals.values()
+    packet_root = packet_root if packet_root is not None else Path("data/v21_sources")
+    found = []
+    for source in originals or []:
+        try:
+            if source.get("model_key") not in ("v8", "v8_near"):
+                continue
+            if (str(source["provider"]) != provider or
+                str(source["fixture_id"]) != fixture_id or
+                str(source["home_team_id"]) != home or
+                str(source["away_team_id"]) != away or
+                utc(source["kickoff_utc"]) != kickoff or
+                utc(source["captured_at_utc"]) >= kickoff or
+                utc(source["captured_at_utc"]) > clock):
+                continue
+            record = best_packet(packet_root,source,now=clock,priority=priority)
+            packet = (record or {}).get("provider_snapshot")
+            if not valid_snapshot(packet,fixture,now=clock):
+                continue
+            if priority == "market":
+                markets = packet.get("multi_market") or {}
+                if "1x2" not in markets or not ({"over_2_5","over_3_5"} & set(markets)):
+                    continue
+                clocks = [utc(markets[k]["last_source_update_utc"]) for k in
+                          ("1x2","over_2_5","over_3_5") if k in markets]
+                if not clocks or any(t > clock or t > kickoff or
+                                     clock-t > timedelta(hours=12) for t in clocks):
+                    continue
+                quality = (max(clocks),utc(packet["captured_at_utc"]))
+            else:
+                quality = (utc(packet["captured_at_utc"]),utc(source["captured_at_utc"]))
+            found.append((quality,packet))
+        except (KeyError,TypeError,ValueError,OSError):
+            continue
+    return max(found,key=lambda pair:pair[0])[1] if found else None
+
+
 @lru_cache(maxsize=4)
 def _minute_archived_candidates(minute):
     """One read per minute rather than rescanning hundreds of JSON files
