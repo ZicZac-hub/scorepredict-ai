@@ -122,7 +122,9 @@ def _as_research(archive, fresh):
             if isinstance(vote,dict) and isinstance(vote.get("score"),list):
                 votes[name]=vote
                 source[name]="new Streamlit API request"
-    return {"status":"completed","votes":votes,"sources":source}
+    return {"status":"completed","votes":votes,"sources":source,
+            "source_snapshot_digest":(fresh or {}).get("source_snapshot_digest")
+            if fresh and fresh.get("status")=="completed" else None}
 
 
 def analyze_pair(first, second, histories, *, configs=None, use_live=False,
@@ -752,7 +754,9 @@ def render(st,rows,histories=None):
                             try:
                                 _ai_votes_saved+=int(_audit_store(_audit_single(
                                     _leg["fixture"],_vote["score"],"ten_ai",
-                                    ai_provider=_provider),_db).get("durable",False))
+                                    ai_provider=_provider,
+                                    evidence_digest=_research.get("source_snapshot_digest") or ""),
+                                    _db).get("durable",False))
                             except (ValueError,TypeError,KeyError):
                                 continue
                 if _ai_votes_saved:
