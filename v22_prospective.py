@@ -14,7 +14,7 @@ import numpy as np
 from persist_prematch import load_json,write_json
 from v10_prospective import ROOT as V8_ROOT,read_latest,utc
 from v16_pair_research import original_model
-from v21_capture_sources import source_packet_path,qualified_packet
+from v21_capture_sources import best_packet
 from v21_prospective import _write_once,_verified
 from v22_shadow import shadow
 from v22_calibration import fitted_temperature,scale
@@ -66,8 +66,8 @@ def frozen_candidates(*,now,source_root=V8_ROOT,provider_root=SOURCES,
             source=original_model(source_root,row)
             if not source or source.get("input_digest")!=row.get("input_digest"):
                 continue
-            packet_row=load_json(source_packet_path(provider_root,row),{})
-            if not qualified_packet(packet_row,row,now=clock):
+            packet_row=best_packet(provider_root,row,now=clock)
+            if packet_row is None:
                 continue
             packet=packet_row["provider_snapshot"]
             shaped={"fixture":_fixture(source),
