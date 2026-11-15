@@ -63,8 +63,17 @@ def _display(st,candidate,labeler):
     weights=first["result"].get("component_weights") or {}
     weights2=second["result"].get("component_weights") or {}
     with st.expander("🔬 Exactly which numerical models were combined"):
-        st.write({"First match":{key:f"{value:.1%}" for key,value in weights.items()},
-                  "Second match":{key:f"{value:.1%}" for key,value in weights2.items()}})
+        if candidate.get("model_choice","V13 combined").startswith("V13"):
+            st.write({"First match":{key:f"{value:.1%}" for key,value in weights.items()},
+                      "Second match":{key:f"{value:.1%}" for key,value in weights2.items()}})
+        else:
+            st.caption("These score probabilities are from the selected "
+                       "individual V7 or V8 statistical component, not the "
+                       "V13 mixture. Weights below show the separately "
+                       "available V13 mixture for comparison, NOT the "
+                       "weights applied to these five doubles.")
+            st.write({"V13 reference weights · first":weights,
+                      "V13 reference weights · second":weights2})
         st.caption("V8 itself contains overlapping V6/V7-type evidence. "
                    "These weights were declared before this test, not "
                    "statistically fitted. Missing V12/V7 data are skipped, "
