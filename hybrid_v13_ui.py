@@ -9,6 +9,7 @@ import pandas as pd
 from history_pipeline import build_evidence
 from hybrid_five_v13 import predict, pair, best_pairs, VERSION
 from smart_double_v8 import select_auto_research_pool
+from robust_double_v14 import rank_robust_pairs
 
 
 def research(rows, histories, *, now=None, limit=12):
@@ -49,21 +50,46 @@ def _display(st,candidate,labeler):
     st.markdown("#### Five exact-score doubles · "+candidate.get("model_choice","V13 combined"))
     st.caption("Match 1: "+labeler(first))
     st.caption("Match 2: "+labeler(second))
-    st.metric("Estimated model coverage",f"{candidate['estimated_joint_coverage']:.2%}")
-    st.caption("Independent-match model estimate, NOT historical hit rate. "
-               "Both exact scores in the SAME row must match. Selection method: "+
-               str(candidate.get("selection_mode","unknown"))+".")
+    robust=bool(candidate.get("robust_lower_envelope"))
+    if robust:
+        st.metric("V7/V8 conservative model envelope (not a win rate)",
+                  f"{candidate['estimated_joint_coverage']:.2%}")
+        st.caption("V7 coverage for these five combinations: "+
+                   f"{candidate['model_coverage_v7']:.2%}"+
+                   " · V8 coverage: "+f"{candidate['model_coverage_v8']:.2%}"+
+                   ". The envelope is the minimum of two statistical "
+                   "estimates, not a calibrated probability or guarantee.")
+    else:
+        st.metric("Estimated model coverage",f"{candidate['estimated_joint_coverage']:.2%}")
+    st.caption("Both exact scores in the SAME double must match. "
+               "Selection method: "+str(candidate.get("selection_mode","unknown"))+
+               ". Independent-match assumption; not a verified win rate.")
     for i,choice in enumerate(candidate["doubles"],1):
         with st.container(border=True):
             st.markdown("**Double "+str(i)+"**")
             c1,c2=st.columns(2)
             c1.metric("Match 1",choice["Score 1"])
             c2.metric("Match 2",choice["Score 2"])
-            st.caption("Estimated joint probability "+f"{choice['Joint']:.2%}")
+            if robust:
+                st.caption("V7 model joint "+f"{choice['V7 joint']:.2%}"+
+                           " · V8 model joint "+f"{choice['V8 joint']:.2%}"+
+                           " · lower envelope "+f"{choice['Joint']:.2%}")
+            else:
+                st.caption("Estimated model joint probability "+
+                           f"{choice['Joint']:.2%}")
     weights=first["result"].get("component_weights") or {}
     weights2=second["result"].get("component_weights") or {}
-    with st.expander("🔬 Exactly which numerical models were combined"):
-        if candidate.get("model_choice","V13 combined").startswith("V13"):
+    with st.expander("🔬 Model evidence and agreement"):
+        if robust:
+            st.write({"V7 vs V8 score-grid disagreement · match 1":
+                      f"{candidate['agreement_total_variation']['first']:.2%}",
+                      "V7 vs V8 score-grid disagreement · match 2":
+                      f"{candidate['agreement_total_variation']['second']:.2%}"})
+            st.caption("Total variation describes disagreement between two "
+                       "correlated statistical models, NOT a calibrated "
+                       "prediction confidence. V14 evaluates every exact "
+                       "score-pair cell, not just top-ten guesses.")
+        elif candidate.get("model_choice","V13 combined").startswith("V13"):
             st.write({"First match":{key:f"{value:.1%}" for key,value in weights.items()},
                       "Second match":{key:f"{value:.1%}" for key,value in weights2.items()}})
         else:
@@ -85,21 +111,26 @@ def _display(st,candidate,labeler):
         "double":i,"match_1":labeler(first),"score_1":x["Score 1"],
         "match_2":labeler(second),"score_2":x["Score 2"],
         "model_joint_estimate":x["Joint"],
-        "method":candidate["selection_mode"],"model":VERSION}
+        "v7_joint_estimate":x.get("V7 joint"),
+        "v8_joint_estimate":x.get("V8 joint"),
+        "method":candidate["selection_mode"],
+        "model":candidate.get("model_version",VERSION)}
         for i,x in enumerate(candidate["doubles"],1)])
     st.download_button("Download V13 five doubles CSV",
         data.to_csv(index=False).encode("utf-8"),
-        "ziczac_v13_hybrid_five_doubles.csv","text/csv",
+        "ziczac_research_five_doubles.csv","text/csv",
         key="v13_download_five",use_container_width=True)
-    st.caption("Experimental challenger only. Existing original predictions, "
-               "verified results and automatic V8 selections are untouched.")
+    st.caption("Experimental challenger only. Original forecasts, verified "
+               "results and automatic V8 selections are untouched. V14 "
+               "agreement is not yet proven to improve accuracy.")
 
 
 def render(st,rows,histories,labeler):
     st.markdown("### 🧠 V13 Hybrid AI · Combined Five Doubles")
-    st.caption("Compare the pre-match V8 baseline, fitted V7 and the new V13 "
-               "blend (V8 + V7 + original V6 + optional V12). External AI and "
-               "bookmaker odds are NOT counted as real model votes.")
+    st.caption("Compare V8, fitted V7, V13 blend, and the new V14 robust "
+               "five-double selector, which checks V7 and V8 agreement over "
+               "complete score grids. None are guaranteed. External AI and "
+               "bookmaker odds are not fabricated.")
     st.warning("V13 is a new research challenger, NOT proven more accurate. "
                "In the previous 20-pair test, V7 diversified won 2/20 and "
                "many methods won 0/20. This does not prove future performance.")
@@ -113,14 +144,22 @@ def render(st,rows,histories,labeler):
     model_choice=st.selectbox("Statistical model for the five doubles",[
         "V13 combined model (new experiment)",
         "V8 evidence ensemble (strongest tested exact-score model)",
-        "V7 fitted Dixon–Coles (best diversified result in 20 historical pairs)"],
+        "V7 fitted Dixon–Coles (best diversified result in 20 historical pairs)",
+        "V14 robust agreement · V7 and V8 full-grid consensus (experimental)"],
         key="v13_model_choice")
-    strategy=st.selectbox("Five-double selection strategy",[
-        "Top five by joint probability (maximum model coverage)",
-        "Balanced (experimental)",
-        "Fully diversified (experimental)"],key="v13_strategy")
-    mode=("top5" if strategy.startswith("Top") else
-          "balanced" if strategy.startswith("Balanced") else "diversified")
+    if model_choice.startswith("V14"):
+        st.caption("V14 uses its own exact, conservative top-five selection "
+                   "over the full V7/V8 score grids and is not the same "
+                   "as arbitrary score diversification.")
+        strategy="V14 robust V7/V8 lower envelope"
+        mode="v14_robust"
+    else:
+        strategy=st.selectbox("Five-double selection strategy",[
+            "Top five by joint probability (maximum model coverage)",
+            "Balanced (experimental)",
+            "Fully diversified (experimental)"],key="v13_strategy")
+        mode=("top5" if strategy.startswith("Top") else
+              "balanced" if strategy.startswith("Balanced") else "diversified")
     now=datetime.now(timezone.utc)
     identity=(mode_label,strategy,model_choice,
               tuple((str(r["fixture"].get("provider")),
@@ -164,7 +203,10 @@ def render(st,rows,histories,labeler):
                     if scores and version:
                         candidates_pool.append({**row,"result":{
                             **original,"scores":scores,"model_version":version}})
-            candidates=best_pairs(candidates_pool,mode=mode,now=now,limit=1)
+            if mode=="v14_robust":
+                candidates=rank_robust_pairs(candidates_pool,now=now,limit=1)
+            else:
+                candidates=best_pairs(candidates_pool,mode=mode,now=now,limit=1)
             if candidates:
                 candidates[0]["model_choice"]=model_choice
             st.session_state["v13_hybrid_result"]={
@@ -173,7 +215,7 @@ def render(st,rows,histories,labeler):
                 "reasons":reasons}
     saved=st.session_state.get("v13_hybrid_result") or {}
     if saved.get("identity")!=identity:
-        st.info("Choose your matches and strategy, then run the V13 challenger.")
+        st.info("Choose your two matches, model and strategy, then run the challenger.")
         return
     if not saved.get("candidate"):
         st.warning("Not enough independent pre-kickoff evidence for a "
