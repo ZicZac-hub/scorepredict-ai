@@ -53,7 +53,7 @@ def test_calibration_uses_strictly_verified_past_not_future():
         as_of=NOW,league="PL",min_samples=100)
     assert later["ready"] and later["sample_size"]==103
     assert .8<=later["temperature"]<=1.3
-    simulated=calibration.chronological_evaluation(rows,finals,min_samples=100)
+    simulated=calibration.chronological_evaluation(rows,finals,min_samples=100,as_of=NOW)
     assert simulated["leagues"]["PL"]["verified_evaluated"]==3
     assert not simulated["automatic_promotion"]
 
@@ -92,7 +92,10 @@ def test_v22_pair_selection_excludes_shared_teams_and_weak_coverage():
     a=candidate(1,11,22)
     b=candidate(2,33,44)
     c=candidate(3,11,45)
-    assert len(tournament.rank_pairs([a,b,c],min_coverage=.001))==1
+    pairs=tournament.rank_pairs([a,b,c],min_coverage=.001)
+    assert len(pairs)==2
+    assert all(not ({p["a"]["source"]["fixture_id"],p["b"]["source"]["fixture_id"]}==
+                     {"1","3"}) for p in pairs)
     assert tournament.rank_pairs([a,b],min_coverage=1.0)==[]
 
 
