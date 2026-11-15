@@ -62,3 +62,31 @@ def earliest(fixture,database_url,before=None):
     except Exception:
         pass
     return None
+
+
+def latest(fixture,database_url,before=None):
+    """Newest valid pre-match packet for a *new* forecast, append-only history.
+
+    Earlier immutable model predictions are still tied to the actual
+    evidence SHA they used; this never rewrites those decisions. A newer
+    packet is accepted only if independently verified before kickoff.
+    """
+    if not database_url:
+        return None
+    import psycopg
+    try:
+        with psycopg.connect(database_url,connect_timeout=7) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(TABLE)
+                cursor.execute(
+                    """SELECT payload_json FROM ziczac_v21_source_packets
+                       WHERE provider=%s AND fixture_id=%s
+                       ORDER BY captured_at_utc DESC,snapshot_sha256 DESC""",
+                    (fixture.get("provider"),str(fixture.get("id"))))
+                for (value,) in cursor.fetchall():
+                    packet=json.loads(value)
+                    if valid_snapshot(packet,fixture,now=before):
+                        return packet
+    except Exception:
+        pass
+    return None
