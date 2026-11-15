@@ -193,3 +193,27 @@ def test_v16_rejects_impossible_or_non_normalized_votes(tmp_path):
     path.write_text(json.dumps(row))
     answer,reason=assemble_pair(original,models,ai_root=folder,now=NOW)
     assert answer is None and reason=="too_few_successful_ai_providers_per_match"
+
+
+def test_v16_original_model_archive_survives_newer_latest_model(tmp_path):
+    frozen,models,base=setup(tmp_path)
+    ai=tmp_path/"llm"
+    for leg_row in (frozen["first"],frozen["second"]):
+        saved_vote(ai,leg_row)
+        source=models[("API-Football",leg_row["fixture_id"],"v8")]
+        path=(base/"forecasts"/"API-Football"/leg_row["fixture_id"]/
+              (leg_row["forecast_id"]+".json"))
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_text(json.dumps(source))
+    # Imagine read_latest returns an unrelated newer horizon/digest.
+    newer={}
+    for key,value in models.items():
+        changed=dict(value)
+        changed["forecast_id"]="refreshed-after-original"
+        changed["input_digest"]="different-evidence-digest"
+        newer[key]=changed
+    result,reason=assemble_pair(
+        frozen,newer,source_root=base,ai_root=ai,now=NOW)
+    assert reason=="ready" and result is not None
+    assert result["source_forecast_ids"]["first"]==frozen["first"]["forecast_id"]
+    assert result["source_forecast_ids"]["second"]==frozen["second"]["forecast_id"]
