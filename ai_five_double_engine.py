@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 from smart_double_ai import _scores, _instant, five_doubles, same_fixture
+from double_score_selection import select_balanced, score_coverage
 
 SYDNEY = ZoneInfo("Australia/Sydney")
 MIN_LEAD_SECONDS = 300
@@ -81,7 +82,11 @@ def endorsements(record):
     return counter,len(opinions)
 
 
-def merged_five(first,second,first_research=None,second_research=None,*,now=None):
+def merged_five(first,second,first_research=None,second_research=None,*,now=None,
+                selection_mode="probability"):
+    if selection_mode not in ("probability", "balanced_challenger"):
+        return {"status":"invalid_selection_mode","reason":"Unknown five-double selection method.",
+                "doubles":[]}
     error=pair_check(first,second,now=now)
     if error:
         return {"status":"invalid_pair","reason":error,"doubles":[]}
@@ -109,12 +114,24 @@ def merged_five(first,second,first_research=None,second_research=None,*,now=None
                 "_rank":original*boost1*boost2
             })
     combined.sort(key=lambda x:(-x["_rank"],-x["Model joint"],x["Score 1"],x["Score 2"]))
-    chosen=[]
-    for item in combined[:5]:
-        chosen.append({k:v for k,v in item.items() if k!="_rank"})
+    # An experimental, probability-aware diversity alternative. Keep the
+    # probability-maximising original untouched, and never manufacture a score
+    # outside the underlying model's verified, deduplicated top-ten grid.
+    # This declared weight has NOT passed a prospective win-rate gate.
+    candidate_selection=(select_balanced(combined,limit=5,diversity_weight=0.15,
+                          probability="_rank") if selection_mode=="balanced_challenger"
+                         else combined[:5])
+    chosen=[{k:v for k,v in item.items() if k!="_rank"}
+            for item in candidate_selection]
     return {
         "status":"ready","doubles":chosen,
         "baseline":baseline,
+        "selection_mode":selection_mode,
+        "selection_weight":0.15 if selection_mode=="balanced_challenger" else 0.0,
+        "baseline_diversity":score_coverage(baseline),
+        "selected_diversity":score_coverage(chosen),
+        "diversity_is_experimental":selection_mode=="balanced_challenger",
+        "no_promotion_or_archive_rewrite":True,
         "baseline_coverage":sum(d["Joint"] for d in baseline),
         "selected_model_coverage":sum(d["Model joint"] for d in chosen),
         "model_probability_source":"ZicZac existing model score grid",
