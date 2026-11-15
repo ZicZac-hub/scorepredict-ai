@@ -52,6 +52,10 @@ def archive_rows(now=None, root=None):
                 },
                 "kickoff":kickoff.isoformat(),
                 "result":{"scores":saved["top10_scores"],
+                          # Do not discard the verified full probability
+                          # grid: V20–V23 cannot produce genuine score
+                          # probabilities from a top-ten shortlist alone.
+                          "matrix":saved.get("score_matrix"),
                           "model_version":saved["model_version"],
                           "outcome_probabilities":saved.get("outcome_probabilities") or {},
                           "home_xg":(saved.get("expected_goals") or {}).get("home"),
@@ -59,8 +63,14 @@ def archive_rows(now=None, root=None):
                 "league":saved.get("competition") or "",
                 "past":[],"archive_frozen":True,
                 "frozen_at_utc":captured.isoformat(),
-                "history_matches_reported":saved.get("history_matches")
+                "history_matches_reported":saved.get("history_matches"),
+                "league_history_matches":saved.get("league_history_matches")
             }
+            # Only advertise source provenance when it was genuinely saved.
+            source_keys=("provider","fixture_id","forecast_id","input_digest",
+                         "home_team_id","away_team_id","kickoff_utc")
+            if all(saved.get(key) is not None for key in source_keys):
+                row["source_forecast"]={key:saved[key] for key in source_keys}
         except (KeyError,ValueError,TypeError):
             continue
         if not eligible(row,now=clock):
