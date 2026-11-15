@@ -190,7 +190,7 @@ def _csv_bytes(data):
 def _display(st,report,first,second):
     calc=report["model_and_ai_result"]
     challenger=calc.get("selection_mode")=="balanced_challenger"
-    st.markdown("### ✅ Five exact-score doubles"+
+    st.markdown("### ✅ Final five exact-score doubles"+
                 (" · balanced challenger" if challenger else " · original baseline"))
     st.caption("Match 1: "+label(first))
     st.caption("Match 2: "+label(second))
