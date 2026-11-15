@@ -147,6 +147,7 @@ jobs:
         if: github.event_name != 'push' && vars.V21_EVIDENCE_ENABLED == 'true'
         env:
           V21_EVIDENCE_ENABLED: "true"
+          V22_DEEP_XG_ENABLED: ${{ vars.V22_DEEP_XG_ENABLED }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python v21_capture_sources.py
       - name: Freeze and score V21 same-day three-model pair tournament
