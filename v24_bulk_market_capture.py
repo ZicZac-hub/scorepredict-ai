@@ -28,7 +28,7 @@ SOURCE_ROOT=Path("data/v21_sources")
 MAX_PER_RUN=2
 DEFAULT_DAILY_REQUESTS=12
 MAX_DAILY_REQUESTS=60
-MAX_PAGE=3
+MAX_PAGE=100  # pagination continues while the daily request budget permits
 DATE_HORIZON=14
 STALE_LIMIT_HOURS=12
 
