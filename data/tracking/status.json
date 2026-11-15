@@ -16,12 +16,28 @@
       "recorded": 6,
       "verified": 1
     },
+    "frozen_v12": {
+      "hit": 0,
+      "hit_rate": null,
+      "miss": 0,
+      "pending": 1,
+      "recorded": 1,
+      "verified": 0
+    },
+    "frozen_v13": {
+      "hit": 0,
+      "hit_rate": null,
+      "miss": 0,
+      "pending": 1,
+      "recorded": 1,
+      "verified": 0
+    },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 163,
-      "recorded": 165,
+      "pending": 164,
+      "recorded": 166,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -44,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 135,
-      "recorded": 135,
+      "pending": 136,
+      "recorded": 136,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-15T11:00:47.157673+00:00",
+  "checked_at_utc": "2026-11-15T11:15:26.332372+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -64,6 +80,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:15:23.646235+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1552235')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Utrecht",
+          "away_team_id": "207",
+          "fixture_id": "1552235",
+          "home_team": "ADO Den Haag",
+          "home_team_id": "198",
+          "kickoff_utc": "2026-11-29T11:15:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:15:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:15:23.566384+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1552235', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Utrecht",
+          "away_team_id": "207",
+          "fixture_id": "1552235",
+          "home_team": "ADO Den Haag",
+          "home_team_id": "198",
+          "kickoff_utc": "2026-11-29T11:15:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:15:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:15:23.558363+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1552235', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Utrecht",
+          "away_team_id": "207",
+          "fixture_id": "1552235",
+          "home_team": "ADO Den Haag",
+          "home_team_id": "198",
+          "kickoff_utc": "2026-11-29T11:15:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:15:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T11:15:23.583904+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1552235', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Utrecht",
+          "away_team_id": "207",
+          "fixture_id": "1552235",
+          "home_team": "ADO Den Haag",
+          "home_team_id": "198",
+          "kickoff_utc": "2026-11-29T11:15:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T11:15:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T00:19:47.183698+00:00",
@@ -9315,8 +9447,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 298,
-    "recorded": 306,
+    "pending": 302,
+    "recorded": 310,
     "verified": 8
   }
 }
