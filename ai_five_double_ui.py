@@ -441,14 +441,15 @@ def render(st,rows,histories=None):
                 except (OSError,KeyError,RuntimeError,AttributeError):
                     _db=os.environ.get("DATABASE_URL","")
                 _ai_votes_saved=0
-                for _leg,_research in zip((first,second),report["ai_research"]):
-                    for _provider,_vote in (_research.get("votes") or {}).items():
-                        try:
-                            _ai_votes_saved+=int(_audit_store(_audit_single(
-                                _leg["fixture"],_vote["score"],"ten_ai",
-                                ai_provider=_provider),_db).get("durable",False))
-                        except (ValueError,TypeError,KeyError):
-                            continue
+                if private:
+                    for _leg,_research in zip((first,second),report["ai_research"]):
+                        for _provider,_vote in (_research.get("votes") or {}).items():
+                            try:
+                                _ai_votes_saved+=int(_audit_store(_audit_single(
+                                    _leg["fixture"],_vote["score"],"ten_ai",
+                                    ai_provider=_provider),_db).get("durable",False))
+                            except (ValueError,TypeError,KeyError):
+                                continue
                 if _ai_votes_saved:
                     st.caption(str(_ai_votes_saved)+" individual model votes "
                                "preserved alongside this five-double selection.")
