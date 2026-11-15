@@ -15,6 +15,7 @@ from on_demand_ai import (frozen_for_fixture, private_gate_ready, run_selected,
 from llm_research_panel import PROVIDERS
 from smart_double_ai import _scores
 from goal_research_v20 import goal_profile, goal_form_challenger
+from v21_provider_evidence import valid_snapshot
 
 
 def archive_rows(now=None, root=None):
@@ -125,13 +126,18 @@ def _as_research(archive, fresh):
 
 def analyze_pair(first, second, histories, *, configs=None, use_live=False,
                  request=None, now=None, qwen_url=None, archiver=frozen_for_fixture,
-                 selection_mode="probability"):
+                 selection_mode="probability", provider_packets=None):
     """Evidence-backed, session-only research for one pre-match pair."""
     now = utc(now or datetime.now(timezone.utc))
     issue = pair_check(first, second, now=now)
     if issue:
         return {"status": "invalid_pair", "reason": issue}
     pair_rows = (first, second)
+    provider_packets = list(provider_packets or (None,None))
+    if len(provider_packets)!=2:
+        return {"status":"invalid_provider_packet","reason":"Need exactly two evidence packets"}
+    provider_packets = [packet if valid_snapshot(packet,row["fixture"],now=now)
+                        else None for row,packet in zip(pair_rows,provider_packets)]
     dated_history = [_history(row, histories) for row in pair_rows]
     profiles = [goal_profile(row["fixture"], dated_history[i], now)
                 for i, row in enumerate(pair_rows)]
@@ -170,7 +176,8 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
                 result = run_selected(
                     row["fixture"], dated_history[i], row.get("result") or {}, {},
                     remaining, now=now, request=request, qwen_url=qwen_url,
-                    team_context=row.get("research_context") or {})
+                    team_context={**(row.get("research_context") or {}),
+                                  "v21_provider_snapshot":provider_packets[i]})
                 fresh[i] = result
                 errors[i] = result.get("errors") or {}
             except Exception:
@@ -178,8 +185,13 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
     evidence = [_as_research(archives[i], fresh[i]) for i in (0, 1)]
     original = merged_five(first, second, evidence[0], evidence[1], now=now,
                            selection_mode="probability")
+    # Until a source-matched AI panel beats statistical-only picks on
+    # independent future games, V21 never promotes AI opinions to numerical
+    # weighting. The validated votes remain visible for review.
+    applied_evidence = ([{},{}] if selection_mode=="goal_form_research"
+                        else evidence)
     combined = merged_five(effective_rows[0], effective_rows[1],
-                           evidence[0], evidence[1], now=now,
+                           applied_evidence[0], applied_evidence[1], now=now,
                            selection_mode=("probability" if
                                            selection_mode == "goal_form_research"
                                            else selection_mode))
@@ -205,6 +217,8 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
         "archived_history_counts": [r.get("history_matches_reported")
                                     for r in pair_rows],
         "historical_profiles": profiles, "research_models": research_models,
+        "v21_provider_packets": provider_packets,
+        "research_ai_votes_weighted": selection_mode!="goal_form_research",
         "provider_context": [r.get("research_context") or {} for r in pair_rows],
         "ai_research": evidence, "api_errors": errors,
         "model_and_ai_result": combined,
@@ -262,7 +276,28 @@ def _display(st,report,first,second):
                    "probability-maximising estimated coverage. This is NOT a proven "
                    "accuracy gain. The original frozen records and automated "
                    "Five Doubles remain unchanged.")
-    with st.expander("📋 Actual team research: last 10, venue, H2H, goals, injuries", expanded=True):
+    if form_research:
+        st.caption("V21 AI verdicts are recorded as advisory only; they do NOT "
+                   "change research score probabilities until verified future "
+                   "performance establishes an improvement.")
+    packets=report.get("v21_provider_packets") or [None,None]
+    with st.expander("🔎 Verified pre-match provider source availability",expanded=True):
+        for i,packet in enumerate(packets):
+            st.markdown("**Match "+str(i+1)+"**")
+            if not packet:
+                st.caption("No source-matched timestamped provider packet. "
+                           "Missing lineup, shot xG and market values were not guessed.")
+                continue
+            st.caption("Captured "+str(packet["captured_at_utc"])+
+                       " UTC · source SHA-256 "+str(packet["snapshot_sha256"])[:16])
+            available=packet.get("available_sources") or {}
+            st.caption("Previous-fixture expected goals: "+str(len(
+                packet.get("verified_historical_fixture_xg") or []))+
+                " qualifying fixture(s) · Provider-reported starting XIs: "+
+                str(len(packet.get("confirmed_starting_xi") or []))+
+                " · Injury reports: "+str(len(packet.get("reported_injuries") or []))+
+                " · Timestamped 1X2 odds: "+("yes" if available.get("timestamped_1x2") else "no"))
+        with st.expander("📋 Actual team research: last 10, venue, H2H, goals, injuries", expanded=True):
         for i, row in enumerate((first, second)):
             st.markdown("**Match " + str(i+1) + ": " +
                         row["fixture"]["homeTeam"]["name"] + " vs " +
