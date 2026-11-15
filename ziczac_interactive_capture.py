@@ -92,7 +92,7 @@ def _freeze(source,record,now):
             "captured_at_utc":now.isoformat(),**record}
 
 
-def single(fixture,predicted,source,*,method="",ai_provider="",now=None):
+def single(fixture,predicted,source,*,method="",ai_provider="",now=None,evidence_digest=""):
     instant=utc(now or datetime.now(timezone.utc))
     if source not in ("deep_research","ten_ai"):
         raise ValueError("Use pair() for five-double records")
@@ -101,6 +101,10 @@ def single(fixture,predicted,source,*,method="",ai_provider="",now=None):
     if source=="deep_research" and not method:
         raise ValueError("Research method is required")
     record={"leg":leg(fixture,instant),"score":score(predicted)}
+    if evidence_digest:
+        if not isinstance(evidence_digest,str) or not re.fullmatch(r"[0-9a-f]{64}",evidence_digest):
+            raise ValueError("Real SHA-256 evidence digest required, or omit")
+        record["source_evidence_sha256"]=evidence_digest
     if source=="deep_research":
         record["method"]=str(method)[:120]
     else:
