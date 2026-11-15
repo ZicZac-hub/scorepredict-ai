@@ -124,7 +124,7 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
             calibrated=calibrated_predict(
                 fixture,history,league_history=league,as_of=cutoff,
                 reference_forecast=forecast)
-            completed=utc(datetime.now(timezone.utc))
+            completed=max(when,utc(datetime.now(timezone.utc)))
             if calibrated is not None and completed<kickoff:
                 row=_record(fixture,evidence,calibrated,"v12",completed)
                 row["v12_diagnostics"]=calibrated["v12_diagnostics"]
