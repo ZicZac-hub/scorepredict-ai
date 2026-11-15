@@ -24,7 +24,8 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     ai_results_path=Path(root)/"ai_status.json"
     providers=load_json(ai_results_path,{})
     prospective=load_json(Path(root)/"performance.json",{})
-    source_files=list(Path(source_root).glob("API-Football_*.json"))
+    source_files=(list(Path(source_root).glob("API-Football_*.json"))+
+                  list((Path(source_root)/"versions").glob("API-Football_*.json")))
     status=load_json(Path(source_root)/"status.json",{})
     extracted={"packets_checked":len(source_files),
                "with_historical_xg":0,"with_6_per_team":0,
