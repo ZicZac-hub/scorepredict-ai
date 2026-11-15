@@ -1,0 +1,110 @@
+{
+  "baseline_double_chance": {
+    "bins": [
+      {
+        "absolute_gap": null,
+        "estimated_band": "50%\u201360%",
+        "hits": 0,
+        "mean_estimated": null,
+        "observed_rate": null,
+        "verified": 0,
+        "wilson_95": null
+      },
+      {
+        "absolute_gap": null,
+        "estimated_band": "60%\u201370%",
+        "hits": 0,
+        "mean_estimated": null,
+        "observed_rate": null,
+        "verified": 0,
+        "wilson_95": null
+      },
+      {
+        "absolute_gap": 0.24541820422525729,
+        "estimated_band": "70%\u201380%",
+        "hits": 1,
+        "mean_estimated": 0.7454182042252573,
+        "observed_rate": 0.5,
+        "verified": 2,
+        "wilson_95": [
+          0.09453120573423071,
+          0.9054687942657693
+        ]
+      },
+      {
+        "absolute_gap": null,
+        "estimated_band": "80%\u201390%",
+        "hits": 0,
+        "mean_estimated": null,
+        "observed_rate": null,
+        "verified": 0,
+        "wilson_95": null
+      },
+      {
+        "absolute_gap": null,
+        "estimated_band": "90%\u2013100%",
+        "hits": 0,
+        "mean_estimated": null,
+        "observed_rate": null,
+        "verified": 0,
+        "wilson_95": null
+      }
+    ],
+    "brier": 0.29062372504769607,
+    "expected_calibration_error": 0.24541820422525729,
+    "hits": 1,
+    "mean_model_estimate": 0.7454182042252573,
+    "observed_win_rate": 0.5,
+    "sample_too_small_for_reliable_calibration": true,
+    "verified": 2,
+    "wilson_95": [
+      0.09453120573423071,
+      0.9054687942657693
+    ]
+  },
+  "evaluated_forecasts_captured_pre_kickoff": true,
+  "evaluation_type": "original_prospective_v8_only",
+  "evidence": {
+    "awaiting_or_unverified": 163,
+    "frozen_source_matches_valid": 165,
+    "missing_feature_counts": {
+      "independent_market_snapshot_unavailable": 165,
+      "lineup_adjustment_not_validated": 165,
+      "short_last_ten_sample": 6,
+      "shot_based_xg_not_verified": 165
+    },
+    "no_extra_paid_calls": true,
+    "source_rejections": {},
+    "verified_results": 2
+  },
+  "note": "No new football observations are fabricated. Reliable calibration needs hundreds of verified pre-match predictions. Original five exact-score double results are tracked separately.",
+  "per_league": {
+    "BSA": {
+      "brier": 0.29062372504769607,
+      "observed_win_rate": 0.5,
+      "sample_too_small": true,
+      "verified": 2
+    }
+  },
+  "target_70_percent_actual_claim": false,
+  "time_safe_shrinkage_research": {
+    "calibration_candidate_eligible_for_review": false,
+    "deployed": false,
+    "limitations": "Original V8 outputs remain unchanged. The diagnostic is only an as-of-safe candidate; passing a retrospective screen does not establish a prospective model advantage.",
+    "min_eligible_test_matches_to_review": 50,
+    "min_global_previous_verified": 100,
+    "min_prior_verified_in_same_band": 20,
+    "model_promotion": false,
+    "raw_brier": null,
+    "shrunk_calibrated_brier": null,
+    "walk_forward_verified_test_matches": 0
+  },
+  "unavailable_external_sources": {
+    "genuine_shot_quality_xg": "no_audited_feed_integrated",
+    "multi_book_consensus": "not_prospectively_calibrated",
+    "two_leg_multi_llm_consensus": "not_source_qualified_yet",
+    "validated_player_lineup_coefficients": "not_trained_or_validated"
+  },
+  "verified_only_no_pending_losses": true,
+  "version": "v18-immutable-observed-calibration-audit-v1"
+}
