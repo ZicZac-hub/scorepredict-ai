@@ -113,7 +113,7 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
     written_v8=append_file_record(base,root=root,kind="forecasts")
     outcome={"v8_recorded":bool(written_v8),"v9_recorded":False,
              "v10_recorded":False,"v12_recorded":False,
-             "reason":"market_not_queried","market_calls":0}
+             "v13_recorded":False,"reason":"market_not_queried","market_calls":0}
     # A distinct, write-once v12 calibration forecast. It uses this precise
     # pre-match v8 matrix and the same already-verified league history.
     # It never changes v8, consumes no external API calls, and abstains if
@@ -138,6 +138,28 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
         except (ValueError,TypeError,KeyError,RuntimeError,OverflowError) as exc:
             # A candidate may fail; do not block the original collector.
             outcome["v12_status"]="calibration_unavailable_"+type(exc).__name__
+    # Independent V13 combined-model shadow: same verified history, as-of
+    # time, and immutable input digest as the newly written V8 forecast.
+    # No external AI/odds calls, no replacement of any prior prediction.
+    if written_v8:
+        try:
+            from hybrid_five_v13 import predict as hybrid_predict
+            hybrid=hybrid_predict(fixture,history,league_history=league,
+                                  as_of=cutoff,reference_v8=forecast)
+            completed=max(when,utc(datetime.now(timezone.utc)))
+            if hybrid is not None and completed<kickoff:
+                row=_record(fixture,evidence,hybrid,"v13",completed)
+                row["hybrid_component_weights"]=dict(hybrid["component_weights"])
+                row["release_status"]="experimental_shadow_only_not_promoted"
+                outcome["v13_recorded"]=bool(append_file_record(
+                    row,root=root,kind="forecasts"))
+            else:
+                outcome["v13_status"]=("insufficient_distinct_verified_components"
+                                       if hybrid is None else
+                                       "calculation_finished_after_kickoff")
+        except (ValueError,TypeError,KeyError,RuntimeError,OverflowError,
+                ArithmeticError) as exc:
+            outcome["v13_status"]="hybrid_unavailable_"+type(exc).__name__
     # Do not use quota for distant games, unsupported providers or re-recording
     # the same slot: v8 remains the only stored prediction when odds are absent.
     if (not api_key or request is None or market_calls_remaining<=0
@@ -336,7 +358,7 @@ def read_latest(root=ROOT):
     """Return earliest independently saved forecast for each model/fixture."""
     found={}
     for row in read_file_records(root=root,kind="forecasts"):
-        if row.get("model_key") not in ("v8","v8_near","v8_control","v9","v10","v12"):
+        if row.get("model_key") not in ("v8","v8_near","v8_control","v9","v10","v12","v13"):
             continue
         try:
             key=(row["provider"],str(row["fixture_id"]),row["model_key"])
