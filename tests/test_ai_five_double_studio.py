@@ -163,3 +163,46 @@ def test_invalid_after_kickoff_pair_does_not_read_ai_sources():
         raise AssertionError("Cannot retrieve AI for an invalid pair")
     report=analyze_pair(first,second,{},now=NOW+timedelta(days=5),archiver=prohibit)
     assert report["status"]=="invalid_pair"
+
+
+def test_balanced_challenger_does_not_rewrite_or_invent_scores():
+    first,second=pair()
+    unchanged=(copy.deepcopy(first),copy.deepcopy(second))
+    original=merged_five(first,second,now=NOW)
+    balanced=merged_five(first,second,now=NOW,
+                         selection_mode="balanced_challenger")
+    assert original["status"]==balanced["status"]=="ready"
+    assert balanced["selection_mode"]=="balanced_challenger"
+    assert balanced["diversity_is_experimental"] is True
+    assert balanced["no_promotion_or_archive_rewrite"] is True
+    assert len(balanced["doubles"])==5
+    options_1={f"{h}-{a}" for h,a,_ in first["result"]["scores"]}
+    options_2={f"{h}-{a}" for h,a,_ in second["result"]["scores"]}
+    assert all(p["Score 1"] in options_1 and p["Score 2"] in options_2
+               for p in balanced["doubles"])
+    assert len({(p["Score 1"],p["Score 2"]) for p in balanced["doubles"]})==5
+    assert balanced["selected_diversity"]["match_1_scores"] >= original["baseline_diversity"]["match_1_scores"]
+    assert balanced["selected_diversity"]["match_2_scores"] >= original["baseline_diversity"]["match_2_scores"]
+    assert balanced["selected_diversity"] != original["baseline_diversity"]
+    assert balanced["selected_model_coverage"] <= original["baseline_coverage"]+1e-12
+    assert first==unchanged[0] and second==unchanged[1]
+
+
+def test_challenger_stays_session_only_and_baseline_is_default():
+    first,second=pair()
+    baseline=analyze_pair(first,second,{},now=NOW,archiver=lambda fixture:None)
+    challenger=analyze_pair(first,second,{},now=NOW,archiver=lambda fixture:None,
+                            selection_mode="balanced_challenger")
+    assert baseline["model_and_ai_result"]["selection_mode"]=="probability"
+    assert challenger["model_and_ai_result"]["selection_mode"]=="balanced_challenger"
+    assert challenger["session_only"] is True
+    assert challenger["original_forecasts_overwritten"] is False
+    assert challenger["independent_prospective_accuracy_record"] is False
+    assert b"Match 1 exact score" in _csv_bytes(challenger["model_and_ai_result"])
+
+
+def test_invalid_selector_rejected_without_creating_guesses():
+    first,second=pair()
+    bad=merged_five(first,second,now=NOW,selection_mode="unvalidated_magic")
+    assert bad["status"]=="invalid_selection_mode"
+    assert bad["doubles"]==[]
