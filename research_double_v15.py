@@ -11,6 +11,7 @@ Never issue paid API calls, fabricate missing providers, revise the original
 five doubles or backfill past kickoffs. Unpaired votes = abstain.
 """
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -49,7 +50,7 @@ def _source(leg,models):
     return None
 
 
-def _vote_records(leg,root,now):
+def _vote_records(leg,root,now,allowed_sources=None):
     """Only FIRST real pre-kickoff AI record matching verified fixture IDs.
 
     Do not use later overwritten versions; return validated, named votes only.
@@ -71,6 +72,13 @@ def _vote_records(leg,root,now):
             if (kickoff!=utc(leg["kickoff_utc"]) or
                 start>=kickoff or start>now):
                 continue
+            sources=list(allowed_sources or [])
+            if sources and not any(
+                row.get("source_forecast_id")==source.get("forecast_id") and
+                (not source.get("captured_at_utc") or
+                 utc(source["captured_at_utc"])<=start)
+                for source in sources):
+                continue
             votes={}
             for name,v in (row.get("votes") or {}).items():
                 if name not in PROVIDERS or not isinstance(v,dict):
@@ -78,6 +86,12 @@ def _vote_records(leg,root,now):
                 score=v.get("score")
                 if (not isinstance(score,(tuple,list)) or len(score)!=2 or
                     any(type(x) is not int or x<0 or x>9 for x in score)):
+                    continue
+                probs=[v.get("home"),v.get("draw"),v.get("away")]
+                if (any(type(p) not in (int,float) or
+                        not math.isfinite(float(p)) or
+                        not 0<=p<=1 for p in probs) or
+                    abs(sum(probs)-1)>0.02):
                     continue
                 # Only one legitimate validated score vote per provider.
                 votes[name]=v
@@ -106,7 +120,14 @@ def assemble_pair(packet,models,*,ai_root=AI_ROOT,now=None,
         sources=[_source(leg,models) for leg in (first,second)]
         if any(not source for source in sources):
             return None,"original_statistical_forecast_missing"
-        votes=[_vote_records(leg,ai_root,when) for leg in (first,second)]
+        votes=[]
+        for leg in (first,second):
+            key=(str(leg["provider"]),str(leg["fixture_id"]))
+            candidates=[models[(*key,version)]
+                        for version in ("v8","v8_near")
+                        if (*key,version) in models]
+            votes.append(_vote_records(
+                leg,ai_root,when,allowed_sources=candidates))
         if not all(votes):
             return None,"missing_original_earlier_ai_vote_for_both_matches"
         counts=[len(v.get("votes") or {}) for v in votes]
