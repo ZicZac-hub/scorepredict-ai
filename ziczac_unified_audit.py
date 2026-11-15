@@ -242,7 +242,7 @@ def private_records(rows):
             if len(choices)!=5:
                 continue
             method = record.get("method") or "probability"
-            if method not in ("probability", "balanced_challenger", "goal_form_research"):
+            if method not in ("probability", "balanced_challenger", "goal_form_research", "v22_xg_market"):
                 continue
             source_name = ("ai_five_double" if method == "probability" else
                            "ai_five_double_" + method)
