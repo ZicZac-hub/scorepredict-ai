@@ -102,3 +102,21 @@ def test_repository_saved_odds_packet_does_not_require_database(tmp_path):
                    originals=[source],packet_root=tmp_path) is None
     assert repository_provider_packet(fixture,now=NOW+timedelta(hours=6),
                    originals=[source],packet_root=tmp_path) is None
+
+
+def test_top_ten_only_current_row_does_not_hide_complete_frozen_v8_grid():
+    from ai_five_double_ui import options
+    live=match(700,11,12)
+    archived=match(700,11,12)
+    live["kickoff"]=KICK
+    archived["kickoff"]=KICK
+    live["result"].pop("matrix")
+    archived["archive_frozen"]=True
+    chosen=options([live],now=NOW,archived=[archived])
+    assert len(chosen)==1
+    assert chosen[0]["archive_frozen"] is True
+    assert chosen[0]["result"]["matrix"]==GRID.tolist()
+    live["result"]["matrix"]=GRID.tolist()
+    chosen=options([live],now=NOW,archived=[archived])
+    assert len(chosen)==1
+    assert not chosen[0].get("archive_frozen",False)
