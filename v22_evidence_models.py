@@ -43,13 +43,16 @@ def _normalize(odds):
     return {k: round(v / total, 8) for k, v in inv.items()}
 
 
-def parse_markets(raw, *, observed_at, max_age_hours=12):
+def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetched_at=None):
     """Collect timestamped pre-match 1X2, BTTS, O/U 2.5 and 3.5.
 
     Multiple books may contribute but each named book must have a complete
     outcome set for that market. Never mix odds across different bookmakers.
-    The original bet/update timestamp is mandatory; observation time alone
-    cannot stand in for a bookmaker update.
+    Prefer the bookmaker's actual quote update timestamp. When the
+    bookmaker does not supply one, permit the original timestamp of a
+    **verified API response fetch** (including a fresh cache) as an
+    observation, distinctly labelled as such. NEVER use clock-now or
+    stale-fallback response time as a fabricated bookmaker update.
     """
     seen = {}
     now = utc(observed_at)
@@ -63,8 +66,11 @@ def parse_markets(raw, *, observed_at, max_age_hours=12):
             for bet in book.get("bets") or []:
                 name = str(bet.get("name") or "").casefold().strip()
                 name = re.sub(r"\s+", " ", name)
-                update = _time(bet.get("update") or book.get("update") or
-                               fixture.get("update"))
+                raw_update=(bet.get("update") or book.get("update") or fixture.get("update"))
+                update = (_time(raw_update) if raw_update else
+                          _time(verified_provider_fetched_at))
+                basis = ("bookmaker_quote_updated_at" if raw_update else
+                         "api_response_fetched_at")
                 if (update is None or update > now or
                         now - update > timedelta(hours=max_age_hours)):
                     continue
@@ -99,6 +105,7 @@ def parse_markets(raw, *, observed_at, max_age_hours=12):
                                   "updated_at_utc": update.isoformat(),
                                   "observed_at_utc": now.isoformat(),
                                   "fair": fair,
+                                  "timestamp_basis":basis,
                                   "source": "API-Football-prematch-odds"}
                         if key not in seen or record["updated_at_utc"] > seen[key]["updated_at_utc"]:
                             seen[key] = record
@@ -114,7 +121,8 @@ def parse_markets(raw, *, observed_at, max_age_hours=12):
             grouped[kind] = {"probabilities":{k:round(v/total,7) for k,v in result.items()},
                              "n_bookmakers":len(quotes),
                              "quotes":quotes,
-                             "last_source_update_utc":max(q["updated_at_utc"] for q in quotes)}
+                             "last_source_update_utc":max(q["updated_at_utc"] for q in quotes),
+                             "quote_timestamp_basis":[q["timestamp_basis"] for q in quotes]}
     return grouped
 
 
