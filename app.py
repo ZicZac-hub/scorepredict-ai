@@ -1158,6 +1158,9 @@ with active_page_slot:
         from v10_status_ui import render as render_v10_status
         render_v10_status(st)
         st.divider()
+        from v17_confidence_ui import render as render_v17_confidence
+        render_v17_confidence(st)
+        st.divider()
         from revision_ui import render_revision_panel
         render_revision_panel(st, _revision_status, sydney_kickoff, _retry_archive_revisions)
         st.divider()
@@ -1747,6 +1750,10 @@ with active_page_slot:
                        'consult connected OpenAI, Gemini and other APIs.')
             from automatic_doubles_ui import render as render_auto_frozen
             render_auto_frozen(st)
+            st.divider()
+            with st.expander('🛡️ V17 high-confidence outcomes and evidence', expanded=False):
+                from v17_confidence_ui import render as render_v17_confidence
+                render_v17_confidence(st)
             st.divider()
             from hybrid_v13_ui import render as render_hybrid_v13
             from v8_doubles_ui import render as render_v8_doubles
