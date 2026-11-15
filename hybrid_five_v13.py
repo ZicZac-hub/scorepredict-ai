@@ -41,6 +41,10 @@ def predict(fixture, history, league_history=None, *, as_of=None,
     past = _asof_history(fixture, history or [], now)
     league = _asof_history(fixture,
         history if league_history is None else league_history, now)
+    if len(league)<30:
+        # A genuine fitted opponent model needs a league population.
+        # Thin data must not turn a weak baseline into a named hybrid.
+        return None
     v8 = (reference_v8 if reference_v8 is not None else
           predict_v8(fixture, past, league_history=league,
                      as_of=now, max_goals=max_goals))
