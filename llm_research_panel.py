@@ -301,7 +301,10 @@ def paired_candidates(rows,limit=1):
                 prioritized.append(other)
                 identities.add(key)
         return prioritized[:limit],True
-    return ordered[:limit],False
+    # An extra paid model batch is not useful for SAME-DAY doubles when
+    # no valid two-match pair exists. Fall back to one rather than charging
+    # for a second unrelated fixture.
+    return ordered[:1],False
 
 
 def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
