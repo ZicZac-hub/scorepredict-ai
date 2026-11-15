@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from goal_research_v20 import goal_profile
+from v21_provider_evidence import valid_snapshot
 from llm_research_panel import (
     PROVIDERS, SECRETS, ask, classify_provider_error, consensus, settings
 )
@@ -246,10 +247,20 @@ def briefing(fixture, history, statistical, fallback=None, *, now=None,
             for k in ("home_season", "away_season", "standings", "injuries",
                       "confirmed_lineups") if (team_context or {}).get(k)
         },
-        "not_provided": ["verified shot-based xG", "live web browsing",
-                         "verified numerical player-impact coefficients",
-                         "licensed pre-match bookmaker odds"]
+        "not_provided": ["verified future-match xG", "live web browsing",
+                         "verified numerical player-impact coefficients"]
     }
+    packet = (team_context or {}).get("v21_provider_snapshot")
+    if valid_snapshot(packet,fixture,now=clock):
+        payload["audited_external_provider_snapshot"] = {
+            "captured_at_utc":packet["captured_at_utc"],
+            "sha256":packet["snapshot_sha256"],
+            "actual_past_fixture_expected_goals":packet.get("verified_historical_fixture_xg") or [],
+            "provider_reported_lineups":packet.get("confirmed_starting_xi") or [],
+            "provider_reported_injuries":packet.get("reported_injuries") or [],
+            "time_checked_1x2_market":packet.get("market"),
+            "coverage":packet.get("available_sources") or {}
+        }
     return ("You are one independent football research reviewer. Use ONLY the dated "
             "facts provided. Independently examine last-ten match performance, "
             "home versus away goal scoring/conceding, 2+ goal rates and H2H; "
@@ -311,7 +322,10 @@ def run_selected(fixture, history, statistical, fallback, provider_configs, *,
         "ephemeral": True,
         "research_only": True,
         "original_predictions_overwritten": False,
-        "evaluated_as_frozen_five_double": False
+        "evaluated_as_frozen_five_double": False,
+        "source_snapshot_digest":((team_context or {}).get("v21_provider_snapshot") or {}).get("snapshot_sha256")
+        if valid_snapshot((team_context or {}).get("v21_provider_snapshot"),fixture,now=clock)
+        else None
     }
 
 
