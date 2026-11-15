@@ -16,7 +16,7 @@ from persist_prematch import RESULTS, load_json, verified_result, write_json
 from smart_double_v8 import rank_research_pairs
 from smart_double_ai import five_doubles
 from double_score_selection import select_balanced,select_diversified
-from robust_double_v14 import robust_pair
+from robust_double_v14 import robust_pair, rank_robust_pairs, VERSION as ROBUST_V14
 from v10_prospective import ROOT, read_latest, utc
 
 REPORT = ROOT / "performance.json"
@@ -138,7 +138,8 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
         kickoff=utc(row["kickoff_utc"])
         day=kickoff.astimezone(SYDNEY).date().isoformat()
         eligible[day].append(row)
-    stats={"days_evaluated":0,"days_saved":[],"abstained":{},
+    stats={"days_evaluated":0,"days_saved":[],"v14_robust_days_saved":[],
+           "abstained":{},
            "near_research_available":sum(r["model_key"]=="v8_near" for r in per_fixture.values())}
     for day,rows in sorted(eligible.items()):
         target=Path(root)/"doubles"/(day+".json")
@@ -297,6 +298,66 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
                     "minimum_minutes_before_each_selected_match":FREEZE_MIN_LEAD_MINUTES}}
         if _write_once(target,result):
             stats["days_saved"].append(day)
+            # Freeze an independently selected V14 two-match pair for this
+            # same newly discovered slate/date. Never backfill on older
+            # days or invent earlier score grids from newer research.
+            robust_pool=[]
+            by_v13={}
+            for original in rows:
+                key=(original["provider"],str(original["fixture_id"]))
+                archived=options.get((*key,"v13"))
+                if (archived is None or
+                    archived.get("input_digest")!=original.get("input_digest") or
+                    utc(archived["captured_at_utc"])>instant or
+                    not archived.get("v14_component_grids")):
+                    continue
+                robust_pool.append(_v14_match(archived))
+                by_v13[key]=archived
+            shortlisted=rank_robust_pairs(
+                robust_pool,now=instant,limit=1,min_coverage=MIN_COVERAGE)
+            if shortlisted:
+                candidate=shortlisted[0]
+                selected_ids=[
+                    (part["fixture"]["provider"],str(part["fixture"]["id"]))
+                    for part in (candidate["first"],candidate["second"])]
+                v14first,v14second=(by_v13[key] for key in selected_ids)
+                record={
+                    "policy":"v14-robust-two-model-prospective-shadow-v1",
+                    "mode":"prospective_robust_v14",
+                    "status":"frozen_pre_kickoff",
+                    "model_version":ROBUST_V14,
+                    "sydney_date":day,
+                    "captured_at_utc":instant.isoformat(),
+                    "first":{field:v14first[field] for field in
+                             ("provider","fixture_id","kickoff_utc",
+                              "home_team_id","away_team_id",
+                              "home_team","away_team","forecast_id",
+                              "model_key","model_version")},
+                    "second":{field:v14second[field] for field in
+                              ("provider","fixture_id","kickoff_utc",
+                               "home_team_id","away_team_id",
+                               "home_team","away_team","forecast_id",
+                               "model_key","model_version")},
+                    "selected_forecast_input_digests":[
+                        v14first["input_digest"],v14second["input_digest"]],
+                    "five_doubles":[{
+                        "score1":opt["Score 1"],"score2":opt["Score 2"],
+                        "v7_joint":float(opt["V7 joint"]),
+                        "v8_joint":float(opt["V8 joint"]),
+                        "conservative_envelope":float(opt["Joint"])}
+                        for opt in candidate["doubles"]],
+                    "lower_envelope_score":float(
+                        candidate["estimated_joint_coverage"]),
+                    "coverage_v7":float(candidate["model_coverage_v7"]),
+                    "coverage_v8":float(candidate["model_coverage_v8"]),
+                    "covered_probability_is_not_verified_win_rate":True,
+                    "lower_envelope_is_not_calibrated_probability":True,
+                    "model_sources_are_correlated":True,
+                    "accuracy_status":"pending_verified_final_scores",
+                    "original_five_doubles_modified":False}
+                robust_path=Path(root)/"robust_doubles"/(day+".json")
+                if _write_once(robust_path,record):
+                    stats["v14_robust_days_saved"].append(day)
     return stats
 
 
