@@ -566,6 +566,12 @@ def render(st,rows,histories=None):
                 st.caption(name+" · "+(f"{hits}/{n} = {hits/n:.1%}" if n else
                                        "no verified pairs")+
                            " · pending "+str(stat.get("pending",0)))
+            st.caption("V23 early market collector: "+
+                       ("enabled" if board.get("v23_early_market_capture_enabled")
+                        else "not confirmed enabled")+
+                       " · new source packets on last run: "+
+                       str(board.get("v23_early_market_new_packets",0))+
+                       " · missing source packets do not count as losses")
             market_method=board.get("v23_market_form_vs_v8") or {}
             if market_method:
                 st.markdown("**V23 market + form vs original (same frozen pairs)**")
