@@ -347,7 +347,16 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
         else:
             st.warning("No qualifying provider market data was used. This result equals the historical v8 forecast, not a validated market-enhanced prediction. " +
                        str(report.get("market_note") or ""))
-    if report.get("baseline_score"):
+    if report.get("v12_diagnostics"):
+        st.info("Original evidence ensemble v8 top score: **" +
+                "-".join(map(str,report.get("v12_original_v8_score") or [])) +
+                "** · V12 league-calibration challenger: **" + score + "**. "
+                "Any changed score is an unproven experiment, not accuracy.")
+        st.caption("V8-to-V12 probability distribution change: " +
+                   f"{float(report['v12_diagnostics']['total_variation']):.1%}" +
+                   " total variation. V8 component weights are preserved; "
+                   "V12 is a separate historical-league residual adjustment.")
+    elif report.get("baseline_score"):
         st.info("Preserved v6 score: **" + "-".join(map(str,report["baseline_score"])) +
                 "** (" + f"{report['baseline_probability']:.1%}" + " modal probability) · research challenger: **" +
                 score + "**. A changed score is not proof of increased accuracy.")
