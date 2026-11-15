@@ -34,5 +34,5 @@ def test_two_match_option_can_abstain_and_fall_back_to_one():
     records=[row(1,"A","B","2031-11-20T03:00:00Z"),
              row(2,"B","C","2031-11-20T04:00:00Z")]
     chosen,paired=panel.paired_candidates(records,limit=2)
-    assert len(chosen)==2 and paired is False
+    assert len(chosen)==1 and paired is False
     assert panel.paired_candidates(records,limit=0)==([],False)
