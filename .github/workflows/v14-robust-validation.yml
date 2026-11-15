@@ -38,7 +38,7 @@ jobs:
       - name: Compare V14 against V8 and V7 on unmodified historical snapshots
         run: |
           python -u v14_robust_backtest.py work/v14_verified_matches.json \
-            --year 2026 --max-fixtures 700 --max-pair-days 100 \
+            --year 2026 --max-fixtures 1300 --max-pair-days 160 \
             --min-robust-envelope 0.04 \
             --output work/v14_robust_backtest.json
       - name: Archive reproducible comparison
