@@ -93,6 +93,15 @@ def _save_fixture_market(item,*,clock,fetched,root,query_date):
         actual_start=None
     if actual_start is not None and utc(actual_start)<=clock:
         return None
+    if actual_start is not None:
+        # Date endpoints may be quoted in a local timezone, so permit
+        # a one-day offset, but reject unrelated fixture dates.
+        try:
+            if abs((utc(actual_start).date()-
+                    datetime.fromisoformat(query_date).date()).days)>1:
+                return None
+        except (TypeError,ValueError):
+            return None
     league=item.get("league") or {}
     row={"schema":1,"provider":"API-Football",
          "fixture_id":str(fid),"source_fixture_kickoff_utc":actual_start,
@@ -132,6 +141,12 @@ def _valid_catalog(row,source,now):
             return False
         if row.get("source_fixture_kickoff_utc") and (
                 abs((utc(row["source_fixture_kickoff_utc"])-kickoff).total_seconds())>300):
+            return False
+        from api_football import LEAGUES
+        source_league=LEAGUES.get(str(source.get("competition") or ""))
+        observed_league=row.get("source_league_id")
+        if source_league is not None and observed_league is not None and (
+                str(source_league)!=str(observed_league)):
             return False
         market=row.get("market_types") or {}
         if "1x2" not in market or not ({"over_2_5","over_3_5"} & set(market)):
