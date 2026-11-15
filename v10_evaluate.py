@@ -508,9 +508,9 @@ def evaluate(root=ROOT,results=None):
             packet.get("status")!="frozen_pre_kickoff"):
             continue
         try:
-            frozen=utc(packet["captured_at_utc"])
-            if frozen>=min(utc(packet["first"]["kickoff_utc"]),
-                           utc(packet["second"]["kickoff_utc"])):
+            recorded_at=utc(packet["captured_at_utc"])
+            if recorded_at>=min(utc(packet["first"]["kickoff_utc"]),
+                                utc(packet["second"]["kickoff_utc"])):
                 continue
             actual_first,actual_second=(
                 _pair_verified(packet[side],verified)
