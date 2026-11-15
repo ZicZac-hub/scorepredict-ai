@@ -20,24 +20,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 2,
-      "recorded": 2,
+      "pending": 4,
+      "recorded": 4,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 2,
-      "recorded": 2,
+      "pending": 4,
+      "recorded": 4,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 165,
-      "recorded": 167,
+      "pending": 167,
+      "recorded": 169,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -60,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 137,
-      "recorded": 137,
+      "pending": 139,
+      "recorded": 139,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-15T12:44:57.309453+00:00",
+  "checked_at_utc": "2026-11-15T12:51:18.007210+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -80,6 +80,238 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:13.519623+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1563295')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cardiff",
+          "away_team_id": "43",
+          "fixture_id": "1563295",
+          "home_team": "Swansea",
+          "home_team_id": "76",
+          "kickoff_utc": "2026-11-29T12:00:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:12.793453+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1557480')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Liverpool",
+          "away_team_id": "40",
+          "fixture_id": "1557480",
+          "home_team": "Everton",
+          "home_team_id": "45",
+          "kickoff_utc": "2026-11-29T12:00:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:12.690029+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1557480', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Liverpool",
+          "away_team_id": "40",
+          "fixture_id": "1557480",
+          "home_team": "Everton",
+          "home_team_id": "45",
+          "kickoff_utc": "2026-11-29T12:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:12.661147+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1557480', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Liverpool",
+          "away_team_id": "40",
+          "fixture_id": "1557480",
+          "home_team": "Everton",
+          "home_team_id": "45",
+          "kickoff_utc": "2026-11-29T12:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:12.710598+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1557480', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Liverpool",
+          "away_team_id": "40",
+          "fixture_id": "1557480",
+          "home_team": "Everton",
+          "home_team_id": "45",
+          "kickoff_utc": "2026-11-29T12:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:13.363893+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1563295', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cardiff",
+          "away_team_id": "43",
+          "fixture_id": "1563295",
+          "home_team": "Swansea",
+          "home_team_id": "76",
+          "kickoff_utc": "2026-11-29T12:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:13.396206+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1563295', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cardiff",
+          "away_team_id": "43",
+          "fixture_id": "1563295",
+          "home_team": "Swansea",
+          "home_team_id": "76",
+          "kickoff_utc": "2026-11-29T12:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T12:51:13.371870+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1563295', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cardiff",
+          "away_team_id": "43",
+          "fixture_id": "1563295",
+          "home_team": "Swansea",
+          "home_team_id": "76",
+          "kickoff_utc": "2026-11-29T12:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T12:00:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T11:59:30.770088+00:00",
@@ -9563,8 +9795,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 306,
-    "recorded": 314,
+    "pending": 314,
+    "recorded": 322,
     "verified": 8
   }
 }
