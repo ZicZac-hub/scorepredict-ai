@@ -173,7 +173,14 @@ def load(database_url):
 
 
 def store_ui(st,record):
-    """Visible, honest saved/unavailable status for Streamlit controls."""
+    """Visible, owner-authenticated, truthful persistence status."""
+    from on_demand_ai import private_gate_ready
+    if not private_gate_ready(st):
+        st.warning("Your prediction is visible in this session but NOT "
+                   "permanently saved. Enable Private Access with "
+                   "ZICZAC_ACCESS_PASSWORD and sign in to allow secure "
+                   "central audit writes.")
+        return {"durable":False,"state":"private_access_required"}
     try:
         address=st.secrets.get("DATABASE_URL","") or os.environ.get("DATABASE_URL","")
     except (OSError,KeyError,RuntimeError,AttributeError):
