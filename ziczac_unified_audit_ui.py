@@ -39,14 +39,26 @@ def render(st,database_url=""):
     public=load_json(Path("data/tracking/status.json"),{})
     if not isinstance(public,dict):
         public={}
+    from on_demand_ai import private_gate_ready
+    from ziczac_unified_audit import build as build_public
+    access=private_gate_ready(st)
+    if not access:
+        # A public visitor must never see another owner's private DB picks,
+        # including a report left cached by a previous authenticated session.
+        st.session_state.pop("ziczac_unified_audit_status",None)
+        st.caption("Private website selections are hidden until the owner "
+                   "signs in through Private Access. This public summary "
+                   "contains only previously published GitHub forecasts.")
     previous=st.session_state.get("ziczac_unified_audit_status") or {}
     if st.button("🔄 Check all saved prediction results",key="ziczac_unified_refresh",
                  use_container_width=True):
         with st.spinner("Comparing preserved predictions with identity-verified finals..."):
-            # Never send private forecast records to GitHub; inspect them
-            # inside this user's active Streamlit server session only.
-            result=build_with_private(database_url)
-            st.session_state["ziczac_unified_audit_status"]=result
+            # Public visitors can refresh the GitHub side, but only an
+            # authenticated owner may read the private PostgreSQL archive.
+            result=(build_with_private(database_url) if access
+                    else build_public(private_connection="private_access_required"))
+            if access:
+                st.session_state["ziczac_unified_audit_status"]=result
             previous=result
     report=previous if previous else public
     if not report:
