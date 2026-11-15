@@ -142,6 +142,18 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             if path.exists() and (not upgrade_needed or deep_marker.exists()):
                 result["skipped"].append(str(leg["fixture_id"])+":original_preserved")
                 continue
+            if upgrade_needed:
+                # Reserve one funded refresh attempt BEFORE any API requests,
+                # including failed/quota-limited calls. Do not retry every
+                # 15 minutes and silently spend a larger quota.
+                deep_marker.parent.mkdir(parents=True,exist_ok=True)
+                try:
+                    with deep_marker.open("x",encoding="utf-8") as marker:
+                        marker.write(json.dumps({"attempted_at_utc":clock.isoformat(),
+                            "fixture_id":str(leg["fixture_id"]),
+                            "reason":"explicit_V22_deep_xg_opt_in"},sort_keys=True)+"\n")
+                except FileExistsError:
+                    continue
             comp=str(leg.get("competition") or "")
             league=LEAGUES.get(comp)
             if league is None:
@@ -179,15 +191,6 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                 # replace the earlier original path or use a postkickoff file.
                 path=Path(root)/"versions"/(path.stem+"_"+
                      provider["snapshot_sha256"][:16]+".json")
-                deep_marker.parent.mkdir(parents=True,exist_ok=True)
-                try:
-                    with deep_marker.open("x",encoding="utf-8") as marker:
-                        marker.write(json.dumps({"attempted_at_utc":clock.isoformat(),
-                            "fixture_id":str(leg["fixture_id"]),
-                            "reason":"explicit_V22_deep_xg_opt_in"},sort_keys=True)+"\n")
-                except FileExistsError:
-                    result["skipped"].append(str(leg["fixture_id"])+":deep_attempt_preserved")
-                    continue
             path.parent.mkdir(parents=True,exist_ok=True)
             try:
                 with path.open("x",encoding="utf-8") as fh:
