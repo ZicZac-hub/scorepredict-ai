@@ -96,3 +96,32 @@ def test_does_not_bypass_pre_kickoff_quality_controls():
     assert report["checked"]==1
     assert report["modeled"]==[]
     assert report["unmodeled"]==1
+
+
+def test_quota_limited_discovery_reports_blocked_not_empty_football_day():
+    def no_model(*args,**kwargs):
+        raise AssertionError("No modelling permitted after source quota failure")
+    report=research_day(
+        "test-key",DAY,now=NOW,
+        discover=lambda *a: ([],["2026-11-15: API-Football request quota or rate limit"]),
+        model=no_model)
+    assert report["quota_limited"] is True
+    assert report["discovered"]==0
+    assert report["checked"]==0
+    assert report["modeled"]==[]
+    assert report["errors"]
+
+
+def test_quota_error_stops_other_fixture_model_calls_in_same_search():
+    events=[fixture(i,"2026-11-15T08:00:00Z") for i in range(10,15)]
+    attempts=[]
+    def failed_model(key,event,model_variant=None):
+        attempts.append(event["fixture"]["id"])
+        return None,"Provider history quota or rate limit"
+    result=research_day(
+        "test-key",DAY,now=NOW,
+        discover=lambda *a:(events,[]),model=failed_model)
+    assert result["quota_limited"] is True
+    assert result["checked"] == 1
+    assert result["remaining"] == 4
+    assert attempts == [10]
