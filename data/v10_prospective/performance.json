@@ -47,35 +47,49 @@
       "v10": {
         "challenger_hit_rate": null,
         "challenger_wins": 0,
-        "note": "Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs.",
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
         "same_pair_verified_days": 0,
         "v8_wins_on_those_days": 0
       },
       "v13": {
         "challenger_hit_rate": null,
         "challenger_wins": 0,
-        "note": "Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs.",
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
         "same_pair_verified_days": 0,
         "v8_wins_on_those_days": 0
       },
       "v13_balanced": {
         "challenger_hit_rate": null,
         "challenger_wins": 0,
-        "note": "Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs.",
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
         "same_pair_verified_days": 0,
         "v8_wins_on_those_days": 0
       },
       "v13_diversified": {
         "challenger_hit_rate": null,
         "challenger_wins": 0,
-        "note": "Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs.",
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
+        "same_pair_verified_days": 0,
+        "v8_wins_on_those_days": 0
+      },
+      "v14_robust_same_pair": {
+        "challenger_hit_rate": null,
+        "challenger_wins": 0,
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
+        "same_pair_verified_days": 0,
+        "v8_wins_on_those_days": 0
+      },
+      "v7_diversified_same_pair": {
+        "challenger_hit_rate": null,
+        "challenger_wins": 0,
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
         "same_pair_verified_days": 0,
         "v8_wins_on_those_days": 0
       },
       "v9": {
         "challenger_hit_rate": null,
         "challenger_wins": 0,
-        "note": "Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs.",
+        "note": "Frozen before kickoff on the same v8-selected matches. For V14 the coverage figure is a lower-envelope model criterion, NOT a calibrated probability or win rate.",
         "same_pair_verified_days": 0,
         "v8_wins_on_those_days": 0
       }
@@ -94,7 +108,8 @@
     },
     "days_evaluated": 6,
     "days_saved": [],
-    "near_research_available": 0
+    "near_research_available": 0,
+    "v14_robust_days_saved": []
   },
   "limitations": "Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
   "models": {
@@ -200,7 +215,21 @@
     "v9_only_hits": 0,
     "verified_same_fixture_count": 2
   },
-  "promotion_gate": "Never promote v9/v10/v12/v13 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks.",
+  "promotion_gate": "Never promote v9/v10/v12/v13/v14 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks.",
+  "v14_independently_selected_five_doubles": {
+    "awaiting_both_results": 0,
+    "distinct_pair_selection": "V14 may choose different two fixtures on same day",
+    "experiments_not_promoted": true,
+    "frozen_pairs": 0,
+    "hit_rate": null,
+    "lower_envelope_is_not_a_calibrated_probability": true,
+    "rows": [],
+    "same_sydney_day_v8_comparison_count": 0,
+    "v14_only_winning_days": 0,
+    "v8_only_winning_days": 0,
+    "verified_pairs": 0,
+    "wins": 0
+  },
   "verified_result_source": "verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
   "version": "v10-shadow-performance-v1"
 }
