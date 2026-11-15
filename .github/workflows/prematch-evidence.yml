@@ -182,6 +182,9 @@ jobs:
       - name: Audit V22 source coverage, AI performance and chronological calibration
         if: always()
         run: python v22_quality_report.py
+      - name: Diagnose original five-double misses and target feasibility (no API calls)
+        if: always()
+        run: python five_double_accuracy.py
       - name: Produce unified immutable hit/miss/pending evidence report
         # Run even after a provider quota failure; no new external requests.
         # The published GitHub status contains ONLY already-public scheduled
@@ -207,8 +210,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
@@ -272,6 +275,7 @@ jobs:
             data/v22_prospective/
             data/v23_prospective/
             data/v24_market_catalog/
+            data/accuracy_diagnosis/
             data/independent_football/status.json
             data/independent_football/evaluation.json
             data/independent_football/forecasts/*.json

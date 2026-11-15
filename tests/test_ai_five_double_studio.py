@@ -50,27 +50,35 @@ def test_two_match_model_baseline_survives_no_external_ai():
     assert report["original_immutable_predictions_changed"] is False
 
 
-def test_ai_votes_adjust_order_without_inventing_probabilities():
+def test_unvalidated_ai_votes_cannot_reduce_top_probability_coverage():
     a,b=pair()
-    a["result"]["scores"][1][2]=.119
     base=merged_five(a,b,now=NOW)
     ai_a={"status":"completed","votes":{
         "openai":{"score":[1,0],"home":.49,"draw":.25,"away":.26},
         "gemini":{"score":[1,0],"home":.48,"draw":.25,"away":.27}}}
     ai_b={"status":"completed","votes":{
-        "gemini":{"score":[1,1],"home":.4,"draw":.4,"away":.2}}}
+        "gemini":{"score":[1,0],"home":.4,"draw":.4,"away":.2}}}
+    # Reproduce the former 12%-per-leg boost. Endorsing the second-ranked
+    # scores displaces a more likely exact pair at the five-pick boundary.
+    products=[(p*q,p*q*(1.12 if (h,g)==(1,0) else 1)*
+                            (1.12 if (u,v)==(1,0) else 1))
+              for h,g,p in a["result"]["scores"]
+              for u,v,q in b["result"]["scores"]]
+    old_coverage=sum(p for p,_ in sorted(products,key=lambda x:-x[1])[:5])
+    optimal_coverage=sum(sorted((p for p,_ in products),reverse=True)[:5])
+    assert old_coverage < optimal_coverage
     merged=merged_five(a,b,ai_a,ai_b,now=NOW)
     assert merged["ai_votes"]=={"1":2,"2":1}
     assert merged["status"]=="ready"
-    assert merged["doubles"][0]["Score 1"]=="1-0"
+    assert merged["doubles"][0]["Score 1"]=="1-1"
     assert merged["doubles"][0]["Score 2"]=="1-1"
-    assert merged["doubles"][0]["AI endorsements 1"]==2
-    assert merged["doubles"][0]["Model joint"]==pytest.approx(.119*.13)
-    assert merged["doubles"][0]["Model joint"]<=1
-    assert merged["selected_model_coverage"]<=1
-    assert merged["baseline_coverage"]>=merged["selected_model_coverage"]
-    assert "observed" in str(merged["estimated_coverage_is_not_observed_win_rate"]) or (
-        merged["estimated_coverage_is_not_observed_win_rate"] is True)
+    assert [(x["Score 1"],x["Score 2"]) for x in merged["doubles"]]==[
+        (x["Score 1"],x["Score 2"]) for x in base["doubles"]]
+    assert any(x["AI endorsements 1"]==2 for x in merged["doubles"])
+    assert merged["selected_model_coverage"]==pytest.approx(optimal_coverage)
+    assert merged["baseline_coverage"]==pytest.approx(optimal_coverage)
+    assert merged["ai_votes_numerical_weight"]==0
+    assert merged["estimated_coverage_is_not_observed_win_rate"] is True
 
 
 def test_unknown_ai_score_never_becomes_fake_statistical_probability():
@@ -152,9 +160,36 @@ def test_analyze_pair_uses_only_matching_saved_provider_votes_without_live_calls
     assert report["status"]=="ready"
     assert report["ai_research"][0]["votes"]["gemini"]["score"]==[1,1]
     assert report["model_and_ai_result"]["ai_votes"]=={"1":1,"2":0}
+    assert report["research_ai_votes_weighted"] is False
     assert report["session_only"] is True
     assert report["independent_prospective_accuracy_record"] is False
     assert b"Match 1 exact score" in _csv_bytes(report["model_and_ai_result"])
+
+
+def test_advisory_ai_cannot_change_original_baseline_comparison():
+    first,second=pair()
+    def archive(_):
+        return {"research_only":True,"votes":{
+            "gemini":{"score":[1,0],"home":.5,"draw":.25,"away":.25}}}
+    original=merged_five(first,second,now=NOW)
+    report=analyze_pair(first,second,{},now=NOW,archiver=archive)
+    result=report["model_and_ai_result"]
+    assert report["research_ai_votes_weighted"] is False
+    assert result["baseline_coverage"]==pytest.approx(original["baseline_coverage"])
+    assert result["selected_model_coverage"]==pytest.approx(original["baseline_coverage"])
+    assert result["ai_votes"]=={"1":1,"2":1}
+
+
+def test_balanced_challenger_also_keeps_ai_advisory_only():
+    first,second=pair()
+    advice={"status":"completed","votes":{"gemini":{"score":[2,1]}}}
+    plain=merged_five(first,second,now=NOW,selection_mode="balanced_challenger")
+    annotated=merged_five(first,second,advice,advice,now=NOW,
+                         selection_mode="balanced_challenger")
+    assert [(x["Score 1"],x["Score 2"]) for x in plain["doubles"]]==[
+        (x["Score 1"],x["Score 2"]) for x in annotated["doubles"]]
+    assert annotated["ai_votes"]=={"1":1,"2":1}
+    assert annotated["ai_votes_numerical_weight"]==0
 
 
 def test_invalid_after_kickoff_pair_does_not_read_ai_sources():
@@ -163,6 +198,42 @@ def test_invalid_after_kickoff_pair_does_not_read_ai_sources():
         raise AssertionError("Cannot retrieve AI for an invalid pair")
     report=analyze_pair(first,second,{},now=NOW+timedelta(days=5),archiver=prohibit)
     assert report["status"]=="invalid_pair"
+
+
+def test_slow_ai_cannot_backdate_prediction_or_start_second_request(monkeypatch):
+    import ai_five_double_ui as ui
+    first,second=pair()
+    first["kickoff"]=first["fixture"]["utcDate"]=(NOW+timedelta(minutes=6)).isoformat()
+    at=[NOW]
+    calls=[]
+    def slow(*args,**kwargs):
+        calls.append(args[0]["id"])
+        at[0]=NOW+timedelta(minutes=6,seconds=1)
+        return {"status":"completed","votes":{"gemini":{"score":[1,1]}},"errors":{}}
+    monkeypatch.setattr(ui,"run_selected",slow)
+    result=analyze_pair(first,second,{},now=NOW,clock=lambda:at[0],
+                        configs={"gemini":{}},use_live=True,archiver=lambda _:None)
+    assert calls==[first["fixture"]["id"]]
+    assert result["status"]=="analysis_completed_too_late"
+    assert "model_and_ai_result" not in result
+
+
+def test_ai_analysis_reports_completion_time_instead_of_request_start(monkeypatch):
+    import ai_five_double_ui as ui
+    first,second=pair()
+    at=[NOW]
+    requests=[]
+    def delayed(*args,**kwargs):
+        requests.append(kwargs["now"])
+        at[0]+=timedelta(seconds=20)
+        return {"status":"completed","votes":{},"errors":{}}
+    monkeypatch.setattr(ui,"run_selected",delayed)
+    result=analyze_pair(first,second,{},now=NOW,clock=lambda:at[0],
+                        configs={"gemini":{}},use_live=True,archiver=lambda _:None)
+    assert result["status"]=="ready"
+    assert requests==[NOW,NOW+timedelta(seconds=20)]
+    assert result["generated_at_utc"]==(NOW+timedelta(seconds=40)).isoformat()
+    assert result["analysis_started_at_utc"]==NOW.isoformat()
 
 
 def test_balanced_challenger_does_not_rewrite_or_invent_scores():

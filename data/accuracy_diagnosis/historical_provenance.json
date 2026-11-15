@@ -1,0 +1,89 @@
+{
+  "artifact_id": 14150072422,
+  "artifact_name": "v14-five-double-robust-historical-validation",
+  "artifact_run_url": "https://github.com/ZicZac-hub/scorepredict-ai/actions/runs/43685699587",
+  "artifact_zip_sha256": "1ce00b721142b3e9750a90300f7c10d7963641292ee5b30d571f5c7948dfa4a5",
+  "historical_input_matches": 2255,
+  "historical_input_sha256": "f68da7961002058d9935b95b545fb23e03d9f7c0754f2b714992f4cddd597156",
+  "original_baseline_source_commit": "03e4298dd332aefad7c5c444d47af533b96855ee",
+  "pair_cutoff_defect_fixed": "Former per-fixture pair forecasts could include evidence observed after the earlier selected kickoff. Schema 2 reconstructs all pair candidates at a common cutoff.",
+  "previous_122_day_max_estimated_coverage": 0.11795670512237089,
+  "previous_122_day_mean_estimated_coverage": 0.0744492472932611,
+  "previous_122_day_report": {
+    "as_of": "One hour before first kickoff of the Sydney day",
+    "auto_v14_selected_the_same_two_matches_as_v8": 114,
+    "automatic_production_changed": false,
+    "baseline_eligible_pair_days": 122,
+    "candidate_days": 124,
+    "diagnostics": {
+      "no_full_v7_v8_evidence": 35,
+      "no_two_qualified_forecasts": 2
+    },
+    "latest_year_fixtures": 1300,
+    "limitations": "Model probabilities are uncalibrated and V7/V8 share input evidence. Full-grid robust score is NOT a statistically verified confidence interval. Historical snapshot cannot reconstruct real-time injuries, odds, or missing future fixtures.",
+    "max_per_sydney_day": 6,
+    "min_v14_envelope_for_auto_selection": 0.04,
+    "not_a_prospective_verified_hit_rate": true,
+    "not_independent_holdout": true,
+    "policy": "All games and original results masked until their final-score evaluation",
+    "promotion_approved": false,
+    "source_result_count": 2255,
+    "status": "EXPERIMENTAL historical reconstruction, 2026 already explored",
+    "title": "V14 robust two-match five-double chronological historical challenge",
+    "v14_independently_selected_pair": {
+      "abstained_days": 0,
+      "baseline_eligible_days": 122,
+      "per_eligible_day_hit_rate": 0.040983606557377046,
+      "per_selection_hit_rate": 0.040983606557377046,
+      "selections_issued": 122,
+      "verified_five_double_hits": 5
+    },
+    "v14_robust_on_same_v8_pair": {
+      "abstained_days": 0,
+      "baseline_eligible_days": 122,
+      "per_eligible_day_hit_rate": 0.040983606557377046,
+      "per_selection_hit_rate": 0.040983606557377046,
+      "selections_issued": 122,
+      "verified_five_double_hits": 5
+    },
+    "v7_auto_top5_pair_same_as_v8": 90,
+    "v7_diversified_on_v7_diverse_selected_pair": {
+      "abstained_days": 0,
+      "baseline_eligible_days": 122,
+      "per_eligible_day_hit_rate": 0.040983606557377046,
+      "per_selection_hit_rate": 0.040983606557377046,
+      "selections_issued": 122,
+      "verified_five_double_hits": 5
+    },
+    "v7_diversified_on_v7_top5_selected_pair": {
+      "abstained_days": 0,
+      "baseline_eligible_days": 122,
+      "per_eligible_day_hit_rate": 0.040983606557377046,
+      "per_selection_hit_rate": 0.040983606557377046,
+      "selections_issued": 122,
+      "verified_five_double_hits": 5
+    },
+    "v7_diversified_on_v8_pair": {
+      "abstained_days": 0,
+      "baseline_eligible_days": 122,
+      "per_eligible_day_hit_rate": 0.040983606557377046,
+      "per_selection_hit_rate": 0.040983606557377046,
+      "selections_issued": 122,
+      "verified_five_double_hits": 5
+    },
+    "v8_original_top5": {
+      "abstained_days": 0,
+      "baseline_eligible_days": 122,
+      "per_eligible_day_hit_rate": 0.040983606557377046,
+      "per_selection_hit_rate": 0.040983606557377046,
+      "selections_issued": 122,
+      "verified_five_double_hits": 5
+    },
+    "year": 2026
+  },
+  "replay_command": "python v21_historical_benchmark.py --input /tmp/v14-historical-evidence/v14_verified_matches.json --output data/accuracy_diagnosis/historical_replay.json --max-eval 500",
+  "replay_implementation": "v21_historical_benchmark.py schema_version 2; common daily pre-first-kickoff pair cutoff",
+  "replay_report_sha256": "12a75b420cf643d34cd839a9c4595fd110cc9dcbb634f7c24d932f261f9b897e",
+  "replay_script_sha256": "fcc90f6c839a73fe841f288dc159335c39b5b05a5880b4074029167fb5adc195",
+  "retrospective_already_explored_not_independent_holdout": true
+}

@@ -19,6 +19,7 @@ from goal_research_v20 import goal_profile, goal_form_challenger
 from v21_provider_evidence import valid_snapshot
 from v22_shadow import shadow as v22_shadow
 from v23_market_form import shadow as v23_shadow
+from source_capture_clock import capture_clock
 
 
 def archive_rows(now=None, root=None):
@@ -235,9 +236,9 @@ def _as_research(archive, fresh):
 
 def analyze_pair(first, second, histories, *, configs=None, use_live=False,
                  request=None, now=None, qwen_url=None, archiver=frozen_for_fixture,
-                 selection_mode="probability", provider_packets=None):
+                 selection_mode="probability", provider_packets=None, clock=None):
     """Evidence-backed, session-only research for one pre-match pair."""
-    now = utc(now or datetime.now(timezone.utc))
+    now, observed = capture_clock(now, clock)
     issue = pair_check(first, second, now=now)
     if issue:
         return {"status": "invalid_pair", "reason": issue}
@@ -320,26 +321,34 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
             remaining = {p: cfg for p, cfg in configs.items() if p not in already}
             if not remaining:
                 continue
+            request_time = observed()
+            if pair_check(first, second, now=request_time):
+                return {"status":"analysis_completed_too_late",
+                        "reason":"Research exceeded the eligible pre-match window; "
+                                 "no new five-double prediction was produced."}
             try:
                 result = run_selected(
                     row["fixture"], dated_history[i], row.get("result") or {}, {},
-                    remaining, now=now, request=request, qwen_url=qwen_url,
+                    remaining, now=request_time, request=request, qwen_url=qwen_url,
                     team_context={**(row.get("research_context") or {}),
                                   "v21_provider_snapshot":provider_packets[i]})
                 fresh[i] = result
                 errors[i] = result.get("errors") or {}
             except Exception:
                 errors[i] = {"research": {"reason": "provider_request_failed"}}
+    completed = observed()
+    if pair_check(first, second, now=completed):
+        return {"status":"analysis_completed_too_late",
+                "reason":"Research exceeded the eligible pre-match window; "
+                         "no new five-double prediction was produced."}
     evidence = [_as_research(archives[i], fresh[i]) for i in (0, 1)]
-    original = merged_five(first, second, evidence[0], evidence[1], now=now,
+    original = merged_five(first, second, now=completed,
                            selection_mode="probability")
     # Until a source-matched AI panel beats statistical-only picks on
     # independent future games, V21 never promotes AI opinions to numerical
     # weighting. The validated votes remain visible for review.
-    applied_evidence = ([{},{}] if selection_mode in
-                        ("goal_form_research","v22_xg_market","v23_market_form") else evidence)
     combined = merged_five(effective_rows[0], effective_rows[1],
-                           applied_evidence[0], applied_evidence[1], now=now,
+                           evidence[0], evidence[1], now=completed,
                            selection_mode=("probability" if
                                            selection_mode in ("goal_form_research",
                                                               "v22_xg_market",
@@ -367,7 +376,8 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
         combined["baseline_diversity"] = original.get("selected_diversity")
         combined["research_coverage_not_comparable_without_validation"] = True
     return {
-        "status": "ready", "generated_at_utc": now.isoformat(),
+        "status": "ready", "generated_at_utc": completed.isoformat(),
+        "analysis_started_at_utc": now.isoformat(),
         "fixtures": [identity(first), identity(second)],
         "teams": [teams(first), teams(second)],
         "statistical_models": [(r.get("result") or {}).get("model_version")
@@ -380,7 +390,7 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
         "historical_profiles": profiles, "research_models": research_models,
         "v22_shadow_models":v22_models,"v23_shadow_models":v23_models,
         "v21_provider_packets": provider_packets,
-        "research_ai_votes_weighted": selection_mode not in ("goal_form_research","v22_xg_market","v23_market_form"),
+        "research_ai_votes_weighted": False,
         "provider_context": [r.get("research_context") or {} for r in pair_rows],
         "ai_research": evidence, "api_errors": errors,
         "model_and_ai_result": combined,
@@ -443,8 +453,8 @@ def _display(st,report,first,second):
                    "No historic forecast has been replaced.")
     st.caption("Both coverage values are statistical estimates under an "
                "independent-matches assumption, NOT observed accuracy. "
-               "External AI votes affect candidate order conservatively; "
-               "they are NOT added as probabilities.")
+               "External AI votes are shown as annotations and do not "
+               "change candidate order or score probabilities.")
     old=calc.get("baseline_diversity") or {}
     new=calc.get("selected_diversity") or {}
     st.caption("Different scores covered (match 1 / match 2): original "+
@@ -626,6 +636,8 @@ def render(st,rows,histories=None):
              "fresh calls to connected ChatGPT/OpenAI, Gemini and other providers.")
     st.caption("The original Five Doubles page and frozen prediction history "
                "remain unchanged.")
+    from five_double_accuracy_ui import render as render_diagnosis
+    render_diagnosis(st)
     with st.expander("📊 V21 verified research tournament", expanded=False):
         from persist_prematch import load_json as _read_report
         status=_read_report(Path("data/v21_prospective")/"performance.json",{})
@@ -1046,6 +1058,10 @@ def render(st,rows,histories=None):
                                                 _history(item,histories or {}),
                                                 football_key,now=clock,
                                                 max_history_per_team=xg_depth)
+                        # Source requests may finish well after the page
+                        # clock. Validate their honest completion timestamp
+                        # against the time now, then use it for the next leg.
+                        clock=utc(datetime.now(timezone.utc))
                         if not valid_snapshot(packet,item["fixture"],now=clock):
                             packet=None
                         elif db_url:

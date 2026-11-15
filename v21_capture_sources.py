@@ -16,6 +16,7 @@ from history_pipeline import load_evidence
 from v21_provider_evidence import capture,valid_snapshot
 from v21_prospective import rank_pairs,_models
 from persist_prematch import load_json,write_json
+from source_capture_clock import capture_clock
 
 ROOT=Path("data/v21_sources")
 
@@ -150,8 +151,8 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
 
 
 def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
-                 api_key=None,enabled=None,api_request=None):
-    clock=utc(now or datetime.now(timezone.utc))
+                 api_key=None,enabled=None,api_request=None,clock=None):
+    clock,observation_time=capture_clock(now,clock)
     active=(os.environ.get("V21_EVIDENCE_ENABLED")=="true" if enabled is None else bool(enabled))
     result={"at_utc":clock.isoformat(),"enabled":active,
             "new_packets":[],"calls":0,"skipped":[]}
@@ -209,10 +210,12 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             # Never claim matching historical input_digest after refreshing
             # league history. The packet is supplemental source evidence.
             provider=capture(fixture,evidence["history"],key,
-                             now=clock,request=cb,
+                             now=observation_time(),request=cb,clock=observation_time,
                              max_history_per_team=(8 if
                                  os.environ.get("V22_DEEP_XG_ENABLED")=="true"
                                  else 1))
+            clock=observation_time()
+            result["calls"]+=(provider.get("diagnostics") or {}).get("queries",0)
             if not valid_snapshot(provider,fixture,now=clock):
                 result["skipped"].append(str(leg["fixture_id"])+":no_qualified_packet")
                 continue
@@ -240,7 +243,6 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                 result["skipped"].append(str(leg["fixture_id"])+":race_preserved")
             # existing provider history requests can consume large quota;
             # V21 never retries failed historical calls within this run.
-            result["calls"]+=provider["diagnostics"]["queries"]
         except (ValueError,TypeError,KeyError,OSError):
             result["skipped"].append(str(leg.get("fixture_id"))+":unavailable")
     result["reason"]="partial_or_complete_source_packets" if result["new_packets"] else "no_new_source_evidence"

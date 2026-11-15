@@ -32,6 +32,7 @@ REPORT_EXACT = frozenset((
     "data/prospective_ledger/cadence.json",
     "data/v10_prospective/performance.json",
     "data/v10_prospective/settlement_status.json",
+    "data/accuracy_diagnosis/report.json",
     "data/llm_research/status.json",
     "data/llm_research/evaluation.json",
     "data/independent_football/status.json",
