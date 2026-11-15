@@ -756,12 +756,12 @@ def render(st,rows,histories=None):
           str((second.get("result") or {}).get("model_version")),
           selection_mode)
     if clicked:
-        if pair not in cache:
+        if pair not in cache or cache[pair].get("status")!="ready":
             permitted=bool(consent and private and selected and configs)
             with st.spinner("Comparing statistical scores and available AI research..."):
                 import os
                 from v21_provider_evidence import capture as _capture_provider
-                from v21_evidence_store import earliest as _load_packet, persist as _save_packet
+                from v21_evidence_store import latest as _load_packet, persist as _save_packet
                 try:
                     db_url=str(st.secrets.get("DATABASE_URL") or
                                os.environ.get("DATABASE_URL") or "")
@@ -775,6 +775,15 @@ def render(st,rows,histories=None):
                     existing_packet=(_load_packet(item["fixture"],db_url,before=clock)
                                      if private and db_url else None)
                     packet=existing_packet
+                    if (selection_mode=="v22_xg_market" and packet is not None and
+                            source_consent and private and football_key):
+                        from v22_evidence_models import xg_profile
+                        insufficient=(not xg_profile(item["fixture"],packet,as_of=clock).get("ready")
+                                      or len(packet.get("multi_market") or {})<2)
+                        if insufficient:
+                            # Only the explicit consent click can trigger a
+                            # deeper second packet. Both remain write-once.
+                            packet=None
                     if source_consent and private and football_key and packet is None:
                         packet=_capture_provider(item["fixture"],
                                                 _history(item,histories or {}),
