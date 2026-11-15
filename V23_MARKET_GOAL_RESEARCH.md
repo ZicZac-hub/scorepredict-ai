@@ -63,8 +63,12 @@ frozen original two-match selection.
 For **earlier market collection** (the most useful V23 option if odds vanish
 near kickoff), optionally set another GitHub Actions variable,
 `V23_EARLY_ODDS_ENABLED=true`. It captures at most two original frozen
-fixture legs with kickoffs 6–10 hours away, makes at most **one** odds API
-request per fixture, and stores a write-once price snapshot. This is
+fixture legs in **18–36 hours before kickoff** and, if necessary,
+**6–12 hours before kickoff**. Each eligible stage allows at most one odds
+request per fixture and the workflow caps source requests at two per run.
+A complete, still-fresh earlier packet avoids another request. A failed
+early lookup may be retried once later instead of permanently disabling the
+match. Each successful packet remains write-once. This is
 **disabled by default** and can consume API quota. It never claims the
 quote was updated at the moment it was retrieved: provider-fetched time
 and bookmaker update time are labelled separately.
