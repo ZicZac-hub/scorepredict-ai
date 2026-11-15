@@ -24,6 +24,7 @@ class Reply:
 ])
 def test_provider_access_failures_are_categorized_safely(tmp_path,monkeypatch,status,category):
     monkeypatch.setattr(api_football,"CACHE",tmp_path)
+    monkeypatch.setattr(api_football,"_QUOTA_BLOCK_UNTIL",{})
     monkeypatch.setattr(api_football.requests,"get",
                         lambda *args,**kwargs:Reply(status))
     with pytest.raises(category):
@@ -33,6 +34,7 @@ def test_provider_access_failures_are_categorized_safely(tmp_path,monkeypatch,st
 
 def test_provider_quota_in_success_http_body_is_not_hidden(tmp_path,monkeypatch):
     monkeypatch.setattr(api_football,"CACHE",tmp_path)
+    monkeypatch.setattr(api_football,"_QUOTA_BLOCK_UNTIL",{})
     monkeypatch.setattr(api_football.requests,"get",
         lambda *args,**kwargs:Reply(200,{"errors":{
             "requests":"You have reached the limit of calls for this day"}}))
