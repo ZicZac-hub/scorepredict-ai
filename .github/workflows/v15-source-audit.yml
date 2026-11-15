@@ -1,0 +1,38 @@
+name: V15 real six AI five-double evidence audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'v15_real_source_audit.py'
+      - 'research_double_v15.py'
+      - '.github/workflows/v15-source-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  genuine-ai-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read-only statistical tools
+        run: python -m pip install -r requirements.txt
+      - name: Check coverage audit and no-paid-call V15 tests
+        run: |
+          python -m py_compile v15_real_source_audit.py research_double_v15.py
+          python -m pytest -q tests/test_research_double_v15.py tests/test_llm_double_pair_budget.py
+      - name: Evaluate authentic saved individual AI votes and frozen match pairs
+        run: |
+          python -u v15_real_source_audit.py --output work/v15_real_source_audit.json
+      - name: Upload actual saved data coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v15-six-ai-true-five-double-source-audit
+          path: work/v15_real_source_audit.json
+          if-no-files-found: warn
