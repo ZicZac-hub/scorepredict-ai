@@ -16,6 +16,7 @@ from persist_prematch import RESULTS, load_json, verified_result, write_json
 from smart_double_v8 import rank_research_pairs
 from smart_double_ai import five_doubles
 from double_score_selection import select_balanced,select_diversified
+from robust_double_v14 import robust_pair
 from v10_prospective import ROOT, read_latest, utc
 
 REPORT = ROOT / "performance.json"
@@ -76,6 +77,15 @@ def _match(row):
                        "awayTeam":{"name":row.get("away_team"),"id":row.get("away_team_id")}},
             "kickoff":row["kickoff_utc"],
             "result":{"scores":[(int(h),int(a),float(p)) for h,a,p in row["top10_scores"]]}}
+
+
+def _v14_match(row):
+    match=_match(row)
+    match["result"].update({
+        "component_score_matrices":row.get("v14_component_grids") or {},
+        "component_versions":row.get("v14_component_versions") or {},
+    })
+    return match
 
 
 def _write_once(path, value):
@@ -229,6 +239,37 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
                             {"score1":p["Score 1"],"score2":p["Score 2"],
                              "joint_probability":float(p["Joint"])}
                             for p in options_five]
+            # The historical 65-day research found V7 fully diversified
+            # worth prospectively observing; these are REAL fixed V7
+            # component scores, not a post-match label on V13 probabilities.
+            seven_first=v13_rows[0].get("v7_fitted_top10_scores") or []
+            seven_second=v13_rows[1].get("v7_fitted_top10_scores") or []
+            if len(seven_first)>=5 and len(seven_second)>=5:
+                seven_options=[
+                    {"Score 1":f"{h}-{a}","Score 2":f"{j}-{k}",
+                     "Joint":float(p)*float(q)}
+                    for h,a,p in seven_first[:10]
+                    for j,k,q in seven_second[:10]]
+                seven=select_diversified(seven_options,5)
+                if len(seven)==5:
+                    challenger_picks["v7_diversified_same_pair"]=[
+                        {"score1":p["Score 1"],"score2":p["Score 2"],
+                         "joint_probability":float(p["Joint"])}
+                        for p in seven]
+            # V14 uses complete V7 and V8 score grids; it must abstain
+            # when the genuine frozen model data are unavailable.
+            try:
+                conservative=robust_pair(
+                    _v14_match(v13_rows[0]),_v14_match(v13_rows[1]),
+                    now=instant)
+                if conservative is not None:
+                    challenger_picks["v14_robust_same_pair"]=[
+                        {"score1":p["Score 1"],"score2":p["Score 2"],
+                         "joint_probability":float(p["Joint"]),
+                         "conservative_not_calibrated":True}
+                        for p in conservative["doubles"]]
+            except (ValueError,TypeError,KeyError,ArithmeticError):
+                ignored_challengers["v14_robust_same_pair"]="invalid_score_grid"
         else:
             ignored_challengers["v13"]="missing_same_evidence_pre_match_v13_pair"
         result={"policy":"v10-evidence-ranked-shadow-v2-fresh-research",
@@ -370,7 +411,8 @@ def evaluate(root=ROOT,results=None):
                     for p in packet["five_doubles"])
             additional={}
             for challenger,choices in (packet.get("same_pair_challengers") or {}).items():
-                if challenger not in ("v9","v10","v13","v13_balanced","v13_diversified") or len(choices)!=5:
+                if challenger not in ("v9","v10","v13","v13_balanced","v13_diversified",
+                                      "v7_diversified_same_pair","v14_robust_same_pair") or len(choices)!=5:
                     continue
                 additional[challenger]={
                     "hit":any(p["score1"]==score1 and p["score2"]==score2 for p in choices),
@@ -384,14 +426,17 @@ def evaluate(root=ROOT,results=None):
             continue
     completed=[p for p in pairs if p["status"]=="verified"]
     comparison={}
-    for challenger in ("v9","v10","v13","v13_balanced","v13_diversified"):
+    for challenger in ("v9","v10","v13","v13_balanced","v13_diversified",
+                       "v7_diversified_same_pair","v14_robust_same_pair"):
         cohort=[p for p in completed if challenger in p.get("same_pair_challengers",{})]
         comparison[challenger]={
             "same_pair_verified_days":len(cohort),
             "challenger_wins":sum(p["same_pair_challengers"][challenger]["hit"] for p in cohort),
             "v8_wins_on_those_days":sum(p["hit"] for p in cohort),
             "challenger_hit_rate":sum(p["same_pair_challengers"][challenger]["hit"] for p in cohort)/len(cohort) if cohort else None,
-            "note":"Frozen before kickoff on the identical v8-selected fixtures; no post-hoc alternate pairs."}
+            "note":("Frozen before kickoff on the same v8-selected matches. "
+                    "For V14 the coverage figure is a lower-envelope model "
+                    "criterion, NOT a calibrated probability or win rate.")}
     report={
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
