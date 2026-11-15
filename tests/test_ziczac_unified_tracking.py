@@ -223,3 +223,28 @@ def test_public_performance_board_never_queries_private_database(monkeypatch):
     monkeypatch.setattr(ui,"load_json",lambda *args:{})
     ui.render(site,database_url="should-not-be-used")
     assert site.session_state.get("ziczac_unified_audit_status") is None
+
+
+def test_five_double_methods_have_separate_write_once_ids_and_verified_results():
+    first = fixture(901, "Home X", "Away X")
+    second = fixture(902, "Home Y", "Away Y")
+    original = [{"score1": f"{i}-0", "score2": "0-0"} for i in range(5)]
+    challenger = [{"score1": f"{i}-0", "score2": "1-0"} for i in range(5)]
+    challenger[0] = {"score1": "1-1", "score2": "2-2"}
+    research = [{"score1": f"{i}-0", "score2": "1-1"} for i in range(5)]
+    saved_original = pair(first, second, original, now=NOW)
+    saved_balanced = pair(first, second, challenger, method="balanced_challenger", now=NOW)
+    saved_research = pair(first, second, research, method="goal_form_research", now=NOW)
+    assert len({x["record_id"] for x in
+                (saved_original, saved_balanced, saved_research)}) == 3
+    revised = pair(first, second, research, method="goal_form_research",
+                   now=NOW + timedelta(hours=1))
+    assert revised["record_id"] == saved_research["record_id"]
+    finals = {(first["provider"], str(first["id"])): verified(first, 1, 1),
+              (second["provider"], str(second["id"])): verified(second, 2, 2)}
+    measured = summary(private_records(
+        [saved_original, saved_balanced, saved_research]), finals, now=NOW)
+    assert measured["by_source"]["ai_five_double"]["miss"] == 1
+    assert measured["by_source"]["ai_five_double_balanced_challenger"]["hit"] == 1
+    assert measured["by_source"]["ai_five_double_goal_form_research"]["miss"] == 1
+    assert measured["five_doubles"]["verified"] == 3
