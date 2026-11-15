@@ -14,6 +14,7 @@ from on_demand_ai import (frozen_for_fixture, private_gate_ready, run_selected,
                           server_qwen_url, server_settings, utc)
 from llm_research_panel import PROVIDERS
 from smart_double_ai import _scores
+from goal_research_v20 import goal_profile, goal_form_challenger
 
 
 def archive_rows(now=None, root=None):
@@ -122,56 +123,95 @@ def _as_research(archive, fresh):
     return {"status":"completed","votes":votes,"sources":source}
 
 
-def analyze_pair(first,second,histories,*,configs=None,use_live=False,
-                 request=None,now=None,qwen_url=None,archiver=frozen_for_fixture,
+def analyze_pair(first, second, histories, *, configs=None, use_live=False,
+                 request=None, now=None, qwen_url=None, archiver=frozen_for_fixture,
                  selection_mode="probability"):
-    """Return one session-only report for an explicitly chosen pair."""
-    now=utc(now or datetime.now(timezone.utc))
-    issue=pair_check(first,second,now=now)
+    """Evidence-backed, session-only research for one pre-match pair."""
+    now = utc(now or datetime.now(timezone.utc))
+    issue = pair_check(first, second, now=now)
     if issue:
-        return {"status":"invalid_pair","reason":issue}
-    archives=[archiver(row["fixture"]) for row in (first,second)]
-    fresh=[None,None]
-    errors=[{},{}]
+        return {"status": "invalid_pair", "reason": issue}
+    pair_rows = (first, second)
+    dated_history = [_history(row, histories) for row in pair_rows]
+    profiles = [goal_profile(row["fixture"], dated_history[i], now)
+                for i, row in enumerate(pair_rows)]
+    # The goal-form shadow only runs when two authentic full model grids and
+    # sufficient dated team+venue results exist. No guessed high-score boost.
+    research_models = [goal_form_challenger(row, dated_history[i], now)
+                       for i, row in enumerate(pair_rows)]
+    effective_rows = pair_rows
+    if selection_mode == "goal_form_research":
+        missing = [str(i+1)+": "+str(m.get("reason") or "insufficient evidence")
+                   for i, m in enumerate(research_models) if not m.get("available")]
+        if missing:
+            return {"status": "insufficient_research_evidence",
+                    "reason": "Cannot responsibly produce research-adjusted scores for both matches. "
+                              + " | ".join(missing)
+                              + " Search & model the fixtures to obtain full dated history, "
+                                "or select the original baseline."}
+        effective_rows = []
+        for row, model in zip(pair_rows, research_models):
+            adjusted = dict(row.get("result") or {})
+            adjusted["scores"] = model["scores"]
+            adjusted["matrix"] = model["matrix"]
+            adjusted["home_xg"], adjusted["away_xg"] = model["research_expected_goals"]
+            adjusted["model_version"] = model["model"]
+            effective_rows.append({**row, "result": adjusted})
+    archives = [archiver(row["fixture"]) for row in pair_rows]
+    fresh = [None, None]
+    errors = [{}, {}]
     if use_live and configs:
-        for i,row in enumerate((first,second)):
-            already=(archives[i] or {}).get("votes") or {}
-            # Do not pay again for an already-frozen provider opinion.
-            remaining={p:cfg for p,cfg in configs.items() if p not in already}
+        for i, row in enumerate(pair_rows):
+            already = (archives[i] or {}).get("votes") or {}
+            remaining = {p: cfg for p, cfg in configs.items() if p not in already}
             if not remaining:
                 continue
             try:
-                result=run_selected(
-                    row["fixture"],_history(row,histories),
-                    row.get("result") or {},{},
-                    remaining,now=now,request=request,qwen_url=qwen_url)
-                fresh[i]=result
-                errors[i]=result.get("errors") or {}
+                result = run_selected(
+                    row["fixture"], dated_history[i], row.get("result") or {}, {},
+                    remaining, now=now, request=request, qwen_url=qwen_url,
+                    team_context=row.get("research_context") or {})
+                fresh[i] = result
+                errors[i] = result.get("errors") or {}
             except Exception:
-                errors[i]={"research":{"reason":"provider_request_failed"}}
-    evidence=[_as_research(archives[i],fresh[i]) for i in (0,1)]
-    combined=merged_five(first,second,evidence[0],evidence[1],now=now,
-                         selection_mode=selection_mode)
-    if combined["status"]!="ready":
+                errors[i] = {"research": {"reason": "provider_request_failed"}}
+    evidence = [_as_research(archives[i], fresh[i]) for i in (0, 1)]
+    original = merged_five(first, second, evidence[0], evidence[1], now=now,
+                           selection_mode="probability")
+    combined = merged_five(effective_rows[0], effective_rows[1],
+                           evidence[0], evidence[1], now=now,
+                           selection_mode=("probability" if
+                                           selection_mode == "goal_form_research"
+                                           else selection_mode))
+    if combined["status"] != "ready":
         return combined
+    if selection_mode == "goal_form_research":
+        # The two values use different distributions; never imply the
+        # challenger coverage is an observed or directly comparable win rate.
+        combined["selection_mode"] = "goal_form_research"
+        combined["research_model_coverage"] = combined["selected_model_coverage"]
+        combined["baseline_coverage"] = original.get("selected_model_coverage")
+        combined["baseline_diversity"] = original.get("selected_diversity")
+        combined["research_coverage_not_comparable_without_validation"] = True
     return {
-        "status":"ready","generated_at_utc":now.isoformat(),
-        "fixtures":[identity(first),identity(second)],
-        "teams":[teams(first),teams(second)],
-        "statistical_models":[(first.get("result") or {}).get("model_version"),
-                              (second.get("result") or {}).get("model_version")],
-        "data_source":["archived statistical forecast" if r.get("archive_frozen")
-                       else "current statistical forecast" for r in (first,second)],
-        "past_matches_available":[len(_history(r,histories)) for r in (first,second)],
-        "archived_history_counts":[r.get("history_matches_reported") for r in (first,second)],
-        "ai_research":evidence,
-        "api_errors":errors,
-        "model_and_ai_result":combined,
-        "new_ai_requested":bool(use_live and configs),
-        "session_only":True,
-        "original_forecasts_overwritten":False,
-        "independent_prospective_accuracy_record":False,
-        "provider_disclosure":"Only provider APIs and dated data connected to ZicZac; no unlimited web browsing"
+        "status": "ready", "generated_at_utc": now.isoformat(),
+        "fixtures": [identity(first), identity(second)],
+        "teams": [teams(first), teams(second)],
+        "statistical_models": [(r.get("result") or {}).get("model_version")
+                               for r in pair_rows],
+        "data_source": ["archived statistical forecast" if r.get("archive_frozen")
+                        else "current statistical forecast" for r in pair_rows],
+        "past_matches_available": [len(h) for h in dated_history],
+        "archived_history_counts": [r.get("history_matches_reported")
+                                    for r in pair_rows],
+        "historical_profiles": profiles, "research_models": research_models,
+        "provider_context": [r.get("research_context") or {} for r in pair_rows],
+        "ai_research": evidence, "api_errors": errors,
+        "model_and_ai_result": combined,
+        "new_ai_requested": bool(use_live and configs),
+        "session_only": True, "original_forecasts_overwritten": False,
+        "independent_prospective_accuracy_record": False,
+        "provider_disclosure": "Verified provider data and available named AI APIs only; no unlimited web browsing"
     }
 
 
@@ -189,16 +229,23 @@ def _csv_bytes(data):
 
 def _display(st,report,first,second):
     calc=report["model_and_ai_result"]
-    challenger=calc.get("selection_mode")=="balanced_challenger"
-    st.markdown("### ✅ Final five exact-score doubles"+
-                (" · balanced challenger" if challenger else " · original baseline"))
+    challenger = calc.get("selection_mode") == "balanced_challenger"
+    form_research = calc.get("selection_mode") == "goal_form_research"
+    method = ("research goal-form challenger" if form_research else
+              "balanced challenger" if challenger else "original baseline")
+    st.markdown("### ✅ Five exact-score scenarios · " + method)
     st.caption("Match 1: "+label(first))
     st.caption("Match 2: "+label(second))
     st.caption("Research compiled "+str(report["generated_at_utc"])+
                " UTC · Original forecasts unchanged · session-only comparison.")
     a,b=st.columns(2)
-    a.metric("Baseline model coverage",f"{calc['baseline_coverage']:.2%}")
-    b.metric("Final model-only coverage",f"{calc['selected_model_coverage']:.2%}")
+    a.metric("Original coverage estimate", f"{calc['baseline_coverage']:.2%}")
+    b.metric("Selected model coverage estimate", f"{calc['selected_model_coverage']:.2%}")
+    if form_research:
+        st.warning("Research form model is a separate, unvalidated probability "
+                   "distribution. Original and research coverage estimates are "
+                   "not directly comparable evidence of improved accuracy. "
+                   "No historic forecast has been replaced.")
     st.caption("Both coverage values are statistical estimates under an "
                "independent-matches assumption, NOT observed accuracy. "
                "External AI votes affect candidate order conservatively; "
@@ -215,6 +262,76 @@ def _display(st,report,first,second):
                    "probability-maximising estimated coverage. This is NOT a proven "
                    "accuracy gain. The original frozen records and automated "
                    "Five Doubles remain unchanged.")
+    with st.expander("📋 Actual team research: last 10, venue, H2H, goals, injuries", expanded=True):
+        for i, row in enumerate((first, second)):
+            st.markdown("**Match " + str(i+1) + ": " +
+                        row["fixture"]["homeTeam"]["name"] + " vs " +
+                        row["fixture"]["awayTeam"]["name"] + "**")
+            p = report["historical_profiles"][i]
+            if not p.get("available"):
+                st.warning("Dated match history is unavailable for this fixture.")
+                continue
+            st.caption("Provider-matched verified past results: " +
+                       str(p["verified_historical_fixtures"]) + " · "
+                       "H2H is descriptive, not a fitted player-strength adjustment.")
+            for title, key in (("Home last 10", "home_last10"),
+                               ("Home at home", "home_at_home_last10"),
+                               ("Away last 10", "away_last10"),
+                               ("Away away", "away_away_last10")):
+                sample = p[key]
+                if sample["matches"]:
+                    st.write("**" + title + "** · " + str(sample["matches"]) +
+                             " played · " + str(sample["scored"]) +
+                             " scored/game · " + str(sample["conceded"]) +
+                             " conceded/game · 2+ scored " +
+                             f"{sample['scored_2plus']:.0%}" +
+                             " · 3+ total " + f"{sample['match_over_2_5']:.0%}")
+                else:
+                    st.caption(title + ": no verified result available")
+            h2h = p.get("h2h_last6") or []
+            st.caption("Previous H2H 90-minute scores: " +
+                       (", ".join(str(x["home_goals"])+"–"+str(x["away_goals"])
+                                  for x in h2h) if h2h else "none in source"))
+            model = report["research_models"][i]
+            if model.get("available"):
+                original = model["original_expected_goals"]
+                adjusted = model["research_expected_goals"]
+                st.caption("Base goal means " + f"{original[0]:.2f} / {original[1]:.2f}" +
+                           " · Experimental form means " +
+                           f"{adjusted[0]:.2f} / {adjusted[1]:.2f}" +
+                           " · P(total 4+) " +
+                           f"{model['four_plus_goal_probability_research']:.1%}")
+            else:
+                st.caption("Goal-form model abstained: " + str(model.get("reason")))
+            ctx = report["provider_context"][i]
+            if ctx.get("standings"):
+                st.caption("Verified provider table: " +
+                           "; ".join(str(x.get("team")) + " rank " +
+                                     str(x.get("rank")) + ", points " +
+                                     str(x.get("points"))
+                                     for x in ctx["standings"][:2]))
+            for key, title in (("home_season","Home season"),
+                               ("away_season","Away season")):
+                season = ctx.get(key) or {}
+                if season:
+                    st.caption(title + " goals, home/away splits and team form are "
+                               "available from the provider; see detailed source packet.")
+                    with st.expander(title + " API team statistics", expanded=False):
+                        st.json({"form": season.get("form"),
+                                 "goals": season.get("goals"),
+                                 "clean_sheet": season.get("clean_sheet"),
+                                 "failed_to_score": season.get("failed_to_score")})
+            if ctx.get("injuries"):
+                st.caption("Provider-reported injuries: " +
+                           "; ".join(str(x.get("team")) + " — " + str(x.get("player"))
+                                     for x in ctx["injuries"][:8]))
+            if ctx.get("confirmed_lineups"):
+                st.caption("Provider lineup/formation records: " +
+                           "; ".join(str(x.get("team")) + " " +
+                                     str(x.get("formation"))
+                                     for x in ctx["confirmed_lineups"][:3]))
+            st.caption("No injury report or lineups supplied does NOT mean "
+                       "every player is fit. Player effects are context only.")
     with st.expander("🔎 All top-ten model scorelines for each match",expanded=False):
         for i,row in enumerate((first,second),1):
             st.markdown("**Match "+str(i)+" · existing statistical model**")
@@ -405,15 +522,20 @@ def render(st,rows,histories=None):
         return
     mode_label=st.selectbox(
         "Choose five-double scoring method",
-        ["Balanced challenger (experimental)", "Original top-probability baseline"],
+        ["Research goal-form challenger (experimental)", "Original top-probability baseline",
+         "Balanced challenger (experimental)"],
         index=0,key="ziczac_ai_five_selection_mode",
-        help="Balanced uses the same measured model score probabilities, "
-             "but tests wider coverage across two matches. It may lower the "
-             "estimated probability of hitting one of the five doubles.")
-    selection_mode=("balanced_challenger" if mode_label.startswith("Balanced")
-                    else "probability")
-    st.caption("This selection applies to this AI Studio only. Automatic "
-               "Five Doubles and previously saved forecasts are not changed.")
+        help="Research goal-form recomputes a shadow score grid from verified "
+             "last-ten home/away scoring and opposition concessions, only if "
+             "both fixtures have complete original score grids and enough "
+             "dated results. Original and balanced methods remain available.")
+    selection_mode = ("goal_form_research" if mode_label.startswith("Research") else
+                      "balanced_challenger" if mode_label.startswith("Balanced")
+                      else "probability")
+    st.caption("Research mode tests real goal strength and wider score scenarios; "
+               "it never forces a win or a 3-goal score. No result is shown "
+               "when essential evidence is missing. Existing Five Doubles "
+               "and frozen historical forecasts remain unchanged.")
     configs=server_settings(st)
     private=private_gate_ready(st)
     st.markdown("#### Connected research sources")
