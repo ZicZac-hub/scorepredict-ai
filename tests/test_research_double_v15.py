@@ -39,7 +39,9 @@ def setup(tmp_path):
     models={}
     for entry in (a,b):
         models[("API-Football",entry["fixture_id"],"v8")]={
-            **entry,"top10_scores":deepcopy(SCORES),"model_version":"ziczac-v8"}
+            **entry,"top10_scores":deepcopy(SCORES),"model_version":"ziczac-v8",
+            "input_digest":"frozen-digest-"+entry["fixture_id"],
+            "captured_at_utc":"2031-11-19T11:00:00Z"}
     return frozen,models,base
 
 
@@ -48,6 +50,7 @@ def saved_vote(folder,entry,*,providers=("gemini","openai"),after=False):
     stamp="2031-11-20T05:00:00Z" if after else "2031-11-19T23:00:00Z"
     row={**entry,"research_only":True,"captured_at_utc":stamp,
          "source_forecast_id":entry["forecast_id"],
+         "input_digest":"frozen-digest-"+entry["fixture_id"],
          "votes":{name:{"score":[1,1],"home":.4,"draw":.3,"away":.3}
                   for name in providers}}
     (d/(entry["fixture_id"]+".json")).write_text(json.dumps(row))
@@ -103,6 +106,9 @@ def test_v15_real_two_leg_votes_select_five_without_rewriting_baseline(tmp_path)
     assert performance["rows"][0]["actual_scores"]==["1-1","1-1"]
     assert performance["ai_assisted_hits"] in (0,1)
     assert performance["verified_hit_rate"] in (0.,1.)
+    assert len(performance["v15_win_rate_wilson_95"])==2
+    assert performance["automatic_production_promotion"] is False
+    assert performance["v15_only_wins"]+performance["v8_only_wins"]<=1
 
 
 def test_v15_future_or_mismatched_ids_never_count_as_ai_votes(tmp_path):
@@ -135,3 +141,79 @@ def test_v15_does_not_mark_unverified_pairs_as_losses(tmp_path):
     assert report["pending_pairs"]==1
     assert report["verified_pairs"]==0
     assert report["verified_hit_rate"] is None
+
+
+def test_v16_rejects_another_horizon_or_input_digest(tmp_path):
+    original,models,_=setup(tmp_path)
+    folder=tmp_path/"llm"
+    for entry in (original["first"],original["second"]):
+        saved_vote(folder,entry)
+    changed=folder/"forecasts"/"101.json"
+    row=json.loads(changed.read_text())
+    row["source_forecast_id"]="other-forecast-for-same-fixture"
+    changed.write_text(json.dumps(row))
+    answer,reason=assemble_pair(original,models,ai_root=folder,now=NOW)
+    assert answer is None
+    assert reason=="missing_original_earlier_ai_vote_for_both_matches"
+    row["source_forecast_id"]=original["first"]["forecast_id"]
+    row["input_digest"]="digest-from-a-later-refreshed-model"
+    changed.write_text(json.dumps(row))
+    answer,reason=assemble_pair(original,models,ai_root=folder,now=NOW)
+    assert answer is None
+    assert reason=="missing_original_earlier_ai_vote_for_both_matches"
+
+
+def test_v16_selects_earliest_complete_pre_match_panel(tmp_path):
+    original,models,_=setup(tmp_path)
+    folder=tmp_path/"llm"
+    for entry in (original["first"],original["second"]):
+        saved_vote(folder,entry)
+    first=folder/"forecasts"/"101.json"
+    complete=json.loads(first.read_text())
+    early=dict(complete)
+    early["captured_at_utc"]="2031-11-19T20:00:00Z"
+    early["votes"]={"gemini":complete["votes"]["gemini"]}
+    (first.parent/"101-partial-earlier.json").write_text(json.dumps(early))
+    answer,reason=assemble_pair(original,models,ai_root=folder,now=NOW)
+    assert reason=="ready" and answer is not None
+    assert answer["ai_source_capture_utc"]["first"]=="2031-11-19T23:00:00Z"
+    assert answer["source_forecast_ids"]["first"]==original["first"]["forecast_id"]
+    assert answer["shared_ai_providers_across_both_legs"]==["gemini","openai"]
+
+
+def test_v16_rejects_impossible_or_non_normalized_votes(tmp_path):
+    original,models,_=setup(tmp_path)
+    folder=tmp_path/"llm"
+    for entry in (original["first"],original["second"]):
+        saved_vote(folder,entry)
+    path=folder/"forecasts"/"101.json"
+    row=json.loads(path.read_text())
+    row["votes"]["openai"]["home"]=.99
+    row["votes"]["openai"]["draw"]=.99
+    path.write_text(json.dumps(row))
+    answer,reason=assemble_pair(original,models,ai_root=folder,now=NOW)
+    assert answer is None and reason=="too_few_successful_ai_providers_per_match"
+
+
+def test_v16_original_model_archive_survives_newer_latest_model(tmp_path):
+    frozen,models,base=setup(tmp_path)
+    ai=tmp_path/"llm"
+    for leg_row in (frozen["first"],frozen["second"]):
+        saved_vote(ai,leg_row)
+        source=models[("API-Football",leg_row["fixture_id"],"v8")]
+        path=(base/"forecasts"/"API-Football"/leg_row["fixture_id"]/
+              (leg_row["forecast_id"]+".json"))
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_text(json.dumps(source))
+    # Imagine read_latest returns an unrelated newer horizon/digest.
+    newer={}
+    for key,value in models.items():
+        changed=dict(value)
+        changed["forecast_id"]="refreshed-after-original"
+        changed["input_digest"]="different-evidence-digest"
+        newer[key]=changed
+    result,reason=assemble_pair(
+        frozen,newer,source_root=base,ai_root=ai,now=NOW)
+    assert reason=="ready" and result is not None
+    assert result["source_forecast_ids"]["first"]==frozen["first"]["forecast_id"]
+    assert result["source_forecast_ids"]["second"]==frozen["second"]["forecast_id"]

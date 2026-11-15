@@ -135,6 +135,9 @@ jobs:
         # predictions. Private website selections remain in PostgreSQL.
         if: always()
         run: python ziczac_unified_audit.py
+      - name: Audit genuine AI votes for both frozen matches (no API calls)
+        if: always()
+        run: python v15_real_source_audit.py --output data/v15_ai_double/source_audit.json
       - name: Mark the completed six-hour refresh
         if: success() && steps.cadence.outputs.heavy == 'true'
         run: |

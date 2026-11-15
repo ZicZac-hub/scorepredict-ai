@@ -124,3 +124,15 @@ in Streamlit Secrets. The Archive page shows central synchronization status and
 fresh same-evidence model comparisons; old originals and retrospective revision
 results stay separate. Scheduled collection journals all four models to GitHub
 and optionally the same database, with explicit budget/coverage reports.
+
+
+## V16 verified two-match AI evidence (research only)
+
+The no-cost V16 [paired AI evidence audit](V16_PAIRED_AI_EVIDENCE.md)
+matches each AI response to the exact immutable statistical forecast
+and input digest for **both** fixtures. The scheduled research job
+publishes source-validation diagnostics in Deep Research and the ledger.
+Future verified, original-versus-AI exact-score double comparisons
+include Wilson 95% uncertainty intervals. No old forecasts or original
+five-double picks are rewritten, no new paid requests are enabled,
+and the V8 production selector remains unchanged.

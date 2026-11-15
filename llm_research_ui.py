@@ -162,6 +162,19 @@ def render(st, root=ROOT):
         st.caption("Two-match GitHub AI research mode: enabled by its "
                    "additional request budget. Same-day pair selected: "+
                    ("yes" if status.get("same_day_pair_selected") else "not this run"))
+        if status.get("selected_original_frozen_pair_day"):
+            st.success("Exact original frozen five-double pair selected for research: "+
+                       str(status["selected_original_frozen_pair_day"])+
+                       ". Both model sources are matched to their historical forecast IDs.")
+        elif status.get("same_day_pair_selected"):
+            st.caption("A same-day pair was researched, but there was no eligible exact "
+                       "match to the original frozen five-double pair. This cannot "
+                       "be counted as a successful V15 frozen-pair comparison.")
+        st.caption("AI API requests planned in the latest eligible batch: "+
+                   str(status.get("planned_model_requests") or 0)+
+                   " · Successfully returned votes in that batch: "+
+                   str(status.get("actual_successful_ai_votes") or 0)+
+                   ". A configured provider is not a successful response.")
     else:
         st.info("Scheduled AI research is currently limited to one fixture "
                 "per heavy run. For two-match research, set GitHub Actions "
@@ -171,6 +184,21 @@ def render(st, root=ROOT):
     v15root=Path("data/v15_ai_double")
     v15status=_json(v15root/"status.json")
     v15report=_json(v15root/"evaluation.json")
+    source_audit=_json(v15root/"source_audit.json")
+    if source_audit:
+        st.caption(
+            "V16 source audit · "+str(source_audit.get("frozen_original_double_sets_checked",0))+
+            " original double sets checked · "+
+            str(source_audit.get("original_sets_with_at_least_two_ai_votes_on_both_legs",0))+
+            " with >=2 genuine source-matched AI votes on BOTH matches."
+        )
+        if source_audit.get("source_rows"):
+            with st.expander("V16: source-matched AI coverage by double"):
+                for item in source_audit["source_rows"][-8:]:
+                    st.write(str(item.get("sydney_day"))+" · Match 1 / Match 2: "+
+                             " / ".join(str(n) for n in item.get("actual_provider_votes_per_leg",[]))+
+                             " valid AI responses")
+                    st.caption(" / ".join(item.get("leg_reasons",[])))
     attempted=v15status.get("existing_original_days")
     if attempted is not None:
         st.caption("Original daily pairs inspected: "+str(attempted)+
@@ -186,6 +214,26 @@ def render(st, root=ROOT):
                   "AI-assisted exact double wins":v15report["ai_assisted_hits"],
                   "Original V8 wins on those identical pairs":
                       v15report["original_v8_hits_same_pairs"]})
+        st.caption("95% uncertainty interval for V15 verified set win rate: "+
+                   ("–".join(f"{value:.1%}" for value in
+                             v15report["v15_win_rate_wilson_95"])
+                    if v15report.get("v15_win_rate_wilson_95")
+                    else "Awaiting newer V16 comparison records"))
+        st.caption("Paired comparison on the same two fixtures: "+
+                   str(v15report.get("v15_only_wins") or 0)+
+                   " AI-only wins vs "+
+                   str(v15report.get("v8_only_wins") or 0)+
+                   " V8-only wins. No automatic production promotion.")
+        bounds=v15report.get("v15_win_rate_wilson_95")
+        if isinstance(bounds,list) and len(bounds)==2:
+            st.caption("AI-assisted observed win-rate uncertainty (95% Wilson): "+
+                       _pct(bounds[0])+"–"+_pct(bounds[1])+
+                       ". Only genuinely settled same-pair predictions count; "
+                       "this is not a guarantee of future accuracy.")
+        st.caption("Paired disagreement · V15-only wins: "+
+                   str(v15report.get("v15_only_wins",0))+
+                   " · V8-only wins: "+str(v15report.get("v8_only_wins",0))+
+                   ". Original V8 remains production.")
     else:
         st.caption("No verified two-match multi-AI win rate yet. "
                    "No matched paired results means no accuracy claim.")
