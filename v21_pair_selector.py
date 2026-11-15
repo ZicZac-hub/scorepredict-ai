@@ -5,10 +5,15 @@ instead of borrowing history or selecting the earliest two fixtures.
 """
 from itertools import combinations
 from ai_five_double_engine import eligible,pair_check,identity
-from ai_five_double_ui import _history
 from goal_research_v20 import goal_form_challenger
 from smart_double_ai import five_doubles
 
+
+def _history(row, histories):
+    identity_key = identity(row)
+    past = row.get("past") or (histories or {}).get(row.get("league"),[]) or []
+    return [match for match in past if
+            str(match.get("provider") or "football-data.org") == identity_key[0]]
 
 def candidates(rows, histories=None, *, now=None, min_coverage=.055, max_results=5):
     valid=[]
