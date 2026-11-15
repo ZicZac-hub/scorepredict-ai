@@ -50,7 +50,32 @@ def _source(leg,models):
     return None
 
 
-def _vote_records(leg,root,now,allowed_sources=None):
+def valid_saved_votes(raw_votes):
+    """Count real, well-formed provider responses, not configured API keys.
+
+    Share this exact validation with the source audit so the panel and
+    audit cannot disagree about malformed / synthetic provider votes.
+    """
+    votes={}
+    if not isinstance(raw_votes,dict):
+        return votes
+    for name,v in raw_votes.items():
+        if name not in PROVIDERS or not isinstance(v,dict):
+            continue
+        score=v.get("score")
+        if (not isinstance(score,(tuple,list)) or len(score)!=2 or
+            any(type(x) is not int or x<0 or x>9 for x in score)):
+            continue
+        probs=[v.get("home"),v.get("draw"),v.get("away")]
+        if (any(type(p) not in (int,float) or
+                not math.isfinite(float(p)) or not 0<=p<=1 for p in probs) or
+            abs(sum(probs)-1)>0.02):
+            continue
+        votes[name]=v
+    return votes
+
+
+def _vote_records(leg,root,now,allowed_sources=None,min_votes=1):
     """Only FIRST real pre-kickoff AI record matching verified fixture IDs.
 
     Do not use later overwritten versions; return validated, named votes only.
@@ -72,36 +97,30 @@ def _vote_records(leg,root,now,allowed_sources=None):
             if (kickoff!=utc(leg["kickoff_utc"]) or
                 start>=kickoff or start>now):
                 continue
-            sources=list(allowed_sources or [])
-            if sources and not any(
-                row.get("source_forecast_id")==source.get("forecast_id") and
-                (not source.get("captured_at_utc") or
-                 utc(source["captured_at_utc"])<=start)
-                for source in sources):
-                continue
-            votes={}
-            for name,v in (row.get("votes") or {}).items():
-                if name not in PROVIDERS or not isinstance(v,dict):
+            # Exactly the original pair's statistical forecast and digest.
+            # Another V8 horizon or later refresh for the SAME fixture must
+            # not be silently relabelled as the frozen pair's AI evidence.
+            if allowed_sources is not None:
+                if not any(
+                    source.get("forecast_id")==leg.get("forecast_id") and
+                    row.get("source_forecast_id")==source.get("forecast_id") and
+                    bool(source.get("input_digest")) and
+                    row.get("input_digest")==source.get("input_digest") and
+                    bool(source.get("captured_at_utc")) and
+                    utc(source["captured_at_utc"])<=start
+                    for source in allowed_sources):
                     continue
-                score=v.get("score")
-                if (not isinstance(score,(tuple,list)) or len(score)!=2 or
-                    any(type(x) is not int or x<0 or x>9 for x in score)):
-                    continue
-                probs=[v.get("home"),v.get("draw"),v.get("away")]
-                if (any(type(p) not in (int,float) or
-                        not math.isfinite(float(p)) or
-                        not 0<=p<=1 for p in probs) or
-                    abs(sum(probs)-1)>0.02):
-                    continue
-                # Only one legitimate validated score vote per provider.
-                votes[name]=v
+            votes=valid_saved_votes(row.get("votes"))
             if votes:
                 found.append((start,path.name,row,votes))
         except (OSError,ValueError,TypeError,KeyError):
             continue
     if not found:
         return None
-    _,_,selected,votes=min(found,key=lambda value:(value[0],value[1]))
+    # Chronological rule fixed before results: use the FIRST eligible
+    # complete panel, not the most flattering after-the-fact answer.
+    eligible=[item for item in found if len(item[3])>=min_votes]
+    _,_,selected,votes=min(eligible or found,key=lambda v:(v[0],v[1]))
     return {**selected,"votes":votes}
 
 
@@ -121,13 +140,10 @@ def assemble_pair(packet,models,*,ai_root=AI_ROOT,now=None,
         if any(not source for source in sources):
             return None,"original_statistical_forecast_missing"
         votes=[]
-        for leg in (first,second):
-            key=(str(leg["provider"]),str(leg["fixture_id"]))
-            candidates=[models[(*key,version)]
-                        for version in ("v8","v8_near")
-                        if (*key,version) in models]
+        for leg,source in zip((first,second),sources):
             votes.append(_vote_records(
-                leg,ai_root,when,allowed_sources=candidates))
+                leg,ai_root,when,allowed_sources=[source],
+                min_votes=min_votes))
         if not all(votes):
             return None,"missing_original_earlier_ai_vote_for_both_matches"
         counts=[len(v.get("votes") or {}) for v in votes]
@@ -168,6 +184,14 @@ def assemble_pair(packet,models,*,ai_root=AI_ROOT,now=None,
             "ai_source_capture_utc":{
                 "first":votes[0]["captured_at_utc"],
                 "second":votes[1]["captured_at_utc"]},
+            "source_forecast_ids":{
+                "first":sources[0]["forecast_id"],
+                "second":sources[1]["forecast_id"]},
+            "source_input_digests":{
+                "first":sources[0]["input_digest"],
+                "second":sources[1]["input_digest"]},
+            "shared_ai_providers_across_both_legs":sorted(
+                set(votes[0]["votes"]) & set(votes[1]["votes"])),
             "minimum_verified_providers_per_leg":min_votes,
             "ai_reweight_max_per_leg":0.12,
             "ai_votes_are_not_calibrated_probabilities":True,
@@ -221,6 +245,18 @@ def freeze(*,now=None,root=ROOT,source_root=BASE_ROOT,ai_root=AI_ROOT,
     return status
 
 
+def wilson_95(hits,n):
+    """95% Wilson score interval; does not assume a claimed win rate."""
+    if not n:
+        return None
+    z=1.959963984540054
+    p=hits/n
+    denom=1+z*z/n
+    center=(p+z*z/(2*n))/denom
+    width=z*math.sqrt(p*(1-p)/n+z*z/(4*n*n))/denom
+    return [max(0.0,center-width),min(1.0,center+width)]
+
+
 def evaluate(*,root=ROOT,base_root=BASE_ROOT,results=None):
     if results is None:
         verified=merge_verified(load_json(RESULTS,{}),
@@ -259,6 +295,15 @@ def evaluate(*,root=ROOT,base_root=BASE_ROOT,results=None):
             "original_v8_hits_same_pairs":sum(x["original_v8_hit_same_pair"]
                                               for x in completed),
             "verified_hit_rate":sum(x["hit"] for x in completed)/n if n else None,
+            "v15_win_rate_wilson_95":wilson_95(sum(x["hit"] for x in completed),n),
+            "v8_same_pair_win_rate_wilson_95":wilson_95(
+                sum(x["original_v8_hit_same_pair"] for x in completed),n),
+            "v15_only_wins":sum(x["hit"] and not x["original_v8_hit_same_pair"]
+                                 for x in completed),
+            "v8_only_wins":sum(x["original_v8_hit_same_pair"] and not x["hit"]
+                                 for x in completed),
+            "paired_comparison_is_pre_match_and_same_fixtures":True,
+            "automatic_production_promotion":False,
             "data_limitation":"No performance claim before genuine two-match multi-AI forecasts are frozen and independently verified.",
             "rows":rows}
     Path(root).mkdir(parents=True,exist_ok=True)
