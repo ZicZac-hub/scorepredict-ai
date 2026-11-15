@@ -3,6 +3,7 @@
 Free-tier league/season availability varies. No fabricated matches or results.
 """
 from datetime import date as calendar_date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 import hashlib
 import json
 import time
@@ -27,6 +28,11 @@ ROOT = "https://v3.football.api-sports.io"
 CACHE = Path("/tmp/scorepredict_api_sports")
 CACHE.mkdir(parents=True, exist_ok=True)
 TTL = 21600  # six hours: preserve the free daily quota
+# In-process provider 429 circuit breaker. A rejected request must not
+# trigger another identical paid/quota-consuming request on every UI rerun.
+# The key is hashed; neither the key nor its value is displayed or persisted.
+_QUOTA_BLOCK_UNTIL = {}
+_QUOTA_PAUSE_SECONDS = 900
 LEAGUES = {"PL":39, "PD":140, "BL1":78, "SA":135, "FL1":61,
            "CL":2, "EL":3, "DED":88, "PPL":94, "BSA":71, "ELC":40}
 NAMES = {"PL":"Premier League","PD":"La Liga","BL1":"Bundesliga",
@@ -40,6 +46,13 @@ def cache_ttl(endpoint, params):
     if endpoint == '/fixtures' and params.get('live'): return 30
     if endpoint == '/fixtures' and params.get('id') is not None: return 60
     if endpoint == '/fixtures':
+        # Date-scoped worldwide searches were previously refetched every
+        # five minutes. Use 15-minute cache for Sydney today and one hour
+        # for future dates; kickoff/status filters are always recomputed.
+        if params.get('date') is not None:
+            day = str(params.get('date'))
+            today = datetime.now(ZoneInfo('Australia/Sydney')).date().isoformat()
+            return 900 if day <= today else 3600
         if params.get('season') is not None:
             try:
                 return 86400 if int(params['season']) < datetime.now(timezone.utc).year-1 else 900
@@ -77,7 +90,10 @@ def _request(key, endpoint, params, with_metadata=False):
             return _expose(saved['data'], saved['time'], ttl, 'fresh_cache', with_metadata)
     except (OSError, ValueError, KeyError, TypeError):
         saved=None
+    key_fingerprint=hashlib.sha256(key.encode()).hexdigest()
     try:
+        if _QUOTA_BLOCK_UNTIL.get(key_fingerprint, 0)>time.time():
+            raise ProviderQuotaError("API-Football quota/rate limit; wait before retrying")
         response=requests.get(ROOT+endpoint,params=params,
                               headers={"x-apisports-key":key},timeout=25)
         if response.status_code==429:
@@ -107,6 +123,8 @@ def _request(key, endpoint, params, with_metadata=False):
             except OSError: pass
         return _expose(data, fetched_at, ttl, 'network', with_metadata)
     except (requests.RequestException,RuntimeError) as exc:
+        if isinstance(exc, ProviderQuotaError) and _QUOTA_BLOCK_UNTIL.get(key_fingerprint,0)<=time.time():
+            _QUOTA_BLOCK_UNTIL[key_fingerprint]=time.time()+_QUOTA_PAUSE_SECONDS
         # Stale data remain useful only with their original fetch time. Fast
         # endpoints never receive a day-old fixture status or lineup fallback.
         stale_limit = min(86400, max(300, ttl*4))
