@@ -1748,8 +1748,11 @@ with active_page_slot:
             from automatic_doubles_ui import render as render_auto_frozen
             render_auto_frozen(st)
             st.divider()
+            from hybrid_v13_ui import render as render_hybrid_v13
             from v8_doubles_ui import render as render_v8_doubles
             from market_double_v9_ui import render as render_v9_market_doubles
+            render_hybrid_v13(st, eligible, histories, fixture_label)
+            st.divider()
             render_v8_doubles(st, eligible, histories, fixture_label)
             render_v9_market_doubles(st, eligible, histories, fixture_label, secondary_key)
             st.divider()
