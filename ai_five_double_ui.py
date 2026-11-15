@@ -800,14 +800,18 @@ def render(st,rows,histories=None):
         except (OSError,KeyError,RuntimeError,AttributeError):
             _database=os.environ.get("DATABASE_URL","")
         if not _database:
-            st.warning("V22/V23 Auto Select cannot inspect previous research because "
-                       "private DATABASE_URL is not configured. It will not "
-                       "pretend to have live xG or bookmaker odds.")
-            return
+            st.caption("No private research database is configured. "
+                       "Checking the original source-matched, immutable "
+                       "GitHub market packets instead; no extra API calls.")
+        def _available_packet(fixture):
+            saved=repository_provider_packet(fixture,now=clock,
+                         priority=("market" if auto_v23 else "research"))
+            private_record=(_source_snapshot(fixture,_database,before=clock)
+                            if _database else None)
+            return (saved or private_record) if auto_v23 else (private_record or saved)
         research_selector=(v23_shadow if auto_v23 else None)
-        ranking=_rank_v22_pairs(found,
-            lambda f:_source_snapshot(f,_database,before=clock),now=clock,
-            shadow_fn=research_selector)
+        ranking=_rank_v22_pairs(found,_available_packet,now=clock,
+                                 shadow_fn=research_selector)
         if ranking["abstained"]:
             st.warning(("V23" if auto_v23 else "V22")+
                        " Auto Select abstained: no same-day pair has "
@@ -873,7 +877,9 @@ def render(st,rows,histories=None):
          "Balanced challenger (experimental)",
          "V22 Verified xG + Markets (research-only)",
          "V23 Market + Goal Form (no real xG required)"],
-        index=0 if research_ready else 1,key="ziczac_ai_five_selection_mode",
+        # V20 form was slightly worse than original on matched historical
+        # score log loss. Never default to an unproven challenger.
+        index=1,key="ziczac_ai_five_selection_mode",
         help="Research goal-form recomputes a shadow score grid from verified "
              "last-ten home/away scoring and opposition concessions, only if "
              "both fixtures have complete original score grids and enough "
@@ -949,9 +955,15 @@ def render(st,rows,histories=None):
     pair=(identity(first),identity(second),
           str((first.get("result") or {}).get("model_version")),
           str((second.get("result") or {}).get("model_version")),
-          selection_mode)
+          selection_mode,
+          # New pre-match source evidence can arrive between user clicks.
+          # Revisit V22/V23 once per 15m, never substitute stale cached
+          # outcomes for newer checked market snapshots.
+          int(clock.timestamp()//900) if selection_mode in
+          ("v22_xg_market","v23_market_form") else 0)
     if clicked:
-        if pair not in cache or cache[pair].get("status")!="ready":
+        if (pair not in cache or cache[pair].get("status")!="ready"
+                or bool(source_consent) or bool(consent)):
             permitted=bool(consent and private and selected and configs)
             with st.spinner("Comparing statistical scores and available AI research..."):
                 import os
@@ -969,7 +981,17 @@ def render(st,rows,histories=None):
                 for item in (first,second):
                     existing_packet=(_load_packet(item["fixture"],db_url,before=clock)
                                      if private and db_url else None)
-                    packet=existing_packet
+                    repo_packet=(repository_provider_packet(
+                         item["fixture"],now=clock,
+                         priority=("market" if selection_mode=="v23_market_form"
+                                   else "research"))
+                         if private and selection_mode in
+                         ("v22_xg_market","v23_market_form") else None)
+                    # GitHub-captured odds may be the only source available
+                    # even when no private PostgreSQL database was configured.
+                    packet=((repo_packet or existing_packet)
+                            if selection_mode=="v23_market_form"
+                            else (existing_packet or repo_packet))
                     if (selection_mode=="v22_xg_market" and packet is not None and
                             source_consent and private and football_key):
                         from v22_evidence_models import xg_profile
