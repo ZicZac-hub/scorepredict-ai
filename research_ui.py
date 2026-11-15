@@ -231,6 +231,16 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
             except (TypeError, KeyError, ValueError, ZeroDivisionError) as exc:
                 result = {"available": False, "reason": "Research could not be completed: " + str(exc)[:160]}
         st.session_state["ziczac_deep_report"] = {"fixture": identifier, "method": method, "result": result}
+        # Archive the actual user-requested pre-match score, not a later
+        # retrospective revision or a forecast silently generated after kickoff.
+        if isinstance(result,dict) and result.get("available") and result.get("predicted_score"):
+            from ziczac_interactive_capture import single as _audit_single, store_ui as _audit_ui
+            try:
+                _audit_ui(st,_audit_single(
+                    fixture,result["predicted_score"],"deep_research",method=method))
+            except (ValueError,TypeError,KeyError):
+                st.caption("Deep Research score could not be saved as a valid "
+                           "pre-kickoff prediction. It is not graded as a hit.")
         if use_external:
             ai_runs = st.session_state.setdefault("ziczac_external_ai_runs", {})
             cached = ai_runs.get(identifier)
@@ -255,6 +265,26 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
                         ai_runs[identifier] = {"status": "request_failed",
                                                "errors": {},
                                                "votes": {}}
+                # Each genuinely returned AI score is its own write-once audit
+                # entry. Provider errors are not invented votes or graded losses.
+                from ziczac_interactive_capture import single as _ai_single, store as _ai_store
+                import os
+                _ai_saved=0
+                _ai_data=ai_runs.get(identifier) or {}
+                if _ai_data.get("status")=="completed":
+                    try:
+                        _ai_db=st.secrets.get("DATABASE_URL","") or os.environ.get("DATABASE_URL","")
+                    except (OSError,KeyError,RuntimeError,AttributeError):
+                        _ai_db=os.environ.get("DATABASE_URL","")
+                    for _ai_name,_ai_vote in (_ai_data.get("votes") or {}).items():
+                        try:
+                            _vote_record=_ai_single(fixture,_ai_vote["score"],"ten_ai",ai_provider=_ai_name)
+                            _ai_saved+=int(_ai_store(_vote_record,_ai_db).get("durable",False))
+                        except (ValueError,KeyError,TypeError):
+                            continue
+                    st.caption(str(_ai_saved)+" individual AI forecast(s) "
+                               "confirmed in the permanent audit ledger; "
+                               "only valid pre-kickoff votes are eligible.")
     current = st.session_state.get("ziczac_deep_report") or {}
     if current.get("fixture") != identifier or current.get("method") != method:
         st.info("Choose this match and press **Run Deep Research AI** to open its report.")
