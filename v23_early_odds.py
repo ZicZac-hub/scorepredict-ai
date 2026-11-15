@@ -55,6 +55,32 @@ def eligible_legs(root, now):
                 selected.setdefault(key,(kickoff,model))
         except (TypeError,ValueError,KeyError):
             continue
+    # V24: collect for EVERY eligible individually frozen V8 fixture, not
+    # only the two already selected for a five-double ticket. This repairs
+    # the selection dependency which previously produced zero API requests.
+    # Every candidate is re-read by exact immutable forecast ID and digest.
+    from v10_prospective import read_latest
+    originals=read_latest(root)
+    for row in originals.values() if isinstance(originals,dict) else originals:
+        try:
+            if row.get("model_key") not in ("v8","v8_near"):
+                continue
+            if str(row.get("provider"))!="API-Football":
+                continue
+            kickoff=utc(row["kickoff_utc"])
+            if _window((kickoff-clock).total_seconds()/3600) is None:
+                continue
+            verified=original_model(root,row)
+            if (not verified or
+                verified.get("input_digest")!=row.get("input_digest")):
+                continue
+            key=(str(verified["provider"]),str(verified["fixture_id"]))
+            prior=selected.get(key)
+            if prior is None or (verified["model_key"]=="v8_near" and
+                                 prior[1]["model_key"]!="v8_near"):
+                selected[key]=(kickoff,verified)
+        except (TypeError,KeyError,ValueError,OverflowError):
+            continue
     # Do not repeatedly reselect only the earliest two after their attempts
     # have been spent; the capture loop itself caps ACTUAL provider calls.
     return [x[1] for x in sorted(selected.values(),key=lambda t:(t[0],str(t[1]["fixture_id"])))]
