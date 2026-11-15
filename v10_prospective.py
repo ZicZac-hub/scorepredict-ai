@@ -336,7 +336,7 @@ def read_latest(root=ROOT):
     """Return earliest independently saved forecast for each model/fixture."""
     found={}
     for row in read_file_records(root=root,kind="forecasts"):
-        if row.get("model_key") not in ("v8","v8_near","v8_control","v9","v10"):
+        if row.get("model_key") not in ("v8","v8_near","v8_control","v9","v10","v12"):
             continue
         try:
             key=(row["provider"],str(row["fixture_id"]),row["model_key"])
