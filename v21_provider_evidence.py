@@ -122,7 +122,7 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     if not clock < kickoff - timedelta(minutes=5):
         return {"status": "unavailable", "reason": "not_before_kickoff"}
     request = request or _request
-    limits = max(0, min(2, int(max_history_per_team)))
+    limits = max(0, min(12, int(max_history_per_team)))
     diag = {"queries": 0, "unavailable": {}}
     # All HTTP calls occur only after pre-match identity/consent gates.
     lineup_raw = _fetch(request, api_key, "/fixtures/lineups", {"fixture": fid}, diag)
@@ -190,16 +190,22 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
                                 "home_xg": stats[h], "away_xg": stats[a],
                                 "type": "api_football_reported_expected_goals"})
     market = _market(odds_raw, clock)
+    # V22: extract complete, source-timestamped totals and BTTS prices
+    # from the SAME already-approved /odds call. No extra paid endpoint.
+    from v22_evidence_models import parse_markets
+    multi_market = parse_markets(odds_raw,observed_at=clock)
     payload = {"schema": 1, "status": "captured_pre_kickoff", "provider": "API-Football",
                "fixture_id": fid, "home_team_id": home, "away_team_id": away,
                "kickoff_utc": kickoff.isoformat(), "captured_at_utc": clock.isoformat(),
                "verified_historical_fixture_xg": verified_xg,
                "confirmed_starting_xi": lineups, "reported_injuries": injuries,
-               "market": market, "available_sources": {
+               "market": market, "multi_market": multi_market, "available_sources": {
                    "lineups": bool(lineups), "injuries_reported": bool(injuries),
-                   "historical_xg": bool(verified_xg), "timestamped_1x2": market is not None},
+                   "historical_xg": bool(verified_xg), "timestamped_1x2": market is not None,
+                   "timestamped_multi_market":len(multi_market)>=2},
                "diagnostics": diag, "source_limits": {
                    "max_historical_fixtures_per_team": limits,
+                   "historical_fixture_statistics_max_http_requests": limits*2,
                    "xg_not_a_predicted_goal_adjustment": True,
                    "injury_not_a_validated_player_coefficient": True,
                    "market_not_a_verified_three_book_consensus": True}}
