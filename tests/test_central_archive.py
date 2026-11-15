@@ -30,7 +30,9 @@ def double(**changes):
            'predictions_json': '[{"score1":"2-1","score2":"1-0","probability":0.01}]',
            'first_provider': None, 'second_provider': None,
            'first_kickoff': None, 'second_kickoff': None,
-           'first_model': None, 'second_model': None}
+           'first_model': None, 'second_model': None,
+           'first_home_id': None, 'first_away_id': None,
+           'second_home_id': None, 'second_away_id': None}
     row.update(changes)
     return row
 
