@@ -1,3 +1,5 @@
+> **V19 verified match intelligence:** Research-only genuine market-source five exact-score challenger on the same immutable original two-match pair, with timestamp checks, no-source abstention, independently verified results and no additional provider calls. It does not claim 70% accuracy or purchase xG/lineup data. See [V19 source audit](V19_VERIFIED_MATCH_INTELLIGENCE.md).
+ 
 > **V18 real-data reliability research:** Automatically audits original frozen V8 predictions against independently verified full-time outcomes, counts missing evidence, shows confidence-bin accuracy and tests time-safe calibration without promoting unproven forecasts. See [V18 real-accuracy research](V18_REAL_ACCURACY_EVIDENCE.md).
 
 > **V17 evidence-gated confidence research:** a separate, prospective 1X / X2 / 12 outcome mode is available in **Five Doubles** and **Performance**, with automatic source validation, abstentions and verified 70% reporting gate. This is **not** 70% proven accuracy or a replacement for five exact-score doubles. See [V17 evidence research](V17_EVIDENCE_CONFIDENCE_RESEARCH.md).\n\n# ScorePredict AI Worldwide Pro
