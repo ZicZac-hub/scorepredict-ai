@@ -39,7 +39,7 @@ def audit(base_root=MATCH_ROOT, ai_root=AI_ROOT):
             identity=(str(row["provider"]),str(row["fixture_id"]))
             forecasts.append({"fixture":identity,"kickoff":kickoff,
                               "provider_votes":set(votes)})
-            provider_counts.update(votes)
+            provider_counts.update(votes.keys())
         except (TypeError,KeyError,ValueError):
             continue
     sets=[];complete=0;partial=0
