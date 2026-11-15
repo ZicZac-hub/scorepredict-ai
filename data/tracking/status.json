@@ -20,24 +20,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 21,
-      "recorded": 21,
+      "pending": 22,
+      "recorded": 22,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 21,
-      "recorded": 21,
+      "pending": 22,
+      "recorded": 22,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 184,
-      "recorded": 186,
+      "pending": 185,
+      "recorded": 187,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -60,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 156,
-      "recorded": 156,
+      "pending": 157,
+      "recorded": 157,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-15T17:37:56.529048+00:00",
+  "checked_at_utc": "2026-11-15T18:21:23.286542+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -80,6 +80,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T18:20:30.502164+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1575550')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Estoril",
+          "away_team_id": "230",
+          "fixture_id": "1575550",
+          "home_team": "GIL Vicente",
+          "home_team_id": "762",
+          "kickoff_utc": "2026-11-29T18:00:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T18:00:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T18:20:30.384751+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575550', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Estoril",
+          "away_team_id": "230",
+          "fixture_id": "1575550",
+          "home_team": "GIL Vicente",
+          "home_team_id": "762",
+          "kickoff_utc": "2026-11-29T18:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T18:00:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T18:20:30.372735+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575550', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Estoril",
+          "away_team_id": "230",
+          "fixture_id": "1575550",
+          "home_team": "GIL Vicente",
+          "home_team_id": "762",
+          "kickoff_utc": "2026-11-29T18:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T18:00:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-15T18:20:30.409767+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575550', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Estoril",
+          "away_team_id": "230",
+          "fixture_id": "1575550",
+          "home_team": "GIL Vicente",
+          "home_team_id": "762",
+          "kickoff_utc": "2026-11-29T18:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-29T18:00:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T17:37:50.930138+00:00",
@@ -11767,8 +11883,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 382,
-    "recorded": 390,
+    "pending": 386,
+    "recorded": 394,
     "verified": 8
   }
 }
