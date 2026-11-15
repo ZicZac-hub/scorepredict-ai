@@ -251,6 +251,90 @@ def private_records(rows):
     return output
 
 
+def archived_central_records(forecasts=(),singles=(),doubles=()):
+    """Normalize originals from the existing durable forecast ledger.
+
+    Pre-migration manual pairs without real provider and team identities are
+    retained in the source archive, but not counted as verified losses.
+    """
+    rows=[]
+    missing_identity=0
+    for row in forecasts:
+        pick=_goals(row.get("predicted_score"))
+        if not pick:
+            continue
+        record=_item("website_model_ledger",row.get("forecast_id") or
+                     ("ledger",row.get("provider"),row.get("fixture_id"),
+                      row.get("model_version"),row.get("captured_at_utc")),
+                     [_leg(row)],[[pick]],row.get("captured_at_utc"),
+                     model=row.get("model_version"),is_private=True)
+        if record:
+            rows.append(record)
+    for saved in singles:
+        leg=_leg({
+            "provider":saved.get("provider"),"fixture_id":saved.get("fixture_id"),
+            "home_team_id":saved.get("home_id"),"away_team_id":saved.get("away_id"),
+            "home_team":saved.get("home"),"away_team":saved.get("away"),
+            "kickoff_utc":saved.get("kickoff")})
+        pick=_goals(saved.get("predicted_score"))
+        if not pick:
+            continue
+        record=_item("website_saved_original",
+                     ("website",leg["provider"],leg["fixture_id"],saved.get("saved_at")),
+                     [leg],[[pick]],saved.get("saved_at"),
+                     model=saved.get("model_version"),is_private=True)
+        if record:
+            rows.append(record)
+        else:
+            missing_identity+=1
+    for saved in doubles:
+        legs=[]
+        for name in ("first","second"):
+            legs.append(_leg({
+                "provider":saved.get(name+"_provider"),
+                "fixture_id":saved.get(name+"_id"),
+                "kickoff_utc":saved.get(name+"_kickoff"),
+                "home_team_id":saved.get(name+"_home_id"),
+                "away_team_id":saved.get(name+"_away_id"),
+                "home_team":saved.get(name+"_name",""),
+                "away_team":""
+            }))
+        try:
+            saved_choices=json.loads(saved["predictions_json"])
+        except (KeyError,ValueError,TypeError):
+            continue
+        picks=[[entry.get("score1"),entry.get("score2")]
+               for entry in saved_choices]
+        if len(picks)!=5:
+            continue
+        record=_item("website_manual_five_double",saved.get("snapshot_key"),
+                     legs,picks,saved.get("saved_at"),is_private=True)
+        if record:
+            rows.append(record)
+        else:
+            missing_identity+=1
+    return rows,missing_identity
+
+
+def central_sources(database_url):
+    """Do not copy private website picks into GitHub's public data directory."""
+    from ziczac_interactive_capture import load as load_interactive
+    private,status=load_interactive(database_url)
+    if not database_url:
+        return [],[],"database_not_configured",0,[]
+    try:
+        from forecast_ledger import open_ledger
+        with open_ledger(database_url) as store:
+            records,legacy=archived_central_records(
+                forecasts=store.iter_forecasts(),
+                singles=store.iter_archive_records("single"),
+                doubles=store.iter_archive_records("double"))
+            finals=store.get_settlements()
+        return private,records,status,legacy,finals
+    except Exception as exc:
+        return private,[],"ledger_unavailable:"+type(exc).__name__,0,[]
+
+
 def summary(records,finals,*,now=None,private_connection="not_loaded",conflicts=()):
     clock=utc(now or datetime.now(timezone.utc))
     graded=[]
@@ -292,12 +376,23 @@ def summary(records,finals,*,now=None,private_connection="not_loaded",conflicts=
 
 def build(*,v10_root=Path("data/v10_prospective"),
           prematch_root=Path("data/prematch"),llm_root=Path("data/llm_research"),
-          private=(),extra_finals=(),now=None,private_connection="not_loaded"):
+          private=(),central=(),extra_finals=(),now=None,private_connection="not_loaded",
+          legacy_unverifiable=0):
     finals,conflicts=_collect_finals(v10_root,prematch_root,extra_finals)
     records=scheduled_records(v10_root,prematch_root,llm_root)
     records.extend(private_records(private))
-    return summary(records,finals,now=now,
+    records.extend(central)
+    result=summary(records,finals,now=now,
                    private_connection=private_connection,conflicts=conflicts)
+    result["legacy_records_without_verifiable_identity"]=legacy_unverifiable
+    return result
+
+
+def build_with_private(database_url,**kwargs):
+    private,central,status,legacy,finals=central_sources(database_url)
+    return build(private=private,central=central,extra_finals=finals,
+                 private_connection=status,
+                 legacy_unverifiable=legacy,**kwargs)
 
 
 def publish(root=ROOT):
