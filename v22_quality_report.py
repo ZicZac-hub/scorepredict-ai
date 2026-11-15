@@ -29,6 +29,7 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     source_files=(list(Path(source_root).glob("API-Football_*.json"))+
                   list((Path(source_root)/"versions").glob("API-Football_*.json")))
     status=load_json(Path(source_root)/"status.json",{})
+    early=load_json(Path(source_root)/"market_early_status.json",{})
     extracted={"packets_checked":len(source_files),
                "with_historical_xg":0,"with_6_per_team":0,
                "with_2_market_types":0,"with_both_starting_XIs":0}
@@ -55,6 +56,9 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
         "source_completeness":extracted,
         "source_capture_enabled":status.get("enabled") if status else None,
         "source_capture_last_run":status.get("at_utc") if status else None,
+        "v23_early_market_capture_enabled":early.get("enabled") if early else None,
+        "v23_early_market_last_run":early.get("at_utc") if early else None,
+        "v23_early_market_new_packets":len(early.get("new_packets") or []),
         "frozen_v22_vs_v8":stats,
         "v23_market_form_vs_v8":v23_report.get("methods") or {},
         "v23_source_qualified_pairs":v23_status.get("qualifying_pairs",0),
