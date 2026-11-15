@@ -675,6 +675,12 @@ def render(st,rows,histories=None):
             st.caption("First available eligible saved/modelled fixture: "+next_label)
         return
     ids={label(r):r for r in found}
+    auto_v23=st.checkbox(
+        "🧠 V23 Auto Select · time-checked markets and actual team form",
+        value=False,key="ziczac_v23_auto_pair",
+        help="Compare all same-day pairs with saved bookmaker outcome and "
+             "total-goal quotes. No historical shot-xG requirement. "
+             "Owner login and saved private evidence are needed.")
     auto_v22=st.checkbox("🔬 V22 Auto Select · genuine xG and markets on BOTH matches",
                          value=False,key="ziczac_v22_auto_pair",
                          help="Ranks every eligible same-day pair with already saved "
@@ -686,11 +692,11 @@ def render(st,rows,histories=None):
                           help="Compare ALL eligible same-day pairs using dated team and "
                                "home/away goal form. If none meet the evidence and "
                                "minimum estimated coverage requirements, abstain.")
-    if auto_v22:
+    if auto_v22 or auto_v23:
         from v22_pair_selector import candidates as _rank_v22_pairs
         from v21_evidence_store import latest as _source_snapshot
         if not private_gate_ready(st):
-            st.warning("V22 auto selection needs your private ZicZac login "
+            st.warning("V22/V23 auto selection needs your private ZicZac login "
                        "to access previously saved source packets.")
             return
         import os
@@ -699,23 +705,26 @@ def render(st,rows,histories=None):
         except (OSError,KeyError,RuntimeError,AttributeError):
             _database=os.environ.get("DATABASE_URL","")
         if not _database:
-            st.warning("V22 Auto Select cannot inspect previous research because "
+            st.warning("V22/V23 Auto Select cannot inspect previous research because "
                        "private DATABASE_URL is not configured. It will not "
                        "pretend to have live xG or bookmaker odds.")
             return
+        research_selector=(v23_shadow if auto_v23 else None)
         ranking=_rank_v22_pairs(found,
-            lambda f:_source_snapshot(f,_database,before=clock),now=clock)
+            lambda f:_source_snapshot(f,_database,before=clock),now=clock,
+            shadow_fn=research_selector)
         if ranking["abstained"]:
-            st.warning("V22 Auto Select abstained: no same-day pair has "
-                       "source-matched historical xG, 2+ dated goal markets and "
-                       "sufficient estimated probability coverage.")
+            st.warning(("V23" if auto_v23 else "V22")+
+                       " Auto Select abstained: no same-day pair has "
+                       "sufficient matching bookmaker evidence, goal-model "
+                       "history and estimated probability coverage.")
             st.caption("Eligible source-backed fixtures: "+
                        str(ranking["source_qualified_fixtures"])+
                        " · reasons: "+str(ranking["reasons"]))
             return
         best=ranking["pairs"][0]
         first,second=best["first"],best["second"]
-        st.caption("V22 selected from "+
+        st.caption(("V23" if auto_v23 else "V22")+" selected from "+
                    str(ranking["total_qualifying_pairs"])+
                    " genuinely qualified pairs. Conservative estimated "
                    "five-double coverage: "+
@@ -778,14 +787,15 @@ def render(st,rows,histories=None):
         st.caption("Experimental goal-form mode needs more verified past home/away "
                    "matches for both teams plus complete score grids. "
                    "Original five doubles remain available without inventing research.")
-    selection_mode = ("v23_market_form" if mode_label.startswith("V23") else
+    selection_mode = ("v23_market_form" if auto_v23 or mode_label.startswith("V23") else
                       "v22_xg_market" if auto_v22 or mode_label.startswith("V22") else
                       "goal_form_research" if mode_label.startswith("Research") else
                       "balanced_challenger" if mode_label.startswith("Balanced")
                       else "probability")
-    if auto_v22:
-        st.caption("V22 research scoring is automatically selected because "
-                   "V22 source-qualified Auto Select is enabled.")
+    if auto_v23 or auto_v22:
+        st.caption(("V23 market-and-form" if auto_v23 else "V22 real-xG-and-market")+
+                   " research scoring was selected by the corresponding "
+                   "source-qualified automatic match selection.")
     st.caption("Research mode tests real goal strength and wider score scenarios; "
                "it never forces a win or a 3-goal score. No result is shown "
                "when essential evidence is missing. Existing Five Doubles "
