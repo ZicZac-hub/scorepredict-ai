@@ -363,7 +363,22 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         except (ValueError,TypeError):
             requested=MAX_MATCHES_PER_RUN
     budget=max(0,min(2,int(requested)))
-    rows,paired=paired_candidates(list(eligible_rows.values()),limit=budget)
+    # Match original frozen V8 pair where possible. The generic earliest
+    # same-day pair can miss BOTH legs of the actual saved five-double set.
+    # Stay opt-in: no second paid fixture unless budget was explicitly set.
+    selected_original_day=None
+    preferred=[]
+    if budget==2:
+        from v16_pair_research import frozen_pair_priority
+        preferred,selected_original_day=frozen_pair_priority(
+            source,clock,previously_frozen,eligible)
+    if preferred:
+        rows,paired=preferred,True
+    else:
+        rows,paired=paired_candidates(list(eligible_rows.values()),limit=budget)
+    status["selected_original_frozen_pair_day"]=selected_original_day
+    status["matched_original_forecast_ids"]=[
+        row["forecast_id"] for row in rows] if selected_original_day else []
     status["two_match_research_enabled"]=budget==2
     status["same_day_pair_selected"]=paired
     status["eligible_fixture_count"]=len(eligible_rows)
@@ -372,6 +387,9 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
     status["planned_model_requests"]=len(rows)*len(configured)
     status["actual_successful_ai_votes"]=0
     status["source_quality"]="statistical_frozen_packet_only_no_external_facts"
+    status["prioritization_policy"]=(
+        "exact_original_frozen_v8_two_match_pair_first_when_eligible"
+        if budget==2 else "single_fixture_default_no_extra_paid_calls")
     for row in rows:
         path = panel_path(row, root)
         if path.exists():
