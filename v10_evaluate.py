@@ -15,6 +15,7 @@ from daily_pick_ui import SYDNEY
 from persist_prematch import RESULTS, load_json, verified_result, write_json
 from smart_double_v8 import rank_research_pairs
 from smart_double_ai import five_doubles
+from double_score_selection import select_balanced,select_diversified
 from v10_prospective import ROOT, read_latest, utc
 
 REPORT = ROOT / "performance.json"
@@ -201,6 +202,35 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
                 challenger_picks[challenger]=[{
                     "score1":p["Score 1"],"score2":p["Score 2"],
                     "joint_probability":float(p["Joint"])} for p in alternatives]
+        # Same-PAIR V13 comparison, with each V13 forecast already frozen
+        # before this selection and matched to the selected V8 evidence digest.
+        # Never backfill V13 picks after either fixture starts or if a newer
+        # v8_near snapshot used different history.
+        v13_rows=[options.get((provider,fixture_id,"v13"))
+                  for provider,fixture_id in ids]
+        if all(v13_rows) and all(
+            utc(candidate["captured_at_utc"])<=instant and
+            candidate.get("input_digest")==original.get("input_digest")
+            for candidate,original in zip(v13_rows,(first,second))):
+            left,right=(_match(candidate) for candidate in v13_rows)
+            primary=five_doubles(left,right)
+            if len(primary)==5:
+                sources=[{"Score 1":f"{h}-{a}","Score 2":f"{j}-{k}",
+                          "Joint":float(p)*float(q)}
+                         for h,a,p in v13_rows[0]["top10_scores"][:10]
+                         for j,k,q in v13_rows[1]["top10_scores"][:10]]
+                alternates={
+                    "v13":primary,
+                    "v13_balanced":select_balanced(sources,5,diversity_weight=.18),
+                    "v13_diversified":select_diversified(sources,5)}
+                for name,options_five in alternates.items():
+                    if len(options_five)==5:
+                        challenger_picks[name]=[
+                            {"score1":p["Score 1"],"score2":p["Score 2"],
+                             "joint_probability":float(p["Joint"])}
+                            for p in options_five]
+        else:
+            ignored_challengers["v13"]="missing_same_evidence_pre_match_v13_pair"
         result={"policy":"v10-evidence-ranked-shadow-v2-fresh-research",
                 "mode":"prospective", "status":"frozen_pre_kickoff",
                 "sydney_date":day,"captured_at_utc":instant.isoformat(),
@@ -265,6 +295,7 @@ def evaluate(root=ROOT,results=None):
     common=[]
     common_v10=[]
     common_v12=[]
+    common_v13=[]
     original_vs_near=[]
     control_count=0
     comparison_excluded=0
@@ -289,6 +320,15 @@ def evaluate(root=ROOT,results=None):
             common_v12.append((
                 hits[(provider,fixture_id,"v8")],
                 hits[(provider,fixture_id,"v12")]))
+        alt13=latest.get((provider,fixture_id,"v13"))
+        if (alt13 is not None and
+            alt13.get("input_digest")==row.get("input_digest") and
+            utc(row["captured_at_utc"])<=utc(alt13["captured_at_utc"]) and
+            hits.get((provider,fixture_id,"v8")) is not None and
+            hits.get((provider,fixture_id,"v13")) is not None):
+            common_v13.append((
+                hits[(provider,fixture_id,"v8")],
+                hits[(provider,fixture_id,"v13")]))
         for challenger, cohort in (("v9",common),("v10",common_v10)):
             alt=latest.get((provider,fixture_id,challenger))
             if alt is None or hits.get((provider,fixture_id,challenger)) is None:
@@ -330,7 +370,7 @@ def evaluate(root=ROOT,results=None):
                     for p in packet["five_doubles"])
             additional={}
             for challenger,choices in (packet.get("same_pair_challengers") or {}).items():
-                if challenger not in ("v9","v10") or len(choices)!=5:
+                if challenger not in ("v9","v10","v13","v13_balanced","v13_diversified") or len(choices)!=5:
                     continue
                 additional[challenger]={
                     "hit":any(p["score1"]==score1 and p["score2"]==score2 for p in choices),
@@ -344,7 +384,7 @@ def evaluate(root=ROOT,results=None):
             continue
     completed=[p for p in pairs if p["status"]=="verified"]
     comparison={}
-    for challenger in ("v9","v10"):
+    for challenger in ("v9","v10","v13","v13_balanced","v13_diversified"):
         cohort=[p for p in completed if challenger in p.get("same_pair_challengers",{})]
         comparison[challenger]={
             "same_pair_verified_days":len(cohort),
@@ -356,7 +396,7 @@ def evaluate(root=ROOT,results=None):
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
         "verified_result_source":"verified provider-matched union: data/prematch/verified_results.json and data/v10_prospective/verified_results.json",
-        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v8_near","v9","v10","v12")},
+        "models":{m:_summarize(model_rows[m],frozen=frozen[m]) for m in ("v8","v8_near","v9","v10","v12","v13")},
         "paired_original_v8_vs_near_v8":{
             "same_fixture_verified":len(original_vs_near),
             "original_only_exact_hits":sum(a and not b for a,b in original_vs_near),
@@ -381,6 +421,12 @@ def evaluate(root=ROOT,results=None):
                          "insufficient_to_claim_improvement":len(common_v12)<200,
                          "same_evidence_required":True,
                          "v12_is_shadow_only":True},
+        "paired_v8_v13":{"verified_same_fixture_count":len(common_v13),
+                         "v8_only_hits":sum(a and not b for a,b in common_v13),
+                         "v13_only_hits":sum(b and not a for a,b in common_v13),
+                         "insufficient_to_claim_improvement":len(common_v13)<200,
+                         "same_evidence_required":True,
+                         "v13_is_shadow_only":True},
         "five_doubles":{"frozen_pairs":len(pairs),"verified_pairs":len(completed),
                         "same_pair_challengers":comparison,
                         "awaiting_both_results":len(pairs)-len(completed),
@@ -390,7 +436,7 @@ def evaluate(root=ROOT,results=None):
                             sum(p["estimated_coverage"] for p in completed)/len(completed)
                             if completed else None,"rows":pairs},
         "limitations":"Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
-        "promotion_gate":"Never promote v9/v10/v12 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks."}
+        "promotion_gate":"Never promote v9/v10/v12/v13 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks."}
     return report
 
 
