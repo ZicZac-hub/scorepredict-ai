@@ -172,3 +172,54 @@ def test_postgres_original_cannot_be_rewritten_by_later_ai_result():
     assert status=="connected"
     row=next(r for r in saved if r["record_id"]==first["record_id"])
     assert row["score"]=="1-1"
+
+
+def test_private_forecast_write_requires_owner_login(monkeypatch):
+    import ziczac_interactive_capture as audit
+    class FakeSite:
+        secrets={"ZICZAC_ACCESS_PASSWORD":"configured-private-password",
+                 "DATABASE_URL":"must-not-connect-to-db"}
+        session_state={}
+        def __init__(self):
+            self.messages=[]
+        def warning(self,text):
+            self.messages.append(text)
+        def caption(self,text):
+            self.messages.append(text)
+    site=FakeSite()
+    def forbid(*args,**kwargs):
+        raise AssertionError("Unauthenticated visitor must never write to private DB")
+    monkeypatch.setattr(audit,"store",forbid)
+    record=single(fixture(607,"Home","Away"),"2-1","ten_ai",
+                  ai_provider="gemini",now=NOW)
+    result=audit.store_ui(site,record)
+    assert result["state"]=="private_access_required"
+    assert result["durable"] is False
+    assert "NOT" in site.messages[0]
+
+
+def test_public_performance_board_never_queries_private_database(monkeypatch):
+    import ziczac_unified_audit_ui as ui
+    class FakeSite:
+        secrets={}
+        session_state={}
+        def __init__(self):
+            self.messages=[]
+        def markdown(self,text): self.messages.append(text)
+        def caption(self,text): self.messages.append(text)
+        def info(self,text): self.messages.append(text)
+        def button(self,*args,**kwargs): return True
+        def spinner(self,*args,**kwargs):
+            import contextlib
+            return contextlib.nullcontext()
+        def __getattr__(self,name):
+            raise AssertionError("Unexpected UI request: "+name)
+    site=FakeSite()
+    def forbidden(*args,**kwargs):
+        raise AssertionError("A public visitor must not inspect a private database")
+    monkeypatch.setattr(ui,"build_with_private",forbidden)
+    import ziczac_unified_audit as audit
+    monkeypatch.setattr(audit,"build",lambda **kw:{})
+    monkeypatch.setattr(ui,"load_json",lambda *args:{})
+    ui.render(site,database_url="should-not-be-used")
+    assert site.session_state.get("ziczac_unified_audit_status") is None
