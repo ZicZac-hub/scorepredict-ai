@@ -127,9 +127,9 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
     identifier = (provider, str(fixture.get("id")), str(fixture.get("utcDate")))
     st.caption(str(selected.get("league") or "Football") + " · " + sydney_kickoff(selected.get("kickoff")))
     method = st.radio("Prediction method",
-        ["Market-Informed v9 · odds when verified", "Evidence Ensemble v8 · historical", "Preserved Deep Research v2"],
+        ["Market-Informed v9 · odds when verified", "Evidence Ensemble v8 · historical", "V12 Score Calibration · league evidence (experimental)", "Preserved Deep Research v2"],
         horizontal=True, key="deep_prediction_method",
-        help="Compare the new opponent/Elo ensemble with the previous research model. Existing saved predictions are never changed.")
+        help="V12 tests pre-match league score residual calibration against v8; it requires at least 80 valid historical league results. No production or saved predictions are rewritten.")
     cols = st.columns(2)
     with cols[0]:
         run = st.button("🧠 Run Deep Research AI", type="primary",
@@ -179,7 +179,8 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
         compatible = [m for m in prior if str(m.get("provider") or "football-data.org") == provider]
         with st.spinner("Reviewing verified results and model probabilities..."):
             try:
-                if method.startswith("Market-Informed") or method.startswith("Evidence Ensemble v8"):
+                if (method.startswith("Market-Informed") or method.startswith("Evidence Ensemble v8")
+                        or method.startswith("V12 Score Calibration")):
                     league_history = histories.get(selected.get("league"), compatible)
                     market = None
                     reason = None
@@ -201,6 +202,9 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
                         else:
                             reason = "Only supported API-Football fixtures with credentials can use live market prices."
                         candidate = candidate_predict(fixture, compatible, league_history=league_history, market=market)
+                    elif method.startswith("V12 Score Calibration"):
+                        from score_calibration_v12 import predict as candidate_predict
+                        candidate = candidate_predict(fixture, compatible, league_history=league_history)
                     else:
                         from research_ensemble_v8 import predict as candidate_predict
                         candidate = candidate_predict(fixture, compatible, league_history=league_history)
@@ -223,9 +227,16 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
                             "market_used":candidate.get("market_used",False),
                             "market_details":candidate.get("market_details",{}),
                             "market_note":reason,
+                            "v12_diagnostics":candidate.get("v12_diagnostics"),
+                            "v12_original_v8_score":candidate.get("v12_original_v8_score"),
                             "limitations":candidate["limitations"]}
                     else:
-                        result = {"available":False,"reason":"Insufficient pre-kickoff verified match history for this challenger."}
+                        reason=("V12 abstained: requires at least 80 completed, provider- and "
+                                "competition-matched league matches within the preceding two "
+                                "years, available before the forecast. Missing data are never "
+                                "manufactured." if method.startswith("V12 Score Calibration")
+                                else "Insufficient pre-kickoff verified match history for this challenger.")
+                        result={"available":False,"reason":reason}
                 else:
                     result = research_prediction(fixture, compatible)
             except (TypeError, KeyError, ValueError, ZeroDivisionError) as exc:
@@ -310,6 +321,21 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
     cards[1].metric("Estimated score probability", f"{best_prob:.1%}")
     cards[2].metric("Expected goals (H / A)", f"{report['home_xg']:.2f} / {report['away_xg']:.2f}")
     st.caption("Experimental statistical estimate, not a promised result. No original pre-kickoff predictions are changed.")
+    if method.startswith("V12 Score Calibration"):
+        diagnostic=report.get("v12_diagnostics") or {}
+        st.warning("V12 is an unvalidated, historical-league score adjustment "
+                   "and is NOT the production model. Different exact scores "
+                   "are not evidence of better accuracy.")
+        st.caption("League matches before prediction: "+str(diagnostic.get("observations","?"))+
+                   " · 1–1 historical frequency: "+
+                   f"{float(diagnostic.get('weighted_observed_1_1',0)):.1%}"+
+                   " · independent-Poisson league reference: "+
+                   f"{float(diagnostic.get('reference_1_1',0)):.1%}"+
+                   " · V8 top score: "+
+                   "-".join(map(str,report.get("v12_original_v8_score") or [])))
+        st.caption("V12 correction is bounded, shrunk toward the original "
+                   "probabilities and based on pre-kickoff completed results. "
+                   "No automatic five doubles or old forecasts were modified.")
     if method.startswith("Market-Informed"):
         if report.get("market_used"):
             _market=report["market_details"]
