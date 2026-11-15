@@ -233,7 +233,7 @@ def _display(st,report,first,second):
     form_research = calc.get("selection_mode") == "goal_form_research"
     method = ("research goal-form challenger" if form_research else
               "balanced challenger" if challenger else "original baseline")
-    st.markdown("### ✅ Five exact-score scenarios · " + method)
+    st.markdown("### ✅ Final five exact-score doubles · " + method)
     st.caption("Match 1: "+label(first))
     st.caption("Match 2: "+label(second))
     st.caption("Research compiled "+str(report["generated_at_utc"])+
@@ -518,15 +518,22 @@ def render(st,rows,histories=None):
     if base["status"]!="ready":
         st.warning(base.get("reason") or "The statistical model cannot form five valid doubles.")
         return
+    research_ready = all(goal_form_challenger(
+        row, _history(row, histories), clock).get("available")
+        for row in (first, second))
     mode_label=st.selectbox(
         "Choose five-double scoring method",
         ["Research goal-form challenger (experimental)", "Original top-probability baseline",
          "Balanced challenger (experimental)"],
-        index=0,key="ziczac_ai_five_selection_mode",
+        index=0 if research_ready else 1,key="ziczac_ai_five_selection_mode",
         help="Research goal-form recomputes a shadow score grid from verified "
              "last-ten home/away scoring and opposition concessions, only if "
              "both fixtures have complete original score grids and enough "
              "dated results. Original and balanced methods remain available.")
+    if not research_ready:
+        st.caption("Experimental goal-form mode needs more verified past home/away "
+                   "matches for both teams plus complete score grids. "
+                   "Original five doubles remain available without inventing research.")
     selection_mode = ("goal_form_research" if mode_label.startswith("Research") else
                       "balanced_challenger" if mode_label.startswith("Balanced")
                       else "probability")
