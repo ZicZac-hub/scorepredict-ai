@@ -56,6 +56,16 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
         st.caption((f"Verified five-double wins: {wins}/{n} · {doubles['hit_rate']:.1%}"
                     if n and doubles.get("hit_rate") is not None
                     else "⏳ Pending both match results — not zero accuracy"))
+    robust_auto=report.get("v14_independently_selected_five_doubles") or {}
+    robust_frozen=int(robust_auto.get("frozen_pairs") or 0)
+    robust_checked=int(robust_auto.get("verified_pairs") or 0)
+    robust_wins=int(robust_auto.get("wins") or 0)
+    st.caption("🔬 V14 independently selected two-match five doubles "
+               "(research shadow only): "+str(robust_frozen)+
+               " future pairs frozen · "+str(robust_wins)+
+               "/"+str(robust_checked)+" verified hits. "
+               "Both selected matches must finish and be independently verified; "
+               "pending results are never counted as losses.")
     near_pair=report.get("paired_original_v8_vs_near_v8") or {}
     near_verified=int(near_pair.get("same_fixture_verified") or 0)
     if near_verified:
@@ -111,7 +121,7 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
             else:
                 st.caption("No collector diagnostics have been published in this deployment yet.")
         st.caption("Accuracy fixes v10.1: near-kickoff odds refresh · same-evidence market controls · matchday double freeze · timestamp-based bookmaker selection.")
-        st.caption("Market-informed v9, multi-book v10, league-calibration v12 and hybrid v13 are experimental challengers, not proven superior models. More different-looking scores or a few double hits do not justify changing production without sufficient prospective evidence.")
+        st.caption("Market-informed v9, multi-book v10, league-calibration v12, hybrid v13 and robust agreement v14 are experimental challengers, not proven superior models. V14's envelope is not a calibrated probability; only independently verified results can establish improvement.")
         st.divider()
         from llm_research_ui import render as render_five_ai
         render_five_ai(st)
