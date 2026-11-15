@@ -125,7 +125,7 @@ def pair(first,second,choices,*,now=None,method=""):
         raise ValueError("Doubles must have the same Sydney match date")
     if not isinstance(choices,list) or len(choices)!=5:
         raise ValueError("Exactly five score combinations are required")
-    if method not in ("", "balanced_challenger", "goal_form_research"):
+    if method not in ("", "balanced_challenger", "goal_form_research", "v22_xg_market"):
         raise ValueError("Unrecognized five-double research method")
     frozen=[{"score1":score(x["score1"]),"score2":score(x["score2"])}
             for x in choices]
