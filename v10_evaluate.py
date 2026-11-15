@@ -498,6 +498,65 @@ def evaluate(root=ROOT,results=None):
             "note":("Frozen before kickoff on the same v8-selected matches. "
                     "For V14 the coverage figure is a lower-envelope model "
                     "criterion, NOT a calibrated probability or win rate.")}
+    # V14 selects an entirely different pair on a day when its conservative
+    # V7/V8 envelope supports it. Never award a hit using the original
+    # pair's results; independently verify both V14 fixtures.
+    robust_days=[]
+    for path in sorted((Path(root)/"robust_doubles").glob("*.json")):
+        packet=load_json(path,{})
+        if (packet.get("mode")!="prospective_robust_v14" or
+            packet.get("status")!="frozen_pre_kickoff"):
+            continue
+        try:
+            frozen=utc(packet["captured_at_utc"])
+            if frozen>=min(utc(packet["first"]["kickoff_utc"]),
+                           utc(packet["second"]["kickoff_utc"])):
+                continue
+            actual_first,actual_second=(
+                _pair_verified(packet[side],verified)
+                for side in ("first","second"))
+            if actual_first is None or actual_second is None:
+                robust_days.append({
+                    "sydney_date":packet["sydney_date"],
+                    "status":"awaiting_verified_results"})
+                continue
+            home=f'{actual_first["home_goals"]}-{actual_first["away_goals"]}'
+            away=f'{actual_second["home_goals"]}-{actual_second["away_goals"]}'
+            hit=any(row["score1"]==home and row["score2"]==away
+                    for row in packet["five_doubles"])
+            robust_days.append({
+                "sydney_date":packet["sydney_date"],
+                "status":"verified","hit":bool(hit),
+                "actual_scores":[home,away],
+                "selected_fixture_ids":[str(packet["first"]["fixture_id"]),
+                                        str(packet["second"]["fixture_id"])],
+                "lower_envelope_score":float(packet["lower_envelope_score"]),
+            })
+        except (KeyError,TypeError,ValueError):
+            continue
+    robust_verified=[r for r in robust_days if r["status"]=="verified"]
+    original_by_date={r["sydney_date"]:r for r in completed}
+    both_on_day=[(original_by_date[r["sydney_date"]],r)
+                 for r in robust_verified if r["sydney_date"] in original_by_date]
+    robust_report={
+        "frozen_pairs":len(robust_days),
+        "verified_pairs":len(robust_verified),
+        "awaiting_both_results":len(robust_days)-len(robust_verified),
+        "wins":sum(int(r["hit"]) for r in robust_verified),
+        "hit_rate":(sum(int(r["hit"]) for r in robust_verified)/
+                    len(robust_verified) if robust_verified else None),
+        "same_sydney_day_v8_comparison_count":len(both_on_day),
+        "v14_only_winning_days":sum(
+            bool(v14["hit"]) and not bool(original["hit"])
+            for original,v14 in both_on_day),
+        "v8_only_winning_days":sum(
+            bool(original["hit"]) and not bool(v14["hit"])
+            for original,v14 in both_on_day),
+        "distinct_pair_selection":"V14 may choose different two fixtures on same day",
+        "lower_envelope_is_not_a_calibrated_probability":True,
+        "experiments_not_promoted":True,
+        "rows":robust_days,
+    }
     report={
         "version":"v10-shadow-performance-v1",
         "evidence":"genuinely_frozen_pre_kickoff_only",
@@ -533,6 +592,7 @@ def evaluate(root=ROOT,results=None):
                          "insufficient_to_claim_improvement":len(common_v13)<200,
                          "same_evidence_required":True,
                          "v13_is_shadow_only":True},
+        "v14_independently_selected_five_doubles":robust_report,
         "five_doubles":{"frozen_pairs":len(pairs),"verified_pairs":len(completed),
                         "same_pair_challengers":comparison,
                         "awaiting_both_results":len(pairs)-len(completed),
@@ -542,7 +602,7 @@ def evaluate(root=ROOT,results=None):
                             sum(p["estimated_coverage"] for p in completed)/len(completed)
                             if completed else None,"rows":pairs},
         "limitations":"Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
-        "promotion_gate":"Never promote v9/v10/v12/v13 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks."}
+        "promotion_gate":"Never promote v9/v10/v12/v13/v14 as more accurate without sufficient same-evidence prospective results, calibration and uncertainty checks."}
     return report
 
 
