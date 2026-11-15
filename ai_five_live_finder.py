@@ -15,17 +15,24 @@ from on_demand_ai import utc
 MAX_NEW_MODELS_PER_CLICK = 4
 
 
+def _quota_limited(message):
+    text=str(message or "").casefold()
+    return any(part in text for part in ("quota", "rate limit", "too many requests",
+                                         "http 429", "providerquotaerror"))
+
+
 def research_day(api_key, local_day, *, known_ids=None, limit=MAX_NEW_MODELS_PER_CLICK,
                  discover=global_fixtures, model=model_worldwide, now=None):
     clock = utc(now or datetime.now(timezone.utc))
     report = {"day": local_day.isoformat(), "discovered": 0, "checked": 0,
               "modeled": [], "unmodeled": 0, "errors": [], "remaining": 0,
-              "scope": "API-Football listed pre-match fixtures"}
+              "quota_limited": False, "scope": "API-Football listed pre-match fixtures"}
     if not api_key:
         report["errors"].append("API_FOOTBALL_KEY missing from Streamlit Secrets")
         return report
     events, source_errors = discover(api_key, local_day, 1)
     report["errors"].extend(str(e)[:150] for e in source_errors[:3])
+    report["quota_limited"] = any(_quota_limited(e) for e in source_errors)
     future=[]
     for event in events:
         if event.get("source")!="API-Football":
@@ -52,9 +59,17 @@ def research_day(api_key, local_day, *, known_ids=None, limit=MAX_NEW_MODELS_PER
                 report["unmodeled"]+=1
                 if err:
                     report["errors"].append(str(err)[:160])
+                    if _quota_limited(err):
+                        report["quota_limited"]=True
         except Exception as exc:
             report["unmodeled"]+=1
             report["errors"].append("Model research failed: "+type(exc).__name__)
+            if _quota_limited(type(exc).__name__):
+                report["quota_limited"]=True
+        # A quota failure affects the whole account. Never spin through the
+        # rest of the day's candidate fixtures after detecting it.
+        if report["quota_limited"]:
+            break
     report["remaining"]=max(0,len(queued)-report["checked"])
     report["checked_ids"]=[str((event["fixture"] or {})["id"])
                            for event in queued[:report["checked"]]]
