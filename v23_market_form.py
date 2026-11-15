@@ -46,7 +46,7 @@ def shadow(row, packet, *, as_of, history=None, min_league_history=45):
     for kind,market in markets.items():
         try:
             updated=utc(market["last_source_update_utc"])
-            if not updated>utc(fixture["utcDate"]) and updated<=clock and clock-updated<=timedelta(hours=12):
+            if updated<=utc(fixture["utcDate"]) and updated<=clock and clock-updated<=timedelta(hours=12):
                 checked[kind]=market
         except (TypeError,ValueError,KeyError):
             continue
@@ -106,6 +106,8 @@ def shadow(row, packet, *, as_of, history=None, min_league_history=45):
         "market_types":tuned["market_types"],
         "applied_signals":applied+["timestamped_1x2_and_goal_totals"],
         "snapshot_sha256":packet["snapshot_sha256"],
+        "source_snapshot_digest":packet["snapshot_sha256"],
+        "prediction_method":"v23_market_form_shadow_not_validated",
         "prior_over_2_5_probability":float(baseline[h+a>=3].sum()),
         "adjusted_over_2_5_probability":float(grid[h+a>=3].sum()),
         "prior_four_plus_goals":float(baseline[h+a>=4].sum()),
