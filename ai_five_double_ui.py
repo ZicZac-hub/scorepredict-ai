@@ -566,6 +566,17 @@ def render(st,rows,histories=None):
                 st.caption(name+" · "+(f"{hits}/{n} = {hits/n:.1%}" if n else
                                        "no verified pairs")+
                            " · pending "+str(stat.get("pending",0)))
+            market_method=board.get("v23_market_form_vs_v8") or {}
+            if market_method:
+                st.markdown("**V23 market + form vs original (same frozen pairs)**")
+                for name,stats in sorted(market_method.items()):
+                    n=int(stats.get("verified") or 0)
+                    wins=int(stats.get("hits") or 0)
+                    st.caption(name+": "+(f"{wins}/{n} ({wins/n:.1%})" if n else
+                        "no qualifying verified pair yet")+
+                        " · pending "+str(stats.get("pending",0)))
+            else:
+                st.caption("V23 market-form verification is not yet available.")
             ai=board.get("matched_ai_provider_results") or {}
             st.caption("Verified matched AI panels: "+(
                 ", ".join(name+"="+str(v.get("source_matched_verified_fixtures",0))
