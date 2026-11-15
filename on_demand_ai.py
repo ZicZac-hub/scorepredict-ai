@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from goal_research_v20 import goal_profile
 from llm_research_panel import (
     PROVIDERS, SECRETS, ask, classify_provider_error, consensus, settings
 )
@@ -210,7 +211,8 @@ def _verified_history(fixture, history, now):
     return [value for _,value in matches[:20]]
 
 
-def briefing(fixture, history, statistical, fallback=None, *, now=None):
+def briefing(fixture, history, statistical, fallback=None, *, now=None,
+             team_context=None):
     """Identical limited evidence to all AI providers, strictly as available now."""
     clock = utc(now or datetime.now(timezone.utc))
     kickoff = utc(fixture.get("utcDate"))
@@ -238,21 +240,33 @@ def briefing(fixture, history, statistical, fallback=None, *, now=None):
             "home": result.get("home_xg"), "away": result.get("away_xg")
         },
         "completed_historical_matches": _verified_history(fixture, history, clock),
-        "not_provided": ["confirmed lineups", "verified injuries", "live bookmaker odds",
-                         "true event-level xG", "live web browsing"]
+        "historical_home_away_goal_profile": goal_profile(fixture, history, clock),
+        "provider_team_context_if_available": {
+            k: (team_context or {}).get(k)
+            for k in ("home_season", "away_season", "standings", "injuries",
+                      "confirmed_lineups") if (team_context or {}).get(k)
+        },
+        "not_provided": ["verified shot-based xG", "live web browsing",
+                         "verified numerical player-impact coefficients",
+                         "licensed pre-match bookmaker odds"]
     }
     return ("You are one independent football research reviewer. Use ONLY the dated "
-            "facts provided, not assumed injuries, up-to-the-minute web news, or "
-            "fabricated player information. Statistical model estimates are context "
-            "rather than proof. Return ONLY JSON with keys home_win, draw, away_win "
-            "(numeric probabilities summing to 1), exact_home, exact_away "
-            "(nonnegative whole goals), factors (short list), uncertainty (string). "
-            "An exact-score opinion is NOT a guarantee or calibrated hit rate.\n"
+            "facts provided. Independently examine last-ten match performance, "
+            "home versus away goal scoring/conceding, 2+ goal rates and H2H; "
+            "assess plausible 2-, 3-, or 4-goal outcomes if evidence supports them. "
+            "Do NOT always pick 1-1 or 1-0, and do NOT force a big win for famous teams. "
+            "Use player injuries, starting XI, standings and formations ONLY when "
+            "present in the verified provider packet. Missing news means unknown. "
+            "Never invent current web browsing or player information. "
+            "The statistical model is a prior, not a guarantee. Return ONLY JSON "
+            "with home_win, draw, away_win (numbers summing to 1), exact_home, "
+            "exact_away (whole nonnegative goals), factors (brief evidence reasons), "
+            "uncertainty (string). Exact scores remain uncertain.\\n"
             + json.dumps(payload, sort_keys=True, default=str))
 
 
 def run_selected(fixture, history, statistical, fallback, provider_configs, *,
-                 now=None, request=None, qwen_url=None):
+                 now=None, request=None, qwen_url=None, team_context=None):
     """One bounded research batch, isolated provider errors and no persistence."""
     clock = utc(now or datetime.now(timezone.utc))
     match = fixture_key(fixture)
@@ -264,7 +278,8 @@ def run_selected(fixture, history, statistical, fallback, provider_configs, *,
     if not provider_configs:
         return {"status": "no_streamlit_api_credentials", "votes": {}, "errors": {},
                 "fixture": match}
-    prompt = briefing(fixture, history, statistical, fallback, now=clock)
+    prompt = briefing(fixture, history, statistical, fallback, now=clock,
+                      team_context=team_context)
     configured = [(name, provider_configs[name]) for name in PROVIDERS
                   if name in provider_configs][:MAX_PROVIDERS]
     votes, errors = {}, {}
