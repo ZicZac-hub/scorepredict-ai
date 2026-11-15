@@ -72,9 +72,10 @@ def probabilities(row):
     output = {"1":home,"X":draw,"2":away,
               "1X":home+draw,"X2":draw+away,"12":home+away}
     original = row.get("outcome_probabilities") or {}
-    if any(abs(output[k]-float(original[k]))>1e-6
-           for k,key in (("1","home"),("X","draw"),("2","away"))
-           for _ in [None] if k in output and key in original):
+    if original and any(
+            abs(output[k]-float(original[key]))>1e-6
+            for k,key in (("1","home"),("X","draw"),("2","away"))
+            if key in original):
         # Historical source matrices must agree with recorded outcome summary.
         raise ValueError("model_outcome_mismatch")
     if original and not all(k in original for k in ("home","draw","away")):
