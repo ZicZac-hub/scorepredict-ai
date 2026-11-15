@@ -95,6 +95,15 @@ def audit(base_root=MATCH_ROOT, ai_root=AI_ROOT):
                 or not row.get("home_team_id")
                 or not row.get("away_team_id")):
                 continue
+            # Globally reported saved votes must also have a real,
+            # immutable matching source. A plausible JSON answer alone
+            # is not evidence that the configured model was used correctly.
+            source=_source(base_root,{
+                **row,"forecast_id":row["source_forecast_id"]})
+            if (source is None or
+                row.get("input_digest")!=source["input_digest"] or
+                utc(source["captured_at_utc"])>utc(row["captured_at_utc"])):
+                continue
             votes=valid_saved_votes(row.get("votes"))
             if not votes:
                 continue
