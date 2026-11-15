@@ -409,10 +409,9 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         status["attempted"] += 1
         # V22: provide the same independently captured, source- and
         # forecast-matched pre-match data to every enabled AI adapter.
-        from v21_capture_sources import source_packet_path,qualified_packet
-        extra_record=load_json(source_packet_path(Path("data/v21_sources"),row),{})
-        extra=(extra_record.get("provider_snapshot") if
-               qualified_packet(extra_record,row,now=clock) else None)
+        from v21_capture_sources import best_packet
+        extra_record=best_packet(Path("data/v21_sources"),row,now=clock)
+        extra=(extra_record or {}).get("provider_snapshot")
         prompt = briefing(row,provider_packet=extra)
         votes, models = {}, {}
         for name, (key, model) in configured.items():
