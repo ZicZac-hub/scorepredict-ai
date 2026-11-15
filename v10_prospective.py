@@ -150,6 +150,20 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
             if hybrid is not None and completed<kickoff:
                 row=_record(fixture,evidence,hybrid,"v13",completed)
                 row["hybrid_component_weights"]=dict(hybrid["component_weights"])
+                # Store only genuine same-as-of V7/V8 numerical grids on this
+                # NEW V13 shadow entry. This permits a future five-double
+                # selection to be frozen and independently graded later.
+                # Never backfill older predictions once results are known.
+                row["v14_component_grids"]={
+                    key:np.asarray(value,dtype=float).tolist()
+                    for key,value in (hybrid.get("component_score_matrices") or {}).items()
+                    if key in ("v7","v8")}
+                row["v14_component_versions"]={
+                    key:version for key,version in
+                    (hybrid.get("component_versions") or {}).items()
+                    if key in ("v7","v8")}
+                row["v7_fitted_top10_scores"]=(
+                    (hybrid.get("component_score_distributions") or {}).get("v7") or [])
                 row["release_status"]="experimental_shadow_only_not_promoted"
                 outcome["v13_recorded"]=bool(append_file_record(
                     row,root=root,kind="forecasts"))
