@@ -37,7 +37,7 @@ def test_all_same_day_pairs_ranked_and_source_frozen_once(monkeypatch,tmp_path):
     frozen=[json.loads(x.read_text()) for x in (tmp_path/"forecasts").glob("*.json")]
     options=research.rank_pairs(frozen,min_coverage=0.001)
     assert len(options)==3
-    run=research.freeze_pairs(root=tmp_path,now=NOW)
+    run=research.freeze_pairs(root=tmp_path,now=NOW,min_coverage=.001)
     assert run["newly_frozen_days"]
     assert len(list((tmp_path/"pairs").glob("*.json")))==1
     assert research.freeze_pairs(root=tmp_path,now=NOW)["newly_frozen_days"]==[]
