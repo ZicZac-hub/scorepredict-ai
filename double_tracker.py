@@ -29,7 +29,9 @@ def setup(conn):
     columns = {row[1] for row in conn.execute('PRAGMA table_info(exact_score_doubles)')}
     additions = {'first_provider': 'TEXT', 'second_provider': 'TEXT',
                  'first_kickoff': 'TEXT', 'second_kickoff': 'TEXT',
-                 'first_model': 'TEXT', 'second_model': 'TEXT'}
+                 'first_model': 'TEXT', 'second_model': 'TEXT',
+                 'first_home_id': 'TEXT', 'first_away_id': 'TEXT',
+                 'second_home_id': 'TEXT', 'second_away_id': 'TEXT'}
     for name, definition in additions.items():
         if name not in columns:
             conn.execute(f'ALTER TABLE exact_score_doubles ADD COLUMN {name} {definition}')
@@ -48,6 +50,8 @@ def save(conn, first, second, options, now=None):
     if (now is None or a.get('id') is None or b.get('id') is None
             or provider1 not in KNOWN_PROVIDERS or provider2 not in KNOWN_PROVIDERS
             or same_fixture(first, second)
+            or any((f.get('homeTeam') or {}).get('id') is None or
+                   (f.get('awayTeam') or {}).get('id') is None for f in (a,b))
             or not kickoff1 or not kickoff2 or now >= min(kickoff1, kickoff2)):
         return False
     model1 = str((first.get('result') or {}).get('model_version') or 'unknown')
@@ -63,12 +67,15 @@ def save(conn, first, second, options, now=None):
         return False
     cur = conn.execute("""INSERT OR IGNORE INTO exact_score_doubles
         (snapshot_key,saved_at,first_id,second_id,first_name,second_name,predictions_json,
-         first_provider,second_provider,first_kickoff,second_kickoff,first_model,second_model)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+         first_provider,second_provider,first_kickoff,second_kickoff,first_model,second_model,
+         first_home_id,first_away_id,second_home_id,second_away_id)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (key, now.isoformat(), str(a['id']), str(b['id']),
          a['homeTeam']['name']+' vs '+a['awayTeam']['name'],
          b['homeTeam']['name']+' vs '+b['awayTeam']['name'], json.dumps(entries),
-         provider1, provider2, kickoff1.isoformat(), kickoff2.isoformat(), model1, model2))
+         provider1, provider2, kickoff1.isoformat(), kickoff2.isoformat(), model1, model2,
+         str(a['homeTeam']['id']), str(a['awayTeam']['id']),
+         str(b['homeTeam']['id']), str(b['awayTeam']['id'])))
     conn.commit()
     return bool(cur.rowcount)
 
