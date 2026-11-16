@@ -102,6 +102,25 @@ def available(rows, now):
     return dict(sorted(output.items())),dict(excluded)
 
 
+def _pair_issue(first,second,now):
+    issue=pair_check(first["row"],second["row"],now=now)
+    if issue:
+        return issue
+    # A provider can rename/translate the same team across competitions.
+    # Validate actual team IDs in addition to display names; V25 must never
+    # generate a joint bet on one team twice under different labels.
+    a=first["row"]["fixture"]
+    b=second["row"]["fixture"]
+    if str(a.get("provider") or "football-data.org")==str(
+            b.get("provider") or "football-data.org"):
+        identifiers=[
+            str((fixture.get(side+"Team") or {}).get("id"))
+            for fixture in (a,b) for side in ("home","away")]
+        if len(set(identifiers))!=4:
+            return "The same provider team appears in both matches."
+    return None
+
+
 def pair_catalog(candidates, now, *, search=""):
     """List EVERY available same-Sydney-day four-team pair without modelling it."""
     rows=sorted(candidates,key=lambda x:(x["kickoff"],x["key"]))
@@ -110,7 +129,7 @@ def pair_catalog(candidates, now, *, search=""):
     for a,b in combinations(rows,2):
         if query and query not in (a["title"]+" "+b["title"]).casefold():
             continue
-        if pair_check(a["row"],b["row"],now=now):
+        if _pair_issue(a,b,now):
             continue
         result.append((a,b))
     return result
@@ -119,8 +138,9 @@ def pair_catalog(candidates, now, *, search=""):
 def generate(first,second,now):
     """Five V25 score combinations, with explicit independent V8 comparison."""
     clock=utc(now)
-    if pair_check(first["row"],second["row"],now=clock):
-        return {"status":"ineligible_pair","reason":"Matches changed or kickoff started"}
+    issue=_pair_issue(first,second,clock)
+    if issue:
+        return {"status":"ineligible_pair","reason":issue}
     # A model's saved evidence must still have been recorded before both
     # kickoffs. Revalidation prevents a stale Streamlit cache being re-used.
     for item in (first,second):
