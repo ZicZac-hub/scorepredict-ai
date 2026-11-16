@@ -129,6 +129,12 @@ jobs:
       - name: Freeze v10 research doubles and grade independent prospective forecasts
         if: always()
         run: python v10_evaluate.py
+      - name: Freeze and verify V25 professional analyst robustness challengers
+        # Uses original source-stamped V8 score matrices only; all variants
+        # are sensitivity checks and have no new provider/AI API requests.
+        # New paired picks are write-once; result status is verified separately.
+        if: always()
+        run: python professional_analyst_shadow_v25.py
       - name: Freeze and verify V17 evidence-gated high-confidence outcomes
         # Research-only: no paid APIs and no rewrite of original V8 or exact doubles.
         if: always()
@@ -210,8 +216,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis data/pro_analyst_shadow
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/ data/pro_analyst_shadow/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
@@ -276,6 +282,7 @@ jobs:
             data/v23_prospective/
             data/v24_market_catalog/
             data/accuracy_diagnosis/
+            data/pro_analyst_shadow/
             data/independent_football/status.json
             data/independent_football/evaluation.json
             data/independent_football/forecasts/*.json
