@@ -11,6 +11,32 @@ RESULTS = Path("data/prematch/verified_results.json")
 STATUS = Path("data/diagnostics/result_backfill.json")
 MAX_CALLS = 12
 
+def _accept_verified(item,fid,frozen,existing,status,clock):
+    fixture=item.get("fixture") or {}
+    teams=item.get("teams") or {}
+    home=teams.get("home") or {}
+    away=teams.get("away") or {}
+    goals=item.get("goals") or {}
+    if (fixture.get("status") or {}).get("short")!="FT":
+        return
+    if (str(fixture.get("id"))!=fid or
+        str(home.get("id"))!=str(frozen["home_team_id"]) or
+        str(away.get("id"))!=str(frozen["away_team_id"]) or
+        utc(fixture["date"])!=utc(frozen["kickoff_utc"])):
+        status["skipped_identity"]+=1
+        return
+    hg,ag=goals.get("home"),goals.get("away")
+    if type(hg)!=int or type(ag)!=int or hg<0 or ag<0:
+        return
+    existing[fid]={"provider":"API-Football","fixture_id":int(fid),
+        "home_team_id":int(home["id"]),"away_team_id":int(away["id"]),
+        "home_team":home.get("name"),"away_team":away.get("name"),
+        "kickoff_utc":utc(fixture["date"]).isoformat(),
+        "home_goals":hg,"away_goals":ag,"score_basis":"regulation",
+        "status":"FT","verified_at_utc":clock.isoformat(),
+        "evidence_version":2}
+    status["new_verified"].append(fid)
+
 def run(request=_request, now=None):
     clock = utc(now) if now else datetime.now(timezone.utc)
     key = os.environ.get("API_FOOTBALL_KEY", "")
@@ -47,43 +73,30 @@ def run(request=_request, now=None):
             except (KeyError,ValueError,TypeError,OverflowError):
                 status["skipped_identity"]+=1
         status["eligible_unverified"]=len(candidates)
-        for fid,frozen in sorted(candidates.items(),key=lambda x:x[1]["kickoff_utc"])[:MAX_CALLS]:
+        # API-Football supports up to 20 fixture IDs per request. Batch by
+        # original IDs, then independently validate each returned identity.
+        ordered=sorted(candidates.items(),key=lambda x:x[1]["kickoff_utc"])
+        selected=ordered[:MAX_CALLS*20]
+        status["requested_fixture_ids"]=len(selected)
+        for offset in range(0,len(selected),20):
+            group=selected[offset:offset+20]
             status["requests"]+=1
             try:
-                result=request(key,"/fixtures",{"id":int(fid)},with_metadata=True)
+                result=request(key,"/fixtures",{"ids":"-".join(fid for fid,_ in group)},with_metadata=True)
                 if (result.get("metadata") or {}).get("stale"):
                     continue
                 items=result.get("data") or []
-                if len(items)!=1:
+                if not isinstance(items,list):
                     continue
-                item=items[0]
-                fixture=item.get("fixture") or {}
-                teams=item.get("teams") or {}
-                home=teams.get("home") or {}
-                away=teams.get("away") or {}
-                goals=item.get("goals") or {}
-                state=(fixture.get("status") or {}).get("short")
-                # FT alone is a verified regulation-time score. Avoid AET/PEN
-                # unless a separate, independently supplied 90-minute score exists.
-                if state!="FT":
-                    continue
-                if (str(fixture.get("id"))!=fid or
-                    str(home.get("id"))!=str(frozen["home_team_id"]) or
-                    str(away.get("id"))!=str(frozen["away_team_id"]) or
-                    utc(fixture["date"])!=utc(frozen["kickoff_utc"])):
-                    status["skipped_identity"]+=1
-                    continue
-                hg,ag=goals.get("home"),goals.get("away")
-                if type(hg)!=int or type(ag)!=int or hg<0 or ag<0:
-                    continue
-                existing[fid]={"provider":"API-Football","fixture_id":int(fid),
-                    "home_team_id":int(home["id"]),"away_team_id":int(away["id"]),
-                    "home_team":home.get("name"),"away_team":away.get("name"),
-                    "kickoff_utc":utc(fixture["date"]).isoformat(),
-                    "home_goals":hg,"away_goals":ag,"score_basis":"regulation",
-                    "status":"FT","verified_at_utc":clock.isoformat(),
-                    "evidence_version":2}
-                status["new_verified"].append(fid)
+                status["provider_rows_returned"]=status.get("provider_rows_returned",0)+len(items)
+                for item in items:
+                    fixture=item.get("fixture") or {}
+                    fid=str(fixture.get("id"))
+                    frozen=candidates.get(fid)
+                    if frozen is None or fid not in dict(group):
+                        status["skipped_identity"]+=1
+                        continue
+                    _accept_verified(item,fid,frozen,existing,status,clock)
             except (ProviderQuotaError,ProviderAccessError,ProviderRejectedError) as exc:
                 status["state"]=type(exc).__name__
                 break
