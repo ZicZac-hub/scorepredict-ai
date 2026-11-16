@@ -125,7 +125,7 @@ def render(st, root=ROOT):
                  str(entry.get("away_team") or "Away"))
         with st.expander(label + " · " + str(actual_count) + " AI vote(s) saved"):
             st.caption("Frozen: "+sydney_timestamp(entry.get("captured_at_utc"))+
-                       " · Source: +str(entry.get("source_model") or "unknown")+
+                       " · Source: "+str(entry.get("source_model") or "unknown")+
                        " · Original forecast preserved")
             st.write("**AI responses:** "+str(actual_count)+
                      " of "+str(configured)+" configured at capture")
