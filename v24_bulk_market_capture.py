@@ -314,11 +314,11 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
     for date in days:
         if run["queries"]>=remaining:
             break
-        # Avoid consuming an entire daily quota on successive pages of a
-        # single fixture date. Resume its next page in a later run.
-        queried_for_date=0
+        # Allow pagination within the strictly bounded per-run and daily
+        # request budgets. A one-page cap silently skipped page 2 even when
+        # the provider reported more results, causing incomplete coverage.
         for page in range(1,MAX_PAGE+1):
-            if run["queries"]>=remaining or queried_for_date>=1:
+            if run["queries"]>=remaining:
                 break
             marker=_attempt(root,clock,date,page)
             # Reuse completed page attempts from ANY collection slot today.
@@ -351,7 +351,6 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
             except FileExistsError:
                 continue
             run["queries"]+=1
-            queried_for_date+=1
             run["attempts"].append({"date":date,"page":page})
             try:
                 if request is _request:
