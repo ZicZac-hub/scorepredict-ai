@@ -52,7 +52,7 @@ def test_no_report_still_visible_with_no_fake_zero_hit_rate(tmp_path):
     assert screen.messages[0]==(
         "expander","🧮 V25 Professional Analyst · Five Doubles",True)
     assert "no saved research run" in all_text
-    assert "not counted as a loss" in all_text
+    assert "No missing report is counted as a loss" in all_text
     assert "Real five-double accuracy" not in all_text
     assert screen.links and screen.links[0][1].endswith("prematch-evidence.yml")
 
