@@ -56,6 +56,42 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
         st.caption((f"Verified five-double wins: {wins}/{n} · {doubles['hit_rate']:.1%}"
                     if n and doubles.get("hit_rate") is not None
                     else "⏳ Pending both match results — not zero accuracy"))
+    if not compact:
+        with st.expander("🧮 V25 Professional Analyst · Research-only five doubles"):
+            try:
+                professional = json.loads(
+                    Path("data/pro_analyst_shadow/status.json").read_text(
+                        encoding="utf-8"))
+            except (OSError, ValueError, TypeError):
+                professional = {}
+            if not professional:
+                st.info("No V25 shadow selection report yet. This independent "
+                        "experiment never changes your existing five doubles.")
+            else:
+                n = int(professional.get("verified_sets") or 0)
+                w = int(professional.get("robust_wins") or 0)
+                b = int(professional.get("baseline_wins_on_same_pairs") or 0)
+                st.write("Original frozen V8 vs a four-distribution robustness "
+                         "challenger, on the exact same two-match pairs.")
+                st.write({
+                    "Frozen sets": int(professional.get("total_frozen_sets") or 0),
+                    "Verified sets": n,
+                    "Pending sets": int(professional.get("pending_sets") or 0),
+                    "Robust five-double hits": w,
+                    "Original V8 same-pair hits": b,
+                    "Actual robust accuracy": (
+                        f"{w/n:.1%}" if n else "Unmeasured"),
+                })
+                st.caption("Robust score ranking uses fixed V8, independent "
+                           "Poisson, negative-binomial and bivariate-Poisson "
+                           "sensitivity models, not four independent AI votes. "
+                           "All source forecasts must be frozen before both "
+                           "kickoffs. It may abstain. No method is promoted "
+                           "without substantial future verification.")
+                examples = (professional.get("outcomes") or [])[-8:]
+                if examples:
+                    st.dataframe(examples, use_container_width=True,
+                                 hide_index=True)
     robust_auto=report.get("v14_independently_selected_five_doubles") or {}
     robust_frozen=int(robust_auto.get("frozen_pairs") or 0)
     robust_checked=int(robust_auto.get("verified_pairs") or 0)
