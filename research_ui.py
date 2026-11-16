@@ -83,6 +83,11 @@ def _stats(records):
 
 def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, external_private=False):
     st.markdown('<div class="zz-research-hero"><div class="zz-research-kicker">🧠 DEEP RESEARCH LAB · EXPERIMENTAL</div><h2>Know the match. <span>See the evidence.</span></h2><p>Recent form, venue performance, opponent-adjusted models and honest score probabilities. No invented injuries or guaranteed scores.</p></div>', unsafe_allow_html=True)
+    # V25 is a scheduled TWO-match five-double study, not a selectable
+    # per-match AI model. Keep its read-only results above the single-match
+    # controls so owners can see it immediately on iPhone, even with no fixtures.
+    from v25_deep_research_panel import render as render_v25
+    render_v25(st)
     with st.expander("📈 Verified historical replay · v6 versus v8 (not live accuracy)"):
         from pathlib import Path
         import json
