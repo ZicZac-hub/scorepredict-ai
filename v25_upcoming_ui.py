@@ -4,7 +4,7 @@ Generated scores are explicit on-demand research, not automatic prospective
 shadow winners. Pagination exposes all eligible pairs without API spending.
 """
 import csv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, date
 from io import StringIO
 import math
 
@@ -12,6 +12,9 @@ from ai_five_double_engine import identity
 from v25_upcoming import (
     MAX_PAGE_PAIRS, available, pair_catalog, generate, best_pair,
     rows_for_page, VERSION,
+)
+from v25_date_discovery import (
+    SYDNEY, visible_days, date_label, merge_modelled, fixture_table,
 )
 
 
@@ -92,44 +95,164 @@ def _show_report(st,report):
 
 def render(st,rows,histories=None):
     """Fast V25 entrypoint for all saved or freshly modelled upcoming fixtures."""
-    from ai_five_double_ui import options,_minute_archived_candidates
-    from ai_five_double_engine import pair_check
+    from ai_five_double_ui import options, _minute_archived_candidates
+    from ai_five_live_finder import research_day
     import os
+
     clock=datetime.now(timezone.utc)
+    local_today=clock.astimezone(SYDNEY).date()
     minute=int(clock.timestamp()//60)
-    joined=options(rows or [],now=clock,
-                   archived=_minute_archived_candidates(minute))
+    research=st.session_state.setdefault("zz_v25_discovered_by_day",{})
+    all_session_rows=[
+        result for day,stored in research.items()
+        if day>=local_today.isoformat()
+        for result in stored.get("rows",[])
+    ]
+
+    def merged_forecasts():
+        return options(list(rows or [])+all_session_rows,now=clock,
+                       archived=_minute_archived_candidates(minute))
+
+    joined=merged_forecasts()
     available_by_day,excluded=available(joined,clock)
     st.markdown("### 🧮 V25 · Predict five doubles for upcoming matches")
-    st.caption("Select any qualifying two-match pair, auto-select a researched "
-               "pair, or generate five V25 combinations for every eligible "
-               "pair, one manageable page at a time. Uses only existing "
-               "full pre-kickoff score distributions; no paid AI calls.")
+    st.caption("Choose **Today**, **Tomorrow**, or any upcoming Sydney matchday. "
+               "All provider-confirmed future fixtures can be listed even when "
+               "they lack sufficient historical data to predict exact scores. "
+               "V25 does not invent missing score probability grids.")
+
     total=sum(len(items) for items in available_by_day.values())
     st.write(f"**{total}** complete-grid upcoming matches across "
              f"**{len(available_by_day)}** Sydney matchdays.")
     if excluded:
-        st.caption("Forecasts excluded from V25 (not match losses): "+
+        st.caption("Source forecasts excluded from V25 (not match losses): "+
                    ", ".join(f"{name.replace('_',' ')}: {count}"
                              for name,count in sorted(excluded.items())))
-    groups={day:items for day,items in available_by_day.items()
-            if len(items)>=2}
-    if not groups:
-        st.info("No date has two eligible, distinct matches with complete "
-                "score probability grids yet. This is not a losing prediction. "
-                "Try the 'Load fresh live fixtures' switch at the top of the "
-                "AI Five-Double page, or run Search & model for Today/Tomorrow "
-                "using available authentic API-Football data.")
+    days=visible_days(clock,available_by_day)
+    def _go_to_date(day_value):
+        st.session_state["zz_v25_matchday"]=day_value
+
+    today_button,tomorrow_button=st.columns(2)
+    today_button.button("📍 Today · "+local_today.strftime("%d %b"),
+                        on_click=_go_to_date,args=(local_today.isoformat(),),
+                        key="zz_v25_go_today",use_container_width=True)
+    tomorrow=local_today+timedelta(days=1)
+    tomorrow_button.button("🗓 Tomorrow · "+tomorrow.strftime("%d %b"),
+                           on_click=_go_to_date,args=(tomorrow.isoformat(),),
+                           key="zz_v25_go_tomorrow",use_container_width=True)
+
+    day=st.selectbox(
+        "📅 Choose upcoming match date (Sydney)",
+        days, key="zz_v25_matchday",
+        format_func=lambda value:date_label(
+            value,clock,
+            eligible_count=len(available_by_day.get(value,[])),
+            discovered_count=len((research.get(value) or {}).get("fixtures") or [])),
+        help="Always starts with today's Sydney date. A day with no V25 "
+             "score model is still available for fixture discovery.")
+
+    st.caption("Fixture discovery uses API-Football's Sydney-timezone date "
+               "filter. Tap below to look up the actual fixtures for the "
+               "selected date; the provider's available matches may differ "
+               "from the already-modelled forecast archive.")
+    requested=st.button(
+        "🔎 Find & model matches · "+date.fromisoformat(day).strftime("%d %b"),
+        key="zz_v25_discover_day",type="primary",use_container_width=True,
+        help="Makes one date-scoped API-Football fixture request and up to "
+             "four model attempts. History and team-context calls may use "
+             "your API-Football quota; it never makes paid AI requests.")
+    if requested:
+        try:
+            key=str(st.secrets.get("API_FOOTBALL_KEY") or
+                    os.environ.get("API_FOOTBALL_KEY") or "").strip()
+        except (AttributeError,OSError,KeyError,RuntimeError):
+            key=str(os.environ.get("API_FOOTBALL_KEY") or "").strip()
+        if not key:
+            st.error("API_FOOTBALL_KEY is unavailable in Streamlit Secrets. "
+                     "Cannot confirm missing today's fixtures; saved forecast "
+                     "models remain available.")
+        else:
+            previous=research.get(day) or {}
+            if (previous.get("last") or {}).get("quota_limited"):
+                st.warning("The last provider search hit a rate limit or quota. "
+                           "Additional searches for this date are paused for "
+                           "this session to avoid repeated API costs.")
+            else:
+                with st.spinner("Checking real upcoming fixtures and modelling "
+                                "up to four previously unchecked matches..."):
+                    outcome=research_day(
+                        key,date.fromisoformat(day),
+                        known_ids=previous.get("checked_ids") or [],now=clock)
+                new_rows=merge_modelled(previous.get("rows") or [],
+                                       outcome.get("modeled") or [])
+                checked=list(dict.fromkeys(
+                    list(previous.get("checked_ids") or [])+
+                    list(outcome.get("checked_ids") or [])))
+                # An empty or quota-limited search never erases an earlier
+                # verified fixture list for this same date.
+                fixtures=outcome.get("fixtures") or previous.get("fixtures") or []
+                research[day]={
+                    "rows":new_rows,"checked_ids":checked,"fixtures":fixtures,
+                    "last":{k:v for k,v in outcome.items()
+                            if k not in ("modeled","checked_ids","fixtures")},
+                }
+                # The newly modelled rows must take effect on the SAME click.
+                all_session_rows[:]=[
+                    row for date_key,record in research.items()
+                    if date_key>=local_today.isoformat()
+                    for row in record.get("rows",[])
+                ]
+                joined=merged_forecasts()
+                available_by_day,excluded=available(joined,clock)
+
+    saved=research.get(day) or {}
+    last=saved.get("last") or {}
+    if last:
+        if last.get("quota_limited"):
+            st.error("API-Football quota or rate limit prevented a complete "
+                     "search. Zero returned fixtures does NOT mean today's "
+                     "football schedule is empty.")
+        else:
+            st.caption("Source search "+day+": "+
+                       str(last.get("discovered",0))+" upcoming fixtures · "+
+                       str(len(saved.get("checked_ids") or []))+" attempted "+
+                       "match models · "+
+                       str(len(saved.get("rows") or []))+" modelled with "+
+                       "available statistical evidence · "+
+                       str(last.get("remaining",0))+
+                       " not yet attempted.")
+        for message in (last.get("errors") or [])[:3]:
+            st.caption("Provider/model limitation: "+str(message)[:190])
+        if last.get("remaining",0):
+            st.caption("Tap Find & model again to process another four "
+                       "previously unchecked fixtures. Historical evidence "
+                       "and API quota determine which become V25-ready.")
+
+    chosen=available_by_day.get(day,[])
+    all_fixtures=fixture_table(day,chosen,saved.get("fixtures") or [])
+    st.write(f"**{len(all_fixtures)}** genuine upcoming matches identified "
+             f"for {day} · **{len(chosen)}** with complete V25 score grids.")
+    if all_fixtures:
+        st.dataframe(all_fixtures,use_container_width=True,hide_index=True)
+    elif day<=tomorrow.isoformat() and not last:
+        st.info("The existing saved models do not yet cover this date. "
+                "That does **not** mean no games are scheduled. Tap "
+                "**Find & model matches** to discover today's or tomorrow's "
+                "genuine fixtures using the connected provider.")
+
+    if len(chosen)<2:
+        st.info("No two eligible full-grid score forecasts on this selected "
+                "Sydney date yet. Fixtures with incomplete historical evidence "
+                "are listed above but cannot honestly be given five exact-score "
+                "doubles. Choose another date or use the discovery button.")
         return
-    day=st.selectbox("📅 Choose upcoming match date (Sydney)",
-                     list(groups),key="zz_v25_matchday")
-    st.caption("Showing EVERY available future matchday with at least two "
-               "complete-grid models, not only the next 24 hours.")
+
     search=st.text_input("🔎 Filter pairs by team (optional)",
                          key="zz_v25_team_search",placeholder="Team name")
-    catalog=pair_catalog(groups[day],clock,search=search)
+    catalog=pair_catalog(chosen,clock,search=search)
     if not catalog:
-        st.warning("No four-team match pair on this date matches the search.")
+        st.warning("No eligible two-match pair of four distinct teams "
+                   "matches this date and search.")
         return
     st.write(f"**{len(catalog)}** eligible two-match pairs on {day}. "
              "All pair combinations are browsable.")
