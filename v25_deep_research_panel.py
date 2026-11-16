@@ -6,6 +6,7 @@ and must not be represented as proven accuracy or live bookmaker advice.
 """
 import json
 from datetime import datetime
+from sydney_display import sydney_timestamp
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -28,7 +29,7 @@ def sydney_time(value):
         parsed = datetime.fromisoformat(str(value).replace("Z","+00:00"))
         if parsed.tzinfo is None:
             return None
-        return parsed.astimezone(SYDNEY).strftime("%d %b %Y, %I:%M %p").lstrip("0") + " Sydney"
+        return sydney_timestamp(parsed, fmt="%d %b %Y, %I:%M %p", missing=None)
     except (ValueError,TypeError,OverflowError):
         return None
 

@@ -5,6 +5,7 @@ Everything is evaluated strictly before the selected kickoff. Optional
 team news is fetched only on request and is never fabricated.
 """
 from datetime import datetime, timezone
+from sydney_display import sydney_timestamp
 
 from deep_research_ai import research_prediction
 
@@ -342,7 +343,7 @@ def render(st, rows, histories, api_key, sydney_kickoff, pre_match_report, *, ex
         if report.get("market_used"):
             _market=report["market_details"]
             st.success("Verified pre-match market data used: " + str(_market["bookmaker"]) +
-                       " · Snapshot: " + str(_market["snapshot_utc"]) +
+                       " · Snapshot: " + sydney_timestamp(_market["snapshot_utc"]) +
                        " · 1X2 overround: " + f"{(_market['winner_overround']-1):.1%}")
             if _market.get("totals"):
                 st.caption("Complete Over/Under 2.5 market also incorporated; odds adjusted for the bookmaker margin.")

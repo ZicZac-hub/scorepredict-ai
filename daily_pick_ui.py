@@ -343,7 +343,7 @@ def render(st,rows,session,api_key=None,now=None):
         m=outcome["market"]
         st.success("v9 comparison: "+str(outcome["score"][0])+"–"+str(outcome["score"][1])+
                    " · "+f'{outcome["probability"]:.1%}'+
-                   " · Provider: "+str(m["bookmaker"])+" · Snapshot "+str(m["snapshot_utc"]))
+                   " · Provider: "+str(m["bookmaker"])+" · Snapshot "+sydney_timestamp(m["snapshot_utc"]))
         st.caption("This is a separate experimental market-adjusted estimate, NOT an update to the frozen Prediction of the Day.")
     elif outcome.get("reason"):
         st.info(str(outcome["reason"]))
