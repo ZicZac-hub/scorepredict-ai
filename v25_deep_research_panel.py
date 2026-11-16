@@ -102,7 +102,7 @@ def render(st, *, report_path=STATUS, sets_dir=SETS):
     with st.expander("🧮 V25 Professional Analyst · Five Doubles", expanded=True):
         st.markdown("**Want five V25 score doubles for upcoming matches?**")
         st.link_button("⚽ Generate V25 Five Doubles now",
-                       "https://ziczacscorepredict-ai.streamlit.app/?view=ai_five",
+                       "https://ziczacscorepredict-ai.streamlit.app/?view=ai_five&v25=1",
                        use_container_width=True)
         st.caption("The generator supports manual pairs, automatic selection "
                    "and every eligible same-day upcoming pair, one page at a time.")
