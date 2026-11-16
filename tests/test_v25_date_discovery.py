@@ -98,3 +98,16 @@ def test_invalid_horizon_and_old_days_not_present():
         else:
             raise AssertionError("Invalid date horizon must fail")
     assert "2026-11-16" not in visible_days(NOW,{"2026-11-16":[1]})
+
+def test_cloud_entrypoint_exposes_today_forward_release_marker():
+    """Distinguish a deployed new V25 app from a stale Streamlit process."""
+    from pathlib import Path
+    app=Path("app.py").read_text(encoding="utf-8")
+    smoke=Path(".github/workflows/streamlit-live-smoke.yml").read_text(
+        encoding="utf-8")
+    assert "V25 CALENDAR · 17 NOV 2026 UPDATE · TODAY & TOMORROW ENABLED" in app
+    assert app.index("V25 CALENDAR · 17 NOV 2026 UPDATE") < app.index(
+        'render_ai_five_double_studio(st, [], {})')
+    for path in ("v25_upcoming_ui.py","v25_date_discovery.py",
+                 "ai_five_live_finder.py"):
+        assert path in smoke

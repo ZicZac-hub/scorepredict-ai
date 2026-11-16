@@ -169,6 +169,10 @@ with active_page_slot:
 # live feed discovery, which retains the original complete-data path below.
 if view == 'ai_five':
     with active_page_slot:
+        # Main entrypoint marker deliberately changes on the V25 calendar
+        # release. Streamlit Cloud monitors this file for code refreshes.
+        # It is also an unambiguous visual check of the deployed build.
+        st.caption("V25 CALENDAR · 17 NOV 2026 UPDATE · TODAY & TOMORROW ENABLED")
         st.caption("Fast mode uses existing saved pre-match forecasts and any "
                    "available archived AI opinions. It needs no new football "
                    "data download and does not make paid model requests.")
