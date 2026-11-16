@@ -327,7 +327,14 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
                     break
                 continue
             if page>1:
-                previous=load_json(_attempt(root,clock,date,page-1),{})
+                # Previous page may have been fetched in another three-hour
+                # slot. A slot-specific lookup would strand pagination at
+                # page 1 forever and waste the daily request budget.
+                previous_files=sorted(
+                    (Path(root)/"requests"/clock.date().isoformat()).glob(
+                        date+"_p"+str(page-1)+"_slot*.json"))
+                previous=(load_json(previous_files[-1],{})
+                          if previous_files else {})
                 if not previous or previous.get("result_count",0)<10:
                     break
             marker.parent.mkdir(parents=True,exist_ok=True)
