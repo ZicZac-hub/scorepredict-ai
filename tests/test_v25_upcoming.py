@@ -16,7 +16,7 @@ NOW=datetime(2031,11,18,0,tzinfo=timezone.utc)
 KICK="2031-11-20T03:00:00+00:00"
 
 
-def fixture(fid, *, kick=KICK, captured="2031-11-17T03:00:00+00:00",
+def fixture(fid, *, kick=KICK, captured="2031-11-14T03:00:00+00:00",
             missing_grid=False, home=None, away=None):
     h=np.array([.23,.30,.24,.13,.06,.025,.01,.005],dtype=float)
     a=np.array([.30,.35,.21,.09,.03,.015,.004,.001],dtype=float)
@@ -38,7 +38,7 @@ def fixture(fid, *, kick=KICK, captured="2031-11-17T03:00:00+00:00",
 
 
 def test_every_upcoming_same_day_pair_is_browsable_and_unchanged():
-    fixtures=[fixture(i,kick=(NOW+timedelta(days=3,hours=i)).isoformat())
+    fixtures=[fixture(i,kick=(NOW+timedelta(days=3,hours=i-101)).isoformat())
               for i in range(101,106)]
     originals=deepcopy(fixtures)
     groups,reasons=available(fixtures,NOW)
@@ -87,7 +87,7 @@ def test_different_sydney_day_and_shared_team_never_form_double():
 
 
 def test_auto_select_all_pairs_and_generate_all_pages_no_drop():
-    matches=[fixture(i,kick=(NOW+timedelta(days=3,hours=i)).isoformat())
+    matches=[fixture(i,kick=(NOW+timedelta(days=3,hours=i-101)).isoformat())
              for i in range(101,109)]
     byday,_=available(matches,NOW)
     catalog=pair_catalog(next(iter(byday.values())),NOW)
@@ -111,7 +111,7 @@ def test_auto_select_all_pairs_and_generate_all_pages_no_drop():
 
 
 def test_auto_research_is_bounded_and_honest_about_shortlist():
-    fixtures=[fixture(i,kick=(NOW+timedelta(days=3,hours=i)).isoformat())
+    fixtures=[fixture(i,kick=(NOW+timedelta(days=3,hours=i-101)).isoformat())
               for i in range(101,107)]
     groups,_=available(fixtures,NOW)
     catalog=pair_catalog(next(iter(groups.values())),NOW)
