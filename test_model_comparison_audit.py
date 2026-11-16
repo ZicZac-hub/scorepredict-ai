@@ -1,6 +1,6 @@
 """Unit tests for honest model comparison."""
 import unittest
-from model_comparison_audit import benchmark
+from model_comparison_audit import benchmark, paired_benchmark
 
 def row():
     return {"fixture_id":"api:12","kickoff":"2026-11-20T19:00:00Z",
@@ -29,5 +29,17 @@ class BenchmarkTests(unittest.TestCase):
     def test_truncated_distribution_not_brier(self):
         r=row();r["forecasts"]["baseline"]["scores"]=[[1,0,.3],[0,0,.2]]
         self.assertIsNone(benchmark([r])["models"]["baseline"]["multiclass_brier"])
+    def test_paired_cohort_excludes_duplicate_fixtures(self):
+        r=row()
+        r["forecasts"]["challenger"]=dict(r["forecasts"]["baseline"])
+        self.assertEqual(paired_benchmark([r,r])["shared_fixtures"],0)
+        self.assertEqual(paired_benchmark([r,r])["duplicate_fixtures_excluded"],1)
+    def test_paired_cohort_same_match(self):
+        r=row()
+        r["forecasts"]["challenger"]=dict(r["forecasts"]["baseline"])
+        result=paired_benchmark([r])
+        self.assertEqual(result["shared_fixtures"],1)
+        self.assertEqual(result["models"]["baseline"]["fixtures"],1)
+        self.assertEqual(result["models"]["challenger"]["fixtures"],1)
 if __name__=="__main__":
     unittest.main()
