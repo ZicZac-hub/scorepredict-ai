@@ -178,11 +178,6 @@ if view == 'ai_five':
             help="Turn this on only if you need newly modelled fixtures not "
                  "already present in the frozen research archive.")
         if not _ai_five_live:
-            # V25 research is on-demand for any modelled upcoming match,
-            # NOT restricted to the scheduled prospective 24-hour freeze.
-            from v25_upcoming_ui import render as render_v25_upcoming
-            render_v25_upcoming(st, [], {})
-            st.divider()
             from ai_five_double_ui import render as render_ai_five_double_studio
             render_ai_five_double_studio(st, [], {})
     if not _ai_five_live:
@@ -512,9 +507,6 @@ if view == 'ai_five':
     with active_page_slot:
         st.caption("Live research mode adds newly discovered and modelled "
                    "fixtures to the immutable saved-forecast candidates.")
-        from v25_upcoming_ui import render as render_v25_upcoming
-        render_v25_upcoming(st, eligible, histories)
-        st.divider()
         from ai_five_double_ui import render as render_ai_five_double_studio
         render_ai_five_double_studio(st, eligible, histories)
 
