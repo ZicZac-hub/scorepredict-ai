@@ -143,7 +143,7 @@ div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
 _nav_titles={route:emoji+' '+label for emoji,label,route in nav_items}
 def _open_selected_section():
     _navigate_to(st.session_state['zz_section_picker'])
-if st.session_state.get('zz_section_picker') not in _nav_titles:
+if st.session_state.get('zz_section_picker') != st.session_state['ziczac_active_page']:
     st.session_state['zz_section_picker']=st.session_state['ziczac_active_page']
 st.selectbox('📍 Open a section',list(_nav_titles),
              format_func=lambda route:_nav_titles[route],
