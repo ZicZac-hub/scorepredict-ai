@@ -527,10 +527,15 @@ if view == 'private':
 
 if view == 'deep':
     with active_page_slot:
+        # Entry-point wiring is intentional: Community Cloud may keep a
+        # cached secondary research_ui module even after GitHub changes.
+        # V25 must be visible before optional match lookup and paid AI calls.
+        from v25_deep_research_panel import render as render_v25_panel
+        st.caption("Deep Research build · V25 Professional Analyst panel")
+        render_v25_panel(st)
         from research_ui import render as render_deep_research
-        # Keep this call backward-compatible with existing Streamlit
-        # deployments that may still have an older research_ui module cached.
-        # research_ui verifies the private gate from session+server secrets.
+        # Preserved single-match models remain separate from the automatic
+        # two-fixture V25 study; no original predictions are changed.
         render_deep_research(st, eligible, histories, secondary_key,
                              sydney_kickoff, pre_match_report)
 
