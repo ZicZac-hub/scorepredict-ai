@@ -5,7 +5,9 @@ single-match prediction method, cannot be launched by the purple button,
 and must not be represented as proven accuracy or live bookmaker advice.
 """
 import json
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 STATUS = Path("data/pro_analyst_shadow/status.json")
 SETS = Path("data/pro_analyst_shadow/sets")
@@ -13,6 +15,34 @@ ACTIONS_URL = (
     "https://github.com/ZicZac-hub/scorepredict-ai/actions/"
     "workflows/prematch-evidence.yml"
 )
+STATUS_URL = (
+    "https://github.com/ZicZac-hub/scorepredict-ai/blob/main/"
+    "data/pro_analyst_shadow/status.json"
+)
+SYDNEY = ZoneInfo("Australia/Sydney")
+
+
+def sydney_time(value):
+    """Format source timestamp, not a locally invented run or kickoff."""
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z","+00:00"))
+        if parsed.tzinfo is None:
+            return None
+        return parsed.astimezone(SYDNEY).strftime("%d %b %Y, %I:%M %p").lstrip("0") + " Sydney"
+    except (ValueError,TypeError,OverflowError):
+        return None
+
+
+def diagnostic_reasons(report):
+    """Validated source scan counts, never falsely interpreted as matches lost."""
+    coverage=report.get("candidate_coverage") or {}
+    if not isinstance(coverage,dict):
+        return {}
+    excluded=coverage.get("excluded") or {}
+    if not isinstance(excluded,dict):
+        return {}
+    return {str(k):v for k,v in excluded.items()
+            if type(v) is int and v >= 0}
 
 
 def load_status(path=STATUS):
@@ -82,6 +112,9 @@ def render(st, *, report_path=STATUS, sets_dir=SETS):
                     "report is counted as a loss or a winning result.")
             st.link_button("See automatic V25 collection runs", ACTIONS_URL)
             return
+        evaluated=sydney_time(report.get("generated_at_utc"))
+        if evaluated:
+            st.caption("Last V25 collection: " + evaluated)
         total,verified,pending = (report[k] for k in
                                   ("total_frozen_sets","verified_sets",
                                    "pending_sets"))
@@ -98,6 +131,36 @@ def render(st, *, report_path=STATUS, sets_dir=SETS):
                    "related goal-distribution assumptions. Model-estimated "
                    "coverage is not observed success, and 70% accuracy "
                    "has not been demonstrated.")
+        if total == 0:
+            st.info("V25 collection has run successfully. No two-match "
+                    "research set has qualified yet; this is not a prediction "
+                    "loss or an application error.")
+            reasons=diagnostic_reasons(report)
+            waiting=reasons.get("outside_research_freeze_window",0)
+            if waiting:
+                st.write(f"**{waiting}** saved source forecasts are waiting "
+                         "for the 24-hour pre-match research window.")
+            invalid=reasons.get("invalid_source_time",0)
+            if invalid:
+                st.caption(f"{invalid} source records failed strict timestamp "
+                           "checks and are excluded, not silently repaired.")
+            other=reasons.get("not_original_v8_model",0)
+            if other:
+                st.caption(f"{other} other-model records were excluded because "
+                           "V25 compares only genuine original V8-family sources.")
+            metadata=report.get("candidate_coverage") or {}
+            next_window=(sydney_time(metadata.get("next_possible_pair_window_utc"))
+                         if isinstance(metadata,dict) else None)
+            if next_window:
+                st.write("Earliest *possible* next V25 two-match research "
+                         "window: **" + next_window + "**")
+                st.caption("An opening window does not guarantee a prediction. "
+                           "V25 can still abstain if the evidence or model "
+                           "agreement is insufficient.")
+            st.caption("Archived genuine pre-match forecasts older than 72 hours "
+                       "may be used only in the research comparison, labelled "
+                       "as early snapshots. They are never described as fresh "
+                       "lineups, injury news or live bookmaker information.")
         latest=latest_frozen_set(sets_dir)
         if latest:
             one,two=latest["first"],latest["second"]
@@ -112,4 +175,5 @@ def render(st, *, report_path=STATUS, sets_dir=SETS):
         else:
             st.caption("No eligible saved five-double pairs to display yet. "
                        "The model may abstain when evidence is insufficient.")
+        st.link_button("Open verified V25 status on GitHub", STATUS_URL)
         st.link_button("Open automatic collection history", ACTIONS_URL)
