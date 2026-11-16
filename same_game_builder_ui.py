@@ -44,6 +44,11 @@ def builder_concepts(rows, target=80.0, limit=5):
 
 def render(st, rows, target=80.0):
     st.subheader("🧩 Five same-game builder concepts")
+    st.warning("Accuracy status: UNVALIDATED. The app does not yet have settled "
+               "historical corners/cards/shots/offsides selections linked to "
+               "pre-match quotes, so these concepts are NOT statistically "
+               "ranked or proven to offer value. Do not treat 80+ unadjusted "
+               "multiplication as a confirmed bookmaker payout.")
     st.caption("Based on the screenshot's approach: goals, corners, cards, shots and "
                "other provider-quoted markets combined into alternative single-game "
                "concepts. Quotes must be from the SAME bookmaker. No bookmaker "
@@ -53,6 +58,8 @@ def render(st, rows, target=80.0):
         st.info("Insufficient real individual market quotes to construct five "
                 "illustrative 80+ combinations. No selections invented.")
         return
+    st.caption("Ordering is by closeness to an illustrative 80× product, "
+               "NOT by chance of winning. Five examples may be unavailable.")
     for i,concept in enumerate(concepts,1):
         with st.expander(f"Concept {i} · {concept['Bookmaker']} · unadjusted "
                          f"{concept['Unadjusted product (NOT offered odds)']:.2f}×",
