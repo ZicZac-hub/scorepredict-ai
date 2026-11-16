@@ -6,6 +6,50 @@ from pathlib import Path
 from five_double_accuracy import OUTPUT
 
 
+def coverage_research_rows(report, limit=12):
+    """Read-only summary of original pair probability geometry, including pending sets.
+
+    These numbers describe *model-estimated* coverage; they cannot be
+    interpreted as historical or future betting win rates.
+    """
+    if not isinstance(report, dict) or not isinstance(report.get("sets"), list):
+        return []
+    if type(limit) is not int or limit < 1:
+        return []
+    rows = []
+    for item in report["sets"]:
+        if not isinstance(item, dict):
+            continue
+        geometry = item.get("full_grid_diagnosis") or {}
+        if not isinstance(geometry, dict):
+            continue
+        selected = item.get("selected_five_model_coverage")
+        optimal = geometry.get("optimal_five_model_coverage")
+        if not all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1
+                   for v in (selected, optimal)):
+            continue
+        if selected > optimal + 1e-9:
+            continue
+        required = geometry.get("minimum_combinations_for_target_model_coverage")
+        if required is not None and (type(required) is not int or required < 1):
+            continue
+        gaps = item.get("source_feature_gaps") or []
+        gaps = [leg for leg in gaps if isinstance(leg, dict)]
+        rows.append({
+            "Sydney date": str(item.get("sydney_date") or ""),
+            "Result": item.get("status") if item.get("status") in ("hit", "miss", "pending") else "unknown",
+            "Selected five model coverage": round(selected * 100, 2),
+            "Best five model coverage": round(optimal * 100, 2),
+            "Combos for 70% model coverage": required,
+            "Legs missing true xG": sum(not g.get("verified_shot_xg_available", False) for g in gaps),
+            "Legs without validated lineup adjustment": sum(
+                not g.get("validated_lineup_adjustments_applied", False) for g in gaps),
+        })
+        if len(rows) >= limit:
+            break
+    return rows
+
+
 def render(st, report_path=OUTPUT):
     try:
         raw = Path(report_path).read_text(encoding="utf-8")
@@ -49,6 +93,16 @@ def render(st, report_path=OUTPUT):
                      "Estimated coverage is separate from observed accuracy.")
         st.write("70% exact-score-double accuracy has not been established. "
                  "Changing the order of five guesses cannot add probability to the source grids.")
+        evidence_rows = coverage_research_rows(report)
+        if evidence_rows:
+            st.caption("Research comparison for original saved pairs, including upcoming/pending games. "
+                       "All coverage percentages are MODEL ESTIMATES, not verified wins.")
+            st.dataframe(evidence_rows, use_container_width=True, hide_index=True)
+            st.caption("The 70% column reports how many distinct exact-score doubles would "
+                       "be needed for 70% of the ORIGINAL MODEL'S probability mass. "
+                       "It is not a betting recommendation, a promise, or proof of 70% real accuracy. "
+                       "Missing xG and lineup evidence identifies potential research work, "
+                       "not permission to invent adjustments.")
         sets = report.get("sets")
         for item in sets if isinstance(sets, list) else []:
             try:
