@@ -138,6 +138,16 @@ div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
     padding:6px 2px;white-space:normal;
 }
 </style>""",unsafe_allow_html=True)
+# Reliable native dropdown for mobile: the ten-column button strip can be too
+# narrow to tap on iPhone. This control opens the page immediately on change.
+_nav_titles={route:emoji+' '+label for emoji,label,route in nav_items}
+def _open_selected_section():
+    _navigate_to(st.session_state['zz_section_picker'])
+if st.session_state.get('zz_section_picker') not in _nav_titles:
+    st.session_state['zz_section_picker']=st.session_state['ziczac_active_page']
+st.selectbox('📍 Open a section',list(_nav_titles),
+             format_func=lambda route:_nav_titles[route],
+             key='zz_section_picker',on_change=_open_selected_section)
 nav_cols=st.columns(len(nav_items),gap='small')
 for col,(emoji,label,page) in zip(nav_cols,nav_items):
     with col:
@@ -151,7 +161,7 @@ view=st.session_state['ziczac_active_page']
 # worldwide finder and API settings. This is what makes taps feel responsive.
 active_page_slot=st.container()
 with active_page_slot:
-    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','single50':'🎯 Single match research · estimated fair odds 50+','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
+    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','single50':'🎯 Single match research · five estimated fair-odds outcomes at 80+','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
 
 # The AI Five-Double Studio can run entirely on already-frozen GitHub
 # forecasts. Render it immediately on tap, before expensive fixture discovery,
