@@ -7,7 +7,7 @@ def render(st):
     st.caption("Compare frozen forecasts for identical settled fixtures. "
                "Only forecasts timestamped before kickoff count. "
                "This page does not alter or promote the live prediction model.")
-    st.success("Model Benchmark is open · v2.3")
+    st.success("Model Benchmark is open · v2.4 · verified-results adapter")
     st.write("This page compares verified pre-match forecasts. You can scan the archive or upload a JSON export.")
     scan=st.button("🔎 Scan saved prediction archive",key="zz_benchmark_scan",use_container_width=True)
     uploaded=st.file_uploader("Upload a JSON list of verified fixture forecasts",
@@ -23,16 +23,19 @@ def render(st):
         return
     if uploaded is None:
         st.session_state["zz_benchmark_scan_done"]=True
-        @st.cache_data(ttl=1800,show_spinner=False)
-        def read_local_records():
+        @st.cache_data(ttl=300,show_spinner=False)
+        def read_verified_v24_records():
             return load_archive(".")
         try:
             with st.spinner("Reading compatible saved forecast records…"):
-                rows,diagnostics=read_local_records()
+                rows,diagnostics=read_verified_v24_records()
         except Exception as exc:
             st.error("Archive scan failed ("+type(exc).__name__+"). You can still upload JSON.")
             return
-        st.caption("Read-only local archive scan: "+str(diagnostics))
+        st.caption("Read-only verified-results archive scan: "+str(diagnostics))
+        if "verified_fixtures" not in diagnostics:
+            st.error("Outdated archive loader detected. Restart or redeploy the Streamlit app.")
+            return
         if not rows:
             st.info("No archive records use the benchmark's verified fixture schema. "
                     "The existing forecast archive may require a format-specific "
