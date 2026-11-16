@@ -5,6 +5,7 @@ PAGES = {
     'home': ('Matchday Studio', 'Verified football research, five exact-score doubles and transparent results.'),
     'predict': ('Daily Predictions', 'Explore upcoming fixtures and researched exact-score probabilities.'),
     'deep': ('Deep Research AI', 'Recent form, home and away records, head-to-head and available team news.'),
+    'single50': ('Single Match 50+ Odds', 'One-match research and estimated fair exact-score odds, not bookmaker quotes.'),
     'doubles': ('Five Score Doubles', 'Select two matches and generate five exact-score combinations.'),
     'ai_five': ('AI Five-Double Studio', 'Choose two matches, consult available AI providers and view five research-backed score doubles.'),
     'archive': ('Prediction History', 'Your original forecasts, timestamps and verified final scores.'),
