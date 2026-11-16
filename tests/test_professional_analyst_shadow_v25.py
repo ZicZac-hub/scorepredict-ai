@@ -175,5 +175,37 @@ def test_human_style_notes_only_restate_available_evidence_and_stale_abstains():
     assert memo["genuine_shot_based_xg_available"] is False
     assert memo["validated_lineup_adjustment_applied"] is False
     assert memo["numerical_context_weight"]==0
-    old=forecast(300,captured=NOW-timedelta(days=5))
-    assert _eligible(old,NOW)[1]=="stale_pre_match_source_evidence"
+    # A genuine five-day-old pre-kickoff forecast is still useful as an
+    # EARLY FROZEN shadow baseline, never a source of refreshed team news.
+    early=forecast(300,captured=NOW-timedelta(days=5))
+    early["evidence_as_of_utc"]=(NOW-timedelta(days=5,minutes=2)).isoformat()
+    eligible,why=_eligible(early,NOW)
+    assert why is None
+    assert eligible["source_freshness"]=="early_frozen_source_not_refreshed"
+    assert eligible["source_age_hours"]==120
+    too_old=forecast(301,captured=NOW-timedelta(days=15))
+    too_old["evidence_as_of_utc"]=(NOW-timedelta(days=15,minutes=2)).isoformat()
+    assert _eligible(too_old,NOW)[1]=="source_older_than_14_days"
+
+def test_far_future_frozen_sources_show_next_possible_window_without_pick():
+    from zoneinfo import ZoneInfo
+    first=forecast(100,lead=60,captured=NOW-timedelta(days=3))
+    second=forecast(200,lead=61,captured=NOW-timedelta(days=3))
+    for row in (first,second):
+        row["evidence_as_of_utc"]=(NOW-timedelta(days=3, minutes=2)).isoformat()
+    forecast_report=propose([first,second],NOW,min_envelope=0)
+    assert forecast_report["days"]=={}
+    assert forecast_report["eligible_fixtures"]==0
+    assert forecast_report["excluded"]["outside_research_freeze_window"]==2
+    open_time=datetime.fromisoformat(forecast_report["next_possible_pair_window_utc"])
+    assert open_time==NOW+timedelta(hours=37)
+    assert forecast_report["next_window_is_not_guaranteed_selection"] is True
+    # Same records become eligible when the correct pre-match window opens.
+    selected=propose([first,second],open_time,min_envelope=0)
+    pair=next(iter(selected["days"].values()))
+    assert pair["decision"]=="FROZEN_RESEARCH_ONLY"
+    assert pair["source_freshness_warning"] is True
+    assert pair["no_claim_of_updated_team_news"] is True
+    assert pair["first"]["human_research_note"]["source_freshness"]==(
+        "early_frozen_source_not_refreshed")
+    assert pair["source_age_hours"][0]>=100
