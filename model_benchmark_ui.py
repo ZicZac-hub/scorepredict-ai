@@ -14,18 +14,27 @@ def render(st):
                 '"actual":[1,0],"forecasts":{"baseline":{"created_at":'
                 '"2026-11-20T12:00:00Z","scores":[[1,0,0.15],[0,0,0.12]]}}}]',
                 language="json")
+    from benchmark_archive_loader import load_archive
     if uploaded is None:
-        st.info("No comparable verified records loaded. Upload an export "
-                "from the immutable forecast archive; no results are invented.")
-        return
-    try:
-        rows=json.load(uploaded)
-        if not isinstance(rows,list) or len(rows)>100000:
-            raise ValueError("Expected a JSON array with at most 100,000 records")
-        report=benchmark(rows)
-    except (ValueError,TypeError,KeyError,UnicodeError) as exc:
-        st.error("Invalid benchmark input: "+str(exc)[:160])
-        return
+        @st.cache_data(ttl=1800,show_spinner=False)
+        def read_local_records():
+            return load_archive(".")
+        rows,diagnostics=read_local_records()
+        st.caption("Read-only local archive scan: "+str(diagnostics))
+        if not rows:
+            st.info("No archive records use the benchmark's verified fixture schema. "
+                    "The existing forecast archive may require a format-specific "
+                    "adapter. No results or timestamps are inferred.")
+            return
+    else:
+        try:
+            rows=json.load(uploaded)
+            if not isinstance(rows,list) or len(rows)>100000:
+                raise ValueError("Expected a JSON array with at most 100,000 records")
+        except (ValueError,TypeError,KeyError,UnicodeError) as exc:
+            st.error("Invalid benchmark input: "+str(exc)[:160])
+            return
+    report=benchmark(rows)
     if not report["models"]:
         st.warning("No valid settled, pre-kickoff model predictions found.")
         st.json(report["rejected"])
