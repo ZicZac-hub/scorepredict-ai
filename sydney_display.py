@@ -21,6 +21,6 @@ def sydney_timestamp(value, fmt="%d %b %Y, %I:%M:%S %p", *, missing="Time unavai
         if instant.tzinfo is None:
             instant = instant.replace(tzinfo=timezone.utc)
         local = instant.astimezone(SYDNEY)
-        return local.strftime(fmt).lstrip("0") + " " + local.tzname() + " (Sydney)"
+        return local.strftime(fmt) + " " + local.tzname() + " (Sydney)"
     except (ValueError, TypeError, OverflowError):
         return missing
