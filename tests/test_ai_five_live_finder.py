@@ -45,6 +45,11 @@ def test_date_scoped_search_only_models_upcoming_fixtures_four_at_a_time():
     result=research_day("test-key",DAY,limit=20,discover=discover,
                         model=model,now=NOW)
     assert result["discovered"]==6
+    assert len(result["fixtures"])==6
+    assert {x["fixture_id"] for x in result["fixtures"]}=={
+        "10","11","12","13","14","15"}
+    assert all(x["source_status"].startswith("provider-listed")
+               for x in result["fixtures"])
     assert result["checked"]==4
     assert len(result["modeled"])==4
     assert result["remaining"]==2
@@ -80,6 +85,7 @@ def test_today_search_rejects_started_invalid_and_unmodelled_fixtures():
                         discover=lambda *a:(events,[]),
                         model=model,now=NOW)
     assert report["discovered"]==1
+    assert report["fixtures"][0]["fixture_id"]=="4"
     assert report["checked"]==1
     assert report["modeled"]==[]
     assert report["unmodeled"]==1
