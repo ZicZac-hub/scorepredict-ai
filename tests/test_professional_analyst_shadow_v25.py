@@ -157,3 +157,23 @@ def test_future_verified_result_is_not_visible_before_its_timestamp(tmp_path):
                 now=NOW+timedelta(hours=9),forecasts=[first,second],
                 min_envelope=0)
     assert settled["verified_sets"]==1
+
+def test_human_style_notes_only_restate_available_evidence_and_stale_abstains():
+    recent=forecast(100)
+    recent["research_context"]={
+        "home":{"last10_observed":10,"rest_days_since_last_kickoff":6.5},
+        "away":{"last10_observed":8,"rest_days_since_last_kickoff":2},
+        "verified_xg_xga":{"available":False},
+        "verified_lineup_adjustments":{"applied":False}}
+    second=forecast(200,lead=4)
+    selected=next(iter(propose([recent,second],NOW,min_envelope=0)["days"].values()))
+    memo=selected["first"]["human_research_note"]
+    assert memo["home_recent_matches_observed"]==10
+    assert memo["away_recent_matches_observed"]==8
+    assert memo["home_rest_days"]==6.5
+    assert memo["away_rest_days"]==2
+    assert memo["genuine_shot_based_xg_available"] is False
+    assert memo["validated_lineup_adjustment_applied"] is False
+    assert memo["numerical_context_weight"]==0
+    old=forecast(300,captured=NOW-timedelta(days=5))
+    assert _eligible(old,NOW)[1]=="stale_pre_match_source_evidence"
