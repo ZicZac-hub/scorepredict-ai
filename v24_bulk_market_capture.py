@@ -307,8 +307,11 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
     for date in days:
         if run["queries"]>=remaining:
             break
+        # Avoid consuming an entire daily quota on successive pages of a
+        # single fixture date. Resume its next page in a later run.
+        queried_for_date=0
         for page in range(1,MAX_PAGE+1):
-            if run["queries"]>=remaining:
+            if run["queries"]>=remaining or queried_for_date>=1:
                 break
             marker=_attempt(root,clock,date,page)
             if marker.exists():
@@ -329,6 +332,7 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
             except FileExistsError:
                 continue
             run["queries"]+=1
+            queried_for_date+=1
             run["attempts"].append({"date":date,"page":page})
             try:
                 if request is _request:
