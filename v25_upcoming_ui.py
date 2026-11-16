@@ -6,6 +6,7 @@ shadow winners. Pagination exposes all eligible pairs without API spending.
 import csv
 from datetime import datetime, timezone, timedelta, date
 from io import StringIO
+from sydney_display import sydney_timestamp
 import math
 
 from ai_five_double_engine import identity
@@ -52,9 +53,11 @@ def _show_report(st,report):
         return
     st.markdown("### 🧮 V25 Professional Analyst · Five Exact-Score Doubles")
     st.write("**Match 1:** "+report["first"])
+    st.caption("Kickoff: "+sydney_timestamp(report["first_fixture"].get("utcDate")))
     st.write("**Match 2:** "+report["second"])
+    st.caption("Kickoff: "+sydney_timestamp(report["second_fixture"].get("utcDate")))
     st.caption("Model version: "+report["method"]+
-               " · Generated before kickoff at "+report["generated_at_utc"])
+               " · Generated before kickoff at "+sydney_timestamp(report["generated_at_utc"]))
     left,right=st.columns(2)
     left.metric("Original V8 best-five model mass",
                 f"{report['v8_optimal_five_estimated_mass']:.2%}")
@@ -67,8 +70,8 @@ def _show_report(st,report):
         st.warning("At least one original score model was saved more than 72 "
                    "hours ago. These are early frozen forecast estimates, "
                    "NOT updated lineups, injuries, xG or bookmaker odds.")
-    st.caption("Original source timestamps (UTC): "+
-               " | ".join(report["source_times_utc"]))
+    st.caption("Original source timestamps (Sydney time): "+
+               " | ".join(sydney_timestamp(value) for value in report["source_times_utc"]))
     table=[]
     for i,item in enumerate(report["scores"],1):
         table.append({"Double":i,
