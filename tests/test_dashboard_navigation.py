@@ -137,3 +137,38 @@ def test_ai_five_button_opens_fast_studio_and_generates_five_no_cost_doubles(off
     app.button(key="ziczac_ai_five_run").click().run()
     assert not app.exception
     assert any("Final five exact-score doubles" in x.value for x in app.markdown)
+
+def test_v25_live_date_selector_starts_today_without_saved_forecasts(offline_app,monkeypatch):
+    """On iPhone, V25 must not hide today simply for missing score grids.
+
+    With API credentials intentionally absent, clicking discovery must not
+    attempt a network request or display fabricated football fixtures.
+    """
+    from datetime import datetime,timedelta
+    from zoneinfo import ZoneInfo
+    import ai_five_double_ui
+    monkeypatch.setattr(ai_five_double_ui,"_minute_archived_candidates",
+                        lambda minute: [])
+    app=offline_app.run()
+    app.button(key="zz_route_ai_five").click().run()
+    app.radio(key="zz_ai_five_engine_choice").set_value(
+        "🧮 V25 Professional Analyst · all upcoming matches").run()
+    assert not app.exception
+    current=datetime.now(ZoneInfo("Australia/Sydney")).date()
+    picker=app.selectbox(key="zz_v25_matchday")
+    assert picker.value==current.isoformat()
+    assert "Today" in picker.options[0]
+    assert "Tomorrow" in picker.options[1]
+    keys=_buttons(app)
+    assert {"zz_v25_go_today","zz_v25_go_tomorrow",
+            "zz_v25_discover_day"} <= keys
+    assert "zz_v25_manual_run" not in keys
+    app.button(key="zz_v25_go_tomorrow").click().run()
+    assert not app.exception
+    assert app.selectbox(key="zz_v25_matchday").value==(
+        current+timedelta(days=1)).isoformat()
+    app.button(key="zz_v25_go_today").click().run()
+    assert app.selectbox(key="zz_v25_matchday").value==current.isoformat()
+    app.button(key="zz_v25_discover_day").click().run()
+    assert not app.exception
+    assert any("API_FOOTBALL_KEY" in e.message for e in app.error)
