@@ -76,11 +76,18 @@ def _forecast_priority_dates(clock, original_root, originals=None):
                     dates.add(kickoff.date().isoformat())
             except (TypeError,KeyError,ValueError):
                 continue
-        # Rotate the targeted dates so near and far games both get coverage.
+        # Prioritize imminent fixtures. The old full-list rotation could put
+        # games a week away before today's/tomorrow's forecast dates and
+        # exhaust the two-request budget before collecting near-term odds.
+        # Rotate only the more distant dates to retain broad coverage.
         ordered=sorted(dates)
-        if ordered:
-            shift=(clock.toordinal()+clock.hour//3)%len(ordered)
-            return ordered[shift:]+ordered[:shift]
+        urgent_cutoff=(clock+timedelta(days=2)).date().isoformat()
+        urgent=[date for date in ordered if date<=urgent_cutoff]
+        distant=[date for date in ordered if date>urgent_cutoff]
+        if distant:
+            shift=(clock.toordinal()+clock.hour//3)%len(distant)
+            distant=distant[shift:]+distant[:shift]
+        return urgent+distant
     except (OSError,TypeError,ValueError):
         pass
     return []
