@@ -171,4 +171,4 @@ def test_v25_live_date_selector_starts_today_without_saved_forecasts(offline_app
     assert app.selectbox(key="zz_v25_matchday").value==current.isoformat()
     app.button(key="zz_v25_discover_day").click().run()
     assert not app.exception
-    assert any("API_FOOTBALL_KEY" in e.message for e in app.error)
+    assert any("API_FOOTBALL_KEY" in e.value for e in app.error)
