@@ -6,7 +6,7 @@ from worldwide_model import model_worldwide
 from single_match_50_ui import candidates
 
 def render(st, api_key):
-    st.header("🔎 Single Match · Deep Search & 50+ Odds")
+    st.header("🔎 Single Match · Deep Search & 80+ Odds")
     st.caption("Search genuine upcoming API-Football fixtures by team. Research runs only "
                "after selecting a match; no artificial bookmaker odds or guaranteed picks.")
     if not api_key:
@@ -39,8 +39,8 @@ def render(st, api_key):
     st.markdown("**"+event["home"]+" vs "+event["away"]+"**")
     st.caption("Kickoff: "+event["local"].strftime("%d %b %Y %I:%M %p")+
                " Sydney · Provider fixture ID: "+str(event["id"]))
-    threshold=st.number_input("Minimum estimated fair odds",min_value=50.0,
-                               max_value=1000.0,value=50.0,step=10.0,
+    threshold=st.number_input("Minimum estimated fair odds",min_value=80.0,
+                               max_value=1000.0,value=80.0,step=10.0,
                                key="single50_min_odds")
     if st.button("🧠 Run deep research for selected match",type="primary",
                  use_container_width=True,key="single50_run"):
@@ -70,15 +70,25 @@ def render(st, api_key):
     st.caption("Model: "+str(result.get("model_version","unversioned"))+
                " · Estimated home goals: "+str(round(float(result.get("home_xg",0)),2))+
                " · Estimated away goals: "+str(round(float(result.get("away_xg",0)),2)))
-    for field in ("sources","warnings","evidence_warnings"):
+    counts=row.get("history_counts") or {}
+    if counts:
+        st.write("Verified history coverage:",counts)
+    details=row.get("research_context") or {}
+    if details:
+        with st.expander("Provider research: team form, standings, injuries and lineups"):
+            st.json(details)
+    for field in ("research_details","research_warnings","sources","warnings","evidence_warnings"):
         data=row.get(field)
         if data:
             st.write(field.replace("_"," ").title()+":",data)
-    st.subheader("Exact-score estimated fair odds 50+")
+    st.subheader("Five single-match exact-score options · 80+ estimated fair odds")
     picks=candidates(result.get("matrix"),threshold)
     if picks:
-        st.dataframe(picks,hide_index=True,use_container_width=True)
+        st.dataframe(picks[:5],hide_index=True,use_container_width=True)
+        st.caption(f"{min(5,len(picks))} qualifying distinct exact-score outcomes displayed. "
+                   "Fewer than five means insufficient qualifying model outcomes; no filler picks.")
     else:
         st.warning("No qualifying model-derived exact score. No odds invented.")
-    st.caption("Fair odds = 1 / model probability; NOT verified bookmaker prices. "
+    st.caption("These are five alternatives for ONE match, not five independent bets. "
+               "Fair odds = 1 / model probability; NOT verified bookmaker prices. "
                "Outcomes above 50 are individually very unlikely and no profitable edge is demonstrated.")
