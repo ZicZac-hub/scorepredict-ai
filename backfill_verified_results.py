@@ -96,7 +96,14 @@ def run(request=_request, now=None):
                     if frozen is None or fid not in dict(group):
                         status["skipped_identity"]+=1
                         continue
-                    _accept_verified(item,fid,frozen,existing,status,clock)
+                    try:
+                        _accept_verified(item,fid,frozen,existing,status,clock)
+                    except (KeyError,TypeError,ValueError,OverflowError):
+                        # One malformed provider fixture must not prevent the
+                        # remaining independently identified IDs in this batch
+                        # from being settled.
+                        status["skipped_identity"]+=1
+                        continue
             except (ProviderQuotaError,ProviderAccessError,ProviderRejectedError) as exc:
                 status["state"]=type(exc).__name__
                 break
