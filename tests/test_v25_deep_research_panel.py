@@ -24,8 +24,11 @@ class Screen:
     def info(self,value):
         self.messages.append(("info",value))
 
-    def link_button(self,title,url):
+    def link_button(self,title,url,**kwargs):
         self.links.append((title,url))
+
+    def markdown(self,value):
+        self.messages.append(("markdown",value))
 
 
 def data():
@@ -54,7 +57,8 @@ def test_no_report_still_visible_with_no_fake_zero_hit_rate(tmp_path):
     assert "no saved research run" in all_text
     assert "No missing report is counted as a loss" in all_text
     assert "Real five-double accuracy" not in all_text
-    assert screen.links and screen.links[0][1].endswith("prematch-evidence.yml")
+    assert any(url.endswith("prematch-evidence.yml") for _,url in screen.links)
+    assert any("?view=ai_five" in url for _,url in screen.links)
 
 
 def test_report_counts_and_frozen_five_visible_in_order(tmp_path):
@@ -149,6 +153,7 @@ def test_real_collection_with_zero_qualifying_pairs_is_not_misreported_as_missin
     assert "No saved research run" not in visible
     assert "18 Nov 2026, 10:00 AM Sydney" in visible
     assert "No finished, independently verified V25 pairs yet" in visible
-    assert screen.links[0][1].endswith("data/pro_analyst_shadow/status.json")
+    assert any(url.endswith("data/pro_analyst_shadow/status.json")
+               for _,url in screen.links)
     assert diagnostic_reasons(packet)==packet["candidate_coverage"]["excluded"]
     assert sydney_time(None) is None
