@@ -7,6 +7,7 @@ from single_match_50_ui import candidates
 
 def render(st, api_key):
     st.header("🔎 Single Match · Deep Research & 80+ Odds")
+    st.success("Market Explorer v2.2 · Corners / Penalties / Goals / Offsides / Cards / Shots")
     st.caption("Search genuine upcoming API-Football fixtures by team. Research runs only "
                "after selecting a match; no artificial bookmaker odds or guaranteed picks.")
     if not api_key:
@@ -46,6 +47,7 @@ def render(st, api_key):
     st.markdown("**"+event["home"]+" vs "+event["away"]+"**")
     st.caption("Kickoff: "+event["local"].strftime("%d %b %Y %I:%M %p")+
                " Sydney · Provider fixture ID: "+str(event["id"]))
+    st.markdown("### ⚽ All available bookmaker markets for this match")
     from single_match_market_ui import render as render_bookmaker_markets
     render_bookmaker_markets(st,api_key,event)
     st.divider()
