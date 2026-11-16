@@ -6,7 +6,7 @@ from worldwide_model import model_worldwide
 from single_match_50_ui import candidates
 
 def render(st, api_key):
-    st.header("🔎 Single Match · Deep Search & 80+ Odds")
+    st.header("🔎 Single Match · Deep Research & 80+ Odds")
     st.caption("Search genuine upcoming API-Football fixtures by team. Research runs only "
                "after selecting a match; no artificial bookmaker odds or guaranteed picks.")
     if not api_key:
@@ -46,6 +46,10 @@ def render(st, api_key):
     st.markdown("**"+event["home"]+" vs "+event["away"]+"**")
     st.caption("Kickoff: "+event["local"].strftime("%d %b %Y %I:%M %p")+
                " Sydney · Provider fixture ID: "+str(event["id"]))
+    from single_match_market_ui import render as render_bookmaker_markets
+    render_bookmaker_markets(st,api_key,event)
+    st.divider()
+    st.subheader("Experimental statistical exact-score model")
     threshold=st.number_input("Minimum estimated fair odds",min_value=80.0,
                                max_value=1000.0,value=80.0,step=10.0,
                                key="single50_min_odds")
