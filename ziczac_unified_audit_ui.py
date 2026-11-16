@@ -116,7 +116,7 @@ def render(st,database_url=""):
         with st.expander(symbol+" · "+_label(row)+" · "+
                          row.get("source","unknown").replace("_"," ").title()):
             st.caption("Original saved: "+sydney_timestamp(row.get("captured_at_utc"))+
-                       " · Model: +str(row.get("model") or "not recorded"))
+                       " · Model: "+str(row.get("model") or "not recorded"))
             for index,choice in enumerate(row.get("choices") or [],1):
                 combined=" + ".join(choice)
                 picked=(row.get("option_hits") or [])
