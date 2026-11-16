@@ -132,3 +132,15 @@ def test_explicit_v25_generation_is_valid_for_original_immutable_audit():
     assert record["source"]=="ai_five_double"
     assert record["method"]=="v25_professional_analyst" or (
         record.get("payload") or {}).get("method")=="v25_professional_analyst"
+
+def test_app_entrypoint_shows_v25_upcoming_before_legacy_ai_five():
+    from pathlib import Path
+    app=Path("app.py").read_text(encoding="utf-8")
+    assert app.count("render_v25_upcoming(st, [], {})")==1
+    assert app.count("render_v25_upcoming(st, eligible, histories)")==1
+    assert app.index("render_v25_upcoming(st, [], {})") < app.index(
+        "render_ai_five_double_studio(st, [], {})")
+    assert app.index("render_v25_upcoming(st, eligible, histories)") < app.index(
+        "render_ai_five_double_studio(st, eligible, histories)")
+    research=Path("v25_deep_research_panel.py").read_text(encoding="utf-8")
+    assert "Generate V25 Five Doubles now" in research
