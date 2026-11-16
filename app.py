@@ -173,6 +173,18 @@ if view == 'ai_five':
     if not _ai_five_live:
         st.stop()
 
+# Single-match search runs before primary API key/competition gates so it
+# remains usable when football-data.org is unavailable or unselected.
+if view == 'single50':
+    try:
+        _single_key=st.secrets.get('API_FOOTBALL_KEY','') or os.environ.get('API_FOOTBALL_KEY','')
+    except Exception:
+        _single_key=os.environ.get('API_FOOTBALL_KEY','')
+    with active_page_slot:
+        from single_match_search_ui import render as render_single_search
+        render_single_search(st,_single_key)
+    st.stop()
+
 try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
 key=key or os.environ.get('FOOTBALL_DATA_API_KEY','')
@@ -495,11 +507,6 @@ if view == 'private':
         st.markdown('**Recommended:** Also restrict your deployed app to your own Streamlit account under Streamlit Community Cloud → app → Settings → Sharing. A private GitHub repository alone does not restrict the website.')
         st.caption('Never put your password or API keys into GitHub source files. App session passwords are not saved to the prediction archive.')
         st.link_button('Open Streamlit Cloud', 'https://share.streamlit.io/', use_container_width=True)
-
-if view == 'single50':
-    with active_page_slot:
-        from single_match_50_ui import render as render_single50
-        render_single50(st, eligible, histories, sydney_kickoff)
 
 if view == 'deep':
     with active_page_slot:
