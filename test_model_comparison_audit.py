@@ -17,7 +17,11 @@ class BenchmarkTests(unittest.TestCase):
         r=row();r["forecasts"]["baseline"]["created_at"]=r["kickoff"]
         self.assertEqual(benchmark([r])["models"],{})
     def test_duplicate_fixture_not_double_counted(self):
-        self.assertEqual(benchmark([row(),row()])["models"]["baseline"]["fixtures"],1)
+        # The integrity-first benchmark excludes ALL duplicate fixture IDs:
+        # it must not choose an arbitrary later/earlier row as the original.
+        report=benchmark([row(),row()])
+        self.assertEqual(report["models"],{})
+        self.assertEqual(report["rejected"]["duplicate_fixture"],2)
     def test_invalid_mass_rejected(self):
         r=row();r["forecasts"]["baseline"]["scores"][0][2]=.9
         self.assertEqual(benchmark([r])["models"],{})
