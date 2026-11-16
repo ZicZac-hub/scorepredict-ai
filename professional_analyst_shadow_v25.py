@@ -29,7 +29,8 @@ VARIANTS = ("baseline_v8", "poisson_marginal",
 MIN_HISTORY = 45
 MIN_LEAD = timedelta(minutes=45)
 MAX_LEAD = timedelta(hours=24)
-MAX_SOURCE_AGE = timedelta(hours=72)  # research source-freshness guardrail
+MAX_SOURCE_AGE = timedelta(hours=72)  # label the source as fresh if within this window
+MAX_EARLY_SOURCE_AGE = timedelta(days=14)  # early frozen shadow ONLY; never live
 MIN_ENVELOPE_MASS = 0.035  # research-only operating threshold, NOT validated
 VERSION = "pro-analyst-v25-robust-sensitivity-shadow"
 
@@ -46,8 +47,13 @@ def _grid(record):
         return None
 
 
-def _eligible(record, clock):
-    """Require identifiable, immutable, pre-kickoff evidence on a future match."""
+def _eligible(record, clock, *, ignore_window=False):
+    """Require identifiable, immutable evidence; older archived snapshots are labelled.
+
+    A pre-kickoff source captured 4-7 days early is a VALID frozen forecast,
+    not a near-kickoff refresh. Permit it for prospective SHADOW testing
+    within 14 days of capture; never mislabel it as current team news.
+    """
     try:
         if record.get("model_key") not in ("v8", "v8_near"):
             return None, "not_original_v8_model"
@@ -62,10 +68,11 @@ def _eligible(record, clock):
             "kickoff_utc", "captured_at_utc", "evidence_as_of_utc"))
         if not (evidence <= captured <= clock < kickoff):
             return None, "invalid_source_time"
-        if not (MIN_LEAD <= kickoff - clock <= MAX_LEAD):
+        if not ignore_window and not (MIN_LEAD <= kickoff - clock <= MAX_LEAD):
             return None, "outside_research_freeze_window"
-        if clock-captured > MAX_SOURCE_AGE:
-            return None, "stale_pre_match_source_evidence"
+        source_age=clock-captured
+        if source_age > MAX_EARLY_SOURCE_AGE:
+            return None, "source_older_than_14_days"
         if (record.get("mode") != "prospective" or
                 record.get("score_basis") != "regulation" or
                 not record.get("input_digest")):
@@ -83,7 +90,10 @@ def _eligible(record, clock):
                 "key":(provider, fixture_id),
                 "teams":{(provider, home), (provider, away)},
                 "day":kickoff.astimezone(SYDNEY).date().isoformat(),
-                "captured":captured, "kickoff":kickoff}, None
+                "captured":captured, "kickoff":kickoff,
+                "source_age_hours":round(source_age.total_seconds()/3600, 2),
+                "source_freshness":("recent_source" if source_age<=MAX_SOURCE_AGE
+                                    else "early_frozen_source_not_refreshed")}, None
     except (KeyError, ValueError, TypeError, OverflowError):
         return None, "missing_or_invalid_evidence"
 
@@ -106,6 +116,9 @@ def human_research_note(row, clock):
     return {
         "as_of_utc":row["captured_at_utc"],
         "evidence_age_hours_at_decision":round((clock-capture).total_seconds()/3600,2),
+        "source_freshness":("recent_source" if clock-capture<=MAX_SOURCE_AGE
+                            else "early_frozen_source_not_refreshed"),
+        "source_is_new_lineup_or_odds_information":False,
         "home_recent_matches_observed":numeric(home.get("last10_observed")),
         "away_recent_matches_observed":numeric(away.get("last10_observed")),
         "home_rest_days":numeric(home.get("rest_days_since_last_kickoff")),
@@ -172,14 +185,26 @@ def _pair(first, second):
 
 
 def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
-    """Select at most one research set per Sydney day, or record abstention."""
+    """Select at most one research set per Sydney day, or record abstention.
+
+    Future opening time is a possible research window, never a promised
+    prediction: the model may still abstain on the real decision day.
+    """
     clock = utc(now)
     valid = {}
     excluded = defaultdict(int)
+    outside = {}
     for row in forecasts.values() if isinstance(forecasts, dict) else forecasts:
         item, reason = _eligible(row, clock)
         if item is None:
             excluded[reason] += 1
+            if reason=="outside_research_freeze_window":
+                future,why=_eligible(row,clock,ignore_window=True)
+                if future is not None:
+                    key=future["key"]
+                    if (key not in outside or
+                            future["captured"]>outside[key]["captured"]):
+                        outside[key]=future
             continue
         key = item["key"]
         prior = valid.get(key)
@@ -219,12 +244,39 @@ def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
             "sydney_date":day, "selected_at_utc":clock.isoformat(),
             "first":source(first), "second":source(second),
             "qualified_fixtures":len(candidates),
+            "source_freshness_warning":(
+                first["source_freshness"]!="recent_source" or
+                second["source_freshness"]!="recent_source"),
+            "source_age_hours":[first["source_age_hours"],
+                                second["source_age_hours"]],
+            "no_claim_of_updated_team_news":True,
             **metrics,
             "real_win_rate_not_known_at_selection":True,
             "production_model_changed":False,
         }
+    potential=defaultdict(list)
+    for item in outside.values():
+        potential[item["day"]].append(item)
+    windows=[]
+    for day, rows in potential.items():
+        for first,second in combinations(sorted(rows,key=lambda x:x["key"]),2):
+            if len(first["teams"] | second["teams"])!=4:
+                continue
+            start=max(first["kickoff"],second["kickoff"])-MAX_LEAD
+            end=min(first["kickoff"],second["kickoff"])-MIN_LEAD
+            if (clock < start <= end and
+                    all(start-item["captured"]<=MAX_EARLY_SOURCE_AGE
+                        for item in (first,second))):
+                windows.append((start,day,first["key"],second["key"]))
+    windows.sort()
+    next_window=windows[0] if windows else None
     return {"days":output, "eligible_fixtures":len(valid),
-            "excluded":dict(excluded), "version":VERSION}
+            "excluded":dict(excluded), "version":VERSION,
+            "next_possible_pair_window_utc":(next_window[0].isoformat()
+                                               if next_window else None),
+            "next_possible_sydney_day":(next_window[1] if next_window else None),
+            "next_window_is_not_guaranteed_selection":True,
+            "early_frozen_source_allowed_only_for_shadow":True}
 
 
 def _results(original_root, prematch_root, clock):
