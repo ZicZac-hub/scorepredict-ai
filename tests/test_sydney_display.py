@@ -10,7 +10,7 @@ def test_v25_screenshot_utc_converts_to_sydney_aedt():
 
 
 def test_winter_time_is_aest_not_aedt():
-    assert sydney_timestamp("2026-06-01T22:45:00Z") == "02 Jun 2026, 08:45:00 AM AEST (Sydney)"
+    assert sydney_timestamp("2026-06-01T22:45:00Z") == "2 Jun 2026, 08:45:00 AM AEST (Sydney)"
 
 
 def test_naive_and_aware_utc_datetime_are_displayed_without_mutation():
