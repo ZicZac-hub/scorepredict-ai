@@ -107,9 +107,13 @@ def test_five_doubles_only_displays_immutable_frozen_research_sets(tmp_path):
     assert latest_frozen_set(directory) is None
 
 
-def test_deep_research_page_wires_v25_before_match_filter_or_buttons():
-    source=Path("research_ui.py").read_text(encoding="utf-8")
-    assert source.index("    render_v25(st)") < source.index("    choices = {}")
-    assert source.index("    render_v25(st)") < source.index(
-        '    method = st.radio("Prediction method",')
-    assert "v25_deep_research_panel" in source
+def test_deep_research_entrypoint_displays_v25_even_if_page_module_is_cached():
+    entry=Path("app.py").read_text(encoding="utf-8")
+    page=Path("research_ui.py").read_text(encoding="utf-8")
+    assert entry.index("        render_v25_panel(st)") < entry.index(
+        "        render_deep_research(st, eligible, histories, secondary_key,")
+    assert "Deep Research build · V25 Professional Analyst panel" in entry
+    assert "v25_deep_research_panel" in entry
+    assert "    render_v25(st)" not in page
+    # Keep single-match radio methods untouched; V25 is a two-match study.
+    assert '    method = st.radio("Prediction method",' in page
