@@ -57,6 +57,35 @@ def _day_priority(clock):
     return [(today+timedelta(days=i)).isoformat() for i in offsets]
 
 
+def _forecast_priority_dates(clock, original_root, originals=None):
+    """Prioritize real frozen fixtures before rotating other catalog dates.
+
+    This changes only provider discovery order, never prediction eligibility
+    or timestamp/identity validation. A 14-day horizon is still enforced.
+    """
+    try:
+        rows=originals if originals is not None else read_latest(original_root)
+        rows=rows.values() if isinstance(rows,dict) else rows
+        dates=set()
+        for row in rows or []:
+            try:
+                if row.get("provider")!="API-Football" or row.get("model_key") not in ("v8","v8_near"):
+                    continue
+                kickoff=utc(row["kickoff_utc"])
+                if clock+timedelta(minutes=5)<kickoff<=clock+timedelta(days=14):
+                    dates.add(kickoff.date().isoformat())
+            except (TypeError,KeyError,ValueError):
+                continue
+        # Rotate the targeted dates so near and far games both get coverage.
+        ordered=sorted(dates)
+        if ordered:
+            shift=(clock.toordinal()+clock.hour//3)%len(ordered)
+            return ordered[shift:]+ordered[:shift]
+    except (OSError,TypeError,ValueError):
+        pass
+    return []
+
+
 def _slot(clock):
     return clock.strftime("%Y%m%d")+"_"+str(clock.hour//3)
 
@@ -268,10 +297,11 @@ def bind_catalog(*,now,root=ROOT,original_root=ORIGINAL_ROOT,
     return summary
 
 
-def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_time=None):
+def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_time=None,priority_dates=None):
     run={"queries":0,"new_catalog_fixtures":[],"empty_pages":0,
          "skipped_stale":0,"provider_errors":[],"attempts":[]}
-    days=_day_priority(clock)
+    rotation=_day_priority(clock)
+    days=list(dict.fromkeys(list(priority_dates or [])+rotation))
     # Marker ledger bounds cumulative UTC-day spending across all runs.
     remaining=max(0,min(max_requests,daily_budget-_day_count(root,clock)))
     for date in days:
@@ -384,8 +414,10 @@ def capture(*,now=None,enabled=None,api_key=None,root=ROOT,
     daily_limit=max(0,min(MAX_DAILY_REQUESTS,int(daily_limit)))
     status["daily_limit"]=daily_limit
     cb=request or _request
+    priority_dates=_forecast_priority_dates(clock,original_root,originals)
+    status["forecast_priority_dates"]=priority_dates
     run=_request_dates(root,clock,min(MAX_PER_RUN,max(0,int(max_per_run))),
-                       daily_limit,cb,key,observation_time)
+                       daily_limit,cb,key,observation_time,priority_dates=priority_dates)
     status.update(run)
     status["requests_used_today"]=_day_count(root,clock)
     completed=observation_time()
