@@ -100,10 +100,15 @@ def latest_frozen_set(directory=SETS):
 def render(st, *, report_path=STATUS, sets_dir=SETS):
     """Always show the research section, including before its first report."""
     with st.expander("🧮 V25 Professional Analyst · Five Doubles", expanded=True):
-        st.caption("NEW · Automatic two-match research experiment. "
-                   "V25 is not a selectable single-match method below, "
-                   "and Run Deep Research AI does not trigger it. "
-                   "Existing V8 picks stay unchanged.")
+        st.markdown("**Want five V25 score doubles for upcoming matches?**")
+        st.link_button("⚽ Generate V25 Five Doubles now",
+                       "https://ziczacscorepredict-ai.streamlit.app/?view=ai_five",
+                       use_container_width=True)
+        st.caption("The generator supports manual pairs, automatic selection "
+                   "and every eligible same-day upcoming pair, one page at a time.")
+        st.caption("This panel below is the automatic pre-match V25 experiment. "
+                   "Its saved results are separate from predictions you create "
+                   "on demand. Existing V8 picks stay unchanged.")
         report=load_status(report_path)
         if report is None:
             st.info("V25 is installed, but no saved research run is available "
