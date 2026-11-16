@@ -6,6 +6,7 @@ One explicit button click runs a bounded, private, pre-kickoff research batch.
 No immutable GitHub prediction is rewritten, and these unarchived opinions
 are NEVER scored as verified prospective accuracy.
 """
+from sydney_display import sydney_timestamp
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -97,8 +98,8 @@ def show_frozen(st, record):
     votes = record.get("votes") or {}
     st.markdown("#### 📌 Earlier pre-match AI research for this match")
     st.caption("Saved automatically by GitHub before kickoff: "+
-               str(record.get("captured_at_utc") or "unknown")+
-               " UTC. This is an archived opinion, not a new paid API call.")
+               sydney_timestamp(record.get("captured_at_utc"))+
+               ". This is an archived opinion, not a new paid API call.")
     for name in PROVIDERS:
         vote = votes.get(name)
         if not isinstance(vote,dict):

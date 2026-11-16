@@ -1,4 +1,5 @@
 """Display only actually captured Sportmonks Predictions add-on probabilities."""
+from sydney_display import sydney_timestamp
 import json
 from pathlib import Path
 
@@ -26,8 +27,8 @@ def render(st, root=ROOT):
         st.warning("Sportmonks predictions not available or request failed ("+
                    str(status.get("error_type"))+"). Check the plan/add-on and API quota.")
     else:
-        st.caption("Latest check: "+str(status.get("checked_at_utc","unknown"))+
-                   " UTC · frozen reports: "+str(status.get("captured",0))+
+        st.caption("Latest check: "+sydney_timestamp(status.get("checked_at_utc"))+
+                   " · frozen reports: "+str(status.get("captured",0))+
                    " · unmatched fixture identities: "+str(status.get("unmatched",0)))
     report=_read(Path(root)/"evaluation.json")
     n=int(report.get("verified_matched_fixtures") or 0)
@@ -46,7 +47,7 @@ def render(st, root=ROOT):
             continue
         with st.expander(str(row.get("home_team"))+" vs "+str(row.get("away_team"))+
                          " · Sportmonks score probabilities"):
-            st.caption("Frozen before kickoff: "+str(row.get("captured_at_utc"))+
+            st.caption("Frozen before kickoff: "+sydney_timestamp(row.get("captured_at_utc"))+
                        ". Sportmonks fixture ID: "+str(row.get("sportmonks_fixture_id")))
             st.write({"Source top-5 exact scores":[
                          {"Score":score,"Probability":round(100*row["score_probabilities"][score],2)}

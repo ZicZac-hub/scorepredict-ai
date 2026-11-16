@@ -1,4 +1,5 @@
 """Compact real-result board for all saved ZicZac forecast sources."""
+from sydney_display import sydney_timestamp
 import csv
 import io
 import os
@@ -20,10 +21,12 @@ def _label(record):
 def _export(records):
     out=io.StringIO()
     writer=csv.writer(out)
-    writer.writerow(["Source","Type","Match","Kickoff UTC","Saved UTC",
+    writer.writerow(["Source","Type","Match","Kickoff (Sydney)","Saved (Sydney)","Kickoff UTC","Saved UTC",
                      "Original exact score(s)","Verified final score(s)","Status"])
     for row in records:
         writer.writerow([row.get("source"),row.get("kind"),_label(row),
+                         sydney_timestamp(row.get("scheduled_kickoff_utc")),
+                         sydney_timestamp(row.get("captured_at_utc")),
                          row.get("scheduled_kickoff_utc"),row.get("captured_at_utc"),
                          " / ".join(" + ".join(c) for c in row.get("choices") or []),
                          " + ".join(row.get("actual_scores") or []),
@@ -112,8 +115,8 @@ def render(st,database_url=""):
             row.get("status"),"⚪ UNVERIFIED")
         with st.expander(symbol+" · "+_label(row)+" · "+
                          row.get("source","unknown").replace("_"," ").title()):
-            st.caption("Original saved: "+str(row.get("captured_at_utc"))+
-                       " UTC · Model: "+str(row.get("model") or "not recorded"))
+            st.caption("Original saved: "+sydney_timestamp(row.get("captured_at_utc"))+
+                       " · Model: +str(row.get("model") or "not recorded"))
             for index,choice in enumerate(row.get("choices") or [],1):
                 combined=" + ".join(choice)
                 picked=(row.get("option_hits") or [])
@@ -143,5 +146,5 @@ def render(st,database_url=""):
         st.error("Conflicting independent full-time results require review: "+
                  str(report["identity_conflicts"])+". Affected fixtures "
                  "have not been graded.")
-    st.caption("Latest audit: "+str(report.get("checked_at_utc") or "unknown")+
-               " UTC. Historical replay and post-kickoff predictions are excluded.")
+    st.caption("Latest audit: "+sydney_timestamp(report.get("checked_at_utc"))+
+               ". Historical replay and post-kickoff predictions are excluded.")

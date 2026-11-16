@@ -5,6 +5,7 @@ Never invents injuries, odds, or a fixture. The first view freezes a
 pre-match candidate IN THE CURRENT SESSION only; it is not yet a
 cross-device verified prospective record.
 """
+from sydney_display import sydney_timestamp
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import json
@@ -256,7 +257,7 @@ def render(st,rows,session,api_key=None,now=None):
     if snapshot.get("market_provenance"):
         market=snapshot["market_provenance"]
         st.caption("✅ Verified market-adjusted v9: "+str(market["bookmaker"])+
-                   " · Odds snapshot "+str(market["snapshot_utc"])+
+                   " · Odds snapshot "+sydney_timestamp(market["snapshot_utc"])+
                    " · Margin removed before blending.")
         old=snapshot["v8_comparison"]
         st.caption("Original v8 exact-score estimate: "+

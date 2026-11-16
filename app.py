@@ -1,4 +1,5 @@
 """ZicZac Predict AI Worldwide: free Streamlit UI, live API, walk-forward validation."""
+from sydney_display import sydney_timestamp
 from datetime import datetime, timedelta, timezone
 from itertools import combinations
 import os
@@ -1500,7 +1501,7 @@ with active_page_slot:
                     if not _news.get('available'):
                         st.info(_news.get('reason','No verified data available.'))
                     else:
-                        st.caption('Provider checked: '+str(_news.get('checked_at','unknown'))+' UTC · Cached up to 15 minutes')
+                        st.caption('Provider checked: '+sydney_timestamp(_news.get('checked_at'))+' · Cached up to 15 minutes')
                         if _news['lineups']:
                             for _lineup in _news['lineups']:
                                 st.markdown('**'+str(_lineup['team'])+'** · '+('Confirmed XI' if _lineup['confirmed'] else 'Partial lineup')+' · '+str(_lineup.get('formation') or 'Formation unavailable'))

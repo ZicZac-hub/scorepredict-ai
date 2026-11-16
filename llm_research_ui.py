@@ -1,4 +1,5 @@
 """Read-only ten-provider AI research status for the ZicZac Streamlit app."""
+from sydney_display import sydney_timestamp
 from pathlib import Path
 import json
 
@@ -76,7 +77,7 @@ def render(st, root=ROOT):
         details = status.get("last_attempt_errors") or status.get("provider_error_details") or {}
         if details:
             last = status.get("last_attempt_at_utc") or status.get("checked_at_utc")
-            st.warning("Last attempted provider check ("+str(last)+" UTC) had "
+            st.warning("Last attempted provider check ("+sydney_timestamp(last)+") had "
                        +str(len(details))+" provider error(s). These are not football losses.")
             for provider, error in sorted(details.items()):
                 reason = str(error.get("reason") or "provider_error")
@@ -123,8 +124,8 @@ def render(st, root=ROOT):
         label = (str(entry.get("home_team") or "Home")+" vs "+
                  str(entry.get("away_team") or "Away"))
         with st.expander(label + " · " + str(actual_count) + " AI vote(s) saved"):
-            st.caption("Frozen: "+str(entry.get("captured_at_utc"))+
-                       " UTC · Source: "+str(entry.get("source_model") or "unknown")+
+            st.caption("Frozen: "+sydney_timestamp(entry.get("captured_at_utc"))+
+                       " · Source: +str(entry.get("source_model") or "unknown")+
                        " · Original forecast preserved")
             st.write("**AI responses:** "+str(actual_count)+
                      " of "+str(configured)+" configured at capture")

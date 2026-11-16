@@ -4,6 +4,7 @@ Use the SAME original model score tables as Five Doubles, optionally adding
 previously frozen AI opinions plus owner-authorised on-demand AI providers.
 No scraping, no fabricated data, no overwrite of original match forecasts.
 """
+from sydney_display import sydney_timestamp
 from datetime import datetime, timedelta, timezone
 import csv
 import io
@@ -426,8 +427,8 @@ def _display(st,report,first,second):
     st.markdown("### ✅ Final five exact-score doubles · " + method)
     st.caption("Match 1: "+label(first))
     st.caption("Match 2: "+label(second))
-    st.caption("Research compiled "+str(report["generated_at_utc"])+
-               " UTC · Original forecasts unchanged · session-only comparison.")
+    st.caption("Research compiled "+sydney_timestamp(report["generated_at_utc"])+
+               " · Original forecasts unchanged · session-only comparison.")
     a,b=st.columns(2)
     a.metric("Original coverage estimate", f"{calc['baseline_coverage']:.2%}")
     b.metric("Selected model coverage estimate", f"{calc['selected_model_coverage']:.2%}")
@@ -483,8 +484,8 @@ def _display(st,report,first,second):
                 st.caption("No source-matched timestamped provider packet. "
                            "Missing lineup, shot xG and market values were not guessed.")
                 continue
-            st.caption("Captured "+str(packet["captured_at_utc"])+
-                       " UTC · source SHA-256 "+str(packet["snapshot_sha256"])[:16])
+            st.caption("Captured "+sydney_timestamp(packet["captured_at_utc"])+
+                       " · source SHA-256 "+str(packet["snapshot_sha256"])[:16])
             available=packet.get("available_sources") or {}
             st.caption("Previous-fixture expected goals: "+str(len(
                 packet.get("verified_historical_fixture_xg") or []))+
@@ -599,8 +600,8 @@ def _display(st,report,first,second):
                        " · Dated past match records available: "+
                        str(report["past_matches_available"][i]))
             if row.get("archive_frozen"):
-                st.caption("Frozen forecast captured "+str(row.get("frozen_at_utc"))+
-                           " UTC · Historical count in saved evidence: "+
+                st.caption("Frozen forecast captured "+sydney_timestamp(row.get("frozen_at_utc"))+
+                           " · Historical count in saved evidence: "+
                            str(row.get("history_matches_reported") or "unknown")+
                            " · Raw historical match list unavailable in this session.")
             votes=report["ai_research"][i]["votes"]

@@ -4,6 +4,7 @@ The Streamlit service is separate from scheduled GitHub Actions. Calls are
 possible only with server-side Streamlit credentials and an authenticated
 owner. Existing archived GitHub votes are read-only and cost nothing.
 """
+from sydney_display import sydney_timestamp
 from datetime import datetime, timezone
 
 from on_demand_ai import (MIN_LEAD, fixture_key, frozen_for_fixture,
@@ -29,7 +30,7 @@ def available(rows, *, now=None):
         if not home.get("name") or not away.get("name"):
             continue
         label = (str(home["name"]) + " vs " + str(away["name"]) + " · " +
-                 utc(match["utcDate"]).strftime("%d %b %Y %H:%M UTC") +
+                 sydney_timestamp(match["utcDate"], fmt="%d %b %Y %I:%M %p") +
                  " · " + str(identity[0]) + " #" + str(identity[1]))
         result[label] = row
     return result
