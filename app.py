@@ -121,7 +121,7 @@ st.markdown(studio_css(),unsafe_allow_html=True)
 _hero_slot=st.empty()
 # Native button navigation: each tap changes a single session-state route.
 # Buttons avoid the iPhone radio-label behaviour that looked selectable but did not navigate.
-nav_items=[('🏠','Home','home'),('🎯','Daily Prediction','predict'),('🔗','Five Doubles','doubles'),('🤖','AI Five-Double','ai_five'),('🧠','Deep Research','deep'),('🎯','Single 50+ Odds','single50'),('📊','History','archive'),('✅','Performance','finished'),('🔒','Private Access','private'),('☰','More','more')]
+nav_items=[('🏠','Home','home'),('🎯','Daily Prediction','predict'),('🔗','Five Doubles','doubles'),('🤖','AI Five-Double','ai_five'),('🧠','Deep Research','deep'),('🎯','Single 50+ Odds','single50'),('📐','Model Benchmark','benchmark'),('📊','History','archive'),('✅','Performance','finished'),('🔒','Private Access','private'),('☰','More','more')]
 sync_location(st.session_state, st.query_params)
 def _navigate_to(page):
     navigate(st.session_state, st.query_params, page)
@@ -161,7 +161,7 @@ view=st.session_state['ziczac_active_page']
 # worldwide finder and API settings. This is what makes taps feel responsive.
 active_page_slot=st.container()
 with active_page_slot:
-    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','single50':'🎯 Single match research · five estimated fair-odds outcomes at 80+','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
+    st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','single50':'🎯 Single match research · five estimated fair-odds outcomes at 80+','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','benchmark':'📐 Verified model comparison · same-fixture accuracy','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
 
 # The AI Five-Double Studio can run entirely on already-frozen GitHub
 # forecasts. Render it immediately on tap, before expensive fixture discovery,
@@ -182,6 +182,13 @@ if view == 'ai_five':
             render_ai_five_double_studio(st, [], {})
     if not _ai_five_live:
         st.stop()
+
+# Run the benchmark before live fixture/API gates: uploaded verified data is enough.
+if view == 'benchmark':
+    with active_page_slot:
+        from model_benchmark_ui import render as render_model_benchmark
+        render_model_benchmark(st)
+    st.stop()
 
 # Single-match search runs before primary API key/competition gates so it
 # remains usable when football-data.org is unavailable or unselected.
