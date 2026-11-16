@@ -29,20 +29,23 @@ def benchmark(rows, min_sample=100):
     This is a per-match benchmark; five-double success is a separate metric.
     """
     by_model={}
-    seen=set()
+    from collections import Counter
+    counts=Counter(str(row.get("fixture_id") or "") for row in rows if isinstance(row,dict))
     rejected={"unsettled":0,"duplicate_fixture":0,"late_or_untimed":0,
               "invalid_distribution":0}
     for row in rows:
+        if not isinstance(row,dict):
+            rejected["unsettled"]+=1
+            continue
         fid=str(row.get("fixture_id") or "")
         actual=_actual(row.get("actual"))
         kickoff=_time(row.get("kickoff"))
         if not fid or actual is None or kickoff is None:
             rejected["unsettled"]+=1
             continue
-        if fid in seen:
+        if counts[fid]>1:
             rejected["duplicate_fixture"]+=1
             continue
-        seen.add(fid)
         for name,forecast in (row.get("forecasts") or {}).items():
             if not isinstance(forecast,dict) or (stamp:=_time(forecast.get("created_at"))) is None or stamp>=kickoff:
                 rejected["late_or_untimed"]+=1
