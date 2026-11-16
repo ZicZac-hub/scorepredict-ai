@@ -10,17 +10,22 @@ def render(st, api_key):
     st.caption("Search genuine upcoming API-Football fixtures by team. Research runs only "
                "after selecting a match; no artificial bookmaker odds or guaranteed picks.")
     if not api_key:
-        st.warning("API_FOOTBALL_KEY is not configured in Streamlit Secrets. "
-                   "Live provider fixture search is unavailable.")
+        st.error("Team search cannot start: API_FOOTBALL_KEY is missing from Streamlit Secrets. "
+                 "Add your existing provider key there (never paste it into the website).")
+        st.link_button("Open Streamlit Cloud settings","https://share.streamlit.io/")
         return
     date_choice=st.selectbox("Sydney match dates",
-        ["Today and tomorrow","Next 7 days","Next 14 days"],key="single50_dates")
+        ["Next 7 days","Today and tomorrow","Next 14 days"],key="single50_dates")
     days={"Today and tomorrow":2,"Next 7 days":7,"Next 14 days":14}[date_choice]
     @st.cache_data(ttl=1800,show_spinner=False,max_entries=8)
     def search_fixtures(start,span,credential):
         return global_fixtures(credential,start,span)
     with st.spinner("Searching real fixtures by Sydney date…"):
-        events,errors=search_fixtures(datetime.now(SYDNEY).date(),days,api_key)
+        try:
+            events,errors=search_fixtures(datetime.now(SYDNEY).date(),days,api_key)
+        except Exception as exc:
+            st.error("Fixture search failed ("+type(exc).__name__+"). Try refreshing the page or check provider availability.")
+            return
     if errors:
         st.warning("Provider search limitations: "+"; ".join(errors[:2]))
     search=st.text_input("🔎 Search team or league",key="single50_team_search",
@@ -28,6 +33,8 @@ def render(st, api_key):
     filtered=[e for e in events if search.casefold().strip() in
               (e["home"]+" "+e["away"]+" "+e["league"]).casefold()]
     st.caption(f"{len(filtered)} matching fixtures out of {len(events)} provider fixtures.")
+    if events:
+        st.caption("Choose a fixture from the list below. The search box filters the returned team and league names.")
     if not filtered:
         st.info("No matching upcoming fixtures returned by API-Football. Try another team or expand the date range. If the total provider fixture count is zero, check the configured API key, subscription access, and provider warnings above.")
         return
@@ -50,8 +57,8 @@ def render(st, api_key):
         with st.spinner("Checking historical evidence and calculating score probabilities…"):
             try:
                 row,error=model_worldwide(api_key,event,model_variant="research_v8")
-            except (ValueError,TypeError,KeyError,RuntimeError) as exc:
-                row,error=None,"Research failed: "+str(exc)[:160]
+            except Exception as exc:
+                row,error=None,"Research failed ("+type(exc).__name__+"). Provider data may be unavailable; no forecast has been invented."
         st.session_state["single50_report"]={
             "fixture_id":str(event["id"]),"kickoff":event["kickoff"].isoformat(),
             "row":row,"error":error}
