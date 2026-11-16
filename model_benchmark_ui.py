@@ -7,6 +7,9 @@ def render(st):
     st.caption("Compare frozen forecasts for identical settled fixtures. "
                "Only forecasts timestamped before kickoff count. "
                "This page does not alter or promote the live prediction model.")
+    st.success("Model Benchmark is open · v2.3")
+    st.write("This page compares verified pre-match forecasts. You can scan the archive or upload a JSON export.")
+    scan=st.button("🔎 Scan saved prediction archive",key="zz_benchmark_scan",use_container_width=True)
     uploaded=st.file_uploader("Upload a JSON list of verified fixture forecasts",
                               type=["json"],key="zz_benchmark_json")
     with st.expander("Required JSON record format"):
@@ -15,11 +18,20 @@ def render(st):
                 '"2026-11-20T12:00:00Z","scores":[[1,0,0.15],[0,0,0.12]]}}}]',
                 language="json")
     from benchmark_archive_loader import load_archive
+    if uploaded is None and not scan and not st.session_state.get("zz_benchmark_scan_done"):
+        st.info("Press Scan saved prediction archive to begin. The scan may take time on large archives.")
+        return
     if uploaded is None:
+        st.session_state["zz_benchmark_scan_done"]=True
         @st.cache_data(ttl=1800,show_spinner=False)
         def read_local_records():
             return load_archive(".")
-        rows,diagnostics=read_local_records()
+        try:
+            with st.spinner("Reading compatible saved forecast records…"):
+                rows,diagnostics=read_local_records()
+        except Exception as exc:
+            st.error("Archive scan failed ("+type(exc).__name__+"). You can still upload JSON.")
+            return
         st.caption("Read-only local archive scan: "+str(diagnostics))
         if not rows:
             st.info("No archive records use the benchmark's verified fixture schema. "
