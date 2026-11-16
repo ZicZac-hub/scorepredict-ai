@@ -117,3 +117,38 @@ def test_deep_research_entrypoint_displays_v25_even_if_page_module_is_cached():
     assert "    render_v25(st)" not in page
     # Keep single-match radio methods untouched; V25 is a two-match study.
     assert '    method = st.radio("Prediction method",' in page
+
+def test_real_collection_with_zero_qualifying_pairs_is_not_misreported_as_missing(tmp_path):
+    from v25_deep_research_panel import sydney_time, diagnostic_reasons
+
+    packet = data()
+    packet.update({
+        "total_frozen_sets":0,"verified_sets":0,"pending_sets":0,
+        "robust_wins":0,"baseline_wins_on_same_pairs":0,
+        "generated_at_utc":"2026-11-16T13:24:35Z",
+        "candidate_coverage":{
+            "eligible_fixtures":0,
+            "excluded":{
+                "outside_research_freeze_window":197,
+                "invalid_source_time":4,
+                "not_original_v8_model":70},
+            "next_possible_pair_window_utc":"2026-11-17T23:00:00+00:00",
+            "next_window_is_not_guaranteed_selection":True,
+        },
+    })
+    status=tmp_path/"status.json"
+    status.write_text(json.dumps(packet),encoding="utf-8")
+    screen=Screen()
+    render(screen,report_path=status,sets_dir=tmp_path/"sets")
+    visible=" ".join(str(line) for line in screen.messages)
+    assert "collection has run successfully" in visible
+    assert "197" in visible and "24-hour pre-match research window" in visible
+    assert "4 source records failed strict timestamp" in visible
+    assert "70 other-model records" in visible
+    assert "not a prediction loss" in visible
+    assert "No saved research run" not in visible
+    assert "18 Nov 2026, 10:00 AM Sydney" in visible
+    assert "No finished, independently verified V25 pairs yet" in visible
+    assert screen.links[0][1].endswith("data/pro_analyst_shadow/status.json")
+    assert diagnostic_reasons(packet)==packet["candidate_coverage"]["excluded"]
+    assert sydney_time(None) is None
