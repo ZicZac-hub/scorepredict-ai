@@ -321,9 +321,14 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
             if run["queries"]>=remaining or queried_for_date>=1:
                 break
             marker=_attempt(root,clock,date,page)
-            if marker.exists():
-                existing=load_json(marker,{})
-                if existing.get("result_count",0)<10:
+            # Reuse completed page attempts from ANY collection slot today.
+            # Otherwise every new slot re-fetches page 1 and never advances.
+            prior_files=sorted(
+                (Path(root)/"requests"/clock.date().isoformat()).glob(
+                    date+"_p"+str(page)+"_slot*.json"))
+            if prior_files:
+                prior=load_json(prior_files[-1],{})
+                if prior.get("result_count",0)<10:
                     break
                 continue
             if page>1:
