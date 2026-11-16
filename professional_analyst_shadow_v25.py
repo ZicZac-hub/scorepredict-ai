@@ -208,11 +208,12 @@ def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
         _,_,_,first,second,metrics = ranked[0]
         def source(item):
             r=item["record"]
-            return {k:r[k] for k in (
+            data={k:r[k] for k in (
                 "provider", "fixture_id", "home_team_id","away_team_id",
                 "home_team","away_team","kickoff_utc","captured_at_utc",
                 "forecast_id","model_key","model_version","input_digest")}
-            | {"human_research_note":human_research_note(r,clock)}
+            data["human_research_note"]=human_research_note(r,clock)
+            return data
         output[day] = {
             "decision":"FROZEN_RESEARCH_ONLY", "model_version":VERSION,
             "sydney_date":day, "selected_at_utc":clock.isoformat(),
