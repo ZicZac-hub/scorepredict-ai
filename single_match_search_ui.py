@@ -29,7 +29,7 @@ def render(st, api_key):
               (e["home"]+" "+e["away"]+" "+e["league"]).casefold()]
     st.caption(f"{len(filtered)} matching fixtures out of {len(events)} provider fixtures.")
     if not filtered:
-        st.info("No matching upcoming fixtures returned. Try another team or expand the date range.")
+        st.info("No matching upcoming fixtures returned by API-Football. Try another team or expand the date range. If the total provider fixture count is zero, check the configured API key, subscription access, and provider warnings above.")
         return
     labels={str(e["id"])+" · "+e["home"]+" vs "+e["away"]+" · "+
             e["local"].strftime("%d %b %I:%M %p")+" Sydney · "+e["league"]:e
@@ -91,4 +91,4 @@ def render(st, api_key):
         st.warning("No qualifying model-derived exact score. No odds invented.")
     st.caption("These are five alternatives for ONE match, not five independent bets. "
                "Fair odds = 1 / model probability; NOT verified bookmaker prices. "
-               "Outcomes above 50 are individually very unlikely and no profitable edge is demonstrated.")
+               "Outcomes at 80+ are individually very unlikely and no profitable edge is demonstrated.")
