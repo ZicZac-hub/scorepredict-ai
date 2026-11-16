@@ -192,7 +192,7 @@ def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
             "excluded":dict(excluded), "version":VERSION}
 
 
-def _results(original_root, prematch_root):
+def _results(original_root, prematch_root, clock):
     """Only verified, post-kickoff regulation-time provider results qualify."""
     accepted, conflicted = {}, set()
     for file in (Path(original_root)/"verified_results.json",
@@ -211,7 +211,7 @@ def _results(original_root, prematch_root):
                         row.get("score_basis") != "regulation" or
                         row.get("status") not in ("FT","AET","PEN","FINISHED")):
                     continue
-                if not utc(row["verified_at_utc"]) > utc(row["kickoff_utc"]):
+                if not (utc(row["kickoff_utc"]) < utc(row["verified_at_utc"]) <= clock):
                     continue
                 h,a = row["home_goals"],row["away_goals"]
                 if type(h) is not int or type(a) is not int or min(h,a)<0:
@@ -267,7 +267,7 @@ def run(*, root=ORIGINAL_ROOT, out=OUT, prematch_root=Path("data/prematch"),
             created.append(day)
         except FileExistsError:
             pass
-    results,conflicts = _results(root,prematch_root)
+    results,conflicts = _results(root,prematch_root,clock)
     outcomes=[]
     for path in sorted(folder.glob("*.json")):
         try:
