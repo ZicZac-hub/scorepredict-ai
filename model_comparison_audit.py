@@ -90,3 +90,33 @@ def benchmark(rows, min_sample=100):
     return {"models":models,"rejected":rejected,
             "note":"Never compare models on different fixture cohorts; intersect fixture IDs first. "
                    "A holdout, calibration, uncertainty and five-double audit are required before promotion."}
+
+
+def paired_benchmark(rows):
+    """Score every model on the INTERSECTION of its valid pre-match fixtures.
+
+    Build each per-model cohort from validated rows; use benchmark's own
+    rejection rules by evaluating a single fixture/model at a time.
+    """
+    cohorts={}
+    for row in rows:
+        fid=str(row.get("fixture_id") or "")
+        if not fid:
+            continue
+        for model,forecast in (row.get("forecasts") or {}).items():
+            candidate=dict(row)
+            candidate["forecasts"]={model:forecast}
+            result=benchmark([candidate])
+            if model in result["models"]:
+                cohorts.setdefault(str(model),{})[fid]=candidate
+    if len(cohorts)<2:
+        return {"shared_fixtures":0,"models":{}}
+    shared=set.intersection(*(set(x) for x in cohorts.values()))
+    if not shared:
+        return {"shared_fixtures":0,"models":{}}
+    models={}
+    for name,cohort in sorted(cohorts.items()):
+        report=benchmark([cohort[fid] for fid in sorted(shared)])
+        if name in report["models"]:
+            models[name]=report["models"][name]
+    return {"shared_fixtures":len(shared),"models":models}
