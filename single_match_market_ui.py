@@ -13,7 +13,7 @@ KEYWORDS={
     "Other":(),
 }
 
-def flatten_markets(payload, fixture_id, minimum=80.0):
+def flatten_markets(payload, fixture_id, minimum=1.01):
     """Read provider odds for exactly one fixture, with explicit source labels."""
     output=[]
     for item in payload if isinstance(payload,list) else []:
@@ -46,14 +46,14 @@ def render(st, api_key, event):
     st.caption("Provider-listed odds only. Corners, penalties, goals, free kicks, "
                "offsides, cards and shots appear only if a bookmaker supplies them. "
                "A market may not be available on your plan or for this fixture.")
-    minimum=st.number_input("Minimum quoted decimal odds",min_value=80.0,
-                            max_value=10000.0,value=80.0,step=10.0,
+    minimum=st.number_input("Minimum individual quoted decimal odds",min_value=1.01,
+                            max_value=10000.0,value=1.20,step=0.5,
                             key="zz_real_market_minimum")
     if st.button("🔎 Search actual markets for this match",key="zz_real_market_search",
                  use_container_width=True):
         try:
             data=_request(api_key,"/odds",{"fixture":event["id"]})
-            rows=flatten_markets(data,event["id"],minimum)
+            rows=flatten_markets(data,event["id"],1.01)
             st.session_state["zz_real_market_result"]={
                 "fixture":str(event["id"]),"rows":rows,"error":None,
                 "checked":datetime.now(timezone.utc).isoformat()}
@@ -80,6 +80,8 @@ def render(st, api_key, event):
     st.caption(str(len(filtered))+" qualifying bookmaker quotes. "
                "Displayed quotes are not guaranteed to remain available.")
     st.dataframe(filtered,use_container_width=True,hide_index=True)
+    from same_game_builder_ui import render as render_builders
+    render_builders(st,record.get("rows",[]),target=80.0)
     st.warning("Do not multiply odds from correlated same-game markets to claim an "
                "80+ combined price. A valid same-game combination requires a "
                "bookmaker-quoted combined market and independently validated probabilities.")
