@@ -25,11 +25,15 @@ jobs:
       - name: Recompute matched original and prospective evaluations
         run: |
           python evaluate_prospective_ledger.py --files-only
+      - name: Rebuild verified model benchmark automatically
+        run: |
+          python -m unittest -q test_benchmark_archive_loader.py
+          python benchmark_archive_loader.py --report data/benchmark/summary.json
       - name: Commit newly verified scores and sanitized diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json
+          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
           git pull --rebase
