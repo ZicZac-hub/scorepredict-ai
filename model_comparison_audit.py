@@ -93,30 +93,36 @@ def benchmark(rows, min_sample=100):
 
 
 def paired_benchmark(rows):
-    """Score every model on the INTERSECTION of its valid pre-match fixtures.
+    """Compare only forecasts stored together on unique settled fixtures.
 
-    Build each per-model cohort from validated rows; use benchmark's own
-    rejection rules by evaluating a single fixture/model at a time.
+    Duplicate fixture IDs are excluded altogether, including conflicting
+    scores/kickoffs. This prevents an appended or altered record from
+    silently replacing a genuinely frozen forecast in the leaderboard.
     """
-    cohorts={}
-    for row in rows:
-        fid=str(row.get("fixture_id") or "")
-        if not fid:
-            continue
-        for model,forecast in (row.get("forecasts") or {}).items():
-            candidate=dict(row)
-            candidate["forecasts"]={model:forecast}
-            result=benchmark([candidate])
-            if model in result["models"]:
-                cohorts.setdefault(str(model),{})[fid]=candidate
-    if len(cohorts)<2:
-        return {"shared_fixtures":0,"models":{}}
-    shared=set.intersection(*(set(x) for x in cohorts.values()))
+    from collections import Counter
+    ids=[str(row.get("fixture_id") or "") for row in rows if isinstance(row,dict)]
+    counts=Counter(ids)
+    unique=[row for row in rows if isinstance(row,dict)
+            and row.get("fixture_id") and counts[str(row["fixture_id"])]==1]
+    eligible={}
+    for row in unique:
+        valid=set()
+        for name,forecast in (row.get("forecasts") or {}).items():
+            candidate=dict(row,forecasts={name:forecast})
+            if name in benchmark([candidate])["models"]:
+                valid.add(name)
+        eligible[str(row["fixture_id"])]=(row,valid)
+    model_names=set().union(*(valid for _,valid in eligible.values())) if eligible else set()
+    if len(model_names)<2:
+        return {"shared_fixtures":0,"models":{},"duplicate_fixtures_excluded":sum(v>1 for v in counts.values())}
+    shared=[row for row,valid in eligible.values() if model_names.issubset(valid)]
     if not shared:
-        return {"shared_fixtures":0,"models":{}}
+        return {"shared_fixtures":0,"models":{},"duplicate_fixtures_excluded":sum(v>1 for v in counts.values())}
     models={}
-    for name,cohort in sorted(cohorts.items()):
-        report=benchmark([cohort[fid] for fid in sorted(shared)])
-        if name in report["models"]:
-            models[name]=report["models"][name]
-    return {"shared_fixtures":len(shared),"models":models}
+    for name in sorted(model_names):
+        sample=[dict(row,forecasts={name:row["forecasts"][name]}) for row in shared]
+        result=benchmark(sample)
+        if name in result["models"]:
+            models[name]=result["models"][name]
+    return {"shared_fixtures":len(shared),"models":models,
+            "duplicate_fixtures_excluded":sum(v>1 for v in counts.values())}
