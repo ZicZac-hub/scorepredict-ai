@@ -20,24 +20,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 34,
-      "recorded": 34,
+      "pending": 35,
+      "recorded": 35,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 34,
-      "recorded": 34,
+      "pending": 35,
+      "recorded": 35,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 197,
-      "recorded": 199,
+      "pending": 198,
+      "recorded": 200,
       "verified": 2
     },
     "frozen_v8_near": {
@@ -60,12 +60,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 169,
-      "recorded": 169,
+      "pending": 170,
+      "recorded": 170,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-16T16:07:20.204542+00:00",
+  "checked_at_utc": "2026-11-16T17:30:34.559768+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -80,6 +80,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-16T17:30:27.026876+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1550212')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Atalanta",
+          "away_team_id": "499",
+          "fixture_id": "1550212",
+          "home_team": "Lecce",
+          "home_team_id": "867",
+          "kickoff_utc": "2026-11-30T17:30:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-30T17:30:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-16T17:30:26.919015+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550212', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Atalanta",
+          "away_team_id": "499",
+          "fixture_id": "1550212",
+          "home_team": "Lecce",
+          "home_team_id": "867",
+          "kickoff_utc": "2026-11-30T17:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-30T17:30:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-16T17:30:26.927625+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550212', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Atalanta",
+          "away_team_id": "499",
+          "fixture_id": "1550212",
+          "home_team": "Lecce",
+          "home_team_id": "867",
+          "kickoff_utc": "2026-11-30T17:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-30T17:30:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-16T17:30:26.947398+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550212', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Atalanta",
+          "away_team_id": "499",
+          "fixture_id": "1550212",
+          "home_team": "Lecce",
+          "home_team_id": "867",
+          "kickoff_utc": "2026-11-30T17:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-30T17:30:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-15T23:04:15.583361+00:00",
@@ -13275,8 +13391,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 434,
-    "recorded": 442,
+    "pending": 438,
+    "recorded": 446,
     "verified": 8
   }
 }
