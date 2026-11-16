@@ -29,6 +29,7 @@ VARIANTS = ("baseline_v8", "poisson_marginal",
 MIN_HISTORY = 45
 MIN_LEAD = timedelta(minutes=45)
 MAX_LEAD = timedelta(hours=24)
+MAX_SOURCE_AGE = timedelta(hours=72)  # research source-freshness guardrail
 MIN_ENVELOPE_MASS = 0.035  # research-only operating threshold, NOT validated
 VERSION = "pro-analyst-v25-robust-sensitivity-shadow"
 
@@ -63,6 +64,8 @@ def _eligible(record, clock):
             return None, "invalid_source_time"
         if not (MIN_LEAD <= kickoff - clock <= MAX_LEAD):
             return None, "outside_research_freeze_window"
+        if clock-captured > MAX_SOURCE_AGE:
+            return None, "stale_pre_match_source_evidence"
         if (record.get("mode") != "prospective" or
                 record.get("score_basis") != "regulation" or
                 not record.get("input_digest")):
@@ -83,6 +86,36 @@ def _eligible(record, clock):
                 "captured":captured, "kickoff":kickoff}, None
     except (KeyError, ValueError, TypeError, OverflowError):
         return None, "missing_or_invalid_evidence"
+
+
+def human_research_note(row, clock):
+    """Only interpret independently saved pre-kickoff context; no invented team news.
+
+    This text/data memo has ZERO numerical weight until a contextual signal
+    independently demonstrates incremental predictive skill.
+    """
+    context = row.get("research_context") or {}
+    home = context.get("home") or {}
+    away = context.get("away") or {}
+    xg = context.get("verified_xg_xga") or {}
+    lineup = context.get("verified_lineup_adjustments") or {}
+    capture=utc(row["captured_at_utc"])
+    def numeric(value):
+        return (round(float(value), 2) if type(value) in (int,float)
+                and math.isfinite(float(value)) else None)
+    return {
+        "as_of_utc":row["captured_at_utc"],
+        "evidence_age_hours_at_decision":round((clock-capture).total_seconds()/3600,2),
+        "home_recent_matches_observed":numeric(home.get("last10_observed")),
+        "away_recent_matches_observed":numeric(away.get("last10_observed")),
+        "home_rest_days":numeric(home.get("rest_days_since_last_kickoff")),
+        "away_rest_days":numeric(away.get("rest_days_since_last_kickoff")),
+        "genuine_shot_based_xg_available":xg.get("available") is True,
+        "validated_lineup_adjustment_applied":lineup.get("applied") is True,
+        "verified_bookmaker_market_in_this_forecast":row.get("market_used") is True,
+        "numerical_context_weight":0,
+        "note":"Observed context only. Missing news/xG/lineups are not guessed.",
+    }
 
 
 def _pad(grid, shape):
@@ -179,6 +212,7 @@ def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
                 "provider", "fixture_id", "home_team_id","away_team_id",
                 "home_team","away_team","kickoff_utc","captured_at_utc",
                 "forecast_id","model_key","model_version","input_digest")}
+            | {"human_research_note":human_research_note(r,clock)}
         output[day] = {
             "decision":"FROZEN_RESEARCH_ONLY", "model_version":VERSION,
             "sydney_date":day, "selected_at_utc":clock.isoformat(),
