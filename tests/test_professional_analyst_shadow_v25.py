@@ -137,3 +137,23 @@ def test_identity_mismatch_and_conflicting_scores_remain_pending(tmp_path):
              now=NOW+timedelta(hours=9),forecasts=[first,second],min_envelope=0)
     assert out2["conflicting_verified_results_excluded"]==1
     assert out2["verified_sets"]==0
+
+def test_future_verified_result_is_not_visible_before_its_timestamp(tmp_path):
+    first,second=forecast(100),forecast(200,lead=4)
+    root=tmp_path/"original"
+    root.mkdir()
+    out=tmp_path/"shadow"
+    prematch=tmp_path/"prematch"
+    prematch.mkdir()
+    (root/"verified_results.json").write_text(
+        json.dumps({"100":results(first),"200":results(second)}))
+    # Source file already contains finals but audit time precedes verification:
+    # never introduce look-ahead just because a future test row exists.
+    early=run(root=root, prematch_root=prematch,out=out,now=NOW,
+              forecasts=[first,second],min_envelope=0)
+    assert early["verified_sets"]==0
+    assert early["pending_sets"]==1
+    settled=run(root=root,prematch_root=prematch,out=out,
+                now=NOW+timedelta(hours=9),forecasts=[first,second],
+                min_envelope=0)
+    assert settled["verified_sets"]==1
