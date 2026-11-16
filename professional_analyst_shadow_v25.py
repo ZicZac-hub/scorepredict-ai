@@ -249,10 +249,11 @@ def _score_set(packet, result_index):
 
 
 def run(*, root=ORIGINAL_ROOT, out=OUT, prematch_root=Path("data/prematch"),
-        now=None, forecasts=None):
+        now=None, forecasts=None, min_envelope=MIN_ENVELOPE_MASS):
     """Write new shadow sets exactly once; rescore ONLY from verified results."""
     clock = utc(now or datetime.now(timezone.utc))
-    prediction = propose(read_latest(root) if forecasts is None else forecasts, clock)
+    prediction = propose(read_latest(root) if forecasts is None else forecasts,
+                         clock, min_envelope=min_envelope)
     folder = Path(out)/"sets"
     folder.mkdir(parents=True, exist_ok=True)
     created = []
