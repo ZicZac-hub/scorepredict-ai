@@ -89,7 +89,7 @@ def test_write_once_and_settle_two_legs_using_identity_matched_result_files(tmp_
     prematch.mkdir()
     out=tmp_path/"research"
     initial=run(root=original, prematch_root=prematch,out=out,now=NOW,
-                forecasts=[first,second])
+                forecasts=[first,second],min_envelope=0)
     assert initial["total_frozen_sets"] == 1
     assert initial["verified_sets"] == 0
     assert initial["pending_sets"] == 1
@@ -105,7 +105,7 @@ def test_write_once_and_settle_two_legs_using_identity_matched_result_files(tmp_
     (prematch/"verified_results.json").write_text(json.dumps(actuals))
     later=NOW+timedelta(hours=9)
     after=run(root=original,prematch_root=prematch,out=out,now=later,
-              forecasts=[first,second])
+              forecasts=[first,second],min_envelope=0)
     assert after["total_frozen_sets"]==1
     assert after["verified_sets"]==1
     assert after["robust_wins"]==1
@@ -122,18 +122,18 @@ def test_identity_mismatch_and_conflicting_scores_remain_pending(tmp_path):
     prematch.mkdir()
     out=tmp_path/"shadow"
     run(root=original,prematch_root=prematch,out=out,now=NOW,
-        forecasts=[first,second])
+        forecasts=[first,second],min_envelope=0)
     a,b=results(first),results(second)
     b["away_team_id"]="999"
     (original/"verified_results.json").write_text(json.dumps({"100":a,"200":b}))
     out1=run(root=original,prematch_root=prematch,out=out,
-             now=NOW+timedelta(hours=9),forecasts=[first,second])
+             now=NOW+timedelta(hours=9),forecasts=[first,second],min_envelope=0)
     assert out1["verified_sets"]==0
     b["away_team_id"]=second["away_team_id"]
     (original/"verified_results.json").write_text(json.dumps({"100":a,"200":b}))
     alternative=dict(b,home_goals=b["home_goals"]+1)
     (prematch/"verified_results.json").write_text(json.dumps({"200":alternative}))
     out2=run(root=original,prematch_root=prematch,out=out,
-             now=NOW+timedelta(hours=9),forecasts=[first,second])
+             now=NOW+timedelta(hours=9),forecasts=[first,second],min_envelope=0)
     assert out2["conflicting_verified_results_excluded"]==1
     assert out2["verified_sets"]==0
