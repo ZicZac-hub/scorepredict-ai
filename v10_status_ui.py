@@ -88,6 +88,24 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                            "All source forecasts must be frozen before both "
                            "kickoffs. It may abstain. No method is promoted "
                            "without substantial future verification.")
+                selected = [
+                    packet for packet in
+                    ((professional.get("candidate_coverage") or {}).get("days") or {}).values()
+                    if isinstance(packet, dict) and
+                    packet.get("decision")=="FROZEN_RESEARCH_ONLY"
+                ]
+                if selected:
+                    latest=selected[-1]
+                    st.caption("Latest source-verified human-style analysis "
+                               "(descriptive only; unverified xG, lineups and "
+                               "tactical effects have zero numeric weight):")
+                    st.json({
+                        "first_fixture": latest["first"].get("human_research_note"),
+                        "second_fixture": latest["second"].get("human_research_note"),
+                        "model_estimated_robust_mass": latest.get(
+                            "robust_lower_envelope_model_mass"),
+                        "not_a_proven_hit_rate": True,
+                    })
                 examples = (professional.get("outcomes") or [])[-8:]
                 if examples:
                     st.dataframe(examples, use_container_width=True,
