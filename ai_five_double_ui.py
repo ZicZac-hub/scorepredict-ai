@@ -631,9 +631,14 @@ def _display(st,report,first,second):
 
 def render(st,rows,histories=None):
     st.subheader("🤖 AI Five-Double Studio")
+    try:
+        v25_selected=str(st.query_params.get("v25",""))=="1"
+    except (AttributeError,TypeError):
+        v25_selected=False
     engine=st.radio("Choose your five-double prediction engine",
                     ["🧮 V25 Professional Analyst · all upcoming matches",
                      "🤖 Original AI Five-Double Studio"],
+                    index=0 if v25_selected else 1,
                     key="zz_ai_five_engine_choice",
                     help="V25 can model any two eligible future matches with "
                          "complete source score grids on the same Sydney day; "
