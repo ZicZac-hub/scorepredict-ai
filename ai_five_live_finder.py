@@ -46,6 +46,23 @@ def research_day(api_key, local_day, *, known_ids=None, limit=MAX_NEW_MODELS_PER
                 and (fixture.get("awayTeam") or {}).get("id") is not None):
             future.append(event)
     report["discovered"]=len(future)
+    # Real provider-sourced fixtures, including those that cannot yet be
+    # modelled. Never convert a fixture listing into an invented scoreline.
+    # This gives V25 a truthful Today/Tomorrow match list before the model
+    # receives sufficient historical observations.
+    report["fixtures"]=[
+        {
+            "provider":"API-Football",
+            "fixture_id":str(event["fixture"]["id"]),
+            "kickoff_utc":utc(event["fixture"]["utcDate"]).isoformat(),
+            "home_team":str(event["fixture"]["homeTeam"].get("name") or ""),
+            "away_team":str(event["fixture"]["awayTeam"].get("name") or ""),
+            "competition":str(event.get("league") or ""),
+            "country":str(event.get("country") or ""),
+            "source_status":"provider-listed; model not guaranteed"
+        }
+        for event in future
+    ]
     previously=set(known_ids or [])
     queued=[event for event in future
             if str((event.get("fixture") or {}).get("id")) not in previously]
