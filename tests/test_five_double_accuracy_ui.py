@@ -25,6 +25,9 @@ class Screen:
     def download_button(self, label, data, *args, **kwargs):
         self.downloads.append(data)
 
+    def dataframe(self, rows, *args, **kwargs):
+        self.lines.append(f"research rows: {len(rows)}")
+
 
 def report():
     return {"schema_version": 1, "evaluated_at_utc": "2035-01-02T01:00:00Z",
@@ -101,3 +104,45 @@ def test_workflow_preserves_and_archives_the_scheduled_diagnosis():
     assert "data/accuracy_diagnosis/" in workflow.split("git add", 1)[1].split("\n", 1)[0]
     assert "data/accuracy_diagnosis/" in workflow.split("- name: Archive immutable snapshots", 1)[1]
     assert "data/accuracy_diagnosis/report.json" in REPORT_EXACT
+
+def test_research_table_preserves_pending_sets_and_original_inputs():
+    from copy import deepcopy
+    from five_double_accuracy_ui import coverage_research_rows
+
+    original = {"sets": [
+        {"sydney_date": "2026-11-15", "status": "miss",
+         "selected_five_model_coverage": .05923757473658,
+         "full_grid_diagnosis": {"optimal_five_model_coverage": .05923757473658,
+                                 "minimum_combinations_for_target_model_coverage": 156},
+         "source_feature_gaps": [
+             {"verified_shot_xg_available": False, "validated_lineup_adjustments_applied": False},
+             {"verified_shot_xg_available": False, "validated_lineup_adjustments_applied": False}]},
+        {"sydney_date": "2026-11-19", "status": "pending",
+         "selected_five_model_coverage": .07105348455,
+         "full_grid_diagnosis": {"optimal_five_model_coverage": .07105348455,
+                                 "minimum_combinations_for_target_model_coverage": 119},
+         "source_feature_gaps": [
+             {"verified_shot_xg_available": True, "validated_lineup_adjustments_applied": False},
+             {"verified_shot_xg_available": False, "validated_lineup_adjustments_applied": True}]},
+    ]}
+    preserved = deepcopy(original)
+    rows = coverage_research_rows(original)
+    assert len(rows) == 2
+    assert rows[0]["Selected five model coverage"] == 5.92
+    assert rows[1]["Best five model coverage"] == 7.11
+    assert rows[1]["Result"] == "pending"
+    assert rows[0]["Combos for 70% model coverage"] == 156
+    assert rows[1]["Legs missing true xG"] == 1
+    assert rows[1]["Legs without validated lineup adjustment"] == 1
+    assert original == preserved
+
+
+def test_research_table_rejects_invalid_and_out_of_range_mass():
+    from five_double_accuracy_ui import coverage_research_rows
+
+    assert coverage_research_rows(None) == []
+    assert coverage_research_rows({"sets": []}) == []
+    invalid = {"sets": [{"sydney_date": "2026-11-19",
+               "selected_five_model_coverage": .95,
+               "full_grid_diagnosis": {"optimal_five_model_coverage": .07}}]}
+    assert coverage_research_rows(invalid) == []
