@@ -426,6 +426,19 @@ def capture(*,now=None,enabled=None,api_key=None,root=ROOT,
                        source_root=source_root,originals=originals)
     status["binding"]=bound
     status["new_source_bindings"]=bound["new_bindings"]
+    # Distinguish absence of matching fixture markets from a model failure.
+    # Keep this diagnostic free of secrets and unverified accuracy claims.
+    status["coverage_health"]={
+        "eligible_frozen_forecasts":bound["v8_checked"],
+        "matched_market_forecasts":bound["v8_with_catalog"],
+        "unmatched_market_forecasts":bound["missing_catalog"],
+        "new_identity_validated_packets":len(bound["new_bindings"]),
+        "provider_request_errors":len(run.get("provider_errors",[])),
+        "reason":("no_eligible_frozen_forecasts" if not bound["v8_checked"] else
+                  "market_not_matched_to_frozen_fixtures" if not bound["v8_with_catalog"] else
+                  "market_available_for_some_fixtures"),
+        "does_not_establish_accuracy_gain":True,
+    }
     status["all_supported_odds_not_guaranteed"]=True
     status["note"]="Date pages capped by quota, market availability, original fixture identity and kickoff"
     write_json(Path(root)/"status.json",status)
