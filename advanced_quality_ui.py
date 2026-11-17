@@ -189,6 +189,7 @@ def render(st, data_root=None):
                    ", pagination=" + str(details.get("pagination_kind")) +
                    ", has_more=" + str(details.get("has_more_kind")) +
                    ", next_cursor=" + str(bool(details.get("next_cursor_present"))) +
+                   ", message_category=" + str(details.get("message_class", "not_recorded")) +
                    ". No API tokens, provider messages or raw cursor values are displayed.")
     if s["sportmonks_discovery_pages"]:
         st.caption("Fixture identity scan: " +
