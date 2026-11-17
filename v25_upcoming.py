@@ -19,10 +19,13 @@ from ai_five_double_engine import eligible, identity, pair_check, teams, SYDNEY
 from professional_analyst_shadow_v25 import _pair, MAX_EARLY_SOURCE_AGE
 from v10_prospective import utc
 from v21_goal_model_comparison import variants
+from v25_evidence_audit import trace_pair
 
 VERSION = "v25-on-demand-robust-sensitivity-experimental"
 MAX_PAGE_PAIRS = 15
 MAX_AUTO_EVALUATION = 150
+# Conservative research-filter settings, NOT calibrated win probabilities.
+CAUTIOUS_MIN_V8_FIVE_MASS = 0.08
 
 
 def _source_time(row, clock):
@@ -151,8 +154,11 @@ def generate(first,second,now):
     selection=metrics["five_doubles"]
     if len(selection)!=5 or len({(p["score1"],p["score2"]) for p in selection})!=5:
         return {"status":"insufficient_model_support"}
+    source_audit=trace_pair(first,second,clock)
     return {
         "status":"ready",
+        "source_evidence_audit":source_audit,
+        "independent_evidence_numerically_used":False,
         "method":VERSION,
         "generated_at_utc":clock.isoformat(),
         "sydney_date":first["day"],
@@ -175,7 +181,33 @@ def generate(first,second,now):
     }
 
 
-def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION):
+def automatic_quality(report, *, min_model_mass=CAUTIOUS_MIN_V8_FIVE_MASS,
+                      require_fresh_market=True):
+    """Cautious screening only; abstention has NO demonstrated win-rate lift.
+
+    Model mass is an uncalibrated *coverage estimate*, not a confidence bound.
+    This method never changes underlying scores or promotes a new goal model.
+    """
+    reasons=[]
+    if report.get("status")!="ready":
+        return {"passed":False,"reasons":["not_qualified_for_v25"]}
+    mass=report.get("v8_optimal_five_estimated_mass")
+    if type(mass) not in (int,float) or not math.isfinite(mass) or mass < min_model_mass:
+        reasons.append("low_model_estimated_five_score_coverage")
+    if any(report.get("early_frozen_source") or []):
+        reasons.append("original_source_over_72_hours_old")
+    audited=report.get("source_evidence_audit") or []
+    if require_fresh_market and (len(audited)!=2 or not all(
+            item.get("verified_pre_match_market") is True for item in audited)):
+        reasons.append("no_source_matched_fresh_market_on_both_legs")
+    return {"passed":not reasons,"reasons":reasons,
+            "minimum_model_mass_research_only":min_model_mass,
+            "no_verified_win_rate_improvement_claim":True}
+
+
+def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
+              cautious=False, min_model_mass=CAUTIOUS_MIN_V8_FIVE_MASS,
+              require_fresh_market=True):
     """Auto screen the same-date catalog; never imply unseen pairs were checked."""
     if not catalog:
         return {"status":"no_pairs","screened":0,"total_pairs":0}
@@ -192,20 +224,40 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION):
         pair[0]["key"],pair[1]["key"]))
     selected=ranked[:max(1,limit)]
     best=None
+    quality_exclusions=Counter()
+    scored=0
+    highest_v8_mass=None
     for first,second in selected:
         report=generate(first,second,now)
         if report.get("status")!="ready":
+            continue
+        scored+=1
+        mass=report["v8_optimal_five_estimated_mass"]
+        highest_v8_mass=mass if highest_v8_mass is None else max(highest_v8_mass,mass)
+        quality=automatic_quality(report,min_model_mass=min_model_mass,
+                                  require_fresh_market=require_fresh_market)
+        if cautious and not quality["passed"]:
+            quality_exclusions.update(quality["reasons"])
             continue
         grade=report["v25_lower_envelope_criterion"]
         if best is None or grade>best[0]:
             best=(grade,first,second,report)
     if best is None:
-        return {"status":"no_qualified_model","screened":len(selected),
-                "total_pairs":len(catalog)}
+        return {"status":("abstained_low_evidence" if cautious and scored else
+                          "no_qualified_model"),
+                "reason":("No pair satisfied the cautious research filter; "
+                          "this is not evidence of improved hit accuracy." if cautious
+                          else "No pair had valid full pre-match score grids."),
+                "quality_exclusions":dict(quality_exclusions),
+                "highest_v8_estimated_mass":highest_v8_mass,
+                "cautious_filter":bool(cautious),
+                "screened":len(selected),"total_pairs":len(catalog)}
     return {"status":"ready","first":best[1],"second":best[2],
             "report":best[3],"screened":len(selected),
             "total_pairs":len(catalog),
-            "shortlist_only":len(selected)<len(catalog)}
+            "shortlist_only":len(selected)<len(catalog),
+            "cautious_filter":bool(cautious),
+            "quality_exclusions":dict(quality_exclusions)}
 
 
 def rows_for_page(catalog, page, now, *, page_size=MAX_PAGE_PAIRS):
