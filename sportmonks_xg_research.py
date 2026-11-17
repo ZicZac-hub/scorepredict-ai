@@ -144,6 +144,38 @@ def _matched_future(forecast, rows):
     return matches[0] if len(matches)==1 and not conflict else None
 
 
+def _safe_message_class(message):
+    """Only a fixed category leaves this function; never retain provider text."""
+    if not isinstance(message, str) or not message.strip():
+        return "absent"
+    msg = " ".join(message.casefold().split())
+    # Order matters: "no data ... subscription denied" is NOT a valid empty page.
+    if any(fragment in msg for fragment in (
+        "unauthorized", "unauthorised", "not authorized", "not authorised",
+        "forbidden", "access denied", "not allowed", "subscription",
+        "not subscribed", "your plan", "not included in your plan",
+        "missing permission", "invalid token", "invalid api key",
+        "authentication failed", "auth failed", "entitlement",
+    )):
+        return "provider_access_or_subscription"
+    if any(fragment in msg for fragment in (
+        "rate limit", "too many requests", "quota exceeded",
+        "request limit", "credits exhausted",
+    )):
+        return "provider_quota_or_rate_limit"
+    if any(fragment in msg for fragment in (
+        "invalid filter", "unsupported filter", "invalid parameter",
+        "invalid date", "malformed request", "validation failed",
+    )):
+        return "provider_invalid_request"
+    if any(fragment in msg for fragment in (
+        "no results", "no fixtures", "no data found", "no data available",
+        "no matches found", "no records found", "nothing found",
+    )):
+        return "verified_empty_message"
+    return "unclassified_provider_message"
+
+
 def _schema_diagnostic(body):
     """Allowlisted shape descriptors ONLY: no names, credentials, URLs or cursors."""
     if not isinstance(body, dict):
@@ -161,6 +193,7 @@ def _schema_diagnostic(body):
                                    and pag["next_cursor"]),
         "next_page_present":bool(pag.get("next_page")),
         "message_present":isinstance(body.get("message"),str),
+        "message_class":_safe_message_class(body.get("message")),
         "error_present":bool(body.get("error") or body.get("errors")),
     }
 
@@ -198,12 +231,16 @@ def _decode_page(body, current_page):
     if not isinstance(pagination,dict):
         # Sportmonks sometimes documents an explicit "no results" message.
         # This permits only a truly empty page, not a potentially truncated list.
-        message=body.get("message")
-        known_empty=(not rows and isinstance(message,str) and
-                     ("no results" in message.casefold() or
-                      "no fixtures" in message.casefold()))
-        if known_empty:
+        classification=diag["message_class"]
+        if not rows and classification=="verified_empty_message":
             return rows,{"mode":"terminal","more":False},None,diag
+        if not rows and classification in (
+            "provider_access_or_subscription",
+            "provider_quota_or_rate_limit",
+            "provider_invalid_request",
+            "unclassified_provider_message",
+        ):
+            return None,None,classification,diag
         return None,None,"invalid_discovery_response",diag
     flag=pagination.get("has_more")
     if flag is not None and type(flag) is not bool:
