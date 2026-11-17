@@ -44,6 +44,10 @@ def summary(report, market=None):
         "source_packets": total,
         "historical_xg": _count(source.get("with_historical_xg")),
         "six_xg_per_team": _count(source.get("with_6_per_team")),
+        "verified_match_stats": _count(source.get("with_verified_historical_match_statistics")),
+        "stats_without_xg": _count(source.get("with_stats_but_no_genuine_xg")),
+        "independent_opinions": _count(source.get("with_independent_provider_prediction")),
+        "reported_injuries": _count(source.get("with_reported_injuries")),
         "both_lineups": _count(source.get("with_both_starting_XIs")),
         "two_market_types": _count(source.get("with_2_market_types")),
         "market_forecasts": market_total,
@@ -112,6 +116,9 @@ def render(st, data_root=None):
     st.dataframe([
         {"Evidence": "Genuine historical shot-based xG", "Available": s["historical_xg"], "Packets checked": s["source_packets"]},
         {"Evidence": "At least six historical xG fixtures per team", "Available": s["six_xg_per_team"], "Packets checked": s["source_packets"]},
+        {"Evidence": "Provider-reported historical shot and match statistics", "Available": s["verified_match_stats"], "Packets checked": s["source_packets"]},
+        {"Evidence": "Independent API-Football pre-match opinion (shadow only)", "Available": s["independent_opinions"], "Packets checked": s["source_packets"]},
+        {"Evidence": "Reported unavailable/injured players", "Available": s["reported_injuries"], "Packets checked": s["source_packets"]},
         {"Evidence": "Both confirmed starting XIs", "Available": s["both_lineups"], "Packets checked": s["source_packets"]},
         {"Evidence": "At least two bookmaker market types", "Available": s["two_market_types"], "Packets checked": s["source_packets"]},
     ], hide_index=True, use_container_width=True)
@@ -140,6 +147,10 @@ def render(st, data_root=None):
                    " · ".join(map(str, s["capture_skipped"][:8])))
     st.write("Earlier bookmaker odds: " + _state(s["early_odds_enabled"]))
     st.write("Broad market collector: " + _state(s["wide_odds_enabled"]))
+    if s["stats_without_xg"]:
+        st.caption(f'{s["stats_without_xg"]} captured packets have historical '
+                   'match statistics but NO verified xG. Shot counts are not '
+                   'being presented as expected goals.')
     if s["historical_xg"] == 0 or s["both_lineups"] == 0:
         st.warning("Advanced research is incomplete: genuine historical xG "
                    "and/or confirmed starting lineups have not been recorded "
@@ -152,9 +163,11 @@ def render(st, data_root=None):
     else:
         st.info("No independently verified V22 five-double pairs yet. "
                 "No hit-rate claim can be made.")
-    st.caption("The scheduled GitHub workflow runs advanced V21/V22 evidence "
-               "collection automatically before kickoff, within a daily attempt "
-               "budget to limit API usage. Missing provider records remain unavailable.")
+    st.caption("Scheduled scouting starts up to 48 hours before kickoff for "
+               "previously frozen fixtures, then makes one guarded near-kickoff "
+               "refresh to check announced lineups. Historical shot counts, "
+               "true xG and independent provider opinions are labelled separately. "
+               "Source coverage, quota and fixture eligibility limit collection.")
     st.link_button("Open saved quality report", QUALITY_URL)
     st.link_button("Open collection workflow", WORKFLOW_URL)
     with st.expander("View saved evidence fields"):

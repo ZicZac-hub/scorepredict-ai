@@ -19,12 +19,13 @@ def leg(minutes=70):
     }
 
 
-def test_original_selection_widens_to_90_minutes_without_past_kickoff(monkeypatch,tmp_path):
+def test_original_selection_widens_to_48_hours_without_past_kickoff(monkeypatch,tmp_path):
     source=leg()
     monkeypatch.setattr(v10_prospective, "read_latest", lambda root: {"a":source})
     monkeypatch.setattr(mod, "original_model", lambda root, saved: dict(saved))
     assert mod.current_pair(tmp_path, NOW) == [source]
-    assert mod.current_pair(tmp_path, NOW-timedelta(minutes=21)) == []
+    assert mod.current_pair(tmp_path, NOW-timedelta(minutes=21)) == [source]
+    assert mod.current_pair(tmp_path, NOW-timedelta(hours=47)) == []
     assert mod.current_pair(tmp_path, NOW+timedelta(minutes=64)) == []
 
 
@@ -40,7 +41,7 @@ def test_no_eligible_leg_persists_reason_even_with_key(monkeypatch,tmp_path):
     monkeypatch.setattr(mod,"current_pair",lambda root,now: [])
     result=mod.capture_pair(root=tmp_path,source_root=tmp_path,
                             now=NOW,api_key="key",enabled=True)
-    assert result["reason"] == "no_original_frozen_leg_in_8_to_90_minute_window"
+    assert result["reason"] == "no_original_frozen_leg_in_8_min_to_48_hour_window"
     assert (tmp_path/"status.json").exists()
 
 

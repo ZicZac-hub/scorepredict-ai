@@ -99,7 +99,7 @@ def best_packet(root, leg, *, now=None, priority="research"):
 
 
 def current_pair(root=ORIGINAL_ROOT,now=None):
-    """Identify frozen original legs 8–90 minutes pre-kickoff.
+    """Identify frozen original legs 8 minutes to 48 hours pre-kickoff.
 
     A pair's two matches need not kick off simultaneously. A later match
     remains eligible after the earlier one has started, but it must itself
@@ -115,7 +115,7 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
                 continue
             for leg in (pair["first"],pair["second"]):
                 kickoff=utc(leg["kickoff_utc"])
-                if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(minutes=90):
+                if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(hours=48):
                     continue
                 key=(str(leg["provider"]),str(leg["fixture_id"]))
                 if key in seen:
@@ -135,7 +135,7 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
                     leg.get("provider")!="API-Football"):
                 continue
             kickoff=utc(leg["kickoff_utc"])
-            if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(minutes=90):
+            if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(hours=48):
                 continue
             key=(str(leg["provider"]),str(leg["fixture_id"]))
             if key in seen:
@@ -146,7 +146,10 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
                 options.append((kickoff,model))
         except (KeyError,TypeError,ValueError):
             continue
-    options.sort(key=lambda x:(x[0],str(x[1]["fixture_id"])))
+    # Research tomorrow's games earlier, while prioritising imminent lineups.
+    options.sort(key=lambda x:(
+        0 if x[0]<=clock+timedelta(minutes=90) else 1,
+        x[0],str(x[1]["fixture_id"])))
     return [x[1] for x in options]
 
 
@@ -156,7 +159,7 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
     active=(os.environ.get("V21_EVIDENCE_ENABLED")=="true" if enabled is None else bool(enabled))
     result={"at_utc":clock.isoformat(),"enabled":active,
             "new_packets":[],"calls":0,"skipped":[],
-            "capture_window_minutes":[8,90],"attempted_legs":0}
+            "capture_window_minutes":[8,2880],"attempted_legs":0}
     root=Path(root)
     key=api_key if api_key is not None else os.environ.get("API_FOOTBALL_KEY","")
     # A daily cap on *attempts*, not just successfully saved packets.
@@ -186,7 +189,7 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
     models=current_pair(source_root,clock)
     result["eligible_legs"]=len(models)
     if not models:
-        return finish("no_original_frozen_leg_in_8_to_90_minute_window")
+        return finish("no_original_frozen_leg_in_8_min_to_48_hour_window")
     cache={}
     for leg in models:
         try:
@@ -220,6 +223,15 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             if used>=daily_limit:
                 result["skipped"].append(str(leg["fixture_id"])+":daily_attempt_budget_exhausted")
                 continue
+            # Reserve up to two daily source attempts for near-kickoff lineups.
+            # Otherwise early scouting of future fixtures can spend the whole
+            # daily allowance before confirmed lineups become available.
+            early=kickoff>clock+timedelta(minutes=90)
+            reserved=min(2,max(0,daily_limit-1))
+            if early and used>=daily_limit-reserved:
+                result["skipped"].append(str(leg["fixture_id"])+
+                    ":near_kickoff_budget_reserved")
+                continue
             if result["attempted_legs"]>=2:
                 result["skipped"].append(str(leg["fixture_id"])+":per_run_attempt_budget_exhausted")
                 continue
@@ -246,9 +258,10 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                                    api_request=cb,cache=cache)
             provider=capture(fixture,evidence["history"],key,
                              now=observation_time(),request=cb,clock=observation_time,
-                             max_history_per_team=(8 if
+                             max_history_per_team=(6 if
                                  os.environ.get("V22_DEEP_XG_ENABLED")=="true"
-                                 else 1))
+                                 else 1),
+                             include_provider_prediction=True)
             clock=observation_time()
             result["calls"]+=(provider.get("diagnostics") or {}).get("queries",0)
             if not valid_snapshot(provider,fixture,now=clock):
