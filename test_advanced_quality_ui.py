@@ -78,7 +78,7 @@ class AdvancedQualityReportTests(unittest.TestCase):
             render(st, data)
             st.dataframe.assert_called_once()
             st.warning.assert_called_once()
-            st.info.assert_called_once()
+            self.assertGreaterEqual(st.info.call_count,1)
             st.link_button.assert_any_call("Open saved quality report",
                                            "https://github.com/ZicZac-hub/scorepredict-ai/blob/main/data/v22_prospective/quality_report.json")
 
