@@ -11,6 +11,8 @@ import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import requests
+
 from persist_prematch import load_json, write_json
 from source_capture_clock import capture_clock
 from v10_prospective import ROOT as ORIGINAL_ROOT, read_latest, utc
@@ -337,6 +339,9 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         return finish("genuine_sportmonks_xg_captured")
     except RequestBudgetExhausted:
         return finish("request_budget_exhausted_mid_research")
+    except requests.RequestException as exc:
+        status["error_type"]=type(exc).__name__
+        return finish("provider_access_subscription_or_network_error")
     except (ValueError, TypeError, KeyError, OSError) as exc:
         status["error_type"]=type(exc).__name__
         return finish("source_error")
