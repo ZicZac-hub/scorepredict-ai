@@ -546,6 +546,10 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         status["fixture_discovery_scope"]=discovery_meta["scope"]
         status["fixture_discovery_candidates"]=discovery_meta[
             "candidates_seen"]
+        # Safe schema-only metadata: do not write response bodies, cursors,
+        # raw URLs, provider messages, fixture names or API credentials.
+        status["fixture_discovery_response_schema"]=discovery_meta.get(
+            "response_schema")
         if match is None:
             return finish(discovery_reason)
         status["matched_future_fixtures"] = 1
