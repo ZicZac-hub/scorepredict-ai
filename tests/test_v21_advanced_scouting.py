@@ -78,3 +78,34 @@ def test_missing_shot_stat_is_not_zero():
     found=_historical_match_stats(data,31,80)
     assert found["31"]["total_shots"]==0
     assert "corners" not in found["31"]
+
+
+def test_48_hour_selection_prioritises_near_kickoff_for_lineups(monkeypatch,tmp_path):
+    import v10_prospective
+    import v21_capture_sources as mod
+    near = {"provider":"API-Football","fixture_id":"901","model_key":"v8",
+            "input_digest":"a","kickoff_utc":(NOW+timedelta(minutes=30)).isoformat()}
+    early = {"provider":"API-Football","fixture_id":"902","model_key":"v8",
+             "input_digest":"b","kickoff_utc":(NOW+timedelta(hours=35)).isoformat()}
+    monkeypatch.setattr(v10_prospective,"read_latest",
+                        lambda root:{("API-Football","902","v8"):early,
+                                     ("API-Football","901","v8"):near})
+    monkeypatch.setattr(mod,"original_model",lambda root,leg:dict(leg))
+    picked=mod.current_pair(tmp_path,NOW)
+    assert [r["fixture_id"] for r in picked]==["901","902"]
+
+
+def test_stats_with_pass_accuracy_and_fouls_are_not_xg():
+    raw=[{"team":{"id":31},"statistics":[
+              {"type":"Passes %","value":"83%"},
+              {"type":"Fouls","value":9},
+              {"type":"Total passes","value":550}]},
+         {"team":{"id":80},"statistics":[
+              {"type":"Passes %","value":"70%"},
+              {"type":"Fouls","value":16},
+              {"type":"Total passes","value":300}]}]
+    parsed=_historical_match_stats(raw,31,80)
+    assert parsed["31"]["pass_accuracy_pct"]==83
+    assert parsed["80"]["fouls"]==16
+    assert parsed["31"]["total_passes"]==550
+    assert "expected_goals" not in parsed["31"]
