@@ -1,32 +1,37 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-17T03:53:04.091681+00:00",
+  "at_utc": "2026-11-17T04:58:03.992277+00:00",
   "attempts": [
     {
       "date": "2026-11-21",
-      "page": 1
+      "page": 3
     },
     {
       "date": "2026-11-21",
-      "page": 2
+      "page": 4
     }
   ],
   "binding": {
-    "missing_catalog": 202,
-    "new_bindings": [],
+    "missing_catalog": 198,
+    "new_bindings": [
+      "1550202",
+      "1550204",
+      "1550205",
+      "1552226"
+    ],
     "out_of_window": 4,
     "v8_checked": 208,
-    "v8_with_catalog": 6
+    "v8_with_catalog": 10
   },
-  "completed_at_utc": "2026-11-17T03:53:05.381677+00:00",
+  "completed_at_utc": "2026-11-17T04:58:05.180337+00:00",
   "coverage_health": {
     "does_not_establish_accuracy_gain": true,
     "eligible_frozen_forecasts": 208,
-    "matched_market_forecasts": 6,
-    "new_identity_validated_packets": 0,
+    "matched_market_forecasts": 10,
+    "new_identity_validated_packets": 4,
     "provider_request_errors": 0,
     "reason": "market_available_for_some_fixtures",
-    "unmatched_market_forecasts": 202
+    "unmatched_market_forecasts": 198
   },
   "daily_limit": 12,
   "empty_pages": 0,
@@ -46,12 +51,38 @@
     "2026-11-30",
     "2026-11-20"
   ],
-  "new_catalog_fixtures": [],
-  "new_source_bindings": [],
+  "new_catalog_fixtures": [
+    "1550202",
+    "1550204",
+    "1550205",
+    "1551038",
+    "1551039",
+    "1551040",
+    "1551041",
+    "1551042",
+    "1551150",
+    "1551151",
+    "1551378",
+    "1551381",
+    "1551382",
+    "1551601",
+    "1551602",
+    "1551603",
+    "1551604",
+    "1551730",
+    "1551896",
+    "1552226"
+  ],
+  "new_source_bindings": [
+    "1550202",
+    "1550204",
+    "1550205",
+    "1552226"
+  ],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
   "provider_errors": [],
   "queries": 2,
   "request_budget_per_run": 2,
-  "requests_used_today": 8,
+  "requests_used_today": 10,
   "skipped_stale": 0
 }
