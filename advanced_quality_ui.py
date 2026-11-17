@@ -60,6 +60,7 @@ def summary(report, market=None):
         "sportmonks_enabled": sm.get("enabled"),
         "sportmonks_token_present": sm.get("token_present"),
         "sportmonks_reason": sm.get("reason"),
+        "sportmonks_last_observation": sm.get("last_provider_observation"),
         "sportmonks_last_run": sm.get("last_run_utc"),
         "sportmonks_matched_fixtures": _count(sm.get("matched_future_fixtures_last_run")),
         "sportmonks_saved": _count(sm.get("frozen_evidence_packets")),
@@ -179,8 +180,20 @@ def render(st, data_root=None):
     if s["sportmonks_last_run"]:
         st.write("Last Sportmonks check: " + _local_time(s["sportmonks_last_run"]))
     if s["sportmonks_reason"]:
-        st.write("Latest provider result: " +
+        st.write("Latest workflow result: " +
                  str(s["sportmonks_reason"]).replace("_"," "))
+    last=s["sportmonks_last_observation"]
+    if isinstance(last,dict) and last:
+        st.write("Last actual Sportmonks request: " +
+                 _local_time(last.get("at_utc")))
+        st.caption("Actual provider-request outcome: " +
+                   str(last.get("reason", "not_recorded")).replace("_", " ") +
+                   " · response category: " +
+                   str((last.get("response_shape") or {}).get("message_class",
+                       "not_recorded")) +
+                   " · HTTP category: " +
+                   str(last.get("http_status_category", "not_reported")) +
+                   ". Saved without raw provider messages or credentials.")
     if isinstance(s["sportmonks_discovery_response_schema"],dict):
         details=s["sportmonks_discovery_response_schema"]
         st.caption("Safe response shape: data=" +
