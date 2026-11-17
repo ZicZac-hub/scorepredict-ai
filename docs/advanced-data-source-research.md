@@ -213,3 +213,21 @@ received historical xG.** An xG-assisted challenger must be frozen before
 kickoff and compared with the original forecasts on identical future matches,
 with missing outcomes remaining pending. Zero qualified Sportmonks xG packets
 means zero defensible xG-vs-V8 performance comparisons.
+
+
+### Public-repository cursor-cache privacy
+
+GitHub commits `data/sportmonks_xg/discovery` to a public repository.
+Therefore opaque Sportmonks `next_cursor` strings cannot safely be stored in
+those discovery files even though they were previously omitted from status.
+The collector now persists only redacted pagination metadata and a SHA-256
+hash of the request cursor. Cursor values remain in process memory for
+same-run pagination. Cached non-terminal cursor pages must be refetched on
+subsequent runs to obtain a new continuation token; completed terminal
+pages remain cacheable. Legacy cache files containing raw cursors are
+sanitized as they are read. This may consume one additional bounded request
+on a retry but does not increase the four-request daily cap.
+
+This change cannot remove raw values from historical Git commits. If a
+previously committed cursor ever contained an API credential, rotate that
+credential in MySportmonks and update the GitHub Actions secret.
