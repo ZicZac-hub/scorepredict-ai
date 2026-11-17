@@ -35,3 +35,41 @@ Official API-Football references:
 6. Distinguish subscription quota and league/season data availability. Adding AI providers does not solve missing first-party evidence.
 
 **Scope caveat**: The current scheduled implementation is limited to originally frozen V8 legs and the source budget; it does not ingest all global fixtures or guarantee a 70% exact-score double success rate.
+
+## Newly integrated Sportmonks independent genuine-xG collector
+
+The Sportmonks `xGFixture` fixture include can return `EXPECTED_GOALS`
+(type ID **5304**). Official references:
+- https://docs.sportmonks.com/v3/tutorials-and-guides/tutorials/expected/includes
+- https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/expected-xg
+- https://docs.sportmonks.com/v3/definitions/states
+
+`sportmonks_xg_research.py` is a strictly source-separated, research-only
+collector. It uses an **existing** `THIRD_FOOTBALL_API_KEY` or
+`SPORTMONKS_API_TOKEN` GitHub secret, if present. It does not purchase or
+upgrade any provider package. A normal Sportmonks fixture subscription does
+not imply that the optional xG add-on is available.
+
+For eligible original V8 forecasts within 48 hours of kickoff, it uses the
+Sportmonks **fixture-by-date** endpoint to uniquely match exact normalised
+home and away names and kickoff within five minutes. It then uses only the
+matched Sportmonks home/away participant IDs to look up their independently
+completed historical fixtures within the last 60 days (one page of 50 per
+team), using the documented `xGFixture` include. Records are accepted only
+if the historical fixture has state ID `5` (regulation full time), was
+available at least three hours before collection and occurred before the
+target fixture, and contains **both** participant-matched type-5304 xG values.
+
+The collector has a default maximum of **four Sportmonks requests per UTC
+day**, reserved before network access, with an absolute maximum of twelve if
+the owner adjusts `SPORTMONKS_XG_DAILY_REQUESTS`. An attempted source match
+is checkpointed once per original forecast to avoid repeated requests every
+15 minutes. No requests occur on GitHub source-code pushes.
+
+It writes evidence under `data/sportmonks_xg/forecasts/`, audit reasons to
+`data/sportmonks_xg/status.json`, and shows separate coverage on the
+Advanced Quality Report. These Sportmonks xG records **are not currently fed
+into V22 forecasts**, not merged with API-Football fixture IDs, and cannot
+support a claimed accuracy gain until tested prospectively on matched data.
+Missing add-on access, incomplete xG, restricted league coverage and ambiguous
+matching are reported, not treated as xG of zero.

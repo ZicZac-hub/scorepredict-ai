@@ -9,7 +9,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 from persist_prematch import load_json,write_json
-from v10_prospective import ROOT as V8_ROOT,read_latest
+from v10_prospective import ROOT as V8_ROOT,read_latest,utc
 from v22_ai_gate import main as ai_gate
 from v22_calibration import chronological_evaluation
 
@@ -31,6 +31,19 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     status=load_json(Path(source_root)/"status.json",{})
     early=load_json(Path(source_root)/"market_early_status.json",{})
     wide=load_json(Path("data/v24_market_catalog")/"status.json",{})
+    sportmonks_root=Path("data/sportmonks_xg")
+    sportmonks=load_json(sportmonks_root/"status.json",{})
+    sportmonks_packets=[
+        load_json(path,{}) for path in (sportmonks_root/"forecasts").glob("*.json")
+    ]
+    sportmonks_qualified=[
+        row for row in sportmonks_packets
+        if row.get("provider")=="Sportmonks" and row.get("research_only") is True
+        and row.get("xg_type_id")==5304 and row.get("not_automatically_promoted") is True
+        and row.get("captured_at_utc") and row.get("kickoff_utc")
+        and utc(row["captured_at_utc"])<utc(row["kickoff_utc"])
+        and row.get("historical_xg")
+    ]
     extracted={"packets_checked":len(source_files),
                "with_historical_xg":0,"with_6_per_team":0,
                "with_verified_historical_match_statistics":0,
@@ -81,6 +94,23 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
         "v23_early_market_capture_enabled":early.get("enabled") if early else None,
         "v23_early_market_last_run":early.get("at_utc") if early else None,
         "v23_early_market_new_packets":len(early.get("new_packets") or []),
+        "sportmonks_independent_xg":{
+            "enabled":sportmonks.get("enabled"),
+            "token_present":sportmonks.get("token_present"),
+            "last_run_utc":sportmonks.get("at_utc"),
+            "reason":sportmonks.get("reason"),
+            "provider_error_type":sportmonks.get("error_type"),
+            "requests_used_today":sportmonks.get("daily_requests_used"),
+            "requests_limit_per_day":sportmonks.get("daily_request_limit"),
+            "matched_future_fixtures_last_run":sportmonks.get(
+                "matched_future_fixtures",0),
+            "matched_historical_xg_last_run":sportmonks.get(
+                "matched_historical_xg_fixtures",0),
+            "frozen_evidence_packets":len(sportmonks_qualified),
+            "six_xg_for_both_teams_packets":sum(
+                bool(row.get("both_teams_six_xg")) for row in sportmonks_qualified),
+            "provider_subscription_not_assumed":True,
+            "research_only_not_used_by_v22":True},
         "v24_broad_market_collection":{
             "enabled":wide.get("enabled") if wide else None,
             "last_run_utc":wide.get("at_utc") if wide else None,
