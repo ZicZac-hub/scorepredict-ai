@@ -336,12 +336,25 @@ def _query_pages(forecast, now, root, call):
                                  if cursor else None)
             key=folder/("page_"+str(count)+".json")
             prior=load_json(key,{})
+            cache_state=prior.get("pagination_state")
+            # This project persists discovery caches in a PUBLIC repository.
+            # Legacy cached cursor values must not remain in committed files.
+            if isinstance(cache_state,dict) and "cursor" in cache_state:
+                prior=dict(prior)
+                cache_state={k:v for k,v in cache_state.items()
+                             if k in ("mode","more","page")}
+                prior["pagination_state"]=cache_state
+                write_json(key,prior)
             captured=prior.get("fetched_at_utc")
             try:
                 fresh=bool(captured and 0 <= (now-utc(captured)).total_seconds()
                            <= DISCOVERY_CACHE_HOURS*3600 and
                            prior.get("request_cursor_sha256")==request_cursor_hash
-                           and isinstance(prior.get("pagination_state"),dict))
+                           and isinstance(cache_state,dict)
+                           # A cursor page cannot be resumed from a public
+                           # cache without the opaque token. Refetch that page
+                           # to obtain the token only in process memory.
+                           and cache_state.get("mode")!="cursor")
             except (ValueError,TypeError):
                 fresh=False
             if fresh:
@@ -364,11 +377,14 @@ def _query_pages(forecast, now, root, call):
                 summary["scope"]=scope
                 if error:
                     return None,error,summary
-                # Opaque cursors are only stored in private workflow cache files
-                # for bounded replay; never in status.json or application UI.
+                # Discovery caches are committed to a PUBLIC repository.
+                # Retain the cursor only in memory within this workflow run;
+                # persist safe state and an irreversible request cursor hash.
+                safe_state={k:v for k,v in state.items()
+                            if k in ("mode","more","page")}
                 write_json(key,{"fetched_at_utc":now.isoformat(),
                                 "request_cursor_sha256":request_cursor_hash,
-                                "data":rows,"pagination_state":state,
+                                "data":rows,"pagination_state":safe_state,
                                 "schema":diag,"scope":scope})
             if not isinstance(rows,list) or not isinstance(state,dict):
                 return None,"invalid_cached_discovery",summary

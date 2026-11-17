@@ -28,12 +28,21 @@ def test_verified_cursor_pagination_does_not_mix_page_and_per_page(tmp_path):
     assert details["response_schema"]["data_kind"]=="list"
     assert details["response_schema"]["has_more_kind"]=="bool"
     assert len(calls)==2
-    def must_not_request(*args,**kwargs):
-        raise AssertionError("Repeated page requests should be cached")
+    cache_contents=" ".join(p.read_text() for p in tmp_path.rglob("*.json"))
+    assert "opaque-only-cursor" not in cache_contents
+    # Cursor values are never persisted. A fresh page-1 request reacquires
+    # the opaque cursor; a terminal second page is safely served from cache.
+    resumed=[]
+    def resume(url,params):
+        resumed.append(dict(params))
+        assert "cursor" not in params
+        return {"data":[],"pagination":{
+            "has_more":True,"next_cursor":"opaque-only-cursor"}}
     replay,why,cached=_query_pages(original(),NOW+timedelta(minutes=10),
-                                    tmp_path,must_not_request)
+                                    tmp_path,resume)
     assert replay==got and why=="source_identity_matched"
-    assert cached["cached_pages_used"]==2
+    assert len(resumed)==1
+    assert cached["cached_pages_used"]==1
 
 
 def test_next_cursor_without_has_more_is_explicit_forward_pointer():
@@ -180,3 +189,44 @@ def test_rate_limit_and_invalid_request_are_distinct_safe_categories():
         assert reason==category
         assert shape["message_class"]==category
         assert "HIDDEN" not in json.dumps(shape)
+
+
+def test_public_cache_never_persists_cursor_even_if_it_contains_a_token(tmp_path):
+    secret="api_token-DO-NOT-COMMIT"
+    def request(url,params):
+        if params.get("page")==1:
+            return {"data":[],"pagination":{
+                "has_more":True,"next_cursor":"cursor-"+secret}}
+        assert params["cursor"]=="cursor-"+secret
+        return {"data":[next_match()],"pagination":{"has_more":False}}
+    found,reason,_=_query_pages(original(),NOW,tmp_path,request)
+    assert found is not None and reason=="source_identity_matched"
+    for path in tmp_path.rglob("*.json"):
+        assert secret not in path.read_text()
+        assert "cursor-"+secret not in path.read_text()
+
+
+def test_legacy_cached_cursor_is_scrubbed_before_reuse(tmp_path):
+    from persist_prematch import write_json
+    import hashlib
+    day=original()["kickoff_utc"][:10]
+    marker=hashlib.sha256((day+"|team|filters").encode()).hexdigest()[:16]
+    # Build the exact marker used by the collector for the filtered query.
+    marker=hashlib.sha256((day+"|team|participantSearch:Home FC").encode()).hexdigest()[:16]
+    page=tmp_path/"discovery"/day/marker/"page_1.json"
+    secret="SECRET-LEGACY-CURSOR"
+    write_json(page,{
+        "fetched_at_utc":NOW.isoformat(), "request_cursor_sha256":None,
+        "data":[],"pagination_state":{
+            "mode":"cursor","more":True,"cursor":secret},
+        "schema":{},"scope":"team"})
+    calls=[]
+    def request(url,params):
+        calls.append(dict(params))
+        assert "cursor" not in params
+        return {"data":[next_match()],"pagination":{"has_more":False}}
+    got,why,_=_query_pages(original(),NOW,tmp_path,request)
+    assert got and why=="source_identity_matched"
+    assert secret not in page.read_text()
+    assert "cursor" not in json.loads(page.read_text())["pagination_state"]
+    assert len(calls)==1
