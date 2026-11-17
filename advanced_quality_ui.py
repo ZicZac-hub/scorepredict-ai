@@ -54,6 +54,13 @@ def summary(report, market=None):
         "v22_hits": _count(v22.get("hits")),
         "source_capture_enabled": report.get("source_capture_enabled"),
         "source_capture_last_run": report.get("source_capture_last_run"),
+        "capture_reason": report.get("source_capture_reason"),
+        "capture_eligible": report.get("source_capture_eligible_legs"),
+        "capture_attempted": report.get("source_capture_attempted_legs"),
+        "capture_saved": _count(report.get("source_capture_saved_packets")),
+        "capture_skipped": report.get("source_capture_skipped_reasons") or [],
+        "capture_daily_used": report.get("source_capture_daily_attempts_used"),
+        "capture_daily_limit": report.get("source_capture_daily_attempts_limit"),
         "early_odds_enabled": report.get("v23_early_market_capture_enabled"),
         "wide_odds_enabled": ((report.get("v24_broad_market_collection") or {})
                               .get("enabled")),
@@ -119,6 +126,18 @@ def render(st, data_root=None):
     st.markdown("**Collection status**")
     st.write("Historical xG / lineups / injuries: " + _state(s["source_capture_enabled"]))
     st.write("V21 last capture: " + _local_time(s["source_capture_last_run"]))
+    if s["capture_reason"]:
+        st.write("Capture result: " + str(s["capture_reason"]).replace("_", " "))
+    if s["capture_daily_used"] is not None and s["capture_daily_limit"] is not None:
+        st.write(f'Advanced capture attempts today: {s["capture_daily_used"]} / '
+                 f'{s["capture_daily_limit"]} (safety budget)')
+    if s["capture_eligible"] is not None:
+        st.write(f'Eligible frozen legs: {s["capture_eligible"]} · '
+                 f'API attempts: {s["capture_attempted"]} · '
+                 f'New source packets: {s["capture_saved"]}')
+    if s["capture_skipped"]:
+        st.caption("Not collected, with reasons: " +
+                   " · ".join(map(str, s["capture_skipped"][:8])))
     st.write("Earlier bookmaker odds: " + _state(s["early_odds_enabled"]))
     st.write("Broad market collector: " + _state(s["wide_odds_enabled"]))
     if s["historical_xg"] == 0 or s["both_lineups"] == 0:
@@ -133,9 +152,9 @@ def render(st, data_root=None):
     else:
         st.info("No independently verified V22 five-double pairs yet. "
                 "No hit-rate claim can be made.")
-    st.caption("The existing GitHub workflow regenerates the report on its "
-               "scheduled runs. Additional V21/V22 source collection is a "
-               "separate owner opt-in that may use paid football API quota.")
+    st.caption("The scheduled GitHub workflow runs advanced V21/V22 evidence "
+               "collection automatically before kickoff, within a daily attempt "
+               "budget to limit API usage. Missing provider records remain unavailable.")
     st.link_button("Open saved quality report", QUALITY_URL)
     st.link_button("Open collection workflow", WORKFLOW_URL)
     with st.expander("View saved evidence fields"):
