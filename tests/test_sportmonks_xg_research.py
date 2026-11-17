@@ -308,3 +308,53 @@ def test_matching_other_forecast_never_reuses_wrong_team_alias(tmp_path):
     fake["participants"][1]["name"]="Santos FC"
     forecast=dict(original(),home_team="Coritiba",away_team="Santos")
     assert _matched_future(forecast,[fake]) is None
+
+
+def test_last_real_provider_error_survives_following_quota_only_runs(tmp_path):
+    """Save safe cause, not only an overwritten 'daily budget exhausted'."""
+    secret="DO-NOT-PERSIST-THIS-SECRET"
+    env={"SPORTMONKS_XG_ENABLED":"true", "SPORTMONKS_API_TOKEN":secret}
+    forecasts=[original(), dict(original(),fixture_id="322",
+                                 forecast_id="original-second")]
+    class Reply:
+        status_code=200
+        def raise_for_status(self): pass
+        def json(self):
+            return {"data":[], "message":"Subscription required "+secret}
+    calls=[]
+    def denied(*args,**kwargs):
+        calls.append(1)
+        return Reply()
+    first=capture(now=NOW,root=tmp_path,originals=forecasts,
+                  environ=env,request=denied,clock=lambda:NOW,daily_limit=1)
+    assert first["reason"]=="provider_access_or_subscription"
+    observation=first["last_provider_observation"]
+    assert observation["response_shape"]["message_class"]=="provider_access_or_subscription"
+    assert observation["requests_this_run"]==1
+    assert secret not in json.dumps(first)
+    later=NOW+timedelta(minutes=15)
+    second=capture(now=later,root=tmp_path,originals=forecasts,
+                   environ=env,request=denied,clock=lambda:later,daily_limit=1)
+    assert second["reason"]=="daily_request_budget_exhausted"
+    assert second["last_provider_observation"]==observation
+    assert len(calls)==1
+    assert json.loads((tmp_path/"last_provider_observation.json").read_text())==observation
+    assert secret not in (tmp_path/"last_provider_observation.json").read_text()
+    assert secret not in (tmp_path/"status.json").read_text()
+
+
+def test_http_403_category_is_preserved_without_response_text(tmp_path):
+    secret="PRIVATE-HTTP-TOKEN"
+    env={"SPORTMONKS_XG_ENABLED":"true", "SPORTMONKS_API_TOKEN":secret}
+    class Denied:
+        status_code=403
+        def raise_for_status(self):
+            raise requests.HTTPError("Provider said "+secret,response=self)
+    result=capture(now=NOW,root=tmp_path,originals=[original()],
+                   environ=env,request=lambda *a,**k:Denied(),
+                   clock=lambda:NOW)
+    assert result["reason"]=="provider_access_subscription_or_network_error"
+    assert result["http_status_category"]=="authentication_or_permission"
+    assert result["last_provider_observation"]["http_status_category"]=="authentication_or_permission"
+    assert secret not in json.dumps(result)
+    assert secret not in (tmp_path/"last_provider_observation.json").read_text()

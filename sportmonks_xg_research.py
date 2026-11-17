@@ -39,6 +39,51 @@ class RequestBudgetExhausted(Exception):
     pass
 
 
+def _http_status_category(exc):
+    """Redacted HTTP error category, never persist response text or headers."""
+    response = getattr(exc, "response", None)
+    code = getattr(response, "status_code", None)
+    if type(code) is not int:
+        return "not_reported"
+    if code in (401, 403):
+        return "authentication_or_permission"
+    if code == 429:
+        return "rate_limited"
+    if 400 <= code < 500:
+        return "other_client_error"
+    if 500 <= code < 600:
+        return "provider_server_error"
+    return "other_http_status"
+
+
+def _safe_provider_observation(status):
+    """Keep only allowlisted, non-sensitive descriptors after a real request."""
+    schema = status.get("fixture_discovery_response_schema")
+    schema = schema if isinstance(schema, dict) else {}
+    allowed_kinds = ("object", "list", "dict", "str", "int", "bool",
+                     "NoneType", "float", "tuple")
+    allowed_categories = (
+        "absent", "verified_empty_message", "provider_access_or_subscription",
+        "provider_quota_or_rate_limit", "provider_invalid_request",
+        "unclassified_provider_message")
+    classification = schema.get("message_class")
+    return {
+        "at_utc": status["at_utc"],
+        "reason": status["reason"],
+        "requests_this_run": status["requests_this_run"],
+        "response_shape": {
+            "data_kind": schema.get("data_kind") if schema.get("data_kind") in allowed_kinds else "unknown",
+            "row_count": schema.get("row_count") if type(schema.get("row_count")) is int else None,
+            "pagination_kind": schema.get("pagination_kind") if schema.get("pagination_kind") in allowed_kinds else "unknown",
+            "message_class": classification if classification in allowed_categories else "not_recorded",
+        },
+        "http_status_category": status.get("http_status_category", "not_reported"),
+        "matched_future_fixtures": status["matched_future_fixtures"],
+        "matched_historical_xg_fixtures": status["matched_historical_xg_fixtures"],
+        "captured": status["captured"],
+    }
+
+
 def eligible_originals(rows, now):
     """Only genuinely frozen v8 forecasts 45 minutes to 48 hours ahead."""
     chosen = {}
@@ -503,6 +548,15 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
                     started+timedelta(minutes=delay)).isoformat(),
                 "terminal":terminal,
             })
+        # Keep the most recent ACTUAL provider-request diagnosis even when
+        # 15-minute no-call jobs overwrite current-run status with quota/idle.
+        # Never persist provider response text, URLs, headers, tokens or cursors.
+        if status["requests_this_run"] > 0:
+            observation = _safe_provider_observation(status)
+            write_json(root/"last_provider_observation.json", observation)
+        else:
+            observation = load_json(root/"last_provider_observation.json", {})
+        status["last_provider_observation"] = observation or None
         write_json(root/"status.json", status)
         return status
 
@@ -651,6 +705,7 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         return finish("request_budget_exhausted_mid_research")
     except requests.RequestException as exc:
         status["error_type"]=type(exc).__name__
+        status["http_status_category"]=_http_status_category(exc)
         return finish("provider_access_subscription_or_network_error")
     except (ValueError, TypeError, KeyError, OSError) as exc:
         status["error_type"]=type(exc).__name__

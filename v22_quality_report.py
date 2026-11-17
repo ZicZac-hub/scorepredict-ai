@@ -100,6 +100,7 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
             "last_run_utc":sportmonks.get("at_utc"),
             "reason":sportmonks.get("reason"),
             "provider_error_type":sportmonks.get("error_type"),
+            "last_provider_observation":sportmonks.get("last_provider_observation"),
             "requests_used_today":sportmonks.get("daily_requests_used"),
             "requests_limit_per_day":sportmonks.get("daily_request_limit"),
             "matched_future_fixtures_last_run":sportmonks.get(
