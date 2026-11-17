@@ -33,6 +33,37 @@ class AdvancedQualityReportTests(unittest.TestCase):
         self.assertIsNone(result["source_capture_enabled"])
         self.assertEqual(result["v22_verified_pairs"], 0)
 
+    def test_saved_last_real_provider_response_remains_visible_after_quota(self):
+        report={
+            "source_completeness":{},
+            "sportmonks_independent_xg":{
+                "reason":"daily_request_budget_exhausted",
+                "last_provider_observation":{
+                    "at_utc":"2026-11-17T10:05:16+00:00",
+                    "reason":"provider_access_or_subscription",
+                    "response_shape":{"message_class":"provider_access_or_subscription"},
+                    "http_status_category":"authentication_or_permission",
+                },
+            },
+        }
+        result=summary(report,{})
+        self.assertEqual(result["sportmonks_reason"],
+                         "daily_request_budget_exhausted")
+        self.assertEqual(result["sportmonks_last_observation"]["reason"],
+                         "provider_access_or_subscription")
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            (root/"v22_prospective").mkdir()
+            (root/"v22_prospective"/"quality_report.json").write_text(
+                json.dumps(report),encoding="utf-8")
+            st=MagicMock()
+            st.columns.return_value=[MagicMock() for _ in range(4)]
+            render(st,root)
+            written=" ".join(str(call) for call in st.write.call_args_list)
+            captions=" ".join(str(call) for call in st.caption.call_args_list)
+            self.assertIn("Last actual Sportmonks request",written)
+            self.assertIn("provider_access_or_subscription",captions)
+
     def test_missing_data_is_not_called_disabled_or_verified(self):
         result = summary({"source_completeness": {}}, {})
         self.assertEqual(result["source_packets"], 0)
