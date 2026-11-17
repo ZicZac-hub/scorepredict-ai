@@ -12,8 +12,9 @@ import math
 from ai_five_double_engine import identity
 from v25_upcoming import (
     MAX_PAGE_PAIRS, available, pair_catalog, generate, best_pair,
-    rows_for_page, VERSION,
+    rows_for_page, VERSION, automatic_quality,
 )
+from v25_goal_validation import historical_reality_check
 from v25_date_discovery import (
     SYDNEY, visible_days, date_label, merge_modelled, fixture_table,
 )
@@ -66,12 +67,34 @@ def _show_report(st,report):
     st.caption("Neither number is a verified hit rate or real winning "
                "probability. The V25 value is an uncalibrated lower-envelope "
                "score for ranking candidates, not a true probability bound.")
+    screening=automatic_quality(report)
+    if not screening["passed"]:
+        st.warning("Cautious auto-selection would abstain on this pair: "+
+                   ", ".join(reason.replace("_"," ") for reason in screening["reasons"])+
+                   ". These five scores are exploratory only.")
     if any(report["early_frozen_source"]):
         st.warning("At least one original score model was saved more than 72 "
                    "hours ago. These are early frozen forecast estimates, "
                    "NOT updated lineups, injuries, xG or bookmaker odds.")
     st.caption("Original source timestamps (Sydney time): "+
                " | ".join(sydney_timestamp(value) for value in report["source_times_utc"]))
+    with st.expander("🔬 Verified evidence delivery · both matches",expanded=False):
+        st.caption("This audits original fixture IDs, forecast digests, source "
+                   "timestamps, odds, expected-goal history and reported starting XIs. "
+                   "Missing means unverified, not zero or a clean injury report.")
+        for idx,leg in enumerate(report.get("source_evidence_audit") or [],1):
+            st.markdown("**Match "+str(idx)+": "+str(leg.get("fixture") or "Unknown")+"**")
+            st.write({
+                "Matched provider evidence":leg.get("matching_provider_packet") is True,
+                "Fresh timestamped bookmaker market":leg.get("verified_pre_match_market") is True,
+                "Historical source xG for both teams":leg.get("verified_historical_xg_both_teams") is True,
+                "Verified xG fixture counts (home/away)":leg.get("verified_historical_xg_fixtures_per_team"),
+                "Both provider-reported starting XIs":leg.get("confirmed_starting_xi_both_teams") is True,
+                "Evidence status":str(leg.get("reason") or "not checked").replace("_"," "),
+            })
+        st.caption("None of these external signals is numerically weighted in V25 "
+                   "until a separate pre-kickoff-trained challenger shows independent "
+                   "improvement. V25 scores still come from the V8 goal grid.")
     table=[]
     for i,item in enumerate(report["scores"],1):
         table.append({"Double":i,
@@ -119,6 +142,25 @@ def render(st,rows,histories=None):
     joined=merged_forecasts()
     available_by_day,excluded=available(joined,clock)
     st.markdown("### 🧮 V25 · Predict five doubles for upcoming matches")
+    with st.expander("📉 Historical model limits (read-only)",expanded=False):
+        history=historical_reality_check()
+        if history.get("status")!="ready":
+            st.caption("No complete validated historical replay is available. "
+                       "Do not infer a five-double hit rate.")
+        else:
+            st.write("**Retrospective single-match sample:** "+
+                     str(history["retrospective_single_fixtures"])+" fixtures")
+            st.write("**Observed 4+ goal share:** "+
+                     f'{history["observed_high_goal_share"]:.1%}' +
+                     " · **Model-predicted:** "+
+                     f'{history["predicted_high_goal_mass"]:.1%}')
+            st.write("**V8 exact-score doubles in historical replay:** "+
+                     str(history["retrospective_five_double_wins"])+"/"+
+                     str(history["retrospective_five_double_issued"]))
+            st.caption("This is development/backtest evidence, NOT independent "
+                       "future accuracy. The aggregate high-goal data do not "
+                       "justify an arbitrary high-score boost. Goal-model "
+                       "coefficients and frozen predictions remain unchanged.")
     st.caption("Choose **Today**, **Tomorrow**, or any upcoming Sydney matchday. "
                "All provider-confirmed future fixtures can be listed even when "
                "they lack sufficient historical data to predict exact scores. "
@@ -288,6 +330,14 @@ def render(st,rows,histories=None):
                 pair[0]["key"],pair[1]["key"]):
             _show_report(st,saved["report"])
     elif mode.startswith("Automatic"):
+        cautious=st.checkbox(
+            "Cautious auto-select: abstain unless both legs have recent model "
+            "sources, genuine fresh source-matched odds and at least 8% V8 "
+            "five-score model mass (not a verified success probability)",
+            value=True,key="zz_v25_cautious",help="An experimental screening "
+            "policy; stricter coverage is not proven to improve actual hit rate. "
+            "Uncheck for research-only best available pair.")
+        key=(day,search,mode,cautious)
         st.caption("Compare goal-model agreement for eligible four-team "
                    "pairs. On very busy dates the first 150 pairs by the "
                    "original V8 coverage proxy are screened; no global "
@@ -295,7 +345,7 @@ def render(st,rows,histories=None):
         if st.button("✨ V25 Auto Select + Predict",key="zz_v25_auto_run",
                      type="primary",use_container_width=True):
             latest=datetime.now(timezone.utc)
-            chosen=best_pair(catalog,latest)
+            chosen=best_pair(catalog,latest,cautious=cautious)
             cache[key]={"auto":chosen}
             if chosen.get("status")=="ready":
                 _save_explicit_selection(st,chosen["report"])
@@ -309,8 +359,16 @@ def render(st,rows,histories=None):
                             outcome.get("shortlist_only") else ""))
                 _show_report(st,outcome["report"])
             else:
-                st.warning("No suitable V25 pair could be selected with "
-                           "the available model evidence.")
+                st.warning(outcome.get("reason") or
+                           "No suitable V25 pair could be selected.")
+                if outcome.get("quality_exclusions"):
+                    st.write({"Cautious exclusion reasons (may overlap)":
+                              {k.replace("_"," "):v for k,v in
+                               outcome["quality_exclusions"].items()}})
+                if outcome.get("highest_v8_estimated_mass") is not None:
+                    st.caption("Highest V8 top-five mass checked: "+
+                               f'{outcome["highest_v8_estimated_mass"]:.2%}' +
+                               ". Model estimate only, not observed hit rate.")
     else:
         pages=math.ceil(len(catalog)/MAX_PAGE_PAIRS)
         page=st.selectbox("Page of eligible match pairs",
