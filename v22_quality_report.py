@@ -9,7 +9,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 from persist_prematch import load_json,write_json
-from v10_prospective import ROOT as V8_ROOT,read_latest
+from v10_prospective import ROOT as V8_ROOT,read_latest,utc
 from v22_ai_gate import main as ai_gate
 from v22_calibration import chronological_evaluation
 
