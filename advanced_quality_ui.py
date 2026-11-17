@@ -65,6 +65,8 @@ def summary(report, market=None):
         "sportmonks_matched_fixtures": _count(sm.get("matched_future_fixtures_last_run")),
         "sportmonks_saved": _count(sm.get("frozen_evidence_packets")),
         "sportmonks_six_xg": _count(sm.get("six_xg_for_both_teams_packets")),
+        "sportmonks_both_xg": _count(sm.get("both_sides_xg_packets")),
+        "sportmonks_unverified_packets": _count(sm.get("unverified_source_packet_count")),
         "sportmonks_used": sm.get("requests_used_today"),
         "sportmonks_budget": sm.get("requests_limit_per_day"),
         "sportmonks_discovery_scope": sm.get("discovery_scope"),
@@ -214,6 +216,10 @@ def render(st, data_root=None):
     cols = st.columns(2)
     cols[0].metric("Verified Sportmonks xG packets",s["sportmonks_saved"])
     cols[1].metric("Both teams with six historical xG",s["sportmonks_six_xg"])
+    st.caption(f'Both-team source-verified xG packets: {s["sportmonks_both_xg"]}. '
+               f'Historical packets rejected by strict source/time checks: '
+               f'{s["sportmonks_unverified_packets"]}. These source checks '
+               'do not establish an improved five-double win rate.')
     if s["sportmonks_used"] is not None and s["sportmonks_budget"] is not None:
         st.caption(f'Sportmonks calls used today: {s["sportmonks_used"]} / '
                    f'{s["sportmonks_budget"]}. The source add-on is not assumed '
