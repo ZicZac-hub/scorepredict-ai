@@ -95,3 +95,32 @@ session-only. GitHub-scheduled forecasts are saved to
 - Original frozen forecasts are immutable and **never silently replaced**.
 - External AI opinions retain zero numerical weight until validated
   independently on matched, pre-match evidence.
+
+
+## 17 November 2026 — interactive V23 market evidence fixes
+
+The manual Studio may have a previously saved provider packet whose source
+quotes are no longer within V23's strict 12-hour freshness requirement.
+Earlier logic preferred repository packets first and would refuse to request a
+new packet when *any* previous packet existed, even if its 1X2 or totals odds
+had expired. Now V23 chooses the freshest **qualified** packet among valid
+GitHub-saved, private-database, and current-session evidence. When a private
+user explicitly selects the billable research-source consent checkbox, stale
+or absent V23 quotes can be refreshed; without consent no additional provider
+calls occur. A 30-minute session-based attempt guard prevents repeated
+requests on button reruns if the first request returned no usable odds.
+
+Streamlit warns once per run, not once per match, when fresh research is
+session-only and no durable private PostgreSQL DATABASE_URL is configured.
+A valid newly captured packet is reusable inside the current session, but is
+**not durable** without a successful database write. The dashboard shows
+which legs have valid 1X2/goal-total quotes and which are missing, stale,
+future-dated or undated. This does not relax source provenance, synthesize
+missing market odds or change archived predictions.
+
+To persist manual research evidence permanently, configure a private
+PostgreSQL database and add DATABASE_URL in the **Streamlit app's own
+Secrets settings** (not solely GitHub Actions). Keep the connection string
+out of the public repository and chat. If no database is available, use
+the original baseline for matches without certified V23 odds, or rely on
+separately saved scheduled source records for eligible fixtures.
