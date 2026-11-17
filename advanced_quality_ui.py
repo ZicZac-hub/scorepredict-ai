@@ -36,6 +36,7 @@ def summary(report, market=None):
     source = report.get("source_completeness") or {}
     wide = market.get("coverage_health") or {}
     v22 = (report.get("frozen_v22_vs_v8") or {}).get("v22_research") or {}
+    sm = report.get("sportmonks_independent_xg") or {}
     total = _count(source.get("packets_checked"))
     market_total = _count(wide.get("eligible_frozen_forecasts"))
     market_found = _count(wide.get("matched_market_forecasts"))
@@ -56,6 +57,15 @@ def summary(report, market=None):
                            if market_total else None),
         "v22_verified_pairs": _count(v22.get("verified")),
         "v22_hits": _count(v22.get("hits")),
+        "sportmonks_enabled": sm.get("enabled"),
+        "sportmonks_token_present": sm.get("token_present"),
+        "sportmonks_reason": sm.get("reason"),
+        "sportmonks_last_run": sm.get("last_run_utc"),
+        "sportmonks_matched_fixtures": _count(sm.get("matched_future_fixtures_last_run")),
+        "sportmonks_saved": _count(sm.get("frozen_evidence_packets")),
+        "sportmonks_six_xg": _count(sm.get("six_xg_for_both_teams_packets")),
+        "sportmonks_used": sm.get("requests_used_today"),
+        "sportmonks_budget": sm.get("requests_limit_per_day"),
         "source_capture_enabled": report.get("source_capture_enabled"),
         "source_capture_last_run": report.get("source_capture_last_run"),
         "capture_reason": report.get("source_capture_reason"),
@@ -156,6 +166,27 @@ def render(st, data_root=None):
                    "and/or confirmed starting lineups have not been recorded "
                    "in these saved packets. Do not label forecasts as "
                    "fully source-qualified.")
+    st.markdown("**Sportmonks independent genuine xG**")
+    st.caption("Separate Sportmonks evidence, only for a unique cross-provider "
+               "match and completed Sportmonks historical fixtures. It is not "
+               "currently an input to the V22 prediction model.")
+    st.write("Collector: " + _state(s["sportmonks_enabled"]))
+    if s["sportmonks_last_run"]:
+        st.write("Last Sportmonks check: " + _local_time(s["sportmonks_last_run"]))
+    if s["sportmonks_reason"]:
+        st.write("Latest provider result: " +
+                 str(s["sportmonks_reason"]).replace("_"," "))
+    cols = st.columns(2)
+    cols[0].metric("Verified Sportmonks xG packets",s["sportmonks_saved"])
+    cols[1].metric("Both teams with six historical xG",s["sportmonks_six_xg"])
+    if s["sportmonks_used"] is not None and s["sportmonks_budget"] is not None:
+        st.caption(f'Sportmonks calls used today: {s["sportmonks_used"]} / '
+                   f'{s["sportmonks_budget"]}. The source add-on is not assumed '
+                   'active merely because an API key exists.')
+    if s["sportmonks_saved"] == 0:
+        st.info("No qualifying cross-provider historical xG packet has been "
+                "verified yet. Check Sportmonks access and fixture matching; "
+                "do not interpret this as zero expected goals.")
     st.markdown("**Verified V22 five-double results**")
     if s["v22_verified_pairs"]:
         st.metric("Verified hits / verified pairs",
