@@ -191,3 +191,25 @@ diagnosed. A live request and an idle/quota-only run are now kept distinct:
 Current provider access remains unverified until a fresh post-quota-reset
 request succeeds. No paid-call limit, forecast model or historical frozen
 prediction has been changed by this diagnostic patch.
+
+### Strict packet verification for prospective xG evaluation
+
+The previous V22 quality report counted every Sportmonks xG packet with a
+declared xG type and an earlier capture timestamp. That was inadequate for
+research or calibration: it did not re-check the originating immutable V8
+forecast digest, provider-specific fixture and participant IDs, each historical
+match's source, xG values, result timing or duplicate conflicts.
+
+The read-only validator in `sportmonks_xg_validation.py` now verifies all of
+these fields. Only genuinely origin-linked historical observations with
+5304 xG values and timestamps at least three hours before the source capture
+are counted as source-valid. A separate metric reports whether **both**
+selected teams have historical xG, versus a partial packet with only one team.
+The Advanced Quality Report also counts source-invalid packets. No validation
+result automatically promotes xG into production goal rates.
+
+**Incremental accuracy cannot be measured simply because the same match
+received historical xG.** An xG-assisted challenger must be frozen before
+kickoff and compared with the original forecasts on identical future matches,
+with missing outcomes remaining pending. Zero qualified Sportmonks xG packets
+means zero defensible xG-vs-V8 performance comparisons.
