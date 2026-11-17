@@ -1,0 +1,79 @@
+{
+  "away_team": "Palmeiras",
+  "away_team_id": "121",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.4048010470114531,
+    "draw": 0.2714871172027494,
+    "home": 0.3237118357857976
+  },
+  "captured_at_utc": "2026-11-17T23:11:32.488308+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "away",
+    "outcome_probabilities": {
+      "away": 0.4048010470114531,
+      "draw": 0.2714871172027494,
+      "home": 0.3237118357857976
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492452",
+  "home_team": "Cruzeiro",
+  "home_team_id": "135",
+  "input_digest": "9c0f4703d5abe519be9c2f9e8da86fd7076d73bc7fbd60f0969318cc50e293f1",
+  "kickoff_utc": "2026-11-18T23:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "source_captured_at_utc": "2026-11-17T01:50:48.339552Z",
+  "source_forecast_id": "a0ddc4290750574b4f1555c9f9f5c41ebf8ed45a12c39daca5687588a71ea50b",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "b3fc69fe6877ee9de81e0ea4be4a585de15c130954ac296af75465f55dfcb4ac",
+  "votes": {
+    "gemini": {
+      "away": 0.4048010470114531,
+      "draw": 0.2714871172027494,
+      "factors": [
+        "Palmeiras holds higher expected goals model estimates (1.36 vs 1.19).",
+        "Bookmaker consensus implies an away advantage (~38% to 40% win probability).",
+        "Balanced historical exact score options favor tight outcomes like 1-1."
+      ],
+      "home": 0.3237118357857976,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty due to close market odds and competitive model expectations."
+    },
+    "groqcloud": {
+      "away": 0.4048010470114531,
+      "draw": 0.2714871172027494,
+      "factors": [
+        "Balanced goal expectations",
+        "Identical rest days",
+        "Market consensus alignment"
+      ],
+      "home": 0.3237118357857976,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "moderate"
+    }
+  }
+}
