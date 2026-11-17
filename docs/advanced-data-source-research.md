@@ -170,3 +170,24 @@ The daily request cap remains unchanged. After budget reset, review
 `fixture_discovery_response_schema.message_class`. If the message remains
 unclassified, check the exact message privately in Sportmonks' own dashboard
 or API console; do not paste an API token into issues, logs, or screenshots.
+
+
+### Preserve the last real provider observation (17 November 2026)
+
+The 15-minute scheduled collector overwrote an earlier true Sportmonks
+schema error with later `daily_request_budget_exhausted` statuses. That
+made the useful live error vanish from the website before it could be
+diagnosed. A live request and an idle/quota-only run are now kept distinct:
+
+- `status.json.reason` records **this run's** outcome.
+- `status.json.last_provider_observation` records the latest run which made
+  **at least one actual Sportmonks request**, retaining only safe outcome
+  categories, bounded shape metadata and match/xG counts.
+- `last_provider_observation.json` preserves that small safe observation
+  between runs; the report and Advanced Quality UI display it.
+- HTTP 401/403, 429, other 4xx and 5xx are grouped into fixed categories
+  without storing provider messages, response headers, URLs or API tokens.
+
+Current provider access remains unverified until a fresh post-quota-reset
+request succeeds. No paid-call limit, forecast model or historical frozen
+prediction has been changed by this diagnostic patch.
