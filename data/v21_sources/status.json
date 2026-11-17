@@ -1,16 +1,24 @@
 {
-  "at_utc": "2026-11-17T05:59:10.639212+00:00",
-  "attempted_legs": 0,
-  "calls": 0,
+  "at_utc": "2026-11-17T07:16:26.054737+00:00",
+  "attempted_legs": 2,
+  "calls": 32,
   "capture_window_minutes": [
     8,
-    90
+    2880
   ],
   "daily_attempts_limit": 6,
-  "daily_attempts_used": 0,
-  "eligible_legs": 0,
+  "daily_attempts_used": 2,
+  "eligible_legs": 6,
   "enabled": true,
-  "new_packets": [],
-  "reason": "no_original_frozen_leg_in_8_to_90_minute_window",
-  "skipped": []
+  "new_packets": [
+    "1492451",
+    "1492456"
+  ],
+  "reason": "partial_or_complete_source_packets",
+  "skipped": [
+    "1492452:per_run_attempt_budget_exhausted",
+    "1492453:per_run_attempt_budget_exhausted",
+    "1492450:per_run_attempt_budget_exhausted",
+    "1492454:per_run_attempt_budget_exhausted"
+  ]
 }
