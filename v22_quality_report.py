@@ -33,6 +33,10 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     wide=load_json(Path("data/v24_market_catalog")/"status.json",{})
     extracted={"packets_checked":len(source_files),
                "with_historical_xg":0,"with_6_per_team":0,
+               "with_verified_historical_match_statistics":0,
+               "with_stats_but_no_genuine_xg":0,
+               "with_independent_provider_prediction":0,
+               "with_reported_injuries":0,
                "with_2_market_types":0,"with_both_starting_XIs":0}
     for path in source_files:
         row=load_json(path,{})
@@ -40,6 +44,15 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
         xg=snap.get("verified_historical_fixture_xg") or []
         if xg:
             extracted["with_historical_xg"]+=1
+        raw_stats=snap.get("verified_historical_match_statistics") or []
+        if raw_stats:
+            extracted["with_verified_historical_match_statistics"]+=1
+            if not xg:
+                extracted["with_stats_but_no_genuine_xg"]+=1
+        if snap.get("provider_pre_match_opinion"):
+            extracted["with_independent_provider_prediction"]+=1
+        if snap.get("reported_injuries"):
+            extracted["with_reported_injuries"]+=1
         ids=[str((row.get("source_forecast") or {}).get(k))
              for k in ("home_team_id","away_team_id")]
         count={tid:len({r.get("fixture_id") for r in xg if
