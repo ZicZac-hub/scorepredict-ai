@@ -176,8 +176,13 @@ def _query_pages(forecast, now, root, call):
                 more=prior.get("has_more")
                 summary["cached_pages_used"]+=1
             else:
-                packet=call(url, {"include":"participants","per_page":50,
-                                  "page":page,**extra})
+                try:
+                    packet=call(url, {"include":"participants","per_page":50,
+                                      "page":page,**extra})
+                except RequestBudgetExhausted:
+                    # Persisted earlier pages can be resumed on the next
+                    # permitted attempt; never certify a partial scan.
+                    return None,"discovery_request_budget_exhausted",summary
                 rows=packet.get("data")
                 more=(packet.get("pagination") or {}).get("has_more")
                 if not isinstance(rows,list) or not isinstance(more,bool):
