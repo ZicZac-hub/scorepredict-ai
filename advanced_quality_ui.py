@@ -66,6 +66,10 @@ def summary(report, market=None):
         "sportmonks_six_xg": _count(sm.get("six_xg_for_both_teams_packets")),
         "sportmonks_used": sm.get("requests_used_today"),
         "sportmonks_budget": sm.get("requests_limit_per_day"),
+        "sportmonks_discovery_scope": sm.get("discovery_scope"),
+        "sportmonks_discovery_pages": _count(sm.get("discovery_pages_examined")),
+        "sportmonks_cached_pages": _count(sm.get("discovery_cached_pages")),
+        "sportmonks_attempt_number": sm.get("attempt_number"),
         "source_capture_enabled": report.get("source_capture_enabled"),
         "source_capture_last_run": report.get("source_capture_last_run"),
         "capture_reason": report.get("source_capture_reason"),
@@ -176,6 +180,13 @@ def render(st, data_root=None):
     if s["sportmonks_reason"]:
         st.write("Latest provider result: " +
                  str(s["sportmonks_reason"]).replace("_"," "))
+    if s["sportmonks_discovery_pages"]:
+        st.caption("Fixture identity scan: " +
+                   str(s["sportmonks_discovery_pages"]) + " pages checked (" +
+                   str(s["sportmonks_cached_pages"]) + " reused from cache), scope: " +
+                   str(s["sportmonks_discovery_scope"] or "unknown") +
+                   ", attempt: " + str(s["sportmonks_attempt_number"] or "n/a") +
+                   ". An incomplete scan is never claimed as a verified match.")
     cols = st.columns(2)
     cols[0].metric("Verified Sportmonks xG packets",s["sportmonks_saved"])
     cols[1].metric("Both teams with six historical xG",s["sportmonks_six_xg"])
