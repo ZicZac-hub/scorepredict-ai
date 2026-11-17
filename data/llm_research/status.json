@@ -1,8 +1,8 @@
 {
-  "actual_successful_ai_votes": 0,
-  "attempted": 0,
-  "captured": 0,
-  "checked_at_utc": "2026-11-17T10:05:09.073142+00:00",
+  "actual_successful_ai_votes": 2,
+  "attempted": 1,
+  "captured": 1,
+  "checked_at_utc": "2026-11-17T10:34:05.791258+00:00",
   "configured_providers": [
     "openai",
     "claude",
@@ -11,17 +11,66 @@
     "groqcloud",
     "cohere"
   ],
-  "eligible_fixture_count": 0,
+  "eligible_fixture_count": 1,
   "enabled": true,
+  "last_attempt_at_utc": "2026-11-17T10:34:05.791258+00:00",
+  "last_attempt_errors": {
+    "claude": {
+      "http_status": 400,
+      "reason": "invalid_request_or_model",
+      "type": "HTTPError"
+    },
+    "cohere": {
+      "reason": "response_format_or_model_configuration",
+      "type": "ValueError"
+    },
+    "grok": {
+      "http_status": 400,
+      "reason": "invalid_request_or_model",
+      "type": "HTTPError"
+    },
+    "openai": {
+      "http_status": 429,
+      "reason": "quota_or_rate_limit",
+      "type": "HTTPError"
+    }
+  },
   "matched_original_forecast_ids": [],
   "model_request_budget": 6,
-  "planned_model_requests": 0,
+  "planned_model_requests": 6,
   "prioritization_policy": "single_fixture_default_no_extra_paid_calls",
-  "provider_error_details": {},
-  "provider_error_types": {},
-  "reason": "frozen_or_no_eligible_upcoming_fixtures",
+  "provider_error_details": {
+    "claude": {
+      "http_status": 400,
+      "reason": "invalid_request_or_model",
+      "type": "HTTPError"
+    },
+    "cohere": {
+      "reason": "response_format_or_model_configuration",
+      "type": "ValueError"
+    },
+    "grok": {
+      "http_status": 400,
+      "reason": "invalid_request_or_model",
+      "type": "HTTPError"
+    },
+    "openai": {
+      "http_status": 429,
+      "reason": "quota_or_rate_limit",
+      "type": "HTTPError"
+    }
+  },
+  "provider_error_types": {
+    "claude": "HTTPError",
+    "cohere": "ValueError",
+    "grok": "HTTPError",
+    "openai": "HTTPError"
+  },
+  "reason": "frozen_pre_match_ai_research_saved",
   "same_day_pair_selected": false,
-  "selected_fixture_ids": [],
+  "selected_fixture_ids": [
+    "1492451"
+  ],
   "selected_original_frozen_pair_day": null,
   "source_quality": "statistical_frozen_packet_only_no_external_facts",
   "two_match_research_enabled": false
