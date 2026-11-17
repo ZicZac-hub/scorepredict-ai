@@ -99,7 +99,7 @@ def best_packet(root, leg, *, now=None, priority="research"):
 
 
 def current_pair(root=ORIGINAL_ROOT,now=None):
-    """Select up to two frozen original legs 8–90 minutes pre-kickoff.
+    """Identify frozen original legs 8–90 minutes pre-kickoff.
 
     A pair's two matches need not kick off simultaneously. A later match
     remains eligible after the earlier one has started, but it must itself
@@ -147,7 +147,7 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
         except (KeyError,TypeError,ValueError):
             continue
     options.sort(key=lambda x:(x[0],str(x[1]["fixture_id"])))
-    return [x[1] for x in options[:2]]
+    return [x[1] for x in options]
 
 
 def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
@@ -219,6 +219,9 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                 continue
             if used>=daily_limit:
                 result["skipped"].append(str(leg["fixture_id"])+":daily_attempt_budget_exhausted")
+                continue
+            if result["attempted_legs"]>=2:
+                result["skipped"].append(str(leg["fixture_id"])+":per_run_attempt_budget_exhausted")
                 continue
             # Reserve quota BEFORE HTTP requests, including source failures.
             # The workflow permanently saves this counter with other evidence.
