@@ -122,3 +122,61 @@ def test_budget_exhaustion_stays_distinct_and_no_unverified_match(tmp_path):
     match,reason,summary=_query_pages(original(),NOW,tmp_path,no_calls)
     assert match is None and reason=="discovery_request_budget_exhausted"
     assert summary["pages_read"]==0
+
+
+def test_empty_no_data_is_validated_and_falls_back_to_unfiltered_date(tmp_path):
+    calls=[]
+    def request(url, params):
+        calls.append(dict(params))
+        if "filters" in params:
+            return {"data":[],"message":"No data found"}
+        return {"data":[next_match()],"pagination":{"has_more":False}}
+    found,reason,meta=_query_pages(original(),NOW,tmp_path,request)
+    assert found["fixture_id"]==54321
+    assert reason=="source_identity_matched"
+    assert len(calls)==2
+    assert meta["response_schema"]["message_class"]=="absent"
+
+
+def test_provider_subscription_message_is_not_treated_as_empty_or_saved(tmp_path):
+    secret="SECRET-DO-NOT-LOG"
+    body={"data":[],"message":"No data: subscription required "+secret}
+    rows,state,reason,shape=_decode_page(body,1)
+    assert rows is None and state is None
+    assert reason=="provider_access_or_subscription"
+    assert shape["message_class"]=="provider_access_or_subscription"
+    assert secret not in json.dumps(shape)
+    result,why,meta=_query_pages(original(),NOW,tmp_path,
+                                  lambda url,params:body)
+    assert result is None and why==reason
+    assert secret not in json.dumps(meta)
+    assert not list(tmp_path.rglob("*.json"))
+
+
+def test_empty_unclassified_message_fails_closed_without_credential_leak(tmp_path):
+    secret="TOP-PRIVATE-TOKEN"
+    body={"data":[],"message":"Unexpected provider reply "+secret}
+    rows,state,reason,shape=_decode_page(body,1)
+    assert rows is None and state is None
+    assert reason=="unclassified_provider_message"
+    assert secret not in json.dumps(shape)
+    match,why,meta=_query_pages(original(),NOW,tmp_path,
+                                lambda url,params:body)
+    assert match is None and why==reason
+    assert meta["response_schema"]["row_count"]==0
+    assert secret not in json.dumps(meta)
+    assert not list(tmp_path.rglob("*.json"))
+
+
+def test_rate_limit_and_invalid_request_are_distinct_safe_categories():
+    examples=(
+        ("Too many requests: token=HIDDEN", "provider_quota_or_rate_limit"),
+        ("Invalid filter value: token=HIDDEN", "provider_invalid_request"),
+        ("Unauthorized token HIDDEN", "provider_access_or_subscription"),
+    )
+    for message,category in examples:
+        rows,state,reason,shape=_decode_page({"data":[],"message":message},1)
+        assert rows is None and state is None
+        assert reason==category
+        assert shape["message_class"]==category
+        assert "HIDDEN" not in json.dumps(shape)
