@@ -908,7 +908,8 @@ def render(st,rows,histories=None):
                          priority=("market" if auto_v23 else "research"))
             private_record=(_source_snapshot(fixture,_database,before=clock)
                             if _database else None)
-            return (saved or private_record) if auto_v23 else (private_record or saved)
+            return (select_v23_packet(fixture,clock,saved,private_record)
+                    if auto_v23 else (private_record or saved))
         research_selector=(v23_shadow if auto_v23 else None)
         ranking=_rank_v22_pairs(found,_available_packet,now=clock,
                                  shadow_fn=research_selector)
