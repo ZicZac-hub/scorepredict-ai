@@ -1,32 +1,39 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-17T01:51:54.282811+00:00",
+  "at_utc": "2026-11-17T02:52:10.879878+00:00",
   "attempts": [
     {
-      "date": "2026-11-18",
-      "page": 3
+      "date": "2026-11-19",
+      "page": 1
     },
     {
-      "date": "2026-11-18",
-      "page": 4
+      "date": "2026-11-19",
+      "page": 2
     }
   ],
   "binding": {
-    "missing_catalog": 208,
-    "new_bindings": [],
+    "missing_catalog": 202,
+    "new_bindings": [
+      "1492450",
+      "1492450",
+      "1492454",
+      "1492454",
+      "1492458",
+      "1492459"
+    ],
     "out_of_window": 4,
     "v8_checked": 208,
-    "v8_with_catalog": 0
+    "v8_with_catalog": 6
   },
-  "completed_at_utc": "2026-11-17T01:51:55.080876+00:00",
+  "completed_at_utc": "2026-11-17T02:52:11.709440+00:00",
   "coverage_health": {
     "does_not_establish_accuracy_gain": true,
     "eligible_frozen_forecasts": 208,
-    "matched_market_forecasts": 0,
-    "new_identity_validated_packets": 0,
+    "matched_market_forecasts": 6,
+    "new_identity_validated_packets": 6,
     "provider_request_errors": 0,
-    "reason": "market_not_matched_to_frozen_fixtures",
-    "unmatched_market_forecasts": 208
+    "reason": "market_available_for_some_fixtures",
+    "unmatched_market_forecasts": 202
   },
   "daily_limit": 12,
   "empty_pages": 0,
@@ -47,20 +54,29 @@
     "2026-11-30"
   ],
   "new_catalog_fixtures": [
-    "1640011",
-    "1644695",
-    "1644697",
-    "1649035",
-    "1649490",
-    "1650156",
-    "1650157",
-    "1650228"
+    "1492450",
+    "1492454",
+    "1492458",
+    "1492459",
+    "1551379",
+    "1571601",
+    "1574786",
+    "1597962",
+    "1638286",
+    "1638292"
   ],
-  "new_source_bindings": [],
+  "new_source_bindings": [
+    "1492450",
+    "1492450",
+    "1492454",
+    "1492454",
+    "1492458",
+    "1492459"
+  ],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
   "provider_errors": [],
   "queries": 2,
   "request_budget_per_run": 2,
-  "requests_used_today": 4,
+  "requests_used_today": 6,
   "skipped_stale": 0
 }
