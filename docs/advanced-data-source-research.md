@@ -111,3 +111,38 @@ References:
 - https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/fixtures/get-fixtures-by-date
 - https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/fixtures/get-fixtures-by-date-range-for-team
 - https://docs.sportmonks.com/v3/tutorials-and-guides/tutorials/expected/includes
+
+### Response schema correction (17 November 2026)
+
+Production reported `invalid_discovery_response` after receiving an HTTP-200
+Sportmonks date-query response. The prior collector required the old
+`pagination.has_more` boolean in every reply. Official Sportmonks v3
+pagination documentation confirms both **cursor-based** navigation
+(`next_cursor` + `has_more`) and backwards-compatible **page-based**
+navigation (`page`, `next_page`, `has_more`).
+
+The collector now implements these explicit navigation modes and removes
+`per_page` when sending a cursor, as required by the API. Missing navigation
+metadata with a nonempty data array is still an **unverified, incomplete
+response**, never a successful fixture match. An empty `data: []` with an
+explicit provider message saying *no results* is treated only as a verified
+**empty page**, not proof that a fixture or xG data exists. Invalid flags,
+conflicting next-page signals, unknown hosts in a next-page URL, and
+unreadable payloads are rejected.
+
+When a response cannot be parsed, `status.json` and Advanced Quality Report
+show only allowlisted descriptors: Python value kinds, observed row count,
+pagination flag kind, and whether a next cursor/page or message was present.
+They never record the raw provider message, response URL, API token, or
+cursor in these public summaries. Continuation cursor values needed to
+resume scans can exist in timestamped discovery-cache pages, but not in
+user-facing diagnostic status. Requests remain under the same four-per-day
+default, controlled retries and original immutable forecast rules.
+
+References:
+- https://docs.sportmonks.com/v3/tutorials-and-guides/tutorials/introduction/pagination
+- https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/fixtures/get-fixtures-by-date
+
+A successful regression test of pagination proves parsing logic only. The
+historical xG add-on and subscription remain unverified until a **live
+Sportmonks** response includes correctly source-matched genuine xG records.

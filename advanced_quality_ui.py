@@ -67,6 +67,7 @@ def summary(report, market=None):
         "sportmonks_used": sm.get("requests_used_today"),
         "sportmonks_budget": sm.get("requests_limit_per_day"),
         "sportmonks_discovery_scope": sm.get("discovery_scope"),
+        "sportmonks_discovery_response_schema": sm.get("discovery_response_schema"),
         "sportmonks_discovery_pages": _count(sm.get("discovery_pages_examined")),
         "sportmonks_cached_pages": _count(sm.get("discovery_cached_pages")),
         "sportmonks_attempt_number": sm.get("attempt_number"),
@@ -180,6 +181,15 @@ def render(st, data_root=None):
     if s["sportmonks_reason"]:
         st.write("Latest provider result: " +
                  str(s["sportmonks_reason"]).replace("_"," "))
+    if isinstance(s["sportmonks_discovery_response_schema"],dict):
+        details=s["sportmonks_discovery_response_schema"]
+        st.caption("Safe response shape: data=" +
+                   str(details.get("data_kind")) +
+                   ", rows=" + str(details.get("row_count")) +
+                   ", pagination=" + str(details.get("pagination_kind")) +
+                   ", has_more=" + str(details.get("has_more_kind")) +
+                   ", next_cursor=" + str(bool(details.get("next_cursor_present"))) +
+                   ". No API tokens, provider messages or raw cursor values are displayed.")
     if s["sportmonks_discovery_pages"]:
         st.caption("Fixture identity scan: " +
                    str(s["sportmonks_discovery_pages"]) + " pages checked (" +

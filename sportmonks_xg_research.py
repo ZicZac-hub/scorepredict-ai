@@ -11,6 +11,7 @@ import os
 import hashlib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import urlparse, parse_qs
 
 import requests
 
@@ -143,58 +144,157 @@ def _matched_future(forecast, rows):
     return matches[0] if len(matches)==1 and not conflict else None
 
 
-def _query_pages(forecast, now, root, call):
-    """Fully paginate a filtered lookup; use unfiltered date pages as fallback.
+def _schema_diagnostic(body):
+    """Allowlisted shape descriptors ONLY: no names, credentials, URLs or cursors."""
+    if not isinstance(body, dict):
+        return {"body_kind":type(body).__name__,"reason":"non_object_response"}
+    rows=body.get("data")
+    pagination=body.get("pagination")
+    pag=pagination if isinstance(pagination,dict) else {}
+    return {
+        "body_kind":"object",
+        "data_kind":type(rows).__name__,
+        "row_count":len(rows) if isinstance(rows,list) else None,
+        "pagination_kind":type(pagination).__name__,
+        "has_more_kind":type(pag.get("has_more")).__name__,
+        "next_cursor_present":bool(isinstance(pag.get("next_cursor"),str)
+                                   and pag["next_cursor"]),
+        "next_page_present":bool(pag.get("next_page")),
+        "message_present":isinstance(body.get("message"),str),
+        "error_present":bool(body.get("error") or body.get("errors")),
+    }
 
-    A scan is NEVER certified as unique while any page remains unexamined.
-    Cached complete pages are keyed to the query and expire after 36 hours.
+
+def _next_page_number(raw, current):
+    """Parse only a number from a Sportmonks next_page URL; never follow it."""
+    if not isinstance(raw,str) or len(raw)>2048:
+        return None
+    target=urlparse(raw)
+    if target.scheme!="https" or target.hostname!="api.sportmonks.com":
+        return None
+    try:
+        pages=parse_qs(target.query).get("page",[])
+        number=int(pages[0]) if len(pages)==1 else None
+        if number is not None and number==current+1:
+            return number
+    except (ValueError,TypeError):
+        pass
+    return None
+
+
+def _decode_page(body, current_page):
+    """Parse *documented* Sportmonks v3 cursor / legacy page pagination.
+
+    Do not infer completion from a short, nonempty list or silently assume
+    that missing pagination means has_more=False.
+    """
+    diag=_schema_diagnostic(body)
+    if not isinstance(body,dict) or not isinstance(body.get("data"),list):
+        return None,None,"invalid_discovery_response",diag
+    rows=body["data"]
+    if body.get("error") or body.get("errors"):
+        return None,None,"provider_reported_error",diag
+    pagination=body.get("pagination")
+    if not isinstance(pagination,dict):
+        # Sportmonks sometimes documents an explicit "no results" message.
+        # This permits only a truly empty page, not a potentially truncated list.
+        message=body.get("message")
+        known_empty=(not rows and isinstance(message,str) and
+                     ("no results" in message.casefold() or
+                      "no fixtures" in message.casefold()))
+        if known_empty:
+            return rows,{"mode":"terminal","more":False},None,diag
+        return None,None,"invalid_discovery_response",diag
+    flag=pagination.get("has_more")
+    if flag is not None and type(flag) is not bool:
+        return None,None,"invalid_discovery_response",diag
+    cursor=pagination.get("next_cursor")
+    cursor=cursor if isinstance(cursor,str) and 0<len(cursor)<=2048 else None
+    next_page=_next_page_number(pagination.get("next_page"),current_page)
+    if flag is False:
+        if cursor or next_page:
+            return None,None,"invalid_discovery_response",diag
+        return rows,{"mode":"terminal","more":False},None,diag
+    if flag is None and not (cursor or next_page):
+        return None,None,"invalid_discovery_response",diag
+    if cursor:
+        return rows,{"mode":"cursor","more":True,"cursor":cursor},None,diag
+    if next_page is not None:
+        return rows,{"mode":"page","more":True,"page":next_page},None,diag
+    # Legacy v3 page mode documents has_more=true and page=N+1. Cursor
+    # mode should supply next_cursor, so no undocumented token is invented.
+    if flag is True:
+        return rows,{"mode":"page","more":True,"page":current_page+1},None,diag
+    return None,None,"invalid_discovery_response",diag
+
+
+def _query_pages(forecast, now, root, call):
+    """Use verified Sportmonks cursor/legacy page modes, bounded and resumable.
+
+    The last page must be observed before confirming unique fixture identity.
+    Persist only allowlisted shape diagnostics and cached fixture observations,
+    NEVER API credentials, raw next_page URLs or cursors in public status.
     """
     day=utc(forecast["kickoff_utc"]).date().isoformat()
     url=f"{API_ROOT}/fixtures/date/{day}"
-    # Search the home participant first to avoid hundreds of unrelated games.
-    # A search alias miss falls back to a globally paginated date scan.
     phases=(("team", {"filters":"participantSearch:"+str(forecast["home_team"])}),
             ("date", {}))
     summary={"pages_read":0,"cached_pages_used":0,"scope":None,
-             "candidates_seen":0}
+             "candidates_seen":0,"response_schema":None}
     for scope,extra in phases:
         fixtures=[]
         marker=hashlib.sha256((day+"|"+scope+"|"+
                extra.get("filters","")).encode()).hexdigest()[:16]
         folder=Path(root)/"discovery"/day/marker
-        for page in range(1,MAX_DISCOVERY_PAGES+1):
-            key=folder/("page_"+str(page)+".json")
+        cursor=None
+        next_page=1
+        for count in range(1,MAX_DISCOVERY_PAGES+1):
+            # Cursor pagination MUST NOT be mixed with per_page or page.
+            request_cursor_hash=(hashlib.sha256(cursor.encode()).hexdigest()
+                                 if cursor else None)
+            key=folder/("page_"+str(count)+".json")
             prior=load_json(key,{})
             captured=prior.get("fetched_at_utc")
             try:
                 fresh=bool(captured and 0 <= (now-utc(captured)).total_seconds()
-                           <= DISCOVERY_CACHE_HOURS*3600)
+                           <= DISCOVERY_CACHE_HOURS*3600 and
+                           prior.get("request_cursor_sha256")==request_cursor_hash
+                           and isinstance(prior.get("pagination_state"),dict))
             except (ValueError,TypeError):
                 fresh=False
             if fresh:
-                rows=prior.get("data")
-                more=prior.get("has_more")
+                rows=prior["data"]
+                state=prior["pagination_state"]
+                diag=prior.get("schema")
                 summary["cached_pages_used"]+=1
             else:
+                params={"include":"participants",**extra}
+                if cursor is not None:
+                    params["cursor"]=cursor
+                else:
+                    params.update({"per_page":50,"page":next_page})
                 try:
-                    packet=call(url, {"include":"participants","per_page":50,
-                                      "page":page,**extra})
+                    response=call(url,params)
                 except RequestBudgetExhausted:
-                    # Persisted earlier pages can be resumed on the next
-                    # permitted attempt; never certify a partial scan.
                     return None,"discovery_request_budget_exhausted",summary
-                rows=packet.get("data")
-                more=(packet.get("pagination") or {}).get("has_more")
-                if not isinstance(rows,list) or not isinstance(more,bool):
-                    return None,"invalid_discovery_response",summary
+                rows,state,error,diag=_decode_page(response,next_page)
+                summary["response_schema"]=diag
+                summary["scope"]=scope
+                if error:
+                    return None,error,summary
+                # Opaque cursors are only stored in private workflow cache files
+                # for bounded replay; never in status.json or application UI.
                 write_json(key,{"fetched_at_utc":now.isoformat(),
-                                "data":rows,"has_more":more,"scope":scope})
-            if not isinstance(rows,list) or not isinstance(more,bool):
+                                "request_cursor_sha256":request_cursor_hash,
+                                "data":rows,"pagination_state":state,
+                                "schema":diag,"scope":scope})
+            if not isinstance(rows,list) or not isinstance(state,dict):
                 return None,"invalid_cached_discovery",summary
-            fixtures.extend(rows)
+            summary["response_schema"]=diag
             summary["pages_read"]+=1
             summary["scope"]=scope
-            if not more:
+            fixtures.extend(rows)
+            if not state.get("more"):
                 matches,conflict=_fixture_candidates(forecast,fixtures)
                 summary["candidates_seen"]=len(matches)
                 if conflict or len(matches)>1:
@@ -202,8 +302,22 @@ def _query_pages(forecast, now, root, call):
                 if len(matches)==1:
                     return matches[0],"source_identity_matched",summary
                 break
+            if state.get("mode")=="cursor":
+                cursor=state.get("cursor")
+                if not isinstance(cursor,str) or not cursor:
+                    return None,"invalid_cached_discovery",summary
+            elif state.get("mode")=="page":
+                cursor=None
+                try:
+                    following=int(state["page"])
+                except (ValueError,KeyError,TypeError):
+                    return None,"invalid_cached_discovery",summary
+                if following<=next_page:
+                    return None,"invalid_cached_discovery",summary
+                next_page=following
+            else:
+                return None,"invalid_cached_discovery",summary
         else:
-            # Explicitly abstain: unseen pages may contain a competing ID.
             return None,"discovery_pagination_incomplete",summary
     return None,"no_unique_cross_provider_fixture_match",summary
 
@@ -432,6 +546,10 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         status["fixture_discovery_scope"]=discovery_meta["scope"]
         status["fixture_discovery_candidates"]=discovery_meta[
             "candidates_seen"]
+        # Safe schema-only metadata: do not write response bodies, cursors,
+        # raw URLs, provider messages, fixture names or API credentials.
+        status["fixture_discovery_response_schema"]=discovery_meta.get(
+            "response_schema")
         if match is None:
             return finish(discovery_reason)
         status["matched_future_fixtures"] = 1

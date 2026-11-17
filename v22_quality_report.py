@@ -109,6 +109,8 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
                 "fixture_discovery_pages",0),
             "discovery_cached_pages":sportmonks.get(
                 "fixture_discovery_cached_pages",0),
+            "discovery_response_schema":sportmonks.get(
+                "fixture_discovery_response_schema"),
             "attempt_number":sportmonks.get("attempt_number"),
             "selected_forecast_fixture_id":sportmonks.get(
                 "selected_forecast_fixture_id"),
