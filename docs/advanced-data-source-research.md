@@ -146,3 +146,27 @@ References:
 A successful regression test of pagination proves parsing logic only. The
 historical xG add-on and subscription remain unverified until a **live
 Sportmonks** response includes correctly source-matched genuine xG records.
+
+
+### Live follow-up: empty rows with an unclassified provider message
+
+A production snapshot on 17 November 2026 returned `data: []` and a provider
+`message`, but **no pagination metadata**, and therefore previously produced
+`invalid_discovery_response` even after cursor pagination was repaired.
+The raw message was correctly not persisted, so the snapshot alone cannot
+establish whether this was an empty filtered query, an account entitlement
+problem, an invalid request, or another provider condition.
+
+The collector now records only an allowlisted **message category**, never
+the response message, credentials, URLs, or cursors. Known empty-result
+wording, including `no data found`, is terminal for that individual query
+and permits the existing unfiltered date fallback. Authorization,
+subscription, quota, parameter, and unclassified messages fail closed
+with distinct status reasons. None of these outcomes counts as verified
+Sportmonks xG or proves permission to access historical expected-goals data.
+
+The daily request cap remains unchanged. After budget reset, review
+`data/sportmonks_xg/status.json` for `reason` and
+`fixture_discovery_response_schema.message_class`. If the message remains
+unclassified, check the exact message privately in Sportmonks' own dashboard
+or API console; do not paste an API token into issues, logs, or screenshots.
