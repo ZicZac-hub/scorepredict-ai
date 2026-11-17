@@ -97,6 +97,11 @@ _STATISTIC_KEYS = {
     "yellow cards": "yellow_cards",
     "red cards": "red_cards",
     "ball possession": "possession_pct",
+    "fouls": "fouls",
+    "goalkeeper saves": "goalkeeper_saves",
+    "total passes": "total_passes",
+    "passes accurate": "accurate_passes",
+    "passes %": "pass_accuracy_pct",
 }
 
 
@@ -118,11 +123,12 @@ def _historical_match_stats(raw, home_id, away_id):
             if kind is None:
                 continue
             raw_value = item.get("value")
-            if kind == "possession_pct" and isinstance(raw_value, str):
+            if kind in ("possession_pct", "pass_accuracy_pct") and isinstance(raw_value, str):
                 raw_value = raw_value.strip().rstrip("%")
             value = _number(raw_value)
-            if value is not None and (kind == "possession_pct" or value == int(value)):
-                if kind != "possession_pct" or value <= 100:
+            percentage=kind in ("possession_pct", "pass_accuracy_pct")
+            if value is not None and (percentage or value == int(value)):
+                if not percentage or value <= 100:
                     values[kind] = int(value) if value == int(value) else value
         if values:
             found[tid] = values
