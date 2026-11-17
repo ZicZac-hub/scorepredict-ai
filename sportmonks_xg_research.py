@@ -8,6 +8,7 @@ no production prediction is changed, and results are pre-match append-only.
 import json
 import math
 import os
+import hashlib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -17,7 +18,7 @@ from persist_prematch import load_json, write_json
 from source_capture_clock import capture_clock
 from v10_prospective import ROOT as ORIGINAL_ROOT, read_latest, utc
 from sportmonks_probability_research import (
-    API_ROOT, _get, _kickoff, _name, match_fixture,
+    API_ROOT, _get, _kickoff, _name,
 )
 
 ROOT = Path("data/sportmonks_xg")
@@ -26,6 +27,10 @@ MAX_DAILY_REQUESTS = 12
 MAX_PER_RUN = 4
 MAX_FORECASTS_PER_RUN = 1
 MAX_HISTORY_DAYS = 60
+MAX_DISCOVERY_PAGES = 8  # Hard stop on pagination; incomplete scans never certify a match.
+DISCOVERY_CACHE_HOURS = 36
+MAX_ATTEMPTS_PER_FORECAST = 3
+RETRY_MINUTES = 45
 EXPECTED_GOALS_TYPE = 5304  # Sportmonks EXPECTED_GOALS, not xGOT or xPTS.
 
 
@@ -58,38 +63,149 @@ def eligible_originals(rows, now):
         utc(r["kickoff_utc"]), str(r["fixture_id"])))
 
 
-def _matched_future(forecast, rows):
-    """Match a unique future fixture and its two independently sourced team IDs."""
-    fid = match_fixture(forecast, rows)
-    if fid is None:
-        return None
-    matches = [r for r in rows if str(r.get("id")) == str(fid)]
-    if len(matches) != 1:
-        return None
-    item = matches[0]
+# Small, reviewed *whole-name* alias groups; never delete junior,
+# women's, reserve or geographic qualifiers or use fuzzy edit distances.
+_ALIAS_GROUPS = (
+    ("coritiba", "coritiba fc", "coritiba foot ball club"),
+    ("santos", "santos fc", "santos futebol clube"),
+    ("corinthians", "corinthians paulista", "sc corinthians paulista"),
+    ("cruzeiro", "cruzeiro ec", "cruzeiro esporte clube"),
+    ("sao paulo", "sao paulo fc", "sao paulo futebol clube"),
+    ("manchester city", "manchester city fc", "man city"),
+    ("athletic club", "athletic club bilbao", "athletic bilbao"),
+    ("palmeiras", "sociedade esportiva palmeiras", "se palmeiras"),
+    ("fluminense", "fluminense fc", "fluminense football club"),
+    ("vasco da gama", "vasco da gama rj", "cr vasco da gama"),
+    ("botafogo", "botafogo fr", "botafogo de futebol e regatas"),
+)
+_ALIASES = { _name(variant): _name(group[0])
+             for group in _ALIAS_GROUPS for variant in group }
+
+
+def _team_key(value):
+    """Case/accent-insensitive *exact* names or expressly reviewed aliases."""
+    name = _name(value)
+    return _ALIASES.get(name, name)
+
+
+def _fixture_candidates(forecast, rows):
     target = utc(forecast["kickoff_utc"])
-    at = _kickoff(item)
-    if at is None or abs((at-target).total_seconds()) > 300:
-        return None
-    teams = {}
-    for team in item.get("participants") or []:
-        side = (team.get("meta") or {}).get("location")
-        if side not in ("home", "away"):
+    matches = {}
+    conflicts = set()
+    for row in rows:
+        if not isinstance(row,dict):
+            continue
+        at = _kickoff(row)
+        if at is None or abs((at-target).total_seconds()) > 300:
+            continue
+        expected = {side: _team_key(forecast.get(side+"_team"))
+                    for side in ("home","away")}
+        if not all(expected.values()):
+            continue
+        sides = {}
+        for part in row.get("participants") or []:
+            if not isinstance(part,dict):
+                continue
+            side = (part.get("meta") or {}).get("location")
+            if side not in ("home","away"):
+                continue
+            name = _team_key(part.get("name"))
+            try:
+                tid = int(part["id"])
+            except (KeyError,ValueError,TypeError):
+                continue
+            if side in sides and sides[side] != (name,tid):
+                sides[side] = None
+            elif side not in sides:
+                sides[side] = (name,tid)
+        if any(sides.get(side) is None or
+               sides[side][0] != expected[side] for side in ("home","away")):
+            continue
+        if sides["home"][1] == sides["away"][1]:
             continue
         try:
-            tid = int(team["id"])
-        except (KeyError, ValueError, TypeError):
-            return None
-        name = team.get("name")
-        if not name or _name(name) != _name(forecast.get(side+"_team")):
-            return None
-        if side in teams and teams[side] != tid:
-            return None
-        teams[side] = tid
-    if len(teams) != 2 or teams["home"] == teams["away"]:
-        return None
-    return {"fixture_id": int(fid), "home_team_id": teams["home"],
-            "away_team_id": teams["away"]}
+            fid = int(row["id"])
+        except (KeyError,TypeError,ValueError):
+            continue
+        candidate={"fixture_id":fid,
+                   "home_team_id":sides["home"][1],
+                   "away_team_id":sides["away"][1]}
+        if fid in matches and matches[fid]!=candidate:
+            conflicts.add(fid)
+        else:
+            matches[fid]=candidate
+    return [row for fid,row in matches.items() if fid not in conflicts],bool(conflicts)
+
+
+def _matched_future(forecast, rows):
+    """Only one unambiguous source fixture, preserving Sportmonks team IDs."""
+    matches,conflict=_fixture_candidates(forecast,rows)
+    return matches[0] if len(matches)==1 and not conflict else None
+
+
+def _query_pages(forecast, now, root, call):
+    """Fully paginate a filtered lookup; use unfiltered date pages as fallback.
+
+    A scan is NEVER certified as unique while any page remains unexamined.
+    Cached complete pages are keyed to the query and expire after 36 hours.
+    """
+    day=utc(forecast["kickoff_utc"]).date().isoformat()
+    url=f"{API_ROOT}/fixtures/date/{day}"
+    # Search the home participant first to avoid hundreds of unrelated games.
+    # A search alias miss falls back to a globally paginated date scan.
+    phases=(("team", {"filters":"participantSearch:"+str(forecast["home_team"])}),
+            ("date", {}))
+    summary={"pages_read":0,"cached_pages_used":0,"scope":None,
+             "candidates_seen":0}
+    for scope,extra in phases:
+        fixtures=[]
+        marker=hashlib.sha256((day+"|"+scope+"|"+
+               extra.get("filters","")).encode()).hexdigest()[:16]
+        folder=Path(root)/"discovery"/day/marker
+        for page in range(1,MAX_DISCOVERY_PAGES+1):
+            key=folder/("page_"+str(page)+".json")
+            prior=load_json(key,{})
+            captured=prior.get("fetched_at_utc")
+            try:
+                fresh=bool(captured and 0 <= (now-utc(captured)).total_seconds()
+                           <= DISCOVERY_CACHE_HOURS*3600)
+            except (ValueError,TypeError):
+                fresh=False
+            if fresh:
+                rows=prior.get("data")
+                more=prior.get("has_more")
+                summary["cached_pages_used"]+=1
+            else:
+                try:
+                    packet=call(url, {"include":"participants","per_page":50,
+                                      "page":page,**extra})
+                except RequestBudgetExhausted:
+                    # Persisted earlier pages can be resumed on the next
+                    # permitted attempt; never certify a partial scan.
+                    return None,"discovery_request_budget_exhausted",summary
+                rows=packet.get("data")
+                more=(packet.get("pagination") or {}).get("has_more")
+                if not isinstance(rows,list) or not isinstance(more,bool):
+                    return None,"invalid_discovery_response",summary
+                write_json(key,{"fetched_at_utc":now.isoformat(),
+                                "data":rows,"has_more":more,"scope":scope})
+            if not isinstance(rows,list) or not isinstance(more,bool):
+                return None,"invalid_cached_discovery",summary
+            fixtures.extend(rows)
+            summary["pages_read"]+=1
+            summary["scope"]=scope
+            if not more:
+                matches,conflict=_fixture_candidates(forecast,fixtures)
+                summary["candidates_seen"]=len(matches)
+                if conflict or len(matches)>1:
+                    return None,"ambiguous_cross_provider_fixture",summary
+                if len(matches)==1:
+                    return matches[0],"source_identity_matched",summary
+                break
+        else:
+            # Explicitly abstain: unseen pages may contain a competing ID.
+            return None,"discovery_pagination_incomplete",summary
+    return None,"no_unique_cross_provider_fixture_match",summary
 
 
 def _xg_pair(item):
@@ -208,11 +324,34 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         "matched_future_fixtures": 0, "matched_historical_xg_fixtures": 0,
         "captured": 0, "reason": "", "subscription_confirmed": False,
         "no_production_model_changes": True,
+        "fixture_discovery_pages":0, "fixture_discovery_cached_pages":0,
+        "fixture_discovery_scope":None,"attempt_number":0,
     }
+    attempt_path=None
+    attempt_number=0
 
     def finish(reason):
         status["reason"] = reason
         status["daily_requests_used"] = used
+        if attempt_path is not None:
+            delay=(24*60 if reason in (
+                "provider_access_subscription_or_network_error",
+                "source_error", "invalid_discovery_response")
+                   else RETRY_MINUTES)
+            terminal=(reason=="genuine_sportmonks_xg_captured" or
+                      reason=="ambiguous_cross_provider_fixture" or
+                      reason=="past_kickoff_not_valid_for_research" or
+                      attempt_number>=MAX_ATTEMPTS_PER_FORECAST)
+            write_json(attempt_path, {
+                "forecast_id":forecast["forecast_id"],
+                "api_football_fixture_id":str(forecast["fixture_id"]),
+                "attempted_at_utc":started.isoformat(),
+                "attempt_count":attempt_number,
+                "last_reason":reason,
+                "next_retry_at_utc":(
+                    started+timedelta(minutes=delay)).isoformat(),
+                "terminal":terminal,
+            })
         write_json(root/"status.json", status)
         return status
 
@@ -231,14 +370,31 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
             "API-Football_"+str(item["fixture_id"])+"_"+str(item["forecast_id"])+".json")
         attempt = root/"attempts"/(
             "API-Football_"+str(item["fixture_id"])+"_"+str(item["forecast_id"])+".json")
-        if not path.exists() and not attempt.exists():
-            selected = (item, path, attempt)
+        if path.exists():
+            continue
+        previous=load_json(attempt,{})
+        try:
+            count=int(previous.get("attempt_count",1)) if previous else 0
+            retry_at=previous.get("next_retry_at_utc") or (
+                (utc(previous["attempted_at_utc"])+
+                 timedelta(minutes=RETRY_MINUTES)).isoformat()
+                if previous.get("attempted_at_utc") else None)
+            ready=retry_at is None or utc(retry_at)<=started
+        except (TypeError,ValueError,KeyError):
+            # Corrupt checkpoints never authorize unbounded retry traffic.
+            continue
+        if (not previous or (not previous.get("terminal") and
+            count<MAX_ATTEMPTS_PER_FORECAST and ready)):
+            selected = (item, path, attempt, count)
             break
     if selected is None:
         return finish("eligible_forecasts_already_checked")
     if used >= daily_limit or used >= MAX_DAILY_REQUESTS:
         return finish("daily_request_budget_exhausted")
-    forecast, destination, attempt_path = selected
+    forecast, destination, attempt_path, previous_attempts = selected
+    attempt_number=previous_attempts+1
+    status["attempt_number"]=attempt_number
+    status["selected_forecast_fixture_id"]=str(forecast["fixture_id"])
     per_run = min(MAX_PER_RUN, max(0, int(max_per_run)))
 
     def call(url, params):
@@ -255,33 +411,29 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         status["requests_this_run"] += 1
         return _get(token, url, params=params, request=request)
 
-    # One attempted forecast per day unless a previous one is already marked.
-    # Checkpoint before provider requests so subscription errors don't retry
-    # every fifteen minutes on an account without the xG add-on.
+    # Reservation persists across workflow runs, including failed requests.
+    # A prior run's marker is compatible with the new bounded retry counter.
     write_json(attempt_path, {
         "forecast_id":forecast["forecast_id"],
         "api_football_fixture_id":str(forecast["fixture_id"]),
-        "attempted_at_utc":started.isoformat()})
+        "attempted_at_utc":started.isoformat(),
+        "attempt_count":attempt_number,
+        "last_reason":"attempt_reserved",
+        "next_retry_at_utc":(
+            started+timedelta(minutes=RETRY_MINUTES)).isoformat(),
+        "terminal":attempt_number>=MAX_ATTEMPTS_PER_FORECAST,
+    })
     try:
-        target_day=utc(forecast["kickoff_utc"]).date().isoformat()
-        fixtures=[]
-        match=None
-        # Search the exact UTC match date, not all worldwide matches over
-        # four days; pagination avoids silently losing fixtures after page 1.
-        for page in (1,2):
-            response=call(f"{API_ROOT}/fixtures/date/{target_day}",
-                          {"include":"participants","per_page":50,"page":page})
-            observed_items=response.get("data") or []
-            if not isinstance(observed_items,list):
-                return finish("invalid_discovery_response")
-            fixtures.extend(observed_items)
-            match=_matched_future(forecast, fixtures)
-            if match is not None:
-                break
-            if not (response.get("pagination") or {}).get("has_more"):
-                break
+        match,discovery_reason,discovery_meta=_query_pages(
+            forecast,started,root,call)
+        status["fixture_discovery_pages"]=discovery_meta["pages_read"]
+        status["fixture_discovery_cached_pages"]=discovery_meta[
+            "cached_pages_used"]
+        status["fixture_discovery_scope"]=discovery_meta["scope"]
+        status["fixture_discovery_candidates"]=discovery_meta[
+            "candidates_seen"]
         if match is None:
-            return finish("no_unique_cross_provider_fixture_match_within_page_budget")
+            return finish(discovery_reason)
         status["matched_future_fixtures"] = 1
         cutoff = observed()
         if cutoff >= utc(forecast["kickoff_utc"]):
@@ -327,7 +479,9 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
             "historical_xg_away_count":len(evidence["away"]),
             "both_teams_six_xg":min(len(evidence["home"]),
                                    len(evidence["away"])) >= 6,
-            "source_identity_policy":"exact_normalized_teams_and_kickoff_within_5min",
+            "source_identity_policy":"reviewed_whole_name_aliases_and_kickoff_within_5min",
+            "source_discovery_scope":status["fixture_discovery_scope"],
+            "source_discovery_pages":status["fixture_discovery_pages"],
             "historical_source":"Sportmonks_fixture_5304_both_participants",
             "not_api_football_xg":True,
             "not_automatically_promoted":True,
@@ -338,6 +492,7 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         status["captured"]=1
         return finish("genuine_sportmonks_xg_captured")
     except RequestBudgetExhausted:
+        # Discovery pages already fetched remain cached for controlled retry.
         return finish("request_budget_exhausted_mid_research")
     except requests.RequestException as exc:
         status["error_type"]=type(exc).__name__

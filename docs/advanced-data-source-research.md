@@ -73,3 +73,41 @@ into V22 forecasts**, not merged with API-Football fixture IDs, and cannot
 support a claimed accuracy gain until tested prospectively on matched data.
 Missing add-on access, incomplete xG, restricted league coverage and ambiguous
 matching are reported, not treated as xG of zero.
+
+### Fixture-matching upgrade (17 November 2026)
+
+Sportmonks date discovery now tries an official `participantSearch` filter for
+the forecast home team, with **full pagination** before claiming a unique
+match. If that name search returns no match, the collector falls back to
+paginated date discovery. It will **not** trust a match while `has_more=true`
+and pages remain unexamined. Partial scans and cached page responses remain
+diagnosable, and previously fetched discovery pages can be reused for up to
+36 hours to avoid repetitive provider requests.
+
+Team aliases are a small reviewed whole-name dictionary (e.g. Coritiba /
+Coritiba Foot Ball Club, Santos / Santos FC, Manchester City / Man City).
+Case and accents are normalised, but no fuzzy edit-distance matching or
+blanket deletion of `U20`, women's, reserve or location qualifiers occurs.
+Both teams, home/away order and kickoff within 5 minutes must agree; multiple
+eligible Sportmonks fixture IDs mean **no match**, not a guess.
+
+Unmatched forecast attempts are no longer permanently blacklisted after one
+try. A previous attempt marker is migrated to a count with **45-minute
+minimum retry interval**, at most three attempts for each original forecast,
+and a slower 24-hour cooldown after provider access/network failures.
+Previously successful forecasts remain immutable. The existing four-request
+daily Sportmonks limit (absolute configurable maximum twelve) and four-call
+per-run budget remain enforced. Retry checkpoints and source status never
+save API tokens. Exceeded pagination/request budgets are reported explicitly
+instead of reporting an unverified fixture as confirmed.
+
+A correctly configured token proves authentication availability only; it does
+**not** prove the subscription includes the Sportmonks xG add-on or that the
+target competition has historical xG. The real production run must return
+type-5304 xG values for both verified historical participants before those
+records are reported as collected.
+
+References:
+- https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/fixtures/get-fixtures-by-date
+- https://docs.sportmonks.com/v3/endpoints-and-entities/endpoints/fixtures/get-fixtures-by-date-range-for-team
+- https://docs.sportmonks.com/v3/tutorials-and-guides/tutorials/expected/includes

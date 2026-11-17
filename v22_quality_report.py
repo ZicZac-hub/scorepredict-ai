@@ -104,6 +104,14 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
             "requests_limit_per_day":sportmonks.get("daily_request_limit"),
             "matched_future_fixtures_last_run":sportmonks.get(
                 "matched_future_fixtures",0),
+            "discovery_scope":sportmonks.get("fixture_discovery_scope"),
+            "discovery_pages_examined":sportmonks.get(
+                "fixture_discovery_pages",0),
+            "discovery_cached_pages":sportmonks.get(
+                "fixture_discovery_cached_pages",0),
+            "attempt_number":sportmonks.get("attempt_number"),
+            "selected_forecast_fixture_id":sportmonks.get(
+                "selected_forecast_fixture_id"),
             "matched_historical_xg_last_run":sportmonks.get(
                 "matched_historical_xg_fixtures",0),
             "frozen_evidence_packets":len(sportmonks_qualified),

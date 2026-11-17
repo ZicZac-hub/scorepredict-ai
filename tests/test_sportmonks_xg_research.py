@@ -194,6 +194,117 @@ def test_wrong_match_names_cannot_be_relabelled_as_xg(tmp_path):
     env={"SPORTMONKS_XG_ENABLED":"true","SPORTMONKS_API_TOKEN":"secret"}
     s=capture(now=NOW,root=tmp_path,originals=[original()],
               environ=env,request=fake,clock=lambda:NOW)
-    assert s["reason"]=="no_unique_cross_provider_fixture_match_within_page_budget"
+    assert s["reason"]=="no_unique_cross_provider_fixture_match"
     assert s["captured"]==0
-    assert len(calls)==1
+    assert len(calls)==2  # Targeted search then fallback date scan.
+
+
+def test_reviewed_aliases_match_actual_clubs_but_never_juniors():
+    from sportmonks_xg_research import _team_key
+    forecast=dict(original(),home_team="Coritiba",away_team="Santos")
+    fixture=next_match()
+    fixture["participants"][0]["name"]="Coritiba Foot Ball Club"
+    fixture["participants"][1]["name"]="Santos FC"
+    assert _matched_future(forecast,[fixture])=={
+        "fixture_id":54321,"home_team_id":31,"away_team_id":32}
+    fixture["participants"][1]["name"]="Santos U20"
+    assert _matched_future(forecast,[fixture]) is None
+    assert _team_key("Santos Laguna") != _team_key("Santos")
+
+
+def test_filtered_pagination_finds_second_page_but_only_after_complete_scan(tmp_path):
+    from sportmonks_xg_research import _query_pages
+    fixture=next_match()
+    calls=[]
+    def call(url,params):
+        calls.append(dict(params))
+        if params["page"]==1:
+            return {"data":[],"pagination":{"has_more":True}}
+        return {"data":[fixture],"pagination":{"has_more":False}}
+    found,reason,meta=_query_pages(original(),NOW,tmp_path,call)
+    assert reason=="source_identity_matched"
+    assert found["fixture_id"]==54321
+    assert [x["page"] for x in calls]==[1,2]
+    assert all(x["per_page"]==50 for x in calls)
+    # Subsequent pass reuses persisted, timestamped pages instead of re-billing.
+    def forbidden(*args,**kwargs):
+        raise AssertionError("Replayed discovery should come from cache")
+    repeat,why,rec=_query_pages(original(),NOW+timedelta(minutes=15),
+                                tmp_path,forbidden)
+    assert repeat==found
+    assert why=="source_identity_matched"
+    assert rec["cached_pages_used"]==2
+
+
+def test_ambiguous_second_page_is_not_accepted_as_unique(tmp_path):
+    from sportmonks_xg_research import _query_pages
+    first=next_match()
+    second=next_match()
+    second["id"]=54322
+    def call(url,params):
+        return {"data":[first] if params["page"]==1 else [second],
+                "pagination":{"has_more":params["page"]==1}}
+    match,reason,_=_query_pages(original(),NOW,tmp_path,call)
+    assert match is None
+    assert reason=="ambiguous_cross_provider_fixture"
+
+
+def test_nonexhaustive_paginated_scan_cannot_confirm_identity(tmp_path):
+    from sportmonks_xg_research import _query_pages
+    calls=[]
+    def call(url,params):
+        calls.append(params["page"])
+        return {"data":[next_match()] if params["page"]==1 else [],
+                "pagination":{"has_more":True}}
+    found,reason,_=_query_pages(original(),NOW,tmp_path,call)
+    assert found is None
+    assert reason=="discovery_pagination_incomplete"
+    assert len(calls)==8
+
+
+def test_legacy_unmatched_marker_retries_after_cooldown_then_stops_at_three(tmp_path):
+    env={"SPORTMONKS_XG_ENABLED":"true","SPORTMONKS_API_TOKEN":"secret"}
+    forecast=original()
+    marker=tmp_path/"attempts"/"API-Football_321_original-xyz.json"
+    marker.parent.mkdir(parents=True,exist_ok=True)
+    marker.write_text(json.dumps({"forecast_id":"original-xyz",
+        "api_football_fixture_id":"321",
+        "attempted_at_utc":(NOW-timedelta(hours=1)).isoformat()}))
+    calls=[]
+    class Response:
+        status_code=200
+        def raise_for_status(self): pass
+        def json(self):
+            return {"data":[],"pagination":{"has_more":False}}
+    def empty(*args,**kwargs):
+        calls.append(True)
+        return Response()
+    status=capture(now=NOW,root=tmp_path,originals=[forecast],
+                   environ=env,request=empty,clock=lambda:NOW)
+    assert status["attempt_number"]==2
+    assert status["reason"]=="no_unique_cross_provider_fixture_match"
+    assert len(calls)==2
+    # Early return on the same frozen fixture: no extra API calls.
+    again=capture(now=NOW+timedelta(minutes=10),root=tmp_path,
+                  originals=[forecast],environ=env,request=empty,
+                  clock=lambda:NOW+timedelta(minutes=10))
+    assert again["reason"]=="eligible_forecasts_already_checked"
+    assert len(calls)==2
+    later=NOW+timedelta(minutes=50)
+    third=capture(now=later,root=tmp_path,originals=[forecast],
+                  environ=env,request=empty,clock=lambda:later)
+    assert third["attempt_number"]==3
+    assert third["reason"]=="no_unique_cross_provider_fixture_match"
+    assert json.loads(marker.read_text())["terminal"]
+    final=capture(now=later+timedelta(hours=2),root=tmp_path,
+                  originals=[forecast],environ=env,request=empty,
+                  clock=lambda:later+timedelta(hours=2))
+    assert final["reason"]=="eligible_forecasts_already_checked"
+
+
+def test_matching_other_forecast_never_reuses_wrong_team_alias(tmp_path):
+    fake=next_match()
+    fake["participants"][0]["name"]="Coritiba U20"
+    fake["participants"][1]["name"]="Santos FC"
+    forecast=dict(original(),home_team="Coritiba",away_team="Santos")
+    assert _matched_future(forecast,[fake]) is None
