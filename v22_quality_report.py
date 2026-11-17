@@ -12,6 +12,7 @@ from persist_prematch import load_json,write_json
 from v10_prospective import ROOT as V8_ROOT,read_latest,utc
 from v22_ai_gate import main as ai_gate
 from v22_calibration import chronological_evaluation
+from sportmonks_xg_validation import verify_packet_collection
 
 ROOT=Path("data/v22_prospective")
 SOURCE_ROOT=Path("data/v21_sources")
@@ -36,14 +37,10 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     sportmonks_packets=[
         load_json(path,{}) for path in (sportmonks_root/"forecasts").glob("*.json")
     ]
-    sportmonks_qualified=[
-        row for row in sportmonks_packets
-        if row.get("provider")=="Sportmonks" and row.get("research_only") is True
-        and row.get("xg_type_id")==5304 and row.get("not_automatically_promoted") is True
-        and row.get("captured_at_utc") and row.get("kickoff_utc")
-        and utc(row["captured_at_utc"])<utc(row["kickoff_utc"])
-        and row.get("historical_xg")
-    ]
+    # Validate genuine historical xG against the immutable originating V8
+    # forecast, all saved participant IDs and every pre-match timestamp.
+    # Declared type 5304 alone is NOT sufficient evidence of usable xG.
+    sportmonks_audit=verify_packet_collection(sportmonks_packets,originals)
     extracted={"packets_checked":len(source_files),
                "with_historical_xg":0,"with_6_per_team":0,
                "with_verified_historical_match_statistics":0,
@@ -117,9 +114,13 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
                 "selected_forecast_fixture_id"),
             "matched_historical_xg_last_run":sportmonks.get(
                 "matched_historical_xg_fixtures",0),
-            "frozen_evidence_packets":len(sportmonks_qualified),
-            "six_xg_for_both_teams_packets":sum(
-                bool(row.get("both_teams_six_xg")) for row in sportmonks_qualified),
+            "frozen_evidence_packets":sportmonks_audit["source_validated"],
+            "both_sides_xg_packets":sportmonks_audit["with_both_teams"],
+            "six_xg_for_both_teams_packets":sportmonks_audit["with_six_per_team"],
+            "unverified_source_packet_count":(
+                sportmonks_audit["checked"]-sportmonks_audit["source_validated"]),
+            "unverified_source_packet_reasons":sportmonks_audit["rejected_by_reason"],
+            "incremental_accuracy_not_yet_demonstrated":True,
             "provider_subscription_not_assumed":True,
             "research_only_not_used_by_v22":True},
         "v24_broad_market_collection":{
