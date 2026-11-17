@@ -15,7 +15,7 @@ from persist_prematch import load_json, write_json
 from source_capture_clock import capture_clock
 from v10_prospective import ROOT as ORIGINAL_ROOT, read_latest, utc
 from sportmonks_probability_research import (
-    API_ROOT, _discover, _get, _kickoff, _name, _participants, match_fixture,
+    API_ROOT, _get, _kickoff, _name, match_fixture,
 )
 
 ROOT = Path("data/sportmonks_xg")
@@ -261,18 +261,25 @@ def capture(*, now=None, environ=None, root=ROOT, original_root=ORIGINAL_ROOT,
         "api_football_fixture_id":str(forecast["fixture_id"]),
         "attempted_at_utc":started.isoformat()})
     try:
-        begin=(started-timedelta(days=1)).date().isoformat()
-        end=(started+timedelta(days=3)).date().isoformat()
-        response=call(f"{API_ROOT}/fixtures/between/{begin}/{end}",
-                      {"include":"participants","per_page":50,"page":1})
-        fixtures=response.get("data") or []
-        if not isinstance(fixtures,list):
-            return finish("invalid_discovery_response")
-        match=_matched_future(forecast, fixtures)
-        # Do not fetch second discovery page merely to speculate: the one
-        # per-day budget is more useful for source-verified historical xG.
+        target_day=utc(forecast["kickoff_utc"]).date().isoformat()
+        fixtures=[]
+        match=None
+        # Search the exact UTC match date, not all worldwide matches over
+        # four days; pagination avoids silently losing fixtures after page 1.
+        for page in (1,2):
+            response=call(f"{API_ROOT}/fixtures/date/{target_day}",
+                          {"include":"participants","per_page":50,"page":page})
+            observed_items=response.get("data") or []
+            if not isinstance(observed_items,list):
+                return finish("invalid_discovery_response")
+            fixtures.extend(observed_items)
+            match=_matched_future(forecast, fixtures)
+            if match is not None:
+                break
+            if not (response.get("pagination") or {}).get("has_more"):
+                break
         if match is None:
-            return finish("no_unique_cross_provider_fixture_match")
+            return finish("no_unique_cross_provider_fixture_match_within_page_budget")
         status["matched_future_fixtures"] = 1
         cutoff = observed()
         if cutoff >= utc(forecast["kickoff_utc"]):
