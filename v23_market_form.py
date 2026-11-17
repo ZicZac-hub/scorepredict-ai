@@ -15,6 +15,64 @@ from v22_evidence_models import calibrate_markets,xg_profile,combine_goal_eviden
 from goal_research_v20 import goal_form_challenger
 
 
+def _qualified_markets(packet, fixture, clock):
+    """Use only source-timestamped market types available at decision time."""
+    observed = packet.get("multi_market") or {}
+    if not isinstance(observed, dict):
+        observed = {}
+    checked = {}
+    stale = []
+    undated = []
+    for kind, market in observed.items():
+        if not isinstance(market, dict):
+            continue
+        try:
+            updated = utc(market["last_source_update_utc"])
+        except (TypeError, ValueError, KeyError, AttributeError):
+            undated.append(kind)
+            continue
+        if (updated <= utc(fixture["utcDate"]) and updated <= clock
+                and clock - updated <= timedelta(hours=12)):
+            checked[kind] = market
+        else:
+            stale.append(kind)
+    # Only allowlisted market names are displayed in public diagnostics;
+    # never print provider responses, quote values, URLs or credentials.
+    safe = {"1x2", "over_2_5", "over_3_5"}
+    return checked, {
+        "fresh_market_types": sorted(safe.intersection(checked)),
+        "stale_or_future_market_types": sorted(safe.intersection(stale)),
+        "undated_market_types": sorted(safe.intersection(undated)),
+        "missing_required_1x2": "1x2" not in checked,
+        "missing_required_goal_total": not bool(
+            {"over_2_5", "over_3_5"} & set(checked)),
+    }
+
+
+def market_status(packet, fixture, *, as_of):
+    """Explain V23 evidence availability without loosening its strict gate."""
+    if as_of is None:
+        return {"ready": False, "reason": "as_of_missing"}
+    try:
+        clock = utc(as_of)
+    except (TypeError, ValueError):
+        return {"ready": False, "reason": "invalid_as_of"}
+    if not valid_snapshot(packet, fixture, now=clock):
+        return {"ready": False, "reason": "missing_or_mismatched_provider_snapshot",
+                "fresh_market_types": [], "stale_or_future_market_types": [],
+                "undated_market_types": [], "missing_required_1x2": True,
+                "missing_required_goal_total": True}
+    try:
+        _, diagnosis = _qualified_markets(packet, fixture, clock)
+    except (TypeError, KeyError, ValueError):
+        return {"ready": False, "reason": "invalid_market_timestamp"}
+    ready = not (diagnosis["missing_required_1x2"]
+                 or diagnosis["missing_required_goal_total"])
+    return {**diagnosis, "ready": ready, "reason": (
+        "market_evidence_ready" if ready else
+        "timestamped_1x2_and_goal_total_markets_required")}
+
+
 def shadow(row, packet, *, as_of, history=None, min_league_history=45):
     fixture=row.get("fixture") or {}
     if as_of is None:
@@ -41,18 +99,12 @@ def shadow(row, packet, *, as_of, history=None, min_league_history=45):
         except (ValueError,TypeError):
             return {"ready":False,"reason":"unverified_league_history_count"}
 
-    markets=packet.get("multi_market") or {}
-    checked={}
-    for kind,market in markets.items():
-        try:
-            updated=utc(market["last_source_update_utc"])
-            if updated<=utc(fixture["utcDate"]) and updated<=clock and clock-updated<=timedelta(hours=12):
-                checked[kind]=market
-        except (TypeError,ValueError,KeyError):
-            continue
-    if "1x2" not in checked or not ({"over_2_5","over_3_5"} & set(checked)):
-        return {"ready":False,"reason":"timestamped_1x2_and_goal_total_markets_required",
-                "market_types_available":sorted(checked)}
+    checked, evidence = _qualified_markets(packet, fixture, clock)
+    if evidence["missing_required_1x2"] or evidence["missing_required_goal_total"]:
+        return {"ready": False,
+                "reason": "timestamped_1x2_and_goal_total_markets_required",
+                "market_types_available": sorted(checked),
+                "market_diagnostic": evidence}
 
     # Independent genuine xG is optional, not a necessary condition. Avoid
     # treating raw goals and Elo-calculated goal means as true shot-based xG.

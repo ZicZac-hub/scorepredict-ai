@@ -19,8 +19,36 @@ from smart_double_ai import _scores
 from goal_research_v20 import goal_profile, goal_form_challenger
 from v21_provider_evidence import valid_snapshot
 from v22_shadow import shadow as v22_shadow
-from v23_market_form import shadow as v23_shadow
+from v23_market_form import shadow as v23_shadow, market_status
 from source_capture_clock import capture_clock
+
+
+def _source_fixture_key(fixture):
+    """Match a session-only packet to the full fixture identity."""
+    return (str(fixture.get("provider")), str(fixture.get("id")),
+            str(fixture.get("utcDate")),
+            str((fixture.get("homeTeam") or {}).get("id")),
+            str((fixture.get("awayTeam") or {}).get("id")))
+
+
+def select_v23_packet(fixture, now, *options):
+    """Prefer freshly verified V23 odds over stale repo/database snapshots.
+
+    No API requests, no post-kickoff evidence, and no changes to frozen rows.
+    """
+    candidates = [p for p in options if valid_snapshot(p, fixture, now=now)]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: (
+        bool(market_status(p, fixture, as_of=now).get("ready")),
+        utc(p["captured_at_utc"]),
+        str(p.get("snapshot_sha256") or "")))
+
+
+def v23_capture_needed(packet, fixture, now, *, source_consent, private, has_key):
+    """Only an explicitly consented, authenticated user may refresh stale odds."""
+    return bool(source_consent and private and has_key and
+                not market_status(packet, fixture, as_of=now).get("ready"))
 
 
 def archive_rows(now=None, root=None):
@@ -288,7 +316,10 @@ def analyze_pair(first, second, histories, *, configs=None, use_live=False,
                     "reason":"V23 cannot produce researched doubles: "+
                              " | ".join(blocked)+
                              ". Both legs need source-verified 1X2 and goal-total odds. "
-                             "True shot-based xG is optional, not fabricated."}
+                             "True shot-based xG is optional, not fabricated.",
+                    "market_diagnostics": [
+                        market_status(packet, row["fixture"], as_of=now)
+                        for row,packet in zip(pair_rows,provider_packets)]}
         effective_rows=[]
         for row,model in zip(pair_rows,v23_models):
             adjusted=dict(row.get("result") or {})
@@ -877,7 +908,8 @@ def render(st,rows,histories=None):
                          priority=("market" if auto_v23 else "research"))
             private_record=(_source_snapshot(fixture,_database,before=clock)
                             if _database else None)
-            return (saved or private_record) if auto_v23 else (private_record or saved)
+            return (select_v23_packet(fixture,clock,saved,private_record)
+                    if auto_v23 else (private_record or saved))
         research_selector=(v23_shadow if auto_v23 else None)
         ranking=_rank_v22_pairs(found,_available_packet,now=clock,
                                  shadow_fn=research_selector)
@@ -1047,51 +1079,76 @@ def render(st,rows,histories=None):
                     db_url=str(os.environ.get("DATABASE_URL") or "")
                     football_key=str(os.environ.get("API_FOOTBALL_KEY") or "")
                 packets=[]
+                session_packets=st.session_state.setdefault(
+                    "ziczac_ai_five_source_packets",{})
+                # Avoid repeated paid quota use on reruns within 30 minutes,
+                # even if the last provider request returned no valid odds.
+                v23_attempts=st.session_state.setdefault(
+                    "ziczac_v23_source_refresh_attempts",{})
+                undurable=[]
                 for item in (first,second):
-                    existing_packet=(_load_packet(item["fixture"],db_url,before=clock)
+                    fixture=item["fixture"]
+                    fixture_key=_source_fixture_key(fixture)
+                    session_packet=(session_packets.get(fixture_key)
+                                    if private else None)
+                    existing_packet=(_load_packet(fixture,db_url,before=clock)
                                      if private and db_url else None)
                     repo_packet=(repository_provider_packet(
-                         item["fixture"],now=clock,
+                         fixture,now=clock,
                          priority=("market" if selection_mode=="v23_market_form"
                                    else "research"))
                          if private and selection_mode in
                          ("v22_xg_market","v23_market_form") else None)
-                    # GitHub-captured odds may be the only source available
-                    # even when no private PostgreSQL database was configured.
-                    packet=((repo_packet or existing_packet)
-                            if selection_mode=="v23_market_form"
-                            else (existing_packet or repo_packet))
+                    # Prefer genuine, time-verified fresh markets over a stale
+                    # GitHub packet; preserve immutable originals separately.
+                    packet=(select_v23_packet(fixture,clock,repo_packet,
+                                              existing_packet,session_packet)
+                            if selection_mode=="v23_market_form" else
+                            (existing_packet or repo_packet or session_packet))
+                    attempt_key=(fixture_key,int(clock.timestamp()//1800))
+                    already_attempted=(selection_mode=="v23_market_form"
+                                       and bool(v23_attempts.get(attempt_key)))
                     if (selection_mode=="v22_xg_market" and packet is not None and
                             source_consent and private and football_key):
                         from v22_evidence_models import xg_profile
-                        insufficient=(not xg_profile(item["fixture"],packet,as_of=clock).get("ready")
+                        insufficient=(not xg_profile(fixture,packet,as_of=clock).get("ready")
                                       or len(packet.get("multi_market") or {})<2)
                         if insufficient:
-                            # Only the explicit consent click can trigger a
-                            # deeper second packet. Both remain write-once.
                             packet=None
-                    if source_consent and private and football_key and packet is None:
-                        packet=_capture_provider(item["fixture"],
+                    if (selection_mode=="v23_market_form" and not already_attempted
+                            and v23_capture_needed(
+                                packet,fixture,clock,source_consent=source_consent,
+                                private=private,has_key=bool(football_key))):
+                        # A valid but OLD packet is not a reason to suppress
+                        # a specifically consented attempt to collect new odds.
+                        packet=None
+                    if (source_consent and private and football_key and
+                            packet is None and not already_attempted):
+                        if selection_mode=="v23_market_form":
+                            v23_attempts[attempt_key]=True
+                        packet=_capture_provider(fixture,
                                                 _history(item,histories or {}),
                                                 football_key,now=clock,
                                                 max_history_per_team=xg_depth)
-                        # Source requests may finish well after the page
-                        # clock. Validate their honest completion timestamp
-                        # against the time now, then use it for the next leg.
+                        # Never backdate evidence by a slow API response.
                         clock=utc(datetime.now(timezone.utc))
-                        if not valid_snapshot(packet,item["fixture"],now=clock):
+                        if not valid_snapshot(packet,fixture,now=clock):
                             packet=None
-                        elif db_url:
-                            stored=_save_packet(packet,item["fixture"],db_url)
-                            if not stored.get("durable"):
-                                st.warning("Source evidence for "+
-                                           item["fixture"]["homeTeam"]["name"]+
-                                           " is NOT permanently stored ("+
-                                           str(stored.get("state"))+").")
                         else:
-                            st.warning("Source evidence is session-only. Configure "
-                                       "a private DATABASE_URL to retain the packet.")
+                            session_packets[fixture_key]=packet
+                            if db_url:
+                                stored=_save_packet(packet,fixture,db_url)
+                                if not stored.get("durable"):
+                                    undurable.append(str(stored.get("state")))
+                            else:
+                                undurable.append("database_not_configured")
                     packets.append(packet)
+                if undurable:
+                    st.warning("Source evidence for "+str(len(undurable))+
+                               " match(es) was captured but is session-only. "
+                               "Configure a private PostgreSQL DATABASE_URL "
+                               "in your Streamlit app Secrets to preserve it. "
+                               "This is separate from GitHub Actions secrets.")
                 if source_consent and private and not football_key:
                     st.warning("API_FOOTBALL_KEY is missing from Streamlit Secrets. "
                                "No xG/lineup/odds calls were made.")
@@ -1145,6 +1202,25 @@ def render(st,rows,histories=None):
             _display(st,report,first,second)
         else:
             st.warning(report.get("reason") or "This pair could not be analysed.")
+            if report.get("status")=="insufficient_v23_evidence":
+                for index, diagnostic in enumerate(
+                        report.get("market_diagnostics") or (),start=1):
+                    fresh=", ".join(diagnostic.get("fresh_market_types") or []) or "none"
+                    stale=", ".join(diagnostic.get(
+                        "stale_or_future_market_types") or []) or "none"
+                    st.info("Match "+str(index)+" · Usable odds: "+fresh+
+                            " · Expired/future-dated odds: "+stale+
+                            " · 1X2 required: "+
+                            ("missing" if diagnostic.get("missing_required_1x2")
+                             else "verified")+
+                            " · Goal-total required: "+
+                            ("missing" if diagnostic.get("missing_required_goal_total")
+                             else "verified")+". No odds were invented.")
+                st.caption("To retry missing markets, sign in privately, "
+                           "enable the research-source checkbox and run again. "
+                           "Recollection may use API quota and cannot force "
+                           "bookmakers to provide unavailable markets. "
+                           "Original baseline scores remain available.")
     else:
         st.info("Select two matches and press **Run AI Five-Double Prediction**.")
     st.caption("Set up website API access in [Streamlit Secrets instructions]"
