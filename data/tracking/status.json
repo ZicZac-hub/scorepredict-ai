@@ -4,16 +4,16 @@
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 1,
-      "recorded": 3,
+      "pending": 2,
+      "recorded": 4,
       "verified": 2
     },
     "ai_groqcloud": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 1,
-      "recorded": 1,
+      "pending": 2,
+      "recorded": 2,
       "verified": 0
     },
     "automatic_five_double": {
@@ -89,7 +89,7 @@
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-17T15:55:10.649705+00:00",
+  "checked_at_utc": "2026-11-17T17:01:47.533148+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -14098,6 +14098,64 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-17T17:01:39.500910+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1492456', 'gemini')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Chapecoense-sc",
+          "away_team_id": "132",
+          "fixture_id": "1492456",
+          "home_team": "Remo",
+          "home_team_id": "1198",
+          "kickoff_utc": "2026-11-18T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-18T23:00:00.000000Z",
+      "source": "ai_gemini",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-17T17:01:39.500910+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1492456', 'groqcloud')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Chapecoense-sc",
+          "away_team_id": "132",
+          "fixture_id": "1492456",
+          "home_team": "Remo",
+          "home_team_id": "1198",
+          "kickoff_utc": "2026-11-18T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "openai/gpt-oss-20b",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-18T23:00:00.000000Z",
+      "source": "ai_groqcloud",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T01:27:59.278702+00:00",
       "choices": [
         [
@@ -14633,8 +14691,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 480,
-    "recorded": 488,
+    "pending": 482,
+    "recorded": 490,
     "verified": 8
   }
 }

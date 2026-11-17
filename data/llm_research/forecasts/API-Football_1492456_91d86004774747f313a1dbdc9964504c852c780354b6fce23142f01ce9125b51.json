@@ -1,0 +1,79 @@
+{
+  "away_team": "Chapecoense-sc",
+  "away_team_id": "132",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.21213100987131359,
+    "draw": 0.23655038568470782,
+    "home": 0.5513186044439786
+  },
+  "captured_at_utc": "2026-11-17T17:01:39.500910+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.21211550493565678,
+      "draw": 0.2365751928423539,
+      "home": 0.5513093022219893
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492456",
+  "home_team": "Remo",
+  "home_team_id": "1198",
+  "input_digest": "91d86004774747f313a1dbdc9964504c852c780354b6fce23142f01ce9125b51",
+  "kickoff_utc": "2026-11-18T23:00:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "source_captured_at_utc": "2026-11-17T01:50:47.623215Z",
+  "source_forecast_id": "7998b79b86df1b8dbc2c44eada8fb3b1cee6b00421c6f6c92f953f69a832ebf7",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "1dc4e77214d9bd248967aa07624ff760181b67dc88c90ba715507104de171479",
+  "votes": {
+    "gemini": {
+      "away": 0.21213100987131359,
+      "draw": 0.23655038568470782,
+      "factors": [
+        "Model favors Remo heavily at home based on historical match performance.",
+        "Significant rest advantage for Remo (13.02 days vs 3.98 days for Chapecoense-sc).",
+        "Expected goals model estimates higher scoring potential for Remo (1.78 vs 1.01)."
+      ],
+      "home": 0.5513186044439786,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty due to differing market odds vs. statistical model probabilities on draw and away outcomes."
+    },
+    "groqcloud": {
+      "away": 0.2121,
+      "draw": 0.2366,
+      "factors": [
+        "Home team has higher goal rate",
+        "Away team has longer rest",
+        "Top score option 1-1 has 11% probability"
+      ],
+      "home": 0.5513,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "moderate"
+    }
+  }
+}
