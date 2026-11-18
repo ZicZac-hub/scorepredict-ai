@@ -165,14 +165,15 @@ def repository_provider_packet(fixture, *, now=None, originals=None,
             if not valid_snapshot(packet,fixture,now=clock):
                 continue
             if priority == "market":
-                markets = packet.get("multi_market") or {}
-                if "1x2" not in markets or not ({"over_2_5","over_3_5"} & set(markets)):
+                # Use the same source-time and two-required-market gate as
+                # the V23 model; a stale optional O/U 3.5 quote must not
+                # hide current 1X2 + O/U 2.5 evidence in Streamlit.
+                market_quality = market_status(packet, fixture, as_of=clock)
+                if not market_quality.get("ready"):
                     continue
-                clocks = [utc(markets[k]["last_source_update_utc"]) for k in
-                          ("1x2","over_2_5","over_3_5") if k in markets]
-                if not clocks or any(t > clock or t > kickoff or
-                                     clock-t > timedelta(hours=12) for t in clocks):
-                    continue
+                markets = packet["multi_market"]
+                clocks = [utc(markets[k]["last_source_update_utc"])
+                          for k in market_quality["fresh_market_types"]]
                 quality = (max(clocks),utc(packet["captured_at_utc"]))
             else:
                 quality = (utc(packet["captured_at_utc"]),utc(source["captured_at_utc"]))
