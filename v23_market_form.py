@@ -23,6 +23,7 @@ def _qualified_markets(packet, fixture, clock):
     checked = {}
     stale = []
     undated = []
+    captured = utc(packet["captured_at_utc"])
     for kind, market in observed.items():
         if not isinstance(market, dict):
             continue
@@ -31,7 +32,10 @@ def _qualified_markets(packet, fixture, clock):
         except (TypeError, ValueError, KeyError, AttributeError):
             undated.append(kind)
             continue
-        if (updated <= utc(fixture["utcDate"]) and updated <= clock
+        # A provider quote cannot be considered observed in a snapshot
+        # created before its claimed update. Keep bookmaker and fetched-at
+        # timestamps separate and never retroactively make odds available.
+        if (updated < utc(fixture["utcDate"]) and updated <= captured <= clock
                 and clock - updated <= timedelta(hours=12)):
             checked[kind] = market
         else:
