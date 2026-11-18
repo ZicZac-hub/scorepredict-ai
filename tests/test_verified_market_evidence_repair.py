@@ -131,7 +131,8 @@ def test_v25_rejects_unstamped_live_grid_instead_of_inventing_capture_time():
     _, fixture = source_and_fixture()
     grid = np.ones((8, 8), dtype=float) / 64
     row = {"fixture": fixture, "kickoff": fixture["utcDate"],
-           "result": {"matrix": grid.tolist()}}
+           "result": {"matrix": grid.tolist(),
+                      "scores": [(i, 0, 1/64) for i in range(5)]}}
     _, why = qualified(row, NOW)
     assert why == "invalid_or_future_source_timestamp"
     row["generated_at_utc"] = NOW.isoformat()
