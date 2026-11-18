@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-18T23:24:37.647015+00:00",
+  "prospective": true,
+  "record_sha256": "aab04622e1327c6a6f2bbf2b04aeecf42325cf8e57f003db5d8bb466296b5b55",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.12774074318273115,
+        "joint_probability": 0.016779146360650726,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.13135312933515986
+      },
+      {
+        "first_probability": 0.12774074318273115,
+        "joint_probability": 0.015515860235364158,
+        "score1": "1-1",
+        "score2": "0-1",
+        "second_probability": 0.12146367594847135
+      },
+      {
+        "first_probability": 0.11413652258307982,
+        "joint_probability": 0.014992189412720678,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.13135312933515986
+      },
+      {
+        "first_probability": 0.11413652258307982,
+        "joint_probability": 0.01386344159291659,
+        "score1": "1-0",
+        "score2": "0-1",
+        "second_probability": 0.12146367594847135
+      },
+      {
+        "first_probability": 0.12774074318273115,
+        "joint_probability": 0.013197925638852408,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.10331805898430527
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.07434856324050457,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "65",
+        "name": "Nottingham Forest"
+      },
+      "competition": {
+        "code": "PL",
+        "name": "PL"
+      },
+      "homeTeam": {
+        "id": "64",
+        "name": "Hull City"
+      },
+      "id": "1557492",
+      "provider": "API-Football",
+      "utcDate": "2026-12-02T19:30:00+00:00"
+    },
+    "generated_at_utc": "2026-11-18T23:24:37.646686+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "42",
+        "name": "Arsenal"
+      },
+      "competition": {
+        "code": "PL",
+        "name": "PL"
+      },
+      "homeTeam": {
+        "id": "55",
+        "name": "Brentford"
+      },
+      "id": "1557489",
+      "provider": "API-Football",
+      "utcDate": "2026-12-02T20:15:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "65",
+        "fixture_id": "1557492",
+        "forecast_id": "46d64edd1e092e3ae8f2dddec47cc6a1261b1cf6c1e56b2fc37015be33b824ed",
+        "home_team_id": "64",
+        "input_digest": "2a951f446ccb7d5fda0097e80d5226afd21f098693f0d2bf634a242382176cff",
+        "kickoff_utc": "2026-12-02T19:30:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "42",
+        "fixture_id": "1557489",
+        "forecast_id": "ef76b1a16193c2adb9e82b002dd2bb64be4efc713ae76913a505790eebbcb832",
+        "home_team_id": "55",
+        "input_digest": "07aff87d450ed2f3bcdbe3b437376bf633b7d1bad70a8434da1a38669c91c46e",
+        "kickoff_utc": "2026-12-02T20:15:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-18T20:18:16.937757+00:00",
+      "2026-11-18T20:18:17.752976+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-03",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-03",
+  "target_70_percent_proven": false
+}

@@ -1,29 +1,177 @@
 {
-  "at_utc": "2026-11-18T22:25:02.441116+00:00",
+  "at_utc": "2026-11-18T23:24:41.071263+00:00",
   "attempted_legs": 1,
   "calls": 16,
   "capture_window_minutes": [
     8,
     2880
   ],
+  "completed_at_utc": "2026-11-18T23:24:44.991063+00:00",
   "daily_attempts_limit": 6,
-  "daily_attempts_used": 5,
-  "eligible_legs": 11,
+  "daily_attempts_used": 6,
+  "eligible_legs": 8,
   "enabled": true,
+  "maximum_near_refresh_attempts_per_original": 1,
+  "near_refresh_window_minutes": [
+    8,
+    65
+  ],
   "new_packets": [
-    "1492456"
+    "1492450"
   ],
   "reason": "partial_or_complete_source_packets",
   "skipped": [
-    "1492452:original_preserved",
-    "1492453:original_preserved",
-    "1492450:original_preserved",
     "1492454:original_preserved",
     "1492458:original_preserved",
     "1492459:original_preserved",
-    "1492457:near_kickoff_budget_reserved",
-    "1575221:near_kickoff_budget_reserved",
-    "1552827:near_kickoff_budget_reserved",
-    "1570454:near_kickoff_budget_reserved"
-  ]
+    "1492457:daily_attempt_budget_exhausted",
+    "1575221:daily_attempt_budget_exhausted",
+    "1552827:daily_attempt_budget_exhausted",
+    "1570454:daily_attempt_budget_exhausted"
+  ],
+  "source_availability": {
+    "1492450": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "both_identity_matched_starting_XIs_unavailable"
+      ],
+      "source_captured_at_utc": "2026-11-18T23:24:44.963949+00:00",
+      "source_observed_within_3_hours": true,
+      "xg_fixtures_by_team": {
+        "120": 6,
+        "131": 6
+      }
+    },
+    "1492454": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": "2026-11-18T00:02:54.230447+00:00",
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "118": 6,
+        "130": 6
+      }
+    },
+    "1492457": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "fewer_than_6_genuine_xg_fixtures_for_either_team",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": "2026-11-16T07:15:47.452551+00:00",
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "124": 0,
+        "126": 0
+      }
+    },
+    "1492458": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": "2026-11-18T01:38:26.789356+00:00",
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "119": 6,
+        "133": 6
+      }
+    },
+    "1492459": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": "2026-11-18T01:38:29.138233+00:00",
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "136": 6,
+        "794": 6
+      }
+    },
+    "1552827": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "fewer_than_6_genuine_xg_fixtures_for_either_team",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": null,
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "110": 0,
+        "111": 0
+      }
+    },
+    "1570454": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "fewer_than_6_genuine_xg_fixtures_for_either_team",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": null,
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "531": 0,
+        "540": 0
+      }
+    },
+    "1575221": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "fewer_than_6_genuine_xg_fixtures_for_either_team",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": null,
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "157": 0,
+        "192": 0
+      }
+    }
+  },
+  "targeted_pair_fixture_ids": []
 }
