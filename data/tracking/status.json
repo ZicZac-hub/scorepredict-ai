@@ -4,16 +4,16 @@
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 3,
-      "recorded": 5,
+      "pending": 4,
+      "recorded": 6,
       "verified": 2
     },
     "ai_groqcloud": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 3,
-      "recorded": 3,
+      "pending": 4,
+      "recorded": 4,
       "verified": 0
     },
     "automatic_five_double": {
@@ -28,8 +28,8 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 8,
-      "recorded": 8,
+      "pending": 9,
+      "recorded": 9,
       "verified": 0
     },
     "frozen_v12": {
@@ -60,24 +60,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 8,
-      "recorded": 8,
+      "pending": 9,
+      "recorded": 9,
       "verified": 0
     },
     "frozen_v8_near": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 8,
-      "recorded": 10,
+      "pending": 9,
+      "recorded": 11,
       "verified": 2
     },
     "frozen_v9": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 8,
-      "recorded": 10,
+      "pending": 9,
+      "recorded": 11,
       "verified": 2
     },
     "website_original": {
@@ -89,7 +89,7 @@
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-18T04:45:24.149662+00:00",
+  "checked_at_utc": "2026-11-18T05:50:12.369548+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -13292,6 +13292,35 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-18T05:48:40.504220+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492457', 'v10')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fluminense",
+          "away_team_id": "124",
+          "fixture_id": "1492457",
+          "home_team": "Sao Paulo",
+          "home_team_id": "126",
+          "kickoff_utc": "2026-11-20T00:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v10",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-20T00:30:00.000000Z",
+      "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T01:27:59.712961+00:00",
       "choices": [
         [
@@ -13317,6 +13346,93 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-20T00:30:00.000000Z",
       "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T05:48:39.817435+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492457', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fluminense",
+          "away_team_id": "124",
+          "fixture_id": "1492457",
+          "home_team": "Sao Paulo",
+          "home_team_id": "126",
+          "kickoff_utc": "2026-11-20T00:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-20T00:30:00.000000Z",
+      "source": "frozen_v8_near",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T05:48:40.461162+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492457', 'v8_control')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fluminense",
+          "away_team_id": "124",
+          "fixture_id": "1492457",
+          "home_team": "Sao Paulo",
+          "home_team_id": "126",
+          "kickoff_utc": "2026-11-20T00:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_control",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-20T00:30:00.000000Z",
+      "source": "frozen_v8_control",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T05:48:40.461162+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492457', 'v9')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Fluminense",
+          "away_team_id": "124",
+          "fixture_id": "1492457",
+          "home_team": "Sao Paulo",
+          "home_team_id": "126",
+          "kickoff_utc": "2026-11-20T00:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v9",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-20T00:30:00.000000Z",
+      "source": "frozen_v9",
       "status": "pending"
     },
     {
@@ -14304,6 +14420,64 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-18T05:50:00.965687+00:00",
+      "choices": [
+        [
+          "2-0"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1492453', 'gemini')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Atletico Paranaense",
+          "away_team_id": "134",
+          "fixture_id": "1492453",
+          "home_team": "Flamengo",
+          "home_team_id": "127",
+          "kickoff_utc": "2026-11-18T23:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-18T23:30:00.000000Z",
+      "source": "ai_gemini",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T05:50:00.965687+00:00",
+      "choices": [
+        [
+          "2-0"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1492453', 'groqcloud')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Atletico Paranaense",
+          "away_team_id": "134",
+          "fixture_id": "1492453",
+          "home_team": "Flamengo",
+          "home_team_id": "127",
+          "kickoff_utc": "2026-11-18T23:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "openai/gpt-oss-20b",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-18T23:30:00.000000Z",
+      "source": "ai_groqcloud",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T01:28:30.164394+00:00",
       "choices": [
         [
@@ -15155,8 +15329,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 498,
-    "recorded": 506,
+    "pending": 504,
+    "recorded": 512,
     "verified": 8
   }
 }
