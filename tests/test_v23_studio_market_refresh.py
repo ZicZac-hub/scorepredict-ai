@@ -4,7 +4,8 @@ import json
 from datetime import datetime, timedelta, timezone
 
 from ai_five_double_ui import (
-    select_v23_packet, v23_capture_needed, _source_fixture_key)
+    select_v23_packet, v23_capture_needed, _source_fixture_key,
+    repository_provider_packet)
 from v23_market_form import market_status, shadow
 from v22_evidence_models import parse_markets
 from v21_goal_model_comparison import _poisson
@@ -117,3 +118,43 @@ def test_refresh_requires_explicit_consent_owner_login_and_api_key():
                               private=True,has_key=True)
     assert not v23_capture_needed(packet(),FIX,NOW,source_consent=True,
                                   private=True,has_key=True)
+
+def test_studio_accepts_fresh_winner_and_total_despite_stale_optional_line(monkeypatch,tmp_path):
+    """A stale optional totals line must not erase authentic fresh V23 data."""
+    current=packet()
+    current["multi_market"]["over_3_5"]={
+        "last_source_update_utc":(NOW-timedelta(hours=18)).isoformat()}
+    body={k:v for k,v in current.items() if k!="snapshot_sha256"}
+    current["snapshot_sha256"]=hashlib.sha256(
+        json.dumps(body,sort_keys=True,separators=(",",":"),
+                   allow_nan=False).encode()).hexdigest()
+    original={
+        "model_key":"v8","provider":"API-Football",
+        "fixture_id":"444","home_team_id":"11","away_team_id":"22",
+        "kickoff_utc":KICK,
+        "captured_at_utc":(NOW-timedelta(hours=2)).isoformat(),
+        "forecast_id":"original444","input_digest":"digest444"}
+    import v21_capture_sources
+    monkeypatch.setattr(v21_capture_sources, "best_packet",
+                        lambda *a,**kw: {"provider_snapshot":current})
+    selected=repository_provider_packet(
+        FIX,now=NOW,originals=[original],packet_root=tmp_path,
+        priority="market")
+    assert selected is not None
+    assert selected["snapshot_sha256"]==current["snapshot_sha256"]
+    assert market_status(selected,FIX,as_of=NOW)["ready"]
+
+
+def test_studio_refuses_snapshot_with_only_1x2(monkeypatch,tmp_path):
+    single=packet(has_totals=False)
+    original={
+        "model_key":"v8","provider":"API-Football",
+        "fixture_id":"444","home_team_id":"11","away_team_id":"22",
+        "kickoff_utc":KICK,
+        "captured_at_utc":(NOW-timedelta(hours=2)).isoformat()}
+    import v21_capture_sources
+    monkeypatch.setattr(v21_capture_sources, "best_packet",
+                        lambda *a,**kw: {"provider_snapshot":single})
+    assert repository_provider_packet(
+        FIX,now=NOW,originals=[original],packet_root=tmp_path,
+        priority="market") is None
