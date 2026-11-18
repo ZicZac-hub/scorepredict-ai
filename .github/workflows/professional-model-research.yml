@@ -18,7 +18,7 @@ jobs:
       - name: Install isolated research dependencies
         run: python -m pip install -r research-requirements.txt 'pytest>=8,<10'
       - name: Verify date safety, sources and whole-set scoring
-        run: python -m pytest -q tests/test_target70_data.py tests/test_target70_benchmark.py tests/test_target70_postholdout_audit.py tests/test_source_quality_audit.py tests/test_model_comparison_research.py tests/test_professional_double_optimizer.py tests/test_professional_double_shadow.py
+        run: python -m pytest -q tests/test_target70_data.py tests/test_target70_benchmark.py tests/test_target70_postholdout_audit.py tests/test_source_quality_audit.py tests/test_model_comparison_research.py tests/test_professional_double_optimizer.py tests/test_professional_double_shadow.py tests/test_professional_paired_study.py tests/test_v21_matched_refresh.py
       - name: Reproduce pinned-source research without touching forecasts
         run: python run_professional_research.py --include-gradient-boost
       - name: Preserve full research output

@@ -35,6 +35,8 @@ REPORT_EXACT = frozenset((
     "data/accuracy_diagnosis/report.json",
     "data/professional_double_shadow/status.json",
     "data/professional_double_shadow/performance.json",
+    "data/professional_paired_study/status.json",
+    "data/professional_paired_study/performance.json",
     "data/llm_research/status.json",
     "data/llm_research/evaluation.json",
     "data/independent_football/status.json",

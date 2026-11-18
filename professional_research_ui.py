@@ -4,6 +4,8 @@ from pathlib import Path
 
 
 def render(st, root=Path("data")):
+    from professional_paired_ui import render as render_paired
+    render_paired(st,root=root)
     path=Path(root)/"source_quality_sensitivity_v1"/"summary.json"
     if not path.exists():
         path=Path(root)/"research_model_comparison_v1"/"summary.json"

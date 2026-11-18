@@ -251,16 +251,25 @@ def lineup_status(fixture,packet,*,as_of=None):
     if not valid_snapshot(packet,fixture,now=as_of):
         return {"ready":False,"reason":"invalid_evidence"}
     ids={str(fixture["homeTeam"]["id"]),str(fixture["awayTeam"]["id"])}
-    valid=[]
+    valid={}
+    conflicts=set()
     for row in packet.get("confirmed_starting_xi") or []:
-        if str(row.get("team_id")) not in ids:
+        if not isinstance(row,dict) or str(row.get("team_id")) not in ids:
             continue
+        team=str(row["team_id"])
         names=row.get("starting_xi") or []
-        if len(names)==11 and all(isinstance(n,str) and n for n in names):
-            valid.append({"team_id":str(row["team_id"]),
-                          "formation":row.get("formation"),
-                          "starting_xi":names})
-    return {"ready":len(valid)==2,"teams":valid,
+        if (not isinstance(names,list) or len(names)!=11 or
+                not all(isinstance(n,str) and n.strip() for n in names) or
+                len({" ".join(n.casefold().split()) for n in names})!=11):
+            continue
+        item={"team_id":team,"formation":row.get("formation"),"starting_xi":names}
+        if team in valid and item!=valid[team]:
+            conflicts.add(team)
+        else:
+            valid[team]=item
+    teams=[row for team,row in valid.items() if team not in conflicts]
+    return {"ready":{row["team_id"] for row in teams}==ids,"teams":teams,
+            "conflicting_team_ids":sorted(conflicts),
             "numeric_player_coefficient_fitted":False,
             "missing_does_not_mean_healthy":True}
 
