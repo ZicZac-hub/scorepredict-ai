@@ -32,7 +32,9 @@ def _source_time(row, clock):
     raw = (row.get("frozen_at_utc") if row.get("archive_frozen") else
            (row.get("generated_at_utc") or row.get("captured_at_utc")))
     if raw is None:
-        return clock if not row.get("archive_frozen") else None
+        # Never manufacture a source timestamp at the moment the UI renders.
+        # Live model output must carry its actual generation timestamp.
+        return None
     try:
         return utc(raw)
     except (ValueError, TypeError):
