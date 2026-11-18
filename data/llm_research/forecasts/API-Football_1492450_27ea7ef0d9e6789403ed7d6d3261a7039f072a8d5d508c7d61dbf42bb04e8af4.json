@@ -1,0 +1,79 @@
+{
+  "away_team": "Botafogo",
+  "away_team_id": "120",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.27220169420093115,
+    "draw": 0.27670955456483626,
+    "home": 0.45108875123423253
+  },
+  "captured_at_utc": "2026-11-18T12:45:34.240340+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.27220169346147405,
+      "draw": 0.2767095536659659,
+      "home": 0.45108875287256
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492450",
+  "home_team": "Corinthians",
+  "home_team_id": "131",
+  "input_digest": "27ea7ef0d9e6789403ed7d6d3261a7039f072a8d5d508c7d61dbf42bb04e8af4",
+  "kickoff_utc": "2026-11-19T00:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "source_captured_at_utc": "2026-11-17T01:50:49.750007Z",
+  "source_forecast_id": "cca061cffee954bb9f9db2dac2f9f6c92089c900caf27640f5c8689f73c90f8e",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "80fa7b8580b9604c266f8c2029c2d35ba47a44592c43ead261d9dacd53a19f32",
+  "votes": {
+    "gemini": {
+      "away": 0.2722016927220169,
+      "draw": 0.2767095527670955,
+      "factors": [
+        "Statistical model favors Corinthians as home side with around 45% win probability.",
+        "Bookmaker market consensus indicates Corinthians around 51% fair win probability.",
+        "Expected goals model estimates roughly 1.39 for home and 1.02 for away."
+      ],
+      "home": 0.4510887545108875,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty given close goal expectation margins and balanced betting market odds."
+    },
+    "groqcloud": {
+      "away": 0.27220169420093115,
+      "draw": 0.27670955456483626,
+      "factors": [
+        "Expected goal differential favouring home",
+        "Historical 1-1 outcome high probability",
+        "Both teams have similar recent form"
+      ],
+      "home": 0.45108875123423253,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate"
+    }
+  }
+}
