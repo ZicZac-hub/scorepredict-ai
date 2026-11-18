@@ -1,0 +1,130 @@
+{
+  "calibration_first_source_date": "2024-01-01",
+  "calibration_latest_source_date": "2024-06-02",
+  "calibration_loss_by_temperature": {
+    "0.8": 2.9839091413296264,
+    "1.0": 2.9585665296115637,
+    "1.2": 2.9714984351873412
+  },
+  "calibration_rows": 900,
+  "development_results_consulted_during_fit": false,
+  "ensemble_weights": {
+    "bivariate_poisson_c012": 0.18748692627560037,
+    "dixon_coles_regularized_r18": 0.17892392947672262,
+    "dixon_coles_strength": 0.20401273472180592,
+    "gradient_boost_poisson": 0.19740585735349214,
+    "league_poisson": 0.025402319348900738,
+    "negative_binomial_r3": 0.024483201610054836,
+    "time_weighted_strength_poisson": 0.18228503121342332
+  },
+  "gradient_boost_status": {
+    "all_features_are_earlier_monthly_results": true,
+    "feature_names": [
+      "strength_home_mean",
+      "strength_away_mean",
+      "home_prior_count",
+      "away_prior_count",
+      "home_last10_scored",
+      "home_last10_conceded",
+      "away_last10_scored",
+      "away_last10_conceded",
+      "home_venue_scored",
+      "home_venue_conceded",
+      "away_venue_scored",
+      "away_venue_conceded",
+      "home_rest_source_days",
+      "away_rest_source_days",
+      "league_home_mean",
+      "league_away_mean",
+      "league_en",
+      "league_de",
+      "league_es",
+      "league_it",
+      "league_fr"
+    ],
+    "fixed_estimator_settings": {
+      "early_stopping": false,
+      "l2_regularization": 10.0,
+      "learning_rate": 0.05,
+      "loss": "poisson",
+      "max_iter": 100,
+      "max_leaf_nodes": 7,
+      "min_samples_leaf": 30,
+      "random_state": 17
+    },
+    "latest_training_label_source_date": "2023-06-04",
+    "ready": true,
+    "training_rows": 3532
+  },
+  "protocol_sha256": "baf562ff9c80b3b14936acef19fd4d7abafbbe55503c5c9f562f90949497bdc0",
+  "selected_single_model_by_earlier_validation": "dixon_coles_strength",
+  "selection_single_metrics": {
+    "bivariate_poisson_c012": {
+      "evaluated": 783,
+      "exact_hit": 0.13537675606641125,
+      "exact_hits": 106,
+      "exact_score_log_loss": 2.9080282371927884,
+      "outcome_brier": 0.5742201265759768,
+      "top5_hit": 0.5057471264367817,
+      "top5_hits": 396
+    },
+    "dixon_coles_regularized_r18": {
+      "evaluated": 783,
+      "exact_hit": 0.14942528735632185,
+      "exact_hits": 117,
+      "exact_score_log_loss": 2.905737389179323,
+      "outcome_brier": 0.5791165292443774,
+      "top5_hit": 0.5095785440613027,
+      "top5_hits": 399
+    },
+    "dixon_coles_strength": {
+      "evaluated": 783,
+      "exact_hit": 0.14431673052362706,
+      "exact_hits": 113,
+      "exact_score_log_loss": 2.9037317141371957,
+      "outcome_brier": 0.5748980319863615,
+      "top5_hit": 0.5159642401021711,
+      "top5_hits": 404
+    },
+    "gradient_boost_poisson": {
+      "evaluated": 783,
+      "exact_hit": 0.14942528735632185,
+      "exact_hits": 117,
+      "exact_score_log_loss": 2.911627928775227,
+      "outcome_brier": 0.5749237037749604,
+      "top5_hit": 0.49808429118773945,
+      "top5_hits": 390
+    },
+    "league_poisson": {
+      "evaluated": 783,
+      "exact_hit": 0.12132822477650064,
+      "exact_hits": 95,
+      "exact_score_log_loss": 3.027612252079075,
+      "outcome_brier": 0.6435412158029057,
+      "top5_hit": 0.42911877394636017,
+      "top5_hits": 336
+    },
+    "negative_binomial_r3": {
+      "evaluated": 783,
+      "exact_hit": 0.11494252873563218,
+      "exact_hits": 90,
+      "exact_score_log_loss": 2.986993226002983,
+      "outcome_brier": 0.5822686114213234,
+      "top5_hit": 0.4482758620689655,
+      "top5_hits": 351
+    },
+    "time_weighted_strength_poisson": {
+      "evaluated": 783,
+      "exact_hit": 0.1392081736909323,
+      "exact_hits": 109,
+      "exact_score_log_loss": 2.905684306723753,
+      "outcome_brier": 0.5755182492187075,
+      "top5_hit": 0.5070242656449553,
+      "top5_hits": 397
+    }
+  },
+  "source_digest": "1197ae80aaa7a2de91bedfb3f0dd58c32f87d7ce92fd131f8ec4f2a4103b469e",
+  "temperature": 1.0,
+  "weight_fit_latest_source_date": "2023-12-31",
+  "weight_fit_rows": 783
+}

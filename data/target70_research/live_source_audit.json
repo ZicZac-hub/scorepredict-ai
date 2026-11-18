@@ -1,0 +1,72 @@
+{
+  "new_paid_subscription_purchased": false,
+  "private_repository_variables_readable": false,
+  "source_commit": "e5e775d3b8a5d40d807140c50cf2385366089f5a",
+  "source_status": {
+    "data/accuracy_diagnosis/report.json": {
+      "diagnosis": {
+        "all_original_sets_already_maximize_five_cell_model_coverage": true,
+        "model_coverage_range": [
+          0.059237574736583476,
+          0.07619753996352728
+        ],
+        "sets_with_target_model_coverage": 0,
+        "verified_miss_attribution": {
+          "both_leg_scores_outside_selected_options": 1
+        }
+      },
+      "evaluated_at_utc": "2026-11-15T23:05:10.298128+00:00",
+      "observed": {
+        "hit_rate": 0.0,
+        "hits": 0,
+        "independence_of_repeated_sets_not_established": true,
+        "minimum_100_sets_and_lower_interval_at_target": false,
+        "misses": 1,
+        "pending_sets": 5,
+        "verified_sets": 1,
+        "wilson_95": [
+          0.0,
+          0.7934506856227626
+        ]
+      },
+      "source_valid_sets": 6
+    },
+    "data/v21_sources/market_early_status.json": {
+      "at_utc": "2026-11-15T23:05:08.651232+00:00",
+      "enabled": true,
+      "new_packets": [],
+      "queries": 0,
+      "skipped": []
+    },
+    "data/v23_prospective/status.json": {
+      "abstained": true,
+      "checked_at_utc": "2026-11-15T23:05:09.592790+00:00",
+      "eligible_source_qualified_fixtures": 0,
+      "qualifying_pairs": 0
+    },
+    "data/v24_market_catalog/status.json": {
+      "at_utc": "2026-11-15T23:05:07.773225+00:00",
+      "binding": {
+        "missing_catalog": 197,
+        "new_bindings": [],
+        "out_of_window": 4,
+        "v8_checked": 197,
+        "v8_with_catalog": 0
+      },
+      "completed_at_utc": "2026-11-15T23:05:08.332512+00:00",
+      "daily_limit": 12,
+      "empty_pages": 0,
+      "enabled": true,
+      "new_catalog_fixtures": [],
+      "new_source_bindings": [],
+      "provider_errors": [],
+      "queries": 2,
+      "requests_used_today": 4,
+      "skipped_stale": 0
+    }
+  },
+  "variables_read_http_status": 403,
+  "workflow_dispatched_by_this_research": true,
+  "workflow_run_url": "https://github.com/ZicZac-hub/scorepredict-ai/actions/runs/43772732663",
+  "xg_lineup_capture_step": "skipped_by_existing_workflow_opt_in"
+}

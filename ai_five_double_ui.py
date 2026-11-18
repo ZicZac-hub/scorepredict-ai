@@ -670,7 +670,8 @@ def render(st,rows,histories=None):
         v25_selected=False
     engine=st.radio("Choose your five-double prediction engine",
                     ["🧮 V25 Professional Analyst · all upcoming matches",
-                     "🤖 Original AI Five-Double Studio"],
+                     "🤖 Original AI Five-Double Studio",
+                     "Professional probability optimizer"],
                     index=0 if v25_selected else 1,
                     key="zz_ai_five_engine_choice",
                     help="V25 can model any two eligible future matches with "
@@ -679,6 +680,10 @@ def render(st,rows,histories=None):
     if engine.startswith("🧮 V25"):
         from v25_upcoming_ui import render as render_v25_upcoming
         render_v25_upcoming(st,rows,histories)
+        return
+    if engine == "Professional probability optimizer":
+        from professional_double_ui import render as render_professional
+        render_professional(st, rows, histories)
         return
     st.write("Choose **two matches**. ZicZac uses its existing statistical "
              "predictions and any validated saved AI research, with optional "

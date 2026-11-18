@@ -1,0 +1,39 @@
+{
+  "holdout_evaluated_at_selection": false,
+  "protocol_sha256": "05693bf8fb9a8e27ac7b4fd9d64fbf114de386e45fc3a8f41e22aa3b9976944c",
+  "selected_model": "opponent_dc_r6_h240",
+  "selection_criterion": "validation_common_fixture_exact_score_log_loss",
+  "selection_sha256": "a65c25caf640f2a40da396fdf33cb44fc202ba179120ccc96f0d44dc51db1ba9",
+  "source_digest": "1197ae80aaa7a2de91bedfb3f0dd58c32f87d7ce92fd131f8ec4f2a4103b469e",
+  "source_manifest_sha256": "a96c37a8b2bec61a41fb10aa12c3a8fecbc0f304891c38f2cde218c4c487cb94",
+  "validation_metrics": {
+    "league_poisson": {
+      "evaluated": 1683,
+      "exact_hit": 0.12240047534165181,
+      "exact_hits": 206,
+      "exact_score_log_loss": 3.0712853741051624,
+      "outcome_brier": 0.6524451609359744,
+      "top5_hit": 0.41948900772430187,
+      "top5_hits": 706
+    },
+    "opponent_dc_r18_h365": {
+      "evaluated": 1683,
+      "exact_hit": 0.14022578728461083,
+      "exact_hits": 236,
+      "exact_score_log_loss": 2.935890703559722,
+      "outcome_brier": 0.5859831319903503,
+      "top5_hit": 0.49316696375519903,
+      "top5_hits": 830
+    },
+    "opponent_dc_r6_h240": {
+      "evaluated": 1683,
+      "exact_hit": 0.1378490790255496,
+      "exact_hits": 232,
+      "exact_score_log_loss": 2.9319960369684646,
+      "outcome_brier": 0.5826800584865091,
+      "top5_hit": 0.49673202614379086,
+      "top5_hits": 836
+    }
+  },
+  "validation_report_sha256": "5b5b5f3d1cbb94e86a14ad9eb064e1f3a94feac1612f61b2d78eeac7f77086ef"
+}

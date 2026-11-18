@@ -20,11 +20,11 @@ def match(start="2031-11-20T12:00:00Z"):
 
 def history():
     return [
-        {"status": "FINISHED", "utcDate": "2031-11-18T09:00:00Z",
+        {"provider": "API-Football", "status": "FINISHED", "utcDate": "2031-11-18T09:00:00Z",
          "homeTeam": {"id": 11, "name": "Home Eleven"},
          "awayTeam": {"id": 44, "name": "Rival"},
          "score": {"fullTime": {"home": 2, "away": 0}}},
-        {"status": "FINISHED", "utcDate": "2031-11-21T09:00:00Z",
+        {"provider": "API-Football", "status": "FINISHED", "utcDate": "2031-11-21T09:00:00Z",
          "homeTeam": {"id": 12, "name": "Away United"},
          "awayTeam": {"id": 44, "name": "Rival"},
          "score": {"fullTime": {"home": 5, "away": 0}}},
@@ -98,6 +98,9 @@ def test_selected_match_consults_two_configured_providers_without_leaking_secret
     assert set(result["votes"])=={"openai","groqcloud"}
     assert result["consensus"]["suggested_score"]==[2,1]
     assert len(requests_seen)==2
+    assert requests_seen[0][1]["json"]["messages"] == requests_seen[1][1]["json"]["messages"]
+    assert len(result["shared_prompt_sha256"]) == 64
+    assert result["ai_numeric_weight"] == 0.0
     assert result["ephemeral"] is True
     assert result["evaluated_as_frozen_five_double"] is False
     assert "supersecret-" not in str(result)
@@ -124,11 +127,11 @@ def test_unsupported_credentials_dont_leak_into_errors():
 
 def test_excludes_unrelated_league_results_and_120_minute_scores():
     rows=history()+[
-        {"status":"FINISHED","utcDate":"2031-11-18T07:00:00Z",
+        {"provider":"API-Football","status":"FINISHED","utcDate":"2031-11-18T07:00:00Z",
          "homeTeam":{"id":83,"name":"Unrelated"},
          "awayTeam":{"id":84,"name":"Another"},
          "score":{"fullTime":{"home":9,"away":0}}},
-        {"status":"FINISHED","utcDate":"2031-11-17T07:00:00Z",
+        {"provider":"API-Football","status":"FINISHED","utcDate":"2031-11-17T07:00:00Z",
          "homeTeam":{"id":11,"name":"Home Eleven"},
          "awayTeam":{"id":15,"name":"Cup Rival"},
          "score":{"duration":"EXTRA_TIME","fullTime":{"home":3,"away":2},

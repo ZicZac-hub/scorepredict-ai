@@ -21,6 +21,8 @@ concurrency:
 
 jobs:
   audit:
+    # Manual dispatch from a feature branch must never push its source into main.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

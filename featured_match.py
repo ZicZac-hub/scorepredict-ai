@@ -1,5 +1,6 @@
 """Stable featured-match selection, with verified completion checks."""
 from datetime import datetime, timezone
+from copy import deepcopy
 from time import time
 import requests
 
@@ -10,7 +11,9 @@ def fixture_state(api_key, fixture):
     """Return (state, live_score); unknown is not treated as completed."""
     if fixture.get("provider") != "API-Football" or not api_key or not fixture.get("id"):
         status = str(fixture.get("status", "")).upper()
-        return ("finished" if status == "FINISHED" else "unknown"), None
+        return ("finished" if status in FINAL | {"FINISHED"} else
+                "cancelled" if status in CANCELLED | {"CANCELLED", "CANCELED", "POSTPONED"}
+                else "unknown"), None
     response = requests.get("https://v3.football.api-sports.io/fixtures",
                             params={"id": fixture["id"]},
                             headers={"x-apisports-key": api_key}, timeout=15)
@@ -22,6 +25,8 @@ def fixture_state(api_key, fixture):
     if not matches:
         return "unknown", None
     item = matches[0]
+    if str((item.get("fixture") or {}).get("id")) != str(fixture["id"]):
+        return "unknown", None
     short = ((item.get("fixture") or {}).get("status") or {}).get("short", "")
     goals = item.get("goals") or {}
     score = (goals.get("home"), goals.get("away"))
@@ -39,21 +44,49 @@ def rank_feature(row):
             min(venue, 10), min(recent, 10), outcome,
             scores[0][2] if scores else 0)
 
+
+def _kickoff(row):
+    try:
+        kickoff = datetime.fromisoformat(str(row.get("kickoff") or
+                            (row.get("fixture") or {}).get("utcDate")).replace("Z", "+00:00"))
+        if kickoff.tzinfo is None:
+            kickoff = kickoff.replace(tzinfo=timezone.utc)
+        return kickoff.astimezone(timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def _snapshot(row):
+    result = deepcopy(row)
+    kickoff = _kickoff(row)
+    if kickoff is not None:
+        result["kickoff"] = kickoff.isoformat()
+    return result
+
 def choose_feature(rows, session, api_key, now=None):
     """Keep one featured prediction until the provider confirms completion."""
     now = now or datetime.now(timezone.utc)
     available = [r for r in rows if r.get("result") and r["result"].get("scores")]
     saved = session.get("featured_match")
     if saved:
-        # Refresh from current predictions if present, otherwise retain original.
+        # Refresh while genuinely pre-match, then retain the last displayed
+        # pre-kickoff forecast through live play. A later calculation must not
+        # silently replace the featured prediction once its outcome can be seen.
         key = saved["key"]
-        row = next((r for r in available
+        current = next((r for r in available
                     if f"{r['fixture'].get('provider')}:{r['fixture'].get('id')}" == key),
                    saved["row"])
+        row = saved["row"]
+        kickoff = _kickoff(row)
+        current_kickoff = _kickoff(current)
+        if (kickoff is not None and now < kickoff
+                and current_kickoff is not None and now < current_kickoff):
+            row = _snapshot(current)
+            session["featured_match"] = {"key": key, "row": row}
         check = session.get("featured_status")
         if not check or check.get("key") != key or time()-check["time"] >= 60:
             try:
-                state, score = fixture_state(api_key, row["fixture"])
+                state, score = fixture_state(api_key, current["fixture"])
                 check = {"key": key, "time": time(), "state": state, "score": score}
                 session["featured_status"] = check
             except (requests.RequestException, RuntimeError, ValueError):
@@ -67,14 +100,9 @@ def choose_feature(rows, session, api_key, now=None):
     # disappears solely because a fixture crosses midnight in Sydney.
     candidates = []
     for row in available:
-        try:
-            kickoff = datetime.fromisoformat(row["kickoff"].replace("Z", "+00:00"))
-            if kickoff.tzinfo is None:
-                kickoff = kickoff.replace(tzinfo=timezone.utc)
-            if kickoff >= now:
-                candidates.append(row)
-        except (KeyError, ValueError, TypeError):
-            continue
+        kickoff = _kickoff(row)
+        if kickoff is not None and kickoff > now:
+            candidates.append(row)
     for row in sorted(candidates, key=rank_feature, reverse=True):
         # Check candidates before selecting: never pick an already-finished fixture.
         try:
@@ -84,6 +112,7 @@ def choose_feature(rows, session, api_key, now=None):
         if state in ("finished", "cancelled"):
             continue
         key = f"{row['fixture'].get('provider')}:{row['fixture'].get('id')}"
+        row = _snapshot(row)
         session["featured_match"] = {"key": key, "row": row}
         check = {"key": key, "time": time(), "state": state, "score": score}
         session["featured_status"] = check

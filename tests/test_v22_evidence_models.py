@@ -77,6 +77,25 @@ def test_lineup_is_context_only_not_untrained_numeric_effect():
     assert status["ready"] and not status["numeric_player_coefficient_fitted"]
 
 
+@pytest.mark.parametrize("case",["same_team_twice","conflicting_team","repeated_player"])
+def test_two_lineup_rows_do_not_prove_two_complete_confirmed_teams(case):
+    packet=make_packet()
+    first=packet["confirmed_starting_xi"][0]
+    if case=="same_team_twice":
+        packet["confirmed_starting_xi"]=[first,first]
+    elif case=="conflicting_team":
+        changed={**first,"formation":"3-5-2"}
+        packet["confirmed_starting_xi"].append(changed)
+    else:
+        packet["confirmed_starting_xi"][1]["starting_xi"]=["Repeated player"]*11
+    packet.pop("snapshot_sha256")
+    packet["snapshot_sha256"]=hashlib.sha256(json.dumps(
+        packet,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+    status=lineup_status(FIXTURE,packet,as_of=NOW)
+    assert status["ready"] is False
+    assert len({team["team_id"] for team in status["teams"]})<2
+
+
 def test_calibration_keeps_grid_and_caps_market_change():
     markets=make_packet()["multi_market"]
     result=calibrate_markets(GRID,markets)

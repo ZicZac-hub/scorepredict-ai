@@ -5,7 +5,7 @@ No network requests, paid AI calls, invented xG, or retroactive score changes.
 """
 import json
 import math
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -229,45 +229,101 @@ def _wins(choice,result):
     return outcome in choice["selection"]
 
 
+def _evaluation_legs(legs, day, captured, source):
+    """Validate the trial's date, original source and predeclared choices.
+
+    A new filename is not a new football trial. Identity is derived from the
+    archived fixture, and all source observations must predate selection.
+    """
+    identities=[]
+    teams=[]
+    for leg in legs:
+        kickoff=utc(leg["kickoff_utc"])
+        if kickoff.astimezone(SYDNEY).date().isoformat()!=day:
+            raise ValueError("fixture_outside_declared_sydney_date")
+        if captured>=kickoff:
+            raise ValueError("selection_not_before_kickoff")
+        original=original_model(source,leg)
+        if original is None or original.get("input_digest")!=leg.get("input_digest"):
+            raise ValueError("original_source_not_matched")
+        if utc(original["captured_at_utc"])>captured:
+            raise ValueError("original_source_observed_after_selection")
+        outcomes=probabilities(original)
+        expected=max(("1X","X2","12"),key=lambda key:(outcomes[key],key))
+        if leg.get("selection")!=expected:
+            raise ValueError("selection_differs_from_predeclared_rule")
+        estimate=leg.get("model_estimated_probability")
+        if (type(estimate) not in (int,float) or not math.isfinite(estimate)
+                or abs(estimate-outcomes[expected])>1e-8):
+            raise ValueError("selection_probability_source_mismatch")
+        identities.append((str(original["provider"]),str(original["fixture_id"])))
+        teams.extend((str(original["provider"]),str(original[k]))
+                     for k in ("home_team_id","away_team_id"))
+    if len(set(identities))!=len(legs) or len(set(teams))!=2*len(legs):
+        raise ValueError("distinct_fixtures_and_teams_required")
+    return identities
+
+
 def evaluate(root=ROOT,source=SOURCE_ROOT,verified=None):
-    """Use ONLY saved before-kickoff selections and verified regulation scores."""
+    """Grade non-repeated outcome trials; never grade exact-score doubles here."""
     if verified is None:
         verified=load_json(Path(source)/"verified_results.json",{})
     items=[];single_n=single_wins=pair_n=pair_wins=0
     pending_single=pending_pair=0
+    rejected=Counter()
+    seen_singles=set()
+    seen_pair_fixtures=set()
     for path in sorted((Path(root)/"forecasts").glob("*.json")):
         row=load_json(path,{})
-        if (row.get("version")!=VERSION or row.get("mode")!="shadow_pre_match"
+        if (not isinstance(row,dict) or row.get("version")!=VERSION or row.get("mode")!="shadow_pre_match"
                 or row.get("sydney_date")!=path.stem):
             continue
         single=row.get("single")
         pair=row.get("pair")
         info={"sydney_date":row["sydney_date"],"single_status":"abstained",
               "pair_status":"abstained"}
+        try:
+            captured=utc(row["captured_at_utc"])
+        except (ValueError,TypeError,KeyError):
+            rejected["invalid_capture_timestamp"]+=1
+            continue
         if single:
-            if utc(row["captured_at_utc"])>=utc(single["kickoff_utc"]):
-                continue
-            actual=_result(single,source,verified)
-            if actual is not None:
-                hit=_wins(single,actual);single_n+=1;single_wins+=int(hit)
-                info["single_status"]="win" if hit else "loss"
-            else:
-                pending_single+=1;info["single_status"]="pending"
+            try:
+                identities=_evaluation_legs((single,),path.stem,captured,source)
+                if identities[0] in seen_singles:
+                    raise ValueError("repeated_single_fixture")
+                seen_singles.update(identities)
+                actual=_result(single,source,verified)
+                if actual is not None:
+                    hit=_wins(single,actual);single_n+=1;single_wins+=int(hit)
+                    info["single_status"]="win" if hit else "loss"
+                else:
+                    pending_single+=1;info["single_status"]="pending"
+            except (ValueError,TypeError,KeyError) as exc:
+                rejected["single:"+str(exc)]+=1
+                info["single_status"]="invalid_evidence"
         if pair:
-            legs=(pair["first"],pair["second"])
-            if utc(row["captured_at_utc"])>=min(utc(x["kickoff_utc"]) for x in legs):
-                continue
-            actuals=[_result(x,source,verified) for x in legs]
-            if all(x is not None for x in actuals):
-                hit=all(_wins(x,y) for x,y in zip(legs,actuals))
-                pair_n+=1;pair_wins+=int(hit)
-                info["pair_status"]="win" if hit else "loss"
-            else:
-                pending_pair+=1;info["pair_status"]="pending"
+            try:
+                legs=(pair["first"],pair["second"])
+                identities=_evaluation_legs(legs,path.stem,captured,source)
+                if set(identities)&seen_pair_fixtures:
+                    raise ValueError("repeated_pair_fixture")
+                seen_pair_fixtures.update(identities)
+                actuals=[_result(x,source,verified) for x in legs]
+                if all(x is not None for x in actuals):
+                    hit=all(_wins(x,y) for x,y in zip(legs,actuals))
+                    pair_n+=1;pair_wins+=int(hit)
+                    info["pair_status"]="win" if hit else "loss"
+                else:
+                    pending_pair+=1;info["pair_status"]="pending"
+            except (ValueError,TypeError,KeyError) as exc:
+                rejected["pair:"+str(exc)]+=1
+                info["pair_status"]="invalid_evidence"
         items.append(info)
     rate=pair_wins/pair_n if pair_n else None
     bound=wilson(pair_wins,pair_n)
     return {"version":VERSION,"research_only":True,
+            "prediction_type":"two_match_double_chance_not_five_exact_score_doubles",
             "threshold_basis":"uncalibrated_pre_match_model_estimate_not_measured_accuracy",
             "single":{"verified":single_n,"wins":single_wins,
                       "rate":single_wins/single_n if single_n else None,
@@ -275,7 +331,10 @@ def evaluate(root=ROOT,source=SOURCE_ROOT,verified=None):
             "two_match_double_chance":{"verified":pair_n,"wins":pair_wins,
                       "rate":rate,"wilson_95":bound,"pending":pending_pair},
             "meets_70_percent_claim_gate":bool(pair_n>=100 and bound and bound[0]>=0.70),
-            "claim_gate":"At least 100 independent future pairs AND Wilson 95% lower bound at least 70%; no selection means no measured accuracy",
+            "claim_gate":"Outcome research only: at least 100 non-repeated future pairs AND Wilson 95% lower bound at least 70%; not an exact-score claim or a guarantee of future accuracy",
+            "fixture_reuse_in_pair_denominator_allowed":False,
+            "evidence_rejections":dict(rejected),
+            "independence_of_distinct_pairs_not_established":True,
             "rows":items}
 
 

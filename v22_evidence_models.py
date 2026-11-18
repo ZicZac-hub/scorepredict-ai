@@ -43,7 +43,8 @@ def _normalize(odds):
     return {k: round(v / total, 8) for k, v in inv.items()}
 
 
-def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetched_at=None):
+def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetched_at=None,
+                  diagnostics=None):
     """Collect timestamped pre-match 1X2, BTTS, O/U 2.5 and 3.5.
 
     Multiple books may contribute but each named book must have a complete
@@ -55,15 +56,26 @@ def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetch
     stale-fallback response time as a fabricated bookmaker update.
     """
     seen = {}
+    def count(reason):
+        if diagnostics is not None:
+            diagnostics[reason] = diagnostics.get(reason, 0) + 1
     now = utc(observed_at)
     for fixture in raw if isinstance(raw, list) else []:
         if not isinstance(fixture, dict):
+            count("malformed_fixture")
             continue
         for book in fixture.get("bookmakers") or []:
+            if not isinstance(book, dict):
+                count("malformed_bookmaker")
+                continue
             bookmaker = str(book.get("name") or "").strip()[:90]
             if not bookmaker:
+                count("missing_bookmaker_name")
                 continue
             for bet in book.get("bets") or []:
+                if not isinstance(bet, dict):
+                    count("malformed_market")
+                    continue
                 name = str(bet.get("name") or "").casefold().strip()
                 name = re.sub(r"\s+", " ", name)
                 raw_update=(bet.get("update") or book.get("update") or fixture.get("update"))
@@ -71,11 +83,20 @@ def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetch
                           _time(verified_provider_fetched_at))
                 basis = ("bookmaker_quote_updated_at" if raw_update else
                          "api_response_fetched_at")
-                if (update is None or update > now or
-                        now - update > timedelta(hours=max_age_hours)):
+                if update is None:
+                    count("missing_or_invalid_source_timestamp")
+                    continue
+                if update > now:
+                    count("future_source_timestamp")
+                    continue
+                if now - update > timedelta(hours=max_age_hours):
+                    count("stale_source_timestamp")
                     continue
                 values = {}
                 for entry in bet.get("values") or []:
+                    if not isinstance(entry, dict):
+                        count("malformed_price")
+                        continue
                     label = str(entry.get("value") or "").strip().casefold()
                     price = _price(entry.get("odd"))
                     if price is not None:
@@ -100,6 +121,7 @@ def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetch
                 for kind, odds in matches.items():
                     fair = _normalize(odds)
                     if fair is not None:
+                        count("accepted_bookmaker_market")
                         key = (kind, bookmaker)
                         record = {"market": kind, "bookmaker": bookmaker,
                                   "updated_at_utc": update.isoformat(),
@@ -109,6 +131,13 @@ def parse_markets(raw, *, observed_at, max_age_hours=12, verified_provider_fetch
                                   "source": "API-Football-prematch-odds"}
                         if key not in seen or record["updated_at_utc"] > seen[key]["updated_at_utc"]:
                             seen[key] = record
+                    else:
+                        count("invalid_price_or_overround")
+                if not matches:
+                    supported=(name in ("match winner","1x2","both teams score",
+                               "both teams to score","btts","total goals") or
+                               "over/under" in name)
+                    count("incomplete_supported_market" if supported else "unsupported_market_type")
     grouped = {}
     for kind in _MARKETS:
         quotes = [q for q in seen.values() if q["market"] == kind]
@@ -222,16 +251,25 @@ def lineup_status(fixture,packet,*,as_of=None):
     if not valid_snapshot(packet,fixture,now=as_of):
         return {"ready":False,"reason":"invalid_evidence"}
     ids={str(fixture["homeTeam"]["id"]),str(fixture["awayTeam"]["id"])}
-    valid=[]
+    valid={}
+    conflicts=set()
     for row in packet.get("confirmed_starting_xi") or []:
-        if str(row.get("team_id")) not in ids:
+        if not isinstance(row,dict) or str(row.get("team_id")) not in ids:
             continue
+        team=str(row["team_id"])
         names=row.get("starting_xi") or []
-        if len(names)==11 and all(isinstance(n,str) and n for n in names):
-            valid.append({"team_id":str(row["team_id"]),
-                          "formation":row.get("formation"),
-                          "starting_xi":names})
-    return {"ready":len(valid)==2,"teams":valid,
+        if (not isinstance(names,list) or len(names)!=11 or
+                not all(isinstance(n,str) and n.strip() for n in names) or
+                len({" ".join(n.casefold().split()) for n in names})!=11):
+            continue
+        item={"team_id":team,"formation":row.get("formation"),"starting_xi":names}
+        if team in valid and item!=valid[team]:
+            conflicts.add(team)
+        else:
+            valid[team]=item
+    teams=[row for team,row in valid.items() if team not in conflicts]
+    return {"ready":{row["team_id"] for row in teams}==ids,"teams":teams,
+            "conflicting_team_ids":sorted(conflicts),
             "numeric_player_coefficient_fitted":False,
             "missing_does_not_mean_healthy":True}
 

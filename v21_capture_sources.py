@@ -7,6 +7,7 @@ most one near-kickoff refresh, and keep a persisted daily attempt budget.
 Missing API evidence is recorded as missing rather than invented.
 """
 import json
+import math
 import os
 from datetime import datetime,timezone,timedelta
 from pathlib import Path
@@ -20,6 +21,122 @@ from persist_prematch import load_json,write_json
 from source_capture_clock import capture_clock
 
 ROOT=Path("data/v21_sources")
+NEAR_REFRESH_MAX_MINUTES=65
+SOURCE_FRESHNESS_HOURS=3
+PAIR_ROOT=Path("data/professional_double_shadow")
+
+
+def targeted_pair_models(*, source_root, pair_root=PAIR_ROOT, now):
+    """Prioritize one authenticated fixed pair before its common cutoff.
+
+    The later leg may not yet be in its own near-kickoff window. Observing
+    BOTH legs before the earlier match starts is necessary for a prospective
+    same-pair comparison. This changes priority, never the attempt budgets.
+    """
+    from professional_double_shadow import _validated
+    clock=utc(now)
+    choices=[]
+    for path in sorted((Path(pair_root)/"sets").glob("*.json")):
+        try:
+            record=load_json(path,{})
+            models,_,_=_validated(record,source_root=source_root,now=clock)
+            if record["sydney_date"]!=path.stem:
+                continue
+            kickoffs=[utc(model["kickoff_utc"]) for model in models]
+            if (all(model["provider"]=="API-Football" for model in models)
+                    and clock+timedelta(minutes=8)<min(kickoffs)<=
+                        clock+timedelta(minutes=NEAR_REFRESH_MAX_MINUTES)
+                    and max(kickoffs)<=clock+timedelta(hours=SOURCE_FRESHNESS_HOURS)):
+                choices.append((min(kickoffs),path.stem,models))
+        except (KeyError,TypeError,ValueError,OSError,AttributeError,OverflowError):
+            continue
+    return min(choices,key=lambda item:(item[0],item[1]))[2] if choices else []
+
+
+def source_availability(leg, snapshot, *, now):
+    """Describe usable source coverage without relying on list lengths.
+
+    Called only for an identity/hash-qualified packet. A dozen rows for one
+    team, duplicate XIs or stale markets do not establish complete evidence.
+    Missing injury reports are deliberately not treated as a completeness test.
+    """
+    clock=utc(now)
+    captured=None
+    try:
+        captured=utc(snapshot["captured_at_utc"])
+    except (KeyError,TypeError,ValueError):
+        pass
+    ids={str(leg["home_team_id"]),str(leg["away_team_id"])}
+    xg={team:set() for team in ids}
+    for row in snapshot.get("verified_historical_fixture_xg") or []:
+        try:
+            if not isinstance(row,dict) or captured is None:
+                continue
+            stamp=utc(row["kickoff_utc"])
+            fixture_id=str(row["fixture_id"])
+            home,away=str(row["home_team_id"]),str(row["away_team_id"])
+            values=(row["home_xg"],row["away_xg"])
+            if (not fixture_id or home==away or stamp+timedelta(hours=3)>captured
+                    or stamp+timedelta(hours=3)>clock
+                    or any(type(v) not in (int,float) or not math.isfinite(v)
+                           or not 0<=v<=8 for v in values)):
+                continue
+            for team in ids.intersection((home,away)):
+                xg[team].add(fixture_id)
+        except (KeyError,TypeError,ValueError):
+            continue
+    xi={}
+    xi_conflicts=set()
+    for row in snapshot.get("confirmed_starting_xi") or []:
+        if not isinstance(row,dict):
+            continue
+        team=str(row.get("team_id"))
+        names=row.get("starting_xi")
+        if (team in ids and isinstance(names,list) and len(names)==11
+                and all(isinstance(name,str) and name.strip() for name in names)
+                and len({" ".join(name.casefold().split()) for name in names})==11):
+            item=(tuple(names),row.get("formation"))
+            if team in xi and xi[team]!=item:
+                xi_conflicts.add(team)
+            else:
+                xi[team]=item
+    xi_teams=set(xi)-xi_conflicts
+    markets=snapshot.get("multi_market") or {}
+    fresh=[]
+    for kind in ("1x2","over_2_5","over_3_5"):
+        try:
+            market=markets[kind]
+            stamp=utc(market["last_source_update_utc"])
+            keys=("home","draw","away") if kind=="1x2" else ("yes","no")
+            probabilities=market["probabilities"]
+            values=[probabilities[key] for key in keys]
+            normalized=(all(type(value) in (int,float) and math.isfinite(value)
+                            and 0<=value<=1 for value in values)
+                        and math.isclose(sum(values),1.0,rel_tol=0,abs_tol=1e-5))
+            if (normalized and captured is not None and stamp<=captured<=clock
+                    and clock-stamp<=timedelta(hours=12)):
+                fresh.append(kind)
+        except (KeyError,TypeError,ValueError,AttributeError):
+            continue
+    recent=bool(captured is not None and timedelta(0)<=clock-captured<=
+                timedelta(hours=SOURCE_FRESHNESS_HOURS))
+    counts={team:len(rows) for team,rows in sorted(xg.items())}
+    market_ready="1x2" in fresh and bool({"over_2_5","over_3_5"}.intersection(fresh))
+    reasons=[]
+    if not recent:
+        reasons.append("source_not_observed_within_3_hours")
+    if min(counts.values(),default=0)<6:
+        reasons.append("fewer_than_6_genuine_xg_fixtures_for_either_team")
+    if xi_teams!=ids:
+        reasons.append("both_identity_matched_starting_XIs_unavailable")
+    if not market_ready:
+        reasons.append("fresh_1x2_and_goal_total_markets_unavailable")
+    return {"source_captured_at_utc":captured.isoformat() if captured else None,
+            "source_observed_within_3_hours":recent,"xg_fixtures_by_team":counts,
+            "confirmed_xi_team_ids":sorted(xi_teams),
+            "conflicting_xi_team_ids":sorted(xi_conflicts),"fresh_market_types":fresh,
+            "refresh_reasons":reasons,
+            "lineups_have_zero_numerical_weight":True}
 
 
 def source_packet_path(root,leg):
@@ -160,12 +277,16 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
 
 
 def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
-                 api_key=None,enabled=None,api_request=None,clock=None):
+                 api_key=None,enabled=None,api_request=None,clock=None,
+                 pair_root=PAIR_ROOT):
     clock,observation_time=capture_clock(now,clock)
     active=(os.environ.get("V21_EVIDENCE_ENABLED")=="true" if enabled is None else bool(enabled))
     result={"at_utc":clock.isoformat(),"enabled":active,
             "new_packets":[],"calls":0,"skipped":[],
-            "capture_window_minutes":[8,2880],"attempted_legs":0}
+            "capture_window_minutes":[8,2880],"attempted_legs":0,
+            "near_refresh_window_minutes":[8,NEAR_REFRESH_MAX_MINUTES],
+            "maximum_near_refresh_attempts_per_original":1,
+            "source_availability":{},"targeted_pair_fixture_ids":[]}
     root=Path(root)
     key=api_key if api_key is not None else os.environ.get("API_FOOTBALL_KEY","")
     # A daily cap on *attempts*, not just successfully saved packets.
@@ -182,6 +303,7 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
 
     def finish(reason):
         result["reason"]=reason
+        result["completed_at_utc"]=observation_time().isoformat()
         result["daily_attempts_used"]=used
         write_json(root/"status.json",result)
         return result
@@ -193,27 +315,38 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
     from api_football import _request,LEAGUES
     cb=api_request or _request
     models=current_pair(source_root,clock)
+    targeted=targeted_pair_models(source_root=source_root,pair_root=pair_root,now=clock)
+    targets={(str(row["provider"]),str(row["fixture_id"]),str(row["forecast_id"]))
+             for row in targeted}
+    if targeted:
+        identities={(str(row["provider"]),str(row["fixture_id"])) for row in targeted}
+        models=list(targeted)+[row for row in models if
+            (str(row["provider"]),str(row["fixture_id"])) not in identities]
+        result["targeted_pair_fixture_ids"]=[str(row["fixture_id"]) for row in targeted]
     result["eligible_legs"]=len(models)
     if not models:
         return finish("no_original_frozen_leg_in_8_min_to_48_hour_window")
     cache={}
     for leg in models:
         try:
+            clock=observation_time()
             path=source_packet_path(root,leg)
             kickoff=utc(leg["kickoff_utc"])
+            if not clock+timedelta(minutes=8)<kickoff<=clock+timedelta(hours=48):
+                result["skipped"].append(str(leg["fixture_id"])+":outside_capture_window_at_attempt")
+                continue
             previous=best_packet(root,leg,now=clock)
             existing=(previous or {}).get("provider_snapshot") or {}
-            prior_xg=existing.get("verified_historical_fixture_xg") or []
-            prior_market=existing.get("multi_market") or {}
-            both_xi=(len(existing.get("confirmed_starting_xi") or [])==2)
+            availability=source_availability(leg,existing,now=clock)
+            result["source_availability"][str(leg["fixture_id"])]=availability
             # Original packets are write-once. When collected early, allow one
             # additional near-kickoff pass to capture announced starting XIs.
             # Do not poll the same match 15 minutes all day.
             late_window=(clock+timedelta(minutes=8)<kickoff<=
-                         clock+timedelta(minutes=35))
-            refresh_needed=bool(path.exists() and late_window and
-                                (not both_xi or len(prior_xg)<12 or
-                                 len(prior_market)<2))
+                         clock+timedelta(minutes=NEAR_REFRESH_MAX_MINUTES))
+            target=(str(leg["provider"]),str(leg["fixture_id"]),str(leg["forecast_id"])) in targets
+            refresh_needed=bool(path.exists() and (late_window or target) and
+                                availability["refresh_reasons"])
             marker=root/"refresh_attempts"/path.name
             if path.exists() and not refresh_needed:
                 result["skipped"].append(str(leg["fixture_id"])+":original_preserved")
@@ -232,7 +365,7 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             # Reserve up to two daily source attempts for near-kickoff lineups.
             # Otherwise early scouting of future fixtures can spend the whole
             # daily allowance before confirmed lineups become available.
-            early=kickoff>clock+timedelta(minutes=90)
+            early=kickoff>clock+timedelta(minutes=90) and not target
             reserved=min(2,max(0,daily_limit-1))
             if early and used>=daily_limit-reserved:
                 result["skipped"].append(str(leg["fixture_id"])+
@@ -253,7 +386,10 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                 with marker.open("x",encoding="utf-8") as file:
                     file.write(json.dumps({"attempted_at_utc":clock.isoformat(),
                         "fixture_id":str(leg["fixture_id"]),
-                        "reason":"one_bounded_near_kickoff_source_refresh"},
+                        "reason":"one_bounded_near_kickoff_source_refresh",
+                        "eligibility_window_minutes":[8,NEAR_REFRESH_MAX_MINUTES],
+                        "fixed_pair_common_cutoff_priority":target,
+                        "source_refresh_reasons":availability["refresh_reasons"]},
                         sort_keys=True)+"\n")
             fixture={"provider":leg["provider"],"id":int(leg["fixture_id"]),
                      "utcDate":leg["kickoff_utc"],
@@ -262,6 +398,10 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                      "competition":{"code":comp,"id":league}}
             evidence=load_evidence(fixture,as_of=clock,api_key=key,
                                    api_request=cb,cache=cache)
+            clock=observation_time()
+            if not clock+timedelta(minutes=8)<kickoff:
+                result["skipped"].append(str(leg["fixture_id"])+":history_completed_outside_capture_window")
+                continue
             provider=capture(fixture,evidence["history"],key,
                              now=observation_time(),request=cb,clock=observation_time,
                              max_history_per_team=(6 if
@@ -273,6 +413,8 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             if not valid_snapshot(provider,fixture,now=clock):
                 result["skipped"].append(str(leg["fixture_id"])+":no_qualified_packet")
                 continue
+            result["source_availability"][str(leg["fixture_id"])]=source_availability(
+                leg,provider,now=clock)
             if not any((provider.get("available_sources") or {}).values()):
                 result["skipped"].append(str(leg["fixture_id"])+":all_sources_unavailable")
                 continue

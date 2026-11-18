@@ -6,6 +6,8 @@ from model_comparison_audit import benchmark, paired_benchmark
 
 def render(st):
     st.header("📐 Verified model accuracy comparison")
+    from professional_research_ui import render as render_research
+    render_research(st)
     st.caption(
         "Original frozen forecasts, matched against independent regulation-time "
         "final scores. Incomplete games and retrospective rescores are never "

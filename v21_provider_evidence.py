@@ -174,6 +174,34 @@ def _provider_prediction(raw, fixture_id, home_id, away_id):
             return result
     return None
 
+
+def _shots_statistics(raw, home_id, away_id):
+    """Retain shots from the SAME already requested historical statistics."""
+    found={}
+    for row in raw if isinstance(raw,list) else []:
+        if not isinstance(row,dict):
+            continue
+        team=str((row.get("team") or {}).get("id"))
+        if team not in (str(home_id),str(away_id)):
+            continue
+        stats={}
+        for item in row.get("statistics") or []:
+            if not isinstance(item,dict):
+                continue
+            label=str(item.get("type") or "").strip().casefold().replace("_"," ")
+            key={"total shots":"shots","shots on goal":"shots_on_target",
+                 "shots on target":"shots_on_target"}.get(label)
+            value=_number(item.get("value"))
+            if key and type(item.get("value")) is not bool and value is not None and value.is_integer():
+                stats[key]=int(value)
+        if "shots" not in stats:
+            continue
+        if stats.get("shots_on_target",0)>stats["shots"]:
+            stats.pop("shots_on_target",None)
+        found[team]=stats
+    return found if len(found)==2 else None
+
+
 def _market(raw, now):
     """Independent one-bookmaker 1X2 with a timestamp, no fabricated consensus."""
     choices = []
@@ -303,6 +331,7 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
             break
     verified_xg = []
     verified_stats = []
+    verified_shots = []
     for at, match_id, h, a in selected:
         if observation_time() >= kickoff:
             return {"status": "unavailable", "reason": "capture_completed_after_kickoff",
@@ -323,6 +352,14 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
                                 "home_team_id": h, "away_team_id": a,
                                 "home_xg": stats[h], "away_xg": stats[a],
                                 "type": "api_football_reported_expected_goals"})
+        shots=_shots_statistics(raw,h,a)
+        if shots is not None:
+            verified_shots.append({"fixture_id":match_id,"kickoff_utc":at.isoformat(),
+                "home_team_id":h,"away_team_id":a,
+                "home_shots":shots[h]["shots"],"away_shots":shots[a]["shots"],
+                "home_shots_on_target":shots[h].get("shots_on_target"),
+                "away_shots_on_target":shots[a].get("shots_on_target"),
+                "type":"api_football_reported_historical_fixture_shots"})
     # A source is observed only once its response has arrived. Do not stamp
     # later/live information with the earlier click or job-start timestamp.
     clock = observation_time()
@@ -344,11 +381,16 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     odds_time=(diag.get("fetch_metadata",{}).get("/odds",{}).get("fetched_at_utc"))
     multi_market = parse_markets(odds_raw,observed_at=clock,
                                  verified_provider_fetched_at=odds_time)
+    from correct_score_market import parse_correct_score_quotes
+    exact_prices=parse_correct_score_quotes(odds_raw,fixture,observed_at=clock,
+                                            verified_provider_fetched_at=odds_time)
     payload = {"schema": 1, "status": "captured_pre_kickoff", "provider": "API-Football",
                "fixture_id": fid, "home_team_id": home, "away_team_id": away,
                "kickoff_utc": kickoff.isoformat(), "captured_at_utc": clock.isoformat(),
                "verified_historical_fixture_xg": verified_xg,
                "verified_historical_match_statistics": verified_stats,
+               "verified_historical_fixture_shots": verified_shots,
+               "correct_score_market_quotes":exact_prices["quotes"],
                "provider_pre_match_opinion": independent,
                "confirmed_starting_xi": lineups, "reported_injuries": injuries,
                "market": market, "multi_market": multi_market, "available_sources": {
@@ -356,6 +398,8 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
                    "historical_xg": bool(verified_xg),
                    "historical_match_statistics": bool(verified_stats),
                    "independent_provider_prediction": independent is not None,
+                   "historical_shots":bool(verified_shots),
+                   "timestamped_correct_score_prices":exact_prices["ready"],
                    "timestamped_1x2": market is not None,
                    "timestamped_multi_market":len(multi_market)>=2},
                "diagnostics": diag, "source_limits": {

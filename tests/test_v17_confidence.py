@@ -158,3 +158,66 @@ def test_wilson_and_evidence_status_are_honest(tmp_path):
     assert wilson(1,1)[0]<0.7
     assert wilson(100,100)[0]>0.7
     assert evidence_dashboard(source=tmp_path)["real_xg_feed"] is False
+
+
+def _frozen_pair(tmp_path):
+    source=tmp_path/"source"
+    destination=tmp_path/"confidence"
+    a,b=forecast(1,11,12),forecast(2,13,14)
+    for row in (a,b):
+        source_record(source,row)
+    freeze(root=destination,source=source,now=NOW,forecasts=[a,b])
+    path=next((destination/"forecasts").glob("*.json"))
+    verified={a["fixture_id"]:finished(a),b["fixture_id"]:finished(b)}
+    return source,destination,path,verified
+
+
+def test_relabelling_one_pair_as_one_hundred_days_cannot_pass_claim_gate(tmp_path):
+    source,dest,path,verified=_frozen_pair(tmp_path)
+    original=json.loads(path.read_text())
+    original_day=datetime.fromisoformat(original["sydney_date"])
+    for index in range(1,100):
+        day=(original_day+timedelta(days=index)).date().isoformat()
+        duplicate={**original,"sydney_date":day}
+        (dest/"forecasts"/(day+".json")).write_text(json.dumps(duplicate))
+    report=evaluate(root=dest,source=source,verified=verified)
+    assert report["two_match_double_chance"]["verified"]==1
+    assert report["two_match_double_chance"]["wins"]==1
+    assert report["meets_70_percent_claim_gate"] is False
+    assert report["evidence_rejections"]["pair:fixture_outside_declared_sydney_date"]==99
+    assert report["fixture_reuse_in_pair_denominator_allowed"] is False
+    assert report["prediction_type"]=="two_match_double_chance_not_five_exact_score_doubles"
+
+
+def test_duplicate_fixture_inside_pair_never_counts_as_two_trials(tmp_path):
+    source,dest,path,verified=_frozen_pair(tmp_path)
+    packet=json.loads(path.read_text())
+    packet["pair"]["second"]=packet["pair"]["first"]
+    path.write_text(json.dumps(packet))
+    report=evaluate(root=dest,source=source,verified=verified)
+    assert report["two_match_double_chance"]["verified"]==0
+    assert report["evidence_rejections"]=={"pair:distinct_fixtures_and_teams_required":1}
+    assert report["meets_70_percent_claim_gate"] is False
+
+
+def test_later_source_cannot_backfill_an_earlier_frozen_selection(tmp_path):
+    source,dest,path,verified=_frozen_pair(tmp_path)
+    row=forecast(2,13,14)
+    row["captured_at_utc"]=(NOW+timedelta(minutes=1)).isoformat()
+    source_record(source,row)
+    report=evaluate(root=dest,source=source,verified=verified)
+    assert report["two_match_double_chance"]["verified"]==0
+    assert report["evidence_rejections"]["pair:original_source_observed_after_selection"]==1
+
+
+@pytest.mark.parametrize("field,value,reason",[
+    ("selection","12","selection_differs_from_predeclared_rule"),
+    ("model_estimated_probability",.99,"selection_probability_source_mismatch")])
+def test_result_friendly_choice_or_probability_change_is_not_evidence(tmp_path,field,value,reason):
+    source,dest,path,verified=_frozen_pair(tmp_path)
+    packet=json.loads(path.read_text())
+    packet["pair"]["second"][field]=value
+    path.write_text(json.dumps(packet))
+    report=evaluate(root=dest,source=source,verified=verified)
+    assert report["two_match_double_chance"]["verified"]==0
+    assert report["evidence_rejections"]["pair:"+reason]==1

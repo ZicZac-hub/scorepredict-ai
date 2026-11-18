@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-18T00:35:49.166620+00:00",
+  "prospective": true,
+  "record_sha256": "f4365673a39606bfaf9a223d7901f47386281af55a9e38c35aba8a285ef921ba",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.1195039993290151,
+        "joint_probability": 0.01587360100234854,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.1328290357768344
+      },
+      {
+        "first_probability": 0.1029427919462298,
+        "joint_probability": 0.013673791794392976,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.1328290357768344
+      },
+      {
+        "first_probability": 0.09511293539085641,
+        "joint_probability": 0.012633759497871804,
+        "score1": "2-1",
+        "score2": "1-1",
+        "second_probability": 0.1328290357768344
+      },
+      {
+        "first_probability": 0.1195039993290151,
+        "joint_probability": 0.012405861844252556,
+        "score1": "1-1",
+        "score2": "0-1",
+        "second_probability": 0.10381126919524325
+      },
+      {
+        "first_probability": 0.1195039993290151,
+        "joint_probability": 0.012365437139303057,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.10347299846642687
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.06695245127816893,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "119",
+        "name": "Internacional"
+      },
+      "competition": {
+        "code": "BSA",
+        "name": "BSA"
+      },
+      "homeTeam": {
+        "id": "133",
+        "name": "Vasco DA Gama"
+      },
+      "id": "1492458",
+      "provider": "API-Football",
+      "utcDate": "2026-11-19T22:30:00+00:00"
+    },
+    "generated_at_utc": "2026-11-18T00:35:49.162614+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "794",
+        "name": "RB Bragantino"
+      },
+      "competition": {
+        "code": "BSA",
+        "name": "BSA"
+      },
+      "homeTeam": {
+        "id": "136",
+        "name": "Vitoria"
+      },
+      "id": "1492459",
+      "provider": "API-Football",
+      "utcDate": "2026-11-19T22:30:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "119",
+        "fixture_id": "1492458",
+        "forecast_id": "fc00bc409e61606fc55e023d1ed894ca8efcca3f4fa71e5cf33a65c5eebb1985",
+        "home_team_id": "133",
+        "input_digest": "f138cee97bbafe02c740f6c04df9f40d031628788d508c81d859e6a6c15a70f5",
+        "kickoff_utc": "2026-11-19T22:30:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "794",
+        "fixture_id": "1492459",
+        "forecast_id": "234417cf3765de416cd036879b9eb20611b4e1533e9146b9c2c1e68a1920b130",
+        "home_team_id": "136",
+        "input_digest": "4f8a48a7ea724c3073d239376895331b552ef3a84e395ac3a2bc2c98d3bf3d51",
+        "kickoff_utc": "2026-11-19T22:30:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-17T23:10:37.346448+00:00",
+      "2026-11-17T23:10:38.338367+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-20",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-20",
+  "target_70_percent_proven": false
+}

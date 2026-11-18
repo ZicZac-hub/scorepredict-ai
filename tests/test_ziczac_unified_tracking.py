@@ -174,6 +174,23 @@ def test_postgres_original_cannot_be_rewritten_by_later_ai_result():
     assert row["score"]=="1-1"
 
 
+@pytest.mark.skipif(not os.environ.get("TEST_DATABASE_URL"),
+                    reason="Requires GitHub Actions PostgreSQL test service")
+def test_database_rejects_backdated_capture_received_after_kickoff():
+    import uuid
+    actual_now=datetime.now(timezone.utc)
+    f=fixture(int(uuid.uuid4().int%800000000)+100000000,"Home","Away")
+    f["utcDate"]=(actual_now-timedelta(minutes=1)).isoformat()
+    old=single(f,"1-1","ten_ai",ai_provider="gemini",
+               now=actual_now-timedelta(hours=2))
+    result=store(old,os.environ["TEST_DATABASE_URL"])
+    assert result["durable"] is False
+    assert result["state"]=="not_persisted_before_kickoff"
+    records,status=load(os.environ["TEST_DATABASE_URL"])
+    assert status=="connected"
+    assert all(row["record_id"]!=old["record_id"] for row in records)
+
+
 def test_private_forecast_write_requires_owner_login(monkeypatch):
     import ziczac_interactive_capture as audit
     class FakeSite:
