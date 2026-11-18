@@ -36,24 +36,24 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 41,
-      "recorded": 41,
+      "pending": 42,
+      "recorded": 42,
       "verified": 0
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 41,
-      "recorded": 41,
+      "pending": 42,
+      "recorded": 42,
       "verified": 0
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 2,
-      "pending": 203,
-      "recorded": 205,
+      "pending": 204,
+      "recorded": 206,
       "verified": 2
     },
     "frozen_v8_control": {
@@ -84,12 +84,12 @@
       "hit": 0,
       "hit_rate": null,
       "miss": 0,
-      "pending": 175,
-      "recorded": 175,
+      "pending": 176,
+      "recorded": 176,
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-18T17:04:17.082149+00:00",
+  "checked_at_utc": "2026-11-18T18:06:59.324110+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -104,6 +104,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T18:06:48.088345+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1570561')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Real Madrid",
+          "away_team_id": "541",
+          "fixture_id": "1570561",
+          "home_team": "Real Sociedad",
+          "home_team_id": "548",
+          "kickoff_utc": "2026-12-02T18:00:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-02T18:00:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T18:06:47.983446+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1570561', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Real Madrid",
+          "away_team_id": "541",
+          "fixture_id": "1570561",
+          "home_team": "Real Sociedad",
+          "home_team_id": "548",
+          "kickoff_utc": "2026-12-02T18:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-02T18:00:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T18:06:47.947489+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1570561', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Real Madrid",
+          "away_team_id": "541",
+          "fixture_id": "1570561",
+          "home_team": "Real Sociedad",
+          "home_team_id": "548",
+          "kickoff_utc": "2026-12-02T18:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-02T18:00:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-18T18:06:47.958556+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1570561', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Real Madrid",
+          "away_team_id": "541",
+          "fixture_id": "1570561",
+          "home_team": "Real Sociedad",
+          "home_team_id": "548",
+          "kickoff_utc": "2026-12-02T18:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-02T18:00:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-17T20:08:23.479493+00:00",
@@ -15387,8 +15503,8 @@
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 506,
-    "recorded": 514,
+    "pending": 510,
+    "recorded": 518,
     "verified": 8
   }
 }
