@@ -77,14 +77,20 @@ def best_packet(root, leg, *, now=None, priority="research"):
         valid_market=False
         latest_market=""
         try:
-            if ("1x2" in markets and
-                ("over_2_5" in markets or "over_3_5" in markets)):
-                times=[utc(markets[k]["last_source_update_utc"])
-                       for k in markets if k in ("1x2","over_2_5","over_3_5")]
-                clock=utc(now or datetime.now(timezone.utc))
-                valid_market=all(t<=clock and clock-t<=timedelta(hours=12)
-                                 for t in times) and bool(times)
-                latest_market=max(t.isoformat() for t in times)
+            clock=utc(now or datetime.now(timezone.utc))
+            captured=utc(snap["captured_at_utc"])
+            valid_times={}
+            for kind in ("1x2","over_2_5","over_3_5"):
+                try:
+                    stamp=utc(markets[kind]["last_source_update_utc"])
+                    if stamp<=captured<=clock and clock-stamp<=timedelta(hours=12):
+                        valid_times[kind]=stamp
+                except (KeyError,TypeError,ValueError,AttributeError):
+                    continue
+            valid_market=("1x2" in valid_times and
+                          bool({"over_2_5","over_3_5"} & set(valid_times)))
+            if valid_market:
+                latest_market=max(t.isoformat() for t in valid_times.values())
         except (KeyError,TypeError,ValueError):
             valid_market=False
         if priority=="market":

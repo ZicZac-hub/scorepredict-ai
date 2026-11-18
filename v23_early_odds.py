@@ -119,19 +119,17 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
             # 1X2 + goal-total prices; do not spend another API request.
             saved=best_packet(root,leg,now=clock,priority="market")
             saved_markets=((saved or {}).get("provider_snapshot") or {}).get("multi_market") or {}
-            if ("1x2" in saved_markets and
-                    ("over_2_5" in saved_markets or "over_3_5" in saved_markets)):
-                current=True
-                for name in ("1x2","over_2_5","over_3_5"):
-                    if name not in saved_markets:
-                        continue
+            if saved:
+                captured=utc(saved["provider_snapshot"]["captured_at_utc"])
+                def current_market(name):
                     try:
                         updated=utc(saved_markets[name]["last_source_update_utc"])
-                        if updated>clock or clock-updated>timedelta(hours=12):
-                            current=False
-                    except (KeyError,TypeError,ValueError):
-                        current=False
-                if current:
+                        return (updated<=captured<=clock and
+                                clock-updated<=timedelta(hours=12))
+                    except (KeyError,TypeError,ValueError,AttributeError):
+                        return False
+                if (current_market("1x2") and
+                        (current_market("over_2_5") or current_market("over_3_5"))):
                     status["skipped"].append(str(leg["fixture_id"])+":current_market_packet_already_saved")
                     continue
             marker.parent.mkdir(parents=True,exist_ok=True)

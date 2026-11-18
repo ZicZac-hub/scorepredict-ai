@@ -34,25 +34,30 @@ def _matching_source(row):
 
 
 def _fresh_market(packet, now, kickoff):
+    """Require a fresh, source-dated 1X2 quote AND a fresh totals quote.
+
+    Older research packets may contain only a 1X2 line. That is useful
+    context, but must never satisfy the two-market evidence quality gate.
+    An optional stale O/U 3.5 quote must not invalidate a good O/U 2.5.
+    """
     markets = packet.get("multi_market") or {}
-    if isinstance(markets, dict) and "1x2" in markets and (
-            "over_2_5" in markets or "over_3_5" in markets):
-        keys = [k for k in ("1x2", "over_2_5", "over_3_5") if k in markets]
+    if not isinstance(markets, dict):
+        return False
+    try:
+        captured = utc(packet["captured_at_utc"])
+    except (KeyError, TypeError, ValueError):
+        return False
+
+    def fresh(kind):
         try:
-            stamps = [utc(markets[k]["last_source_update_utc"]) for k in keys]
-            return bool(stamps) and all(
-                stamp <= now and stamp < kickoff and now-stamp <= MARKET_MAX_AGE
-                for stamp in stamps)
-        except (KeyError, TypeError, ValueError):
+            market = markets[kind]
+            stamp = utc(market["last_source_update_utc"])
+            return (stamp <= captured <= now < kickoff and
+                    now - stamp <= MARKET_MAX_AGE)
+        except (KeyError, TypeError, ValueError, AttributeError):
             return False
-    quote = packet.get("market")
-    if isinstance(quote, dict) and quote.get("fair_1x2"):
-        try:
-            stamp = utc(quote["updated_at_utc"])
-            return stamp <= now and stamp < kickoff and now-stamp <= MARKET_MAX_AGE
-        except (KeyError, TypeError, ValueError):
-            pass
-    return False
+
+    return fresh("1x2") and (fresh("over_2_5") or fresh("over_3_5"))
 
 
 def trace_leg(candidate, now, *, root=SOURCE_ROOT, packet_loader=None):
@@ -115,7 +120,19 @@ def trace_leg(candidate, now, *, root=SOURCE_ROOT, packet_loader=None):
                 len(item.get("starting_xi") or []) == 11 for item in lineups)
             for tid in (home, away))
         info["reported_injury_entries"] = len(packet.get("reported_injuries") or [])
-        info["verified_pre_match_market"] = _fresh_market(packet, clock, kickoff)
+        # A history-rich packet may contain stale odds even when another
+        # separately frozen, identity-matched packet contains current prices.
+        # Inspect that version independently; do not combine or rewrite hashes.
+        market_packet = packet if _fresh_market(packet, clock, kickoff) else None
+        if market_packet is None:
+            market_record = packet_loader(root, source, now=clock, priority="market")
+            if qualified_packet(market_record, source, now=clock):
+                contender = market_record["provider_snapshot"]
+                if _fresh_market(contender, clock, kickoff):
+                    market_packet = contender
+        info["verified_pre_match_market"] = market_packet is not None
+        if market_packet is not None:
+            info["market_snapshot_at_utc"] = market_packet["captured_at_utc"]
         info["reason"] = ("verified_market_available_not_model_weighted"
                           if info["verified_pre_match_market"] else
                           "verified_snapshot_without_fresh_market")
