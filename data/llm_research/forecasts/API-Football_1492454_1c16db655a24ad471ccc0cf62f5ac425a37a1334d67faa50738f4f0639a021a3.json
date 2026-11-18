@@ -1,0 +1,79 @@
+{
+  "away_team": "Bahia",
+  "away_team_id": "118",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.3502940274572778,
+    "draw": 0.25704414963890265,
+    "home": 0.39266182290381946
+  },
+  "captured_at_utc": "2026-11-18T19:17:44.058565+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.35029402745727783,
+      "draw": 0.2570441496389027,
+      "home": 0.3926618229038195
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492454",
+  "home_team": "Gremio",
+  "home_team_id": "130",
+  "input_digest": "1c16db655a24ad471ccc0cf62f5ac425a37a1334d67faa50738f4f0639a021a3",
+  "kickoff_utc": "2026-11-19T00:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "source_captured_at_utc": "2026-11-17T01:50:50.022818Z",
+  "source_forecast_id": "d9294039531c0d9656c814543b477c193d0db8d3206dc08bb8b2b36b63d9968b",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "9c88c599761af8fedda9c119cee9298f2a931583f7caa8f058e7282941cb0fe8",
+  "votes": {
+    "gemini": {
+      "away": 0.35029402745727783,
+      "draw": 0.2570441496389027,
+      "factors": [
+        "Model expects a tightly contested match with slight home edge for Gremio.",
+        "Goal expectations sit closely balanced around 1.46 (home) versus 1.37 (away).",
+        "Market consensus and top exact score options heavily favor low-scoring outcomes like 1-1."
+      ],
+      "home": 0.3926618229038195,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty given close baseline probabilities between home win and away win."
+    },
+    "groqcloud": {
+      "away": 0.35029402745727783,
+      "draw": 0.2570441496389027,
+      "factors": [
+        "home recent form +1.5 goals",
+        "away rest 13 days advantage",
+        "league average score 2.9"
+      ],
+      "home": 0.3926618229038195,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "moderate"
+    }
+  }
+}
