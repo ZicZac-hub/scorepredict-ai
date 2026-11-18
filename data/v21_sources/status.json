@@ -1,25 +1,26 @@
 {
-  "at_utc": "2026-11-17T23:11:38.817888+00:00",
-  "attempted_legs": 0,
-  "calls": 0,
+  "at_utc": "2026-11-18T00:02:46.691103+00:00",
+  "attempted_legs": 2,
+  "calls": 32,
   "capture_window_minutes": [
     8,
     2880
   ],
   "daily_attempts_limit": 6,
-  "daily_attempts_used": 4,
+  "daily_attempts_used": 2,
   "eligible_legs": 8,
   "enabled": true,
-  "new_packets": [],
-  "reason": "no_new_source_evidence",
+  "new_packets": [
+    "1492450",
+    "1492454"
+  ],
+  "reason": "partial_or_complete_source_packets",
   "skipped": [
     "1492451:original_preserved",
     "1492456:original_preserved",
     "1492452:original_preserved",
     "1492453:original_preserved",
-    "1492450:near_kickoff_budget_reserved",
-    "1492454:near_kickoff_budget_reserved",
-    "1492458:near_kickoff_budget_reserved",
-    "1492459:near_kickoff_budget_reserved"
+    "1492458:per_run_attempt_budget_exhausted",
+    "1492459:per_run_attempt_budget_exhausted"
   ]
 }
