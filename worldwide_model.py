@@ -122,8 +122,12 @@ def model_worldwide(key, event, model_variant='baseline'):
         sources.extend(["Season statistics, standings, injuries and lineups checked where available"])
         errors.extend(context_errors)
     if result is not None:
+        # This is the actual local model completion time, NOT a bookmaker
+        # quote timestamp or a claim that all source data is current.
+        generated_at_utc=datetime.now(timezone.utc).isoformat()
         return {"league": event.get("league", "Unknown"),
                 "fixture": fixture, "result": result,
+                "generated_at_utc": generated_at_utc,
                 "kickoff": fixture["utcDate"], "past": history,
                 "league_history": league_history, "evidence": evidence,
                 "research_sources": ["API-Football (verified completed results)"],
