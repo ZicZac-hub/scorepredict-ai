@@ -38,7 +38,8 @@ from history_store import connect, save_predictions, reconcile, load
 from double_tracker import save as save_double_snapshot, settle as settle_doubles
 from double_score_selection import select_diversified, score_coverage
 from smart_double_ai import rank_pairs, five_doubles
-from dashboard_ui import header_html, studio_css, sync_location, navigate, open_double_mode, sync_double_mode
+from dashboard_ui import (header_html, studio_css, sync_location, navigate,
+                          open_double_mode, sync_double_mode, fallback_competitions)
 from private_access import require_access
 
 st.set_page_config(page_title='ZicZac Predict AI · Matchday Studio 2.0',page_icon='app/static/icon.svg',layout='wide',initial_sidebar_state='auto')
@@ -219,9 +220,8 @@ try:key=st.secrets.get('FOOTBALL_DATA_API_KEY','')
 except Exception:key=''
 key=key or os.environ.get('FOOTBALL_DATA_API_KEY','')
 if not key:
-    st.warning('Add a football-data.org API key in Streamlit Secrets: `FOOTBALL_DATA_API_KEY = "your_key"`. No fabricated fixtures or scores are shown.')
+    st.info('football-data.org is not configured. API-Football and saved research remain available where configured; new forecasts require verified provider history.')
     st.link_button('Get a free API key','https://www.football-data.org/client/register')
-    st.stop()
 with st.sidebar:
     st.markdown('### ⚽ ZicZac navigation')
     st.caption('Choose a section to open it instantly.')
@@ -333,10 +333,16 @@ with st.expander('🌍 Worldwide Match Finder · Tap to search',expanded=False):
     except Exception as exc:
         st.warning(f'Worldwide free fixture source unavailable: {exc}')
 st.divider()
-try:comps=competitions(key)
-except Exception as e:st.error(f'Unable to retrieve competitions: {e}');st.stop()
+try:
+    comps=competitions(key) if key else []
+except Exception:
+    comps=[]
+    st.warning('The football-data.org competition directory is temporarily unavailable. Using the existing API-Football directory; connected provider access still determines available fixtures.')
+if not comps:
+    comps=fallback_competitions()
+    st.caption('Built-in API-Football competition directory. Listing a competition does not imply that fixtures or subscription access are available.')
 names={f"{c.get('area',{}).get('name','World')} · {c['name']} ({c['code']})":c['code'] for c in comps}
-selected=st.multiselect('Competitions to monitor',list(names),default=[n for n in names if any(token in n for token in ('Premier League (PL)','Primera Division (PD)','Champions League (CL)'))][:3] or list(names)[:min(3,len(names))])
+selected=st.multiselect('Competitions to monitor',list(names),default=[n for n in names if names[n] in ('PL','PD','CL')][:3] or list(names)[:min(3,len(names))])
 if not selected:st.info('Choose one or more competitions for statistical modelling. Worldwide fixture discovery above remains available.');st.stop()
 if use_secondary and not secondary_key:st.warning('API-Football backup is enabled but API_FOOTBALL_KEY is missing from Secrets.')
 if len(selected)>8:st.warning('Select up to eight competitions to protect free-tier API limits.');st.stop()
@@ -368,14 +374,15 @@ with st.spinner('Collecting fixtures and completed results...'):
     for name in selected:
         code=names[name]
         upcoming=[];past=[];source='football-data.org'
-        try:
-            upcoming=_fast_primary_fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=15)).isoformat())
-        except Exception as e:
-            errors.append(f'{name}: primary fixtures unavailable ({e})')
-        try:
-            past=_fast_primary_history(key,code)
-        except Exception as e:
-            errors.append(f'{name}: primary historical data unavailable ({e})')
+        if key:
+            try:
+                upcoming=_fast_primary_fixtures(key,code,(now.date()-timedelta(days=1)).isoformat(),(now.date()+timedelta(days=15)).isoformat())
+            except Exception as e:
+                errors.append(f'{name}: primary fixtures unavailable ({e})')
+            try:
+                past=_fast_primary_history(key,code)
+            except Exception as e:
+                errors.append(f'{name}: primary historical data unavailable ({e})')
         # Prefer API-Football Pro data over the older provider.
         if use_secondary and secondary_key and code in supported_codes():
             try:
@@ -511,7 +518,8 @@ rows.sort(key=lambda r:r['kickoff'])
 eligible=[r for r in rows if r.get('result')]
 # Populate the large stadium hero with tomorrow's highest-probability
 # verified exact-score estimate. This is the same live data used throughout.
-_featured, _featured_status = choose_feature(eligible, st.session_state, secondary_key)
+_featured, _featured_status = (choose_feature(eligible, st.session_state, secondary_key)
+                              if view == 'home' else (None, None))
 def fixture_label(r):
     m=r['fixture']
     return f"{m['homeTeam'].get('name','Home')} vs {m['awayTeam'].get('name','Away')} · {sydney_kickoff(r['kickoff'])}"

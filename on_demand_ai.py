@@ -7,13 +7,13 @@ No immutable GitHub prediction is rewritten, and these unarchived opinions
 are NEVER scored as verified prospective accuracy.
 """
 from sydney_display import sydney_timestamp
+import hashlib
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from goal_research_v20 import goal_profile
 from v21_provider_evidence import valid_snapshot
 from llm_research_panel import (
     PROVIDERS, SECRETS, ask, classify_provider_error, consensus, settings
@@ -175,42 +175,15 @@ def _scores(stats, fallback):
 
 
 def _verified_history(fixture, history, now):
-    kickoff = utc(fixture.get("utcDate"))
-    team_ids = {str((fixture.get(side+"Team") or {}).get("id"))
-                for side in ("home","away")}
-    team_ids.discard("None")
-    seen, matches = set(), []
-    for m in history or []:
-        when = utc(m.get("utcDate"))
-        if (m.get("status") != "FINISHED" or when is None or
-                kickoff is None or when >= min(now, kickoff)):
-            continue
-        home = m.get("homeTeam") or {}
-        away = m.get("awayTeam") or {}
-        if team_ids and not ({str(home.get("id")), str(away.get("id"))} & team_ids):
-            continue
-        score = m.get("score") or {}
-        # Some feeds use fullTime for 120-minute or penalty results.
-        # Use explicitly saved regulation-time goals or skip the sample.
-        if score.get("duration") in ("EXTRA_TIME","PENALTY_SHOOTOUT"):
-            goals = score.get("regularTime") or {}
-        else:
-            goals = score.get("fullTime") or {}
-        h,a = goals.get("home"), goals.get("away")
-        if type(h) is not int or type(a) is not int or min(h,a)<0:
-            continue
-        identity = (when.isoformat(), str(home.get("id")), str(away.get("id")))
-        if identity in seen:
-            continue
-        seen.add(identity)
-        matches.append((when, {
-            "date_utc": when.isoformat(),
-            "home": str(home.get("name") or "")[:100],
-            "away": str(away.get("name") or "")[:100],
-            "full_time_90min": [h,a]
-        }))
-    matches.sort(key=lambda value: value[0], reverse=True)
-    return [value for _,value in matches[:20]]
+    """Only identity-matched regulation results available before the cutoff."""
+    from professional_match_evidence import validated_history
+    rows, _ = validated_history(fixture, history, as_of=now)
+    return [{"date_utc": row["kickoff_utc"], "home": row["home"],
+             "away": row["away"], "full_time_90min": row["regulation_score"],
+             "provider": row["provider"], "fixture_id": row["fixture_id"],
+             "result_available_at_utc": row["result_available_at_utc"],
+             "source_observed_at_utc": row["source_observed_at_utc"]}
+            for row in rows[:20]]
 
 
 def briefing(fixture, history, statistical, fallback=None, *, now=None,
@@ -242,33 +215,22 @@ def briefing(fixture, history, statistical, fallback=None, *, now=None,
             "home": result.get("home_xg"), "away": result.get("away_xg")
         },
         "completed_historical_matches": _verified_history(fixture, history, clock),
-        "historical_home_away_goal_profile": goal_profile(fixture, history, clock),
-        "provider_team_context_if_available": {
-            k: (team_context or {}).get(k)
-            for k in ("home_season", "away_season", "standings", "injuries",
-                      "confirmed_lineups") if (team_context or {}).get(k)
-        },
         "not_provided": ["verified future-match xG", "live web browsing",
                          "verified numerical player-impact coefficients"]
     }
-    packet = (team_context or {}).get("v21_provider_snapshot")
-    if valid_snapshot(packet,fixture,now=clock):
-        payload["audited_external_provider_snapshot"] = {
-            "captured_at_utc":packet["captured_at_utc"],
-            "sha256":packet["snapshot_sha256"],
-            "actual_past_fixture_expected_goals":packet.get("verified_historical_fixture_xg") or [],
-            "provider_reported_lineups":packet.get("confirmed_starting_xi") or [],
-            "provider_reported_injuries":packet.get("reported_injuries") or [],
-            "time_checked_1x2_market":packet.get("market"),
-            "coverage":packet.get("available_sources") or {}
-        }
+    from professional_match_evidence import build_dossier
+    payload["professional_match_evidence"] = build_dossier(
+        fixture, history, as_of=clock, statistical=result,
+        provider_packet=(team_context or {}).get("v21_provider_snapshot"),
+        context=team_context)
     return ("You are one independent football research reviewer. Use ONLY the dated "
-            "facts provided. Independently examine last-ten match performance, "
+            "facts provided. Examine the available last-five, last-ten and last-twenty windows, "
             "home versus away goal scoring/conceding, 2+ goal rates and H2H; "
             "assess plausible 2-, 3-, or 4-goal outcomes if evidence supports them. "
             "Do NOT always pick 1-1 or 1-0, and do NOT force a big win for famous teams. "
             "Use player injuries, starting XI, standings and formations ONLY when "
             "present in the verified provider packet. Missing news means unknown. "
+            "Missing shots, xG, goalkeeper, weather or travel facts are unknown, never zero. "
             "Never invent current web browsing or player information. "
             "The statistical model is a prior, not a guarantee. Return ONLY JSON "
             "with home_win, draw, away_win (numbers summing to 1), exact_home, "
@@ -314,6 +276,8 @@ def run_selected(fixture, history, statistical, fallback, provider_configs, *,
         "status": "completed" if completed < utc(fixture["utcDate"])
                   else "completed_after_kickoff_not_prospective",
         "fixture": match,
+        "shared_prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+        "ai_numeric_weight": 0.0,
         "started_at_utc": clock.isoformat(),
         "completed_at_utc": completed.isoformat(),
         "attempted": [name for name,_ in configured],

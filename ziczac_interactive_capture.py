@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 SOURCES = {"deep_research","ten_ai","ai_five_double"}
 PROVIDERS = {"openai","claude","gemini","grok","deepseek","perplexity",
              "mistral","qwen","groqcloud","cohere"}
-_SCORE = re.compile(r"^([0-9])-([0-9])$")
+_SCORE = re.compile(r"^((?:0|[1-9][0-9]?))-((?:0|[1-9][0-9]?))$")
 _TABLE = """CREATE TABLE IF NOT EXISTS ziczac_interactive_forecasts (
  record_id TEXT PRIMARY KEY,
  source TEXT NOT NULL,
@@ -38,11 +38,11 @@ def utc(value):
 
 def score(value):
     if isinstance(value,(tuple,list)) and len(value)==2 and all(
-            type(v) is int and 0<=v<=9 for v in value):
+            type(v) is int and 0<=v<=99 for v in value):
         return f"{value[0]}-{value[1]}"
     if isinstance(value,str) and _SCORE.fullmatch(value):
         return value
-    raise ValueError("Score must contain two nonnegative single-digit goal counts")
+    raise ValueError("Score must contain two nonnegative integer goal counts from 0 to 99")
 
 
 def leg(fixture,now):
@@ -112,7 +112,7 @@ def single(fixture,predicted,source,*,method="",ai_provider="",now=None,evidence
     return _freeze(source,record,instant)
 
 
-def pair(first,second,choices,*,now=None,method=""):
+def pair(first,second,choices,*,now=None,method="",policy_metadata=None):
     instant=utc(now or datetime.now(timezone.utc))
     legs=[leg(first,instant),leg(second,instant)]
     if (legs[0]["provider"],legs[0]["fixture_id"]) == (
@@ -125,13 +125,42 @@ def pair(first,second,choices,*,now=None,method=""):
         raise ValueError("Doubles must have the same Sydney match date")
     if not isinstance(choices,list) or len(choices)!=5:
         raise ValueError("Exactly five score combinations are required")
-    if method not in ("", "balanced_challenger", "goal_form_research", "v22_xg_market", "v23_market_form", "v25_professional_analyst"):
+    if method not in ("", "balanced_challenger", "goal_form_research", "v22_xg_market", "v23_market_form", "v25_professional_analyst", "professional-probability-five-v1"):
         raise ValueError("Unrecognized five-double research method")
     frozen=[{"score1":score(x["score1"]),"score2":score(x["score2"])}
             for x in choices]
     if len({(x["score1"],x["score2"]) for x in frozen})!=5:
         raise ValueError("Five unique score combinations are required")
     record = {"legs": legs, "choices": frozen}
+    if policy_metadata is not None:
+        import math
+        if method != "professional-probability-five-v1" or not isinstance(policy_metadata,dict):
+            raise ValueError("Policy metadata requires the professional optimizer version")
+        probability=policy_metadata.get("estimated_coverage")
+        versions=policy_metadata.get("model_versions")
+        times=policy_metadata.get("source_times_utc")
+        scope=policy_metadata.get("selection_scope","manual_same_day_v1")
+        if (type(probability) not in (int,float) or not math.isfinite(probability)
+                or not 0<probability<=1 or not isinstance(versions,list) or len(versions)!=2
+                or any(not isinstance(v,str) or not v or len(v)>200 for v in versions)
+                or not isinstance(times,list) or len(times)!=2
+                or any(utc(t)>instant for t in times)
+                or scope not in ("manual_same_day_v1","auto_max_raw_coverage_same_day_v1",
+                                 "premium_max_calibrated_coverage_v1")):
+            raise ValueError("Valid pre-match model probability and provenance required")
+        record["policy_metadata"]={"estimated_coverage":float(probability),
+                                   "model_versions":versions,
+                                   "selection_scope":scope,
+                                   "source_times_utc":[utc(t).isoformat() for t in times]}
+        references=policy_metadata.get("source_forecast_refs")
+        if references is not None:
+            allowed=("provider","fixture_id","forecast_id","input_digest", "home_team_id",
+                     "away_team_id","kickoff_utc")
+            if not isinstance(references,dict) or set(references)!={"first","second"}:
+                raise ValueError("Two source forecast reference mappings required")
+            record["policy_metadata"]["source_forecast_refs"]={
+                side:{key:value for key,value in ref.items() if key in allowed}
+                for side,ref in references.items() if isinstance(ref,dict)}
     if method:
         record["method"] = method
     return _freeze("ai_five_double",record,instant)
@@ -144,6 +173,8 @@ def store(record,database_url=None):
         return {"durable":False,"state":"database_not_configured"}
     import psycopg
     try:
+        evidence_legs=[record["leg"]] if record.get("leg") else record["legs"]
+        deadline=min(utc(item["kickoff_utc"]) for item in evidence_legs)
         with psycopg.connect(address,connect_timeout=7) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(_TABLE)
@@ -151,18 +182,20 @@ def store(record,database_url=None):
                     """INSERT INTO ziczac_interactive_forecasts
                        (record_id,source,provider,fixture_id,captured_at_utc,
                         kickoff_utc,payload_json)
-                       VALUES (%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+                       SELECT %s,%s,%s,%s,%s,%s,%s
+                       WHERE clock_timestamp() < %s::timestamptz
+                       ON CONFLICT DO NOTHING""",
                     (record["record_id"],record["source"],record["provider"],
                      record["fixture_id"],record["captured_at_utc"],
                      (record.get("leg") or record["legs"][0])["kickoff_utc"],
-                     json.dumps(record,sort_keys=True,separators=(",",":"))))
+                     json.dumps(record,sort_keys=True,separators=(",",":")),deadline))
                 inserted=cursor.rowcount>0
                 if not inserted:
                     cursor.execute("""SELECT payload_json FROM ziczac_interactive_forecasts
                                       WHERE record_id=%s""",(record["record_id"],))
                     original=cursor.fetchone()
                     if not original:
-                        return {"durable":False,"state":"verification_failed"}
+                        return {"durable":False,"state":"not_persisted_before_kickoff"}
                 return {"durable":True,"state":"saved" if inserted else "original_preserved"}
     except Exception as exc:
         return {"durable":False,"state":"database_unavailable",

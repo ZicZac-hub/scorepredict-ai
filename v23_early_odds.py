@@ -168,16 +168,25 @@ def capture(*,now=None,enabled=None,api_key=None,source_root=V8_ROOT,
             if "1x2" not in markets or not ({"over_2_5","over_3_5"} & set(markets)):
                 status["skipped"].append(str(leg["fixture_id"])+":complete_odds_unavailable")
                 continue
+            from correct_score_market import parse_correct_score_quotes
+            price_fixture={"provider":leg["provider"],"id":leg["fixture_id"],
+                           "utcDate":leg["kickoff_utc"],
+                           "homeTeam":{"id":leg["home_team_id"]},
+                           "awayTeam":{"id":leg["away_team_id"]}}
+            exact_prices=parse_correct_score_quotes(raw,price_fixture,observed_at=observed,
+                                  verified_provider_fetched_at=fetched_at)
             packet={"schema":1,"status":"captured_pre_kickoff",
                     "provider":leg["provider"],"fixture_id":str(leg["fixture_id"]),
                     "home_team_id":str(leg["home_team_id"]),
                     "away_team_id":str(leg["away_team_id"]),
                     "kickoff_utc":leg["kickoff_utc"],"captured_at_utc":observed.isoformat(),
                     "market":None,"multi_market":markets,
+                    "correct_score_market_quotes":exact_prices["quotes"],
                     "verified_historical_fixture_xg":[],
                     "confirmed_starting_xi":[],"reported_injuries":[],
                     "available_sources":{
                         "timestamped_multi_market":True,
+                        "timestamped_correct_score_prices":exact_prices["ready"],
                         "lineups":False,"historical_xg":False},
                     "source_limits":{"calls_for_this_packet":1,
                                      "provider_fetched_at_utc":fetched_at,

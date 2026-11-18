@@ -138,6 +138,73 @@ def test_ai_five_button_opens_fast_studio_and_generates_five_no_cost_doubles(off
     assert not app.exception
     assert any("Final five exact-score doubles" in x.value for x in app.markdown)
 
+
+def test_pro_provider_works_without_primary_key_or_catalog(offline_app, monkeypatch):
+    import data
+    import api_football
+    import global_fixtures
+
+    monkeypatch.delenv('FOOTBALL_DATA_API_KEY', raising=False)
+    monkeypatch.setenv('API_FOOTBALL_KEY', 'offline-pro-navigation')
+    def no_primary(*args, **kwargs):
+        raise AssertionError('A missing primary key must not make primary requests')
+    monkeypatch.setattr(data, 'competitions', no_primary)
+    monkeypatch.setattr(data, 'fixtures', no_primary)
+    monkeypatch.setattr(data, 'history', no_primary)
+    pro_codes=[]
+    def pro_fixtures(_key, code, *args):
+        pro_codes.append(code)
+        return []
+    monkeypatch.setattr(api_football, 'get_fixtures', pro_fixtures)
+    monkeypatch.setattr(api_football, 'get_history', lambda *a, **k: [])
+    monkeypatch.setattr(global_fixtures, 'global_fixtures', lambda *a, **k: ([], []))
+    app=offline_app.run()
+    _assert_page(app, 'home', 'Matchday Studio')
+    assert {'PL', 'PD', 'CL'} <= set(pro_codes)
+    assert {'studio_auto', 'studio_manual', 'feature_history'} <= _buttons(app)
+
+
+def test_primary_catalog_outage_does_not_block_history_and_methods(offline_app, monkeypatch):
+    import data
+    def unavailable(*args, **kwargs):
+        raise RuntimeError('catalog offline')
+    monkeypatch.setattr(data, 'competitions', unavailable)
+    app=offline_app.run()
+    _assert_page(app, 'home', 'Matchday Studio')
+    app.button(key='feature_history').click().run()
+    _assert_page(app, 'archive', 'Prediction History')
+    assert not any('Unable to retrieve competitions' in x.value for x in app.error)
+    app.button(key='zz_route_more').click().run()
+    _assert_page(app, 'more', 'Settings &amp; Methods')
+    assert any('Mathematical model:' in x.value for x in app.markdown)
+
+
+def test_no_provider_keys_keeps_private_settings_and_navigation_available(offline_app, monkeypatch):
+    monkeypatch.delenv('FOOTBALL_DATA_API_KEY', raising=False)
+    app=offline_app.run()
+    _assert_page(app, 'home', 'Matchday Studio')
+    app.button(key='zz_route_private').click().run()
+    _assert_page(app, 'private', 'Private Access')
+    assert any(x.value == '🔒 Private Access' for x in app.subheader)
+
+
+def test_other_pages_do_not_refresh_hidden_home_feature(offline_app, monkeypatch):
+    import featured_match
+    checks=[]
+    def feature(*args, **kwargs):
+        checks.append(True)
+        return None, None
+    monkeypatch.setattr(featured_match, 'choose_feature', feature)
+    app=offline_app.run()
+    assert len(checks) == 1
+    app.button(key='zz_route_archive').click().run()
+    _assert_page(app, 'archive', 'Prediction History')
+    app.button(key='zz_route_more').click().run()
+    _assert_page(app, 'more', 'Settings &amp; Methods')
+    assert len(checks) == 1
+    app.button(key='zz_route_home').click().run()
+    assert len(checks) == 2
+
 def test_v25_live_date_selector_starts_today_without_saved_forecasts(offline_app,monkeypatch):
     """On iPhone, V25 must not hide today simply for missing score grids.
 

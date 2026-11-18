@@ -106,21 +106,31 @@ def _day_count(root,clock):
     return len(list((Path(root)/"requests"/clock.date().isoformat()).glob("*.json")))
 
 
-def _bookmakers_market(item,observed,fetch_time):
+def _increment(counts,reason):
+    if counts is not None:
+        counts[reason]=counts.get(reason,0)+1
+
+
+def _bookmakers_market(item,observed,fetch_time,diagnostics=None):
     return parse_markets([item],observed_at=observed,
-                         verified_provider_fetched_at=fetch_time)
+                         verified_provider_fetched_at=fetch_time,
+                         diagnostics=diagnostics)
 
 
-def _save_fixture_market(item,*,clock,fetched,root,query_date):
-    if not isinstance(item,dict):
+def _save_fixture_market(item,*,clock,fetched,root,query_date,
+                         rejection_counts=None,quote_diagnostics=None):
+    def reject(reason):
+        _increment(rejection_counts,reason)
         return None
+    if not isinstance(item,dict):
+        return reject("malformed_fixture")
     fixture=item.get("fixture") or {}
     fid=_safe_positive_int(fixture.get("id"))
     if fid is None:
-        return None
-    quoted=_bookmakers_market(item,clock,fetched)
+        return reject("missing_or_invalid_fixture_id")
+    quoted=_bookmakers_market(item,clock,fetched,diagnostics=quote_diagnostics)
     if not quoted:
-        return None
+        return reject("no_supported_timestamped_market")
     # Source-provided kickoff is optional. When absent, never invent it:
     # actual 90-minute fixture/time validation occurs during V8 binding.
     actual_start=fixture.get("date")
@@ -129,17 +139,23 @@ def _save_fixture_market(item,*,clock,fetched,root,query_date):
     except (TypeError,ValueError):
         actual_start=None
     if actual_start is not None and utc(actual_start)<=clock:
-        return None
+        return reject("fixture_already_started")
     if actual_start is not None:
         # Date endpoints may be quoted in a local timezone, so permit
         # a one-day offset, but reject unrelated fixture dates.
         try:
             if abs((utc(actual_start).date()-
                     datetime.fromisoformat(query_date).date()).days)>1:
-                return None
+                return reject("fixture_date_does_not_match_query")
         except (TypeError,ValueError):
-            return None
+            return reject("invalid_query_date")
     league=item.get("league") or {}
+    from correct_score_market import parse_correct_score_quotes
+    price_fixture={"provider":"API-Football","id":fid,"utcDate":actual_start,
+                   "homeTeam":(item.get("teams") or {}).get("home") or {},
+                   "awayTeam":(item.get("teams") or {}).get("away") or {}}
+    exact_prices=parse_correct_score_quotes([item],price_fixture,observed_at=clock,
+                                  verified_provider_fetched_at=fetched)
     row={"schema":1,"provider":"API-Football",
          "fixture_id":str(fid),"source_fixture_kickoff_utc":actual_start,
          "source_league_id":league.get("id"),
@@ -147,6 +163,7 @@ def _save_fixture_market(item,*,clock,fetched,root,query_date):
          "captured_at_utc":clock.isoformat(),
          "provider_fetched_at_utc":fetched,
          "market_types":quoted,
+         "correct_score_market_quotes":exact_prices["quotes"],
          "has_verified_both_teams":False,
          "cannot_predict_without_original_model":True}
     sha=_hash(row)
@@ -158,46 +175,52 @@ def _save_fixture_market(item,*,clock,fetched,root,query_date):
             out.write(json.dumps(row,sort_keys=True,indent=2,allow_nan=False)+"\n")
         return str(fid)
     except FileExistsError:
-        return None
+        return reject("identical_catalog_snapshot_preserved")
 
 
-def _valid_catalog(row,source,now):
+def catalog_rejection_reason(row,source,now):
+    """Explain one failed binding without relaxing timestamp or identity gates."""
     try:
         if not isinstance(row,dict) or row.get("provider")!="API-Football":
-            return False
+            return "wrong_provider"
         if str(row["fixture_id"])!=str(source["fixture_id"]):
-            return False
+            return "wrong_fixture_id"
         digest=row.get("snapshot_sha256")
         if digest!=_hash({k:v for k,v in row.items() if k!="snapshot_sha256"}):
-            return False
+            return "snapshot_hash_mismatch"
         captured=utc(row["captured_at_utc"])
         fetched=utc(row["provider_fetched_at_utc"])
         kickoff=utc(source["kickoff_utc"])
         clock=utc(now)
         if not (fetched<=captured<=clock<kickoff):
-            return False
+            return "capture_or_fetch_time_outside_pre_match_window"
         if row.get("source_fixture_kickoff_utc") and (
                 abs((utc(row["source_fixture_kickoff_utc"])-kickoff).total_seconds())>300):
-            return False
+            return "source_kickoff_mismatch"
         from api_football import LEAGUES
         source_league=LEAGUES.get(str(source.get("competition") or ""))
         observed_league=row.get("source_league_id")
         if source_league is not None and observed_league is not None and (
                 str(source_league)!=str(observed_league)):
-            return False
+            return "source_league_mismatch"
         market=row.get("market_types") or {}
         if "1x2" not in market or not ({"over_2_5","over_3_5"} & set(market)):
-            return False
+            return "winner_and_goal_total_markets_required"
         for kind in ("1x2","over_2_5","over_3_5"):
             if kind not in market:
                 continue
             updated=utc(market[kind]["last_source_update_utc"])
-            if not (updated<=clock and updated<=kickoff and
-                    clock-updated<=timedelta(hours=STALE_LIMIT_HOURS)):
-                return False
-        return True
+            if updated>clock or updated>kickoff:
+                return "market_quote_timestamp_in_future"
+            if clock-updated>timedelta(hours=STALE_LIMIT_HOURS):
+                return "market_quotes_stale"
+        return None
     except (TypeError,KeyError,ValueError):
-        return False
+        return "malformed_catalog_snapshot"
+
+
+def _valid_catalog(row,source,now):
+    return catalog_rejection_reason(row,source,now) is None
 
 
 def _bind_packet(row,source,now):
@@ -217,9 +240,11 @@ def _bind_packet(row,source,now):
             "kickoff_utc":source["kickoff_utc"],
             "captured_at_utc":row["captured_at_utc"],
             "market":None,"multi_market":row["market_types"],
+            "correct_score_market_quotes":row.get("correct_score_market_quotes") or [],
             "confirmed_starting_xi":[],"reported_injuries":[],
             "verified_historical_fixture_xg":[],
             "available_sources":{"timestamped_multi_market":True,
+                                 "timestamped_correct_score_prices":bool(row.get("correct_score_market_quotes")),
                                  "historical_xg":False,"lineups":False},
             "source_limits":{"bulk_market_catalog_sha256":row["snapshot_sha256"],
                              "provider_fetched_at_utc":row["provider_fetched_at_utc"],
@@ -251,7 +276,8 @@ def bind_catalog(*,now,root=ROOT,original_root=ORIGINAL_ROOT,
                else forecast_rows)
     found={}
     summary={"v8_checked":0,"v8_with_catalog":0,"new_bindings":[],
-             "missing_catalog":0,"out_of_window":0}
+             "missing_catalog":0,"out_of_window":0,
+             "fixtures_without_catalog":0,"catalog_snapshot_rejections":{}}
     for row in forecasts or []:
         try:
             if row.get("model_key") not in ("v8","v8_near") or (
@@ -275,10 +301,16 @@ def bind_catalog(*,now,root=ROOT,original_root=ORIGINAL_ROOT,
         fid=str(source["fixture_id"])
         folder=Path(root)/"fixtures"/fid
         accepted=[]
-        for path in sorted(folder.glob("*.json")):
+        paths=sorted(folder.glob("*.json"))
+        if not paths:
+            summary["fixtures_without_catalog"]+=1
+        for path in paths:
             row=load_json(path,{})
-            if _valid_catalog(row,source,clock):
+            reason=catalog_rejection_reason(row,source,clock)
+            if reason is None:
                 accepted.append(row)
+            else:
+                _increment(summary["catalog_snapshot_rejections"],reason)
         if not accepted:
             summary["missing_catalog"]+=1
             continue
@@ -306,7 +338,8 @@ def bind_catalog(*,now,root=ROOT,original_root=ORIGINAL_ROOT,
 
 def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_time=None,priority_dates=None):
     run={"queries":0,"new_catalog_fixtures":[],"empty_pages":0,
-         "skipped_stale":0,"provider_errors":[],"attempts":[]}
+         "skipped_stale":0,"provider_errors":[],"attempts":[],
+         "provider_fixture_rows":0,"catalog_rejection_counts":{},"quote_diagnostics":{}}
     rotation=_day_priority(clock)
     days=list(dict.fromkeys(list(priority_dates or [])+rotation))
     # Marker ledger bounds cumulative UTC-day spending across all runs.
@@ -380,16 +413,28 @@ def _request_dates(root,clock,max_requests,daily_budget,request,key,observation_
                 if not isinstance(results,list):
                     results=[]
                 observed=observation_time() if observation_time is not None else clock
+                run["provider_fixture_rows"]+=len(results)
+                page_saved=[]
+                rejections={}
+                quotes={}
                 for item in results:
                     saved=_save_fixture_market(item,clock=observed,fetched=fetched,
-                                               root=root,query_date=date)
+                                               root=root,query_date=date,
+                                               rejection_counts=rejections,
+                                               quote_diagnostics=quotes)
                     if saved is not None:
                         run["new_catalog_fixtures"].append(saved)
+                        page_saved.append(saved)
+                for name,counts in (("catalog_rejection_counts",rejections),("quote_diagnostics",quotes)):
+                    for reason,count in counts.items():
+                        run[name][reason]=run[name].get(reason,0)+count
                 write_json(marker,{"date":date,"page":page,
                                    "reserved_at_utc":clock.isoformat(),
                                    "result_count":len(results),
                                    "source_response_available":bool(results),
-                                   "saved_market_fixture_count":len(run["new_catalog_fixtures"])})
+                                   "saved_market_fixture_count":len(page_saved),
+                                   "catalog_rejection_counts":rejections,
+                                   "quote_diagnostics":quotes})
                 if len(results)<10:
                     run["empty_pages"]+=int(not results)
                     break
@@ -454,6 +499,8 @@ def capture(*,now=None,enabled=None,api_key=None,root=ROOT,
         "eligible_frozen_forecasts":bound["v8_checked"],
         "matched_market_forecasts":bound["v8_with_catalog"],
         "unmatched_market_forecasts":bound["missing_catalog"],
+        "fixtures_without_catalog":bound["fixtures_without_catalog"],
+        "catalog_snapshot_rejections":bound["catalog_snapshot_rejections"],
         "new_identity_validated_packets":len(bound["new_bindings"]),
         "provider_request_errors":len(run.get("provider_errors",[])),
         "reason":("no_eligible_frozen_forecasts" if not bound["v8_checked"] else

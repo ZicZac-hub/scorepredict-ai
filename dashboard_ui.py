@@ -18,6 +18,17 @@ PAGES = {
 MODES = {'auto': 'AI Auto Select', 'manual': 'Manual Select'}
 
 
+def fallback_competitions():
+    """Existing API-Football adapter coverage, never a fabricated fixture list.
+
+    This directory keeps navigation and the independently configured Pro
+    provider usable when the primary provider's catalog is unavailable.
+    """
+    from api_football import NAMES, supported_codes
+    return [{'name': NAMES.get(code, code), 'code': code,
+             'area': {'name': 'API-Football'}} for code in supported_codes()]
+
+
 def sync_location(state, params):
     """Apply a newly opened URL once, leaving later widget changes intact."""
     page = params.get('view', 'home')

@@ -4,6 +4,7 @@ Uses identical saved evidence for ten independent AI adapters. No provider
 is connected without its own API credentials.
 All evaluations require verified regulation-time final scores.
 """
+import hashlib
 import json
 import math
 import os
@@ -72,7 +73,7 @@ def panel_path(row, root=ROOT):
     return Path(root) / "forecasts" / (provider + "_" + identifier + "_" + digest + ".json")
 
 
-def briefing(row, provider_packet=None):
+def briefing(row, provider_packet=None, *, as_of=None, history=None):
     """Same dated frozen source packet to ALL AI providers, no invented facts."""
     info = {
         "home_team": row["home_team"], "away_team": row["away_team"],
@@ -84,21 +85,23 @@ def briefing(row, provider_packet=None):
         "available_schedule_and_form_context": row.get("research_context", {}),
         "unavailable_features": row.get("unavailable_features", []),
     }
-    if isinstance(provider_packet,dict) and provider_packet.get("snapshot_sha256"):
-        info["verified_additional_pre_match_sources"]={
-            "source_sha256":provider_packet["snapshot_sha256"],
-            "captured_at_utc":provider_packet["captured_at_utc"],
-            "past_fixture_observed_xg":provider_packet.get("verified_historical_fixture_xg") or [],
-            "source_reported_starting_lineups":provider_packet.get("confirmed_starting_xi") or [],
-            "source_reported_injuries":provider_packet.get("reported_injuries") or [],
-            "timestamped_1x2":provider_packet.get("market"),
-            "timestamped_goal_markets":provider_packet.get("multi_market") or {},
-        }
+    from professional_match_evidence import build_dossier
+    fixture = {"provider": row.get("provider") or "API-Football",
+               "id": row.get("fixture_id"), "utcDate": row["kickoff_utc"],
+               "homeTeam": {"id": row.get("home_team_id"), "name": row["home_team"]},
+               "awayTeam": {"id": row.get("away_team_id"), "name": row["away_team"]},
+               "competition": {"code": row.get("competition")}}
+    info["professional_match_evidence"] = build_dossier(
+        fixture, history or [], as_of=as_of or row["captured_at_utc"],
+        provider_packet=provider_packet,
+        statistical={side+"_xg": (row.get("expected_goals") or {}).get(side)
+                     for side in ("home", "away")})
     return (
         "Independently assess this football fixture using ONLY these frozen "
         "pre-match facts. Do not claim independent live browsing or make up xG, "
         "injuries, confirmed lineups or odds not in the packet. Distinguish "
-        "the prior statistical forecast from your own judgement. Return ONLY "
+        "the prior statistical forecast from your own judgement. Review available "
+        "5/10/20-match windows and disclose missing features; unknown is never zero. Return ONLY "
         "JSON with keys home_win, draw, away_win (probabilities summing to 1), "
         "exact_home, exact_away (nonnegative integer goals), factors (up to 3 "
         "short points), and uncertainty (short string). No guarantees.\n"
@@ -412,7 +415,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         from v21_capture_sources import best_packet
         extra_record=best_packet(Path("data/v21_sources"),row,now=clock)
         extra=(extra_record or {}).get("provider_snapshot")
-        prompt = briefing(row,provider_packet=extra)
+        prompt = briefing(row,provider_packet=extra,as_of=clock)
         votes, models = {}, {}
         for name, (key, model) in configured.items():
             try:
@@ -441,6 +444,8 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                   "baseline_predicted_score": row["predicted_score"],
                   "baseline_probabilities": row["outcome_probabilities"],
                   "verified_source_packet_sha256":extra.get("snapshot_sha256") if extra else None,
+                  "shared_prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                  "ai_numeric_weight": 0.0,
                   "provider_count": len(votes),
                   "configured_provider_count": len(configured),
                   "disclaimer": "No independent browsing by LLMs. All provider facts "

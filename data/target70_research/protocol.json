@@ -1,0 +1,55 @@
+{
+  "abstentions_count_in_opportunity_denominator": true,
+  "four_distinct_teams": true,
+  "holdout_season": "2024-25",
+  "interpretation": "retrospective_source_date_reconstruction_not_live_or_Sydney_accuracy",
+  "leagues": [
+    "en.1",
+    "de.1",
+    "es.1",
+    "it.1",
+    "fr.1"
+  ],
+  "live_model_promotion": false,
+  "maximum_pair_candidates_per_source_date": 18,
+  "minimum_league_history": 30,
+  "minimum_team_history": 5,
+  "models": {
+    "league_poisson": {
+      "half_life_days": 365,
+      "ridge": null
+    },
+    "opponent_dc_r18_h365": {
+      "half_life_days": 365,
+      "ridge": 18.0
+    },
+    "opponent_dc_r6_h240": {
+      "half_life_days": 240,
+      "ridge": 6.0
+    }
+  },
+  "monthly_refit": true,
+  "no_paid_data_or_AI_calls": true,
+  "pair_choice": "greatest_top_five_independent_joint_model_mass",
+  "prediction_target": "one_of_five_combinations_matches_both_regulation_scores",
+  "selection_metric": "validation_common_fixture_exact_score_log_loss",
+  "selection_tie_break": "model_name_ascending",
+  "thresholds": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.5,
+    0.7
+  ],
+  "thresholds_selected_using_holdout": false,
+  "training_rule": "source_date_strictly_before_month_start_minus_one_calendar_day",
+  "training_seasons": [
+    "2019-20",
+    "2020-21",
+    "2021-22",
+    "2022-23"
+  ],
+  "validation_season": "2023-24",
+  "version": "target70-cc0-date-safe-v1"
+}

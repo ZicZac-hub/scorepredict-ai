@@ -1,0 +1,59 @@
+{
+  "boost_training_source_dates_from": "2021-07-01",
+  "core_models": [
+    "league_poisson",
+    "time_weighted_strength_poisson",
+    "dixon_coles_strength",
+    "dixon_coles_regularized_r18",
+    "bivariate_poisson_c012",
+    "negative_binomial_r3"
+  ],
+  "development_test_season_already_explored": "2024-25",
+  "ensemble_weight_fit": "positive_simplex_exponentiated_gradient_log_loss_uniform_ridge_0.01",
+  "future_prospective_validation_required": true,
+  "implementation_sha256": "74e698c1ab8a1bb5eb852f8d399a1857442b1ec75a5b20ef39975c93b3427a3d",
+  "include_gradient_boost": true,
+  "independent_unseen_test": false,
+  "live_model_promotion": false,
+  "max_development_fixtures": null,
+  "minimum_calibration_rows": 50,
+  "minimum_weight_fit_rows": 50,
+  "model_selection_metric": "common_fixture_exact_score_log_loss",
+  "monthly_training_boundary": "strictly_before_month_start_minus_one_source_day",
+  "optional_gradient_boost": {
+    "early_stopping": false,
+    "estimator": "sklearn.HistGradientBoostingRegressor",
+    "l2_regularization": 10.0,
+    "learning_rate": 0.05,
+    "loss": "poisson",
+    "max_iter": 100,
+    "max_leaf_nodes": 7,
+    "min_samples_leaf": 30,
+    "random_state": 17
+  },
+  "pair_candidate_cap_per_source_date": 18,
+  "pair_policy": "highest_five_joint_score_mass_with_four_distinct_teams",
+  "preserved_fitter_sha256": "6b779faa55308880ff3a78c6ccec5428d842bdf4f798e3a1308ff47438b69b35",
+  "preserved_original_experiment": "target70-cc0-date-safe-v1",
+  "source_digest": "1197ae80aaa7a2de91bedfb3f0dd58c32f87d7ce92fd131f8ec4f2a4103b469e",
+  "source_manifest_sha256": "a96c37a8b2bec61a41fb10aa12c3a8fecbc0f304891c38f2cde218c4c487cb94",
+  "temperature_calibration_source_dates_from": "2024-01-01",
+  "temperature_candidates": [
+    0.8,
+    1.0,
+    1.2
+  ],
+  "thresholds": [
+    0.0,
+    0.1,
+    0.2,
+    0.3,
+    0.5,
+    0.7
+  ],
+  "time_precision": "source_dates_only_not_UTC_kickoffs_or_Sydney_matchdays",
+  "training_label_source_dates_before": "2023-07-01",
+  "version": "development-score-model-comparison-v1",
+  "weight_fit_selection_season": "2023-24",
+  "weight_fit_source_dates_before": "2024-01-01"
+}

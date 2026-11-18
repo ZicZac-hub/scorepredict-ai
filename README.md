@@ -1,3 +1,5 @@
+> **Professional five-double research (18 Nov 2026):** Added a source-qualified optimizer, automatic prospective research capture, common AI evidence, source-date quarantine and an eight-model comparison. The frozen candidate achieved **20/166 = 12.05%** retrospectively; development results range from **7.83% to 16.27%**. The new ledger has **0 settled, 2 pending**; premium abstains without verified calibration. **70% is not demonstrated.** See the [complete upgrade and evidence report](PROFESSIONAL_UPGRADE_REPORT.md).
+
 > **Five-double accuracy repair and diagnosis (15 Nov 2026):** Removed unvalidated AI ranking boosts from the default Studio selection, corrected provider response timestamps and live fixture eligibility, and added a scheduled source-validated miss report. The six original sets cover only **5.92–7.62% estimated model mass**, with **0/1 verified sets successful and 5 pending**. A 70% exact-score-double hit rate is **not established**. See [root causes, reproduced evidence and fixes](FIVE_DOUBLE_ROOT_CAUSE.md).
 
 > **V24 wider real-data collection (16 Nov 2026):** The existing owner-enabled `V23_EARLY_ODDS_ENABLED=true` now also enables a paginated, date-wide API-Football market catalog for all provider-returned fixtures in the next 14 days, even before the statistical model selects them. Market evidence is timestamped and immutable; it is joined to V23 only after matching a genuinely frozen V8 fixture. The earlier V23 collector also searches all individually saved V8 forecasts, not just existing five-double pairs. **Default 12 additional date-page requests per UTC day (up to 2 per run)**, subject to provider quotas and coverage; no unrestricted internet scraping or free xG invention. See [V24 source collection and limits](V24_BROAD_DATA_CAPTURE.md).
@@ -60,11 +62,11 @@ Push the project to GitHub, then deploy `app.py` on https://share.streamlit.io .
 ## Coverage and accuracy caveats
 - "Worldwide" means all competitions available through the configured provider; **not** every league on Earth. A free football-data.org key does not unlock every league or every historical season.
 - A missing team history produces **no prediction**, rather than a fabricated number.
-- This version does **not** have a trained ML model, premium xG, injuries or lineups. "Human-style" means explainable statistical heuristics, not human intuition or an LLM.
+- Live baseline forecasts use statistical goal models. Optional source-qualified xG, injury, lineup and market evidence depends on provider coverage. Gradient boosting and ensembles have separate historical research results; they are not automatically promoted to the live model. AI explanations are not measured accuracy.
 - A double-chance market is one match with two possible outcomes; a two-leg double is two selections across different matches. Both are shown separately.
 - A probability is **not** a promise. Two-leg joint probabilities assume independence; correlated outcomes can violate this.
 - SQLite data on free cloud hosting can disappear after app restarts or redeploys. Export CSVs frequently. For persistent automated audit history, migrate to a free hosted Postgres database and schedule collection outside the interactive app.
-- Forecasts are created when a visitor opens the site, not on a guaranteed background schedule. For unattended updates, add a scheduled job with a persistent database.
+- Interactive forecasts and scheduled repository-backed evidence have separate storage paths. GitHub Actions collect and verify supported fixtures automatically, subject to provider coverage, credentials and quotas; private local SQLite records are not automatically visible to GitHub.
 - Historical walk-forward testing uses only prior completed matches, but is limited by available match history and should be validated out of sample before any accuracy claims.
 
 ## Tests
