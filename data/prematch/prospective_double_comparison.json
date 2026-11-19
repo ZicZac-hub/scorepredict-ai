@@ -2,22 +2,22 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 56
+    "awaiting_both_verified_results": 59
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.05796557165401896,
+      "mean_estimated_probability_coverage": 0.05724688421735332,
       "win_rate": 0.0,
       "wins": 0
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.0431348366690791,
+      "mean_estimated_probability_coverage": 0.042944173465947,
       "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.05796557165401896,
+      "mean_estimated_probability_coverage": 0.05724688421735332,
       "win_rate": 0.0,
       "wins": 0
     }
@@ -25,8 +25,8 @@
   "note": "Only genuine frozen pre-kickoff five-combination sets are evaluated. Both actual scores must match within one same row. Old snapshots never backfilled. No automatic promotion.",
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 0,
-  "pairs_frozen": 57,
-  "pairs_verified": 1,
+  "pairs_frozen": 62,
+  "pairs_verified": 3,
   "rows": [
     {
       "actual_scores": [
@@ -58,6 +58,68 @@
       "original_probability_coverage": 0.05796557165401896,
       "pair_key": "BSA_1492312_1492455",
       "second_match": "Chapecoense-sc vs Vasco DA Gama"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "2-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05695666141523727,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04296362960349559,
+      "first_match": "Coritiba vs Santos",
+      "league": "BSA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05695666141523727,
+      "pair_key": "BSA_1492451_1492456",
+      "second_match": "Remo vs Chapecoense-sc"
+    },
+    {
+      "actual_scores": [
+        "2-1",
+        "2-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.056818419582803724,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.042734054125266284,
+      "first_match": "Cruzeiro vs Palmeiras",
+      "league": "BSA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.056818419582803724,
+      "pair_key": "BSA_1492452_1492453",
+      "second_match": "Flamengo vs Atletico Paranaense"
     }
   ]
 }

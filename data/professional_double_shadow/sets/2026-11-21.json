@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-19T01:52:02.113918+00:00",
+  "prospective": true,
+  "record_sha256": "0464fabbdee11d92260ded72ad10154460d119ae279725c9243778fe104b0214",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.12381036203792772,
+        "joint_probability": 0.01645861710242524,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.13293408428434572
+      },
+      {
+        "first_probability": 0.12381036203792772,
+        "joint_probability": 0.01576033385705902,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.12729414240975276
+      },
+      {
+        "first_probability": 0.1005580481921681,
+        "joint_probability": 0.013367592053846973,
+        "score1": "1-0",
+        "score2": "1-0",
+        "second_probability": 0.13293408428434572
+      },
+      {
+        "first_probability": 0.1005580481921681,
+        "joint_probability": 0.012800450507020627,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.12729414240975276
+      },
+      {
+        "first_probability": 0.12381036203792772,
+        "joint_probability": 0.012176135973599742,
+        "score1": "1-1",
+        "score2": "2-0",
+        "second_probability": 0.0983450478068204
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.0705631294939516,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "111",
+        "name": "Le Havre"
+      },
+      "competition": {
+        "code": "FL1",
+        "name": "FL1"
+      },
+      "homeTeam": {
+        "id": "110",
+        "name": "Estac Troyes"
+      },
+      "id": "1552827",
+      "provider": "API-Football",
+      "utcDate": "2026-11-20T19:45:00+00:00"
+    },
+    "generated_at_utc": "2026-11-19T01:52:02.113883+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "540",
+        "name": "Espanyol"
+      },
+      "competition": {
+        "code": "PD",
+        "name": "PD"
+      },
+      "homeTeam": {
+        "id": "531",
+        "name": "Athletic Club"
+      },
+      "id": "1570454",
+      "provider": "API-Football",
+      "utcDate": "2026-11-20T20:00:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "111",
+        "fixture_id": "1552827",
+        "forecast_id": "dba11ac1f30f672de8a603e5b3b832ff6029db775edd3ecf876bcf755c4d14ff",
+        "home_team_id": "110",
+        "input_digest": "5c7adf505adcfd56d3b2290f4d1787af4e00f53255a5d37306362a0a15ae5acb",
+        "kickoff_utc": "2026-11-20T19:45:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "540",
+        "fixture_id": "1570454",
+        "forecast_id": "c4752d57533dd6751eb3296acbe07fad91013f563a26db049af2c30698ea23a5",
+        "home_team_id": "531",
+        "input_digest": "3a85b0357b77c9a91af4c4b575683b906ce9579c76e48e667138331fcbdab5b8",
+        "kickoff_utc": "2026-11-20T20:00:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-19T01:50:44.033635+00:00",
+      "2026-11-19T01:50:45.536966+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-21",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-21",
+  "target_70_percent_proven": false
+}

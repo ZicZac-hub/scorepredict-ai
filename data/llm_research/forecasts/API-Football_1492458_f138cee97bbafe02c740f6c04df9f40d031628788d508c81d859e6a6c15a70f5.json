@@ -1,0 +1,79 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "Internacional",
+  "away_team_id": "119",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.25480264336967495,
+    "draw": 0.25147077793214084,
+    "home": 0.4937265786981841
+  },
+  "captured_at_utc": "2026-11-19T01:51:58.771124+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.254802643369675,
+      "draw": 0.2514707779321409,
+      "home": 0.49372657869818415
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492458",
+  "home_team": "Vasco DA Gama",
+  "home_team_id": "133",
+  "input_digest": "f138cee97bbafe02c740f6c04df9f40d031628788d508c81d859e6a6c15a70f5",
+  "kickoff_utc": "2026-11-19T22:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_prompt_sha256": "e5b9d2566287f0da5f4bcef3f133ec82b75e01f7e18909c506dcd71d1472eb56",
+  "source_captured_at_utc": "2026-11-17T23:10:37.346448Z",
+  "source_forecast_id": "fc00bc409e61606fc55e023d1ed894ca8efcca3f4fa71e5cf33a65c5eebb1985",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "163f98e4b670c3aa8904f9ac9efed57921634a5990004df19c1ec0ffc2eb974c",
+  "votes": {
+    "gemini": {
+      "away": 0.254802643369675,
+      "draw": 0.2514707779321409,
+      "factors": [
+        "Frozen statistical model projects Vasco da Gama at 1.63 expected goals compared to Internacional at 1.10.",
+        "Bookmaker market consensus prices Vasco da Gama as strong home favorites near 57% implied probability.",
+        "Rest days differential favors Vasco da Gama with fewer days since last kickoff, though exact physical impact remains unverified."
+      ],
+      "home": 0.49372657869818415,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Missing verified true xG feeds, confirmed starting line-ups, and player-level absence data limit absolute confidence."
+    },
+    "groqcloud": {
+      "away": 0.254802643369675,
+      "draw": 0.2514707779321409,
+      "factors": [
+        "Home team strong goal average (1.63 vs 1.10), away rest advantage (15.92 days vs 4.96), 1-1 top score option"
+      ],
+      "home": 0.49372657869818415,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "moderate"
+    }
+  }
+}
