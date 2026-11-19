@@ -22,6 +22,9 @@ from v21_goal_model_comparison import variants
 from v25_evidence_audit import trace_pair
 
 VERSION = "v25-on-demand-robust-sensitivity-experimental"
+# Separate prospective on-demand research from the V25 scheduled shadow cohort.
+# Changing the algorithm requires a new audit method version, not an overwrite.
+AUDIT_METHOD = "v25_on_demand_robust_v1"
 MAX_PAGE_PAIRS = 15
 MAX_AUTO_EVALUATION = 150
 # Conservative research-filter settings, NOT calibrated win probabilities.
@@ -162,6 +165,7 @@ def generate(first,second,now):
         "source_evidence_audit":source_audit,
         "independent_evidence_numerically_used":False,
         "method":VERSION,
+        "audit_method":AUDIT_METHOD,
         "generated_at_utc":clock.isoformat(),
         "sydney_date":first["day"],
         "first":first["title"],"second":second["title"],
