@@ -8,7 +8,7 @@ import pytest
 from ai_five_double_engine import pair_check
 from v25_upcoming import (
     available,best_pair,generate,pair_catalog,qualified,rows_for_page,
-    MAX_PAGE_PAIRS,VERSION
+    MAX_PAGE_PAIRS,VERSION,AUDIT_METHOD
 )
 from ziczac_interactive_capture import pair as audit_pair
 
@@ -49,6 +49,8 @@ def test_every_upcoming_same_day_pair_is_browsable_and_unchanged():
     report=generate(*target,NOW)
     assert report["status"]=="ready"
     assert report["method"]==VERSION
+    assert report["audit_method"]==AUDIT_METHOD
+    assert report["v25_five_original_v8_mass"]<=report["v8_optimal_five_estimated_mass"]+1e-10
     assert len(report["scores"])==5
     assert len({(r["score1"],r["score2"]) for r in report["scores"]})==5
     assert len(report["v8_same_pair_scores"])==5
@@ -128,10 +130,13 @@ def test_explicit_v25_generation_is_valid_for_original_immutable_audit():
     catalog=pair_catalog(next(iter(candidates.values())),NOW)
     output=generate(*catalog[0],NOW)
     record=audit_pair(output["first_fixture"],output["second_fixture"],
-                      output["scores"],method="v25_professional_analyst",now=NOW)
+                      output["scores"],method=AUDIT_METHOD,now=NOW)
     assert record["source"]=="ai_five_double"
-    assert record["method"]=="v25_professional_analyst" or (
-        record.get("payload") or {}).get("method")=="v25_professional_analyst"
+    assert record["method"]==AUDIT_METHOD
+    legacy=audit_pair(output["first_fixture"],output["second_fixture"],
+                      output["scores"],method="v25_professional_analyst",now=NOW)
+    # Old frozen research and current on-demand output must NOT collide.
+    assert record["record_id"]!=legacy["record_id"]
 
 def test_ai_studio_v25_engine_visible_without_duplicate_streamlit_keys():
     from pathlib import Path
