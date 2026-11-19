@@ -12,7 +12,7 @@ import math
 from ai_five_double_engine import identity
 from v25_upcoming import (
     MAX_PAGE_PAIRS, available, pair_catalog, generate, best_pair,
-    rows_for_page, VERSION, automatic_quality,
+    rows_for_page, VERSION, AUDIT_METHOD, automatic_quality,
 )
 from v25_goal_validation import historical_reality_check
 from v25_date_discovery import (
@@ -38,7 +38,7 @@ def _save_explicit_selection(st,report):
         packet=audit_pair(
             report["first_fixture"],report["second_fixture"],
             report["scores"],
-            method="v25_professional_analyst",
+            method=AUDIT_METHOD,
             now=datetime.fromisoformat(report["generated_at_utc"]))
         store_ui(st,packet)
     except (KeyError,ValueError,TypeError) as error:
@@ -64,9 +64,14 @@ def _show_report(st,report):
                 f"{report['v8_optimal_five_estimated_mass']:.2%}")
     right.metric("V25 robustness criterion",
                  f"{report['v25_lower_envelope_criterion']:.2%}")
-    st.caption("Neither number is a verified hit rate or real winning "
-               "probability. The V25 value is an uncalibrated lower-envelope "
-               "score for ranking candidates, not a true probability bound.")
+    # Compare the SAME V8 distribution for both selections. The robustness
+    # criterion is a different uncalibrated measure, not a winning chance.
+    st.metric("V25 selected-five mass under original V8 model",
+              f"{report['v25_five_original_v8_mass']:.2%}")
+    st.caption("The two V8 model-mass figures are directly comparable; "
+               "the V25 robustness criterion is not. None is a verified hit "
+               "rate or a real winning probability. The robustness criterion "
+               "is an uncalibrated model-ranking score, not a probability bound.")
     screening=automatic_quality(report)
     if not screening["passed"]:
         st.warning("Cautious auto-selection would abstain on this pair: "+
