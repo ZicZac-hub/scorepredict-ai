@@ -51,6 +51,25 @@ def test_deep_research_requires_named_method_and_original_forecast():
         single(f,"2-1","deep_research",now=NOW)
 
 
+def test_distinct_v25_methods_remain_separate_and_gradable():
+    first=fixture(701,"First Home","First Away")
+    second=fixture(702,"Second Home","Second Away")
+    picks=[{"score1":f"{i}-0","score2":"1-1"} for i in range(5)]
+    legacy=pair(first,second,picks,now=NOW,method="v25_professional_analyst")
+    on_demand=pair(first,second,picks,now=NOW,method="v25_on_demand_robust_v1")
+    assert legacy["record_id"]!=on_demand["record_id"]
+    rows=private_records([legacy,on_demand])
+    assert len(rows)==2
+    assert {r["source"] for r in rows}=={
+        "ai_five_double_v25_professional_analyst",
+        "ai_five_double_v25_on_demand_robust_v1"}
+    finals={(first["provider"],str(first["id"])):verified(first,1,0),
+            (second["provider"],str(second["id"])):verified(second,1,1)}
+    result=summary(rows,finals,now=NOW)
+    assert result["five_doubles"]["verified"]==2
+    assert result["five_doubles"]["hit"]==2
+
+
 def test_pre_kickoff_required_for_single_and_pair():
     a=fixture(201,"Home A","Away A")
     b=fixture(202,"Home B","Away B")
