@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-19T01:52:17.621432+00:00",
+  "evaluated_at_utc": "2026-11-19T02:51:34.154366+00:00",
   "external_requests": 0,
   "invalid_opportunities": 0,
   "limitations": [
@@ -18,18 +18,21 @@
   "methods": {
     "baseline_v8": {
       "abstained": 0,
-      "hit_rate": null,
+      "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
       "issued": 1,
       "opportunities": 1,
-      "outcome_brier": null,
-      "pending": 1,
-      "set_brier_descriptive": null,
-      "single_fixtures_evaluated": 0,
-      "single_score_log_loss": null,
-      "verified": 0,
-      "wilson_95": null
+      "outcome_brier": 0.5734501612298828,
+      "pending": 0,
+      "set_brier_descriptive": 0.005031875565282043,
+      "single_fixtures_evaluated": 2,
+      "single_score_log_loss": 3.4314203906720473,
+      "verified": 1,
+      "wilson_95": [
+        0.0,
+        0.7934506856227626
+      ]
     },
     "market_only": {
       "abstained": 1,
@@ -183,7 +186,7 @@
       "verified_common_pairs": 0
     }
   },
-  "pending_opportunities": 1,
+  "pending_opportunities": 0,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -193,7 +196,10 @@
           2,
           1
         ],
-        null
+        [
+          4,
+          0
+        ]
       ],
       "lineup_context": [
         {
@@ -213,8 +219,14 @@
       ],
       "methods": {
         "baseline_v8": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.0709357143143145,
+            "hit": false,
+            "outcome_brier": 0.5734501612298828,
+            "score_log_loss": 3.4314203906720473,
+            "set_brier_descriptive": 0.005031875565282043
+          },
+          "status": "verified"
         },
         "market_only": {
           "metrics": null,
@@ -229,13 +241,13 @@
           "status": "abstained"
         }
       },
-      "status": "pending",
+      "status": "verified",
       "sydney_date": "2026-11-19"
     }
   ],
   "source_rejections": {},
   "target_70_percent_proven": false,
   "valid_opportunities": 1,
-  "verified_opportunities": 0,
+  "verified_opportunities": 1,
   "version": "professional-fixed-pair-ablation-v1"
 }

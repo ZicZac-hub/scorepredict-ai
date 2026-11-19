@@ -1,14 +1,14 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-19T01:52:04.801407+00:00",
+  "at_utc": "2026-11-19T02:51:27.815855+00:00",
   "attempts": [
     {
       "date": "2026-11-19",
-      "page": 3
+      "page": 5
     },
     {
       "date": "2026-11-19",
-      "page": 4
+      "page": 6
     }
   ],
   "binding": {
@@ -22,8 +22,10 @@
     "v8_checked": 223,
     "v8_with_catalog": 4
   },
-  "catalog_rejection_counts": {},
-  "completed_at_utc": "2026-11-19T01:52:05.988829+00:00",
+  "catalog_rejection_counts": {
+    "fixture_already_started": 1
+  },
+  "completed_at_utc": "2026-11-19T02:51:28.789265+00:00",
   "coverage_health": {
     "catalog_snapshot_rejections": {
       "market_quotes_stale": 24
@@ -58,26 +60,25 @@
     "2026-11-28"
   ],
   "new_catalog_fixtures": [
-    "1612182",
-    "1612192",
-    "1612193",
-    "1628039",
-    "1628041",
-    "1628045",
-    "1630465",
-    "1630467",
-    "1630638",
-    "1630640",
-    "1630643",
-    "1638286",
-    "1638292",
-    "1638297",
-    "1638327",
-    "1638338",
-    "1639691",
-    "1640368",
-    "1640369",
-    "1643062"
+    "1643063",
+    "1645894",
+    "1647177",
+    "1647214",
+    "1647374",
+    "1647524",
+    "1647527",
+    "1647624",
+    "1649584",
+    "1649585",
+    "1649586",
+    "1649969",
+    "1649988",
+    "1649989",
+    "1649994",
+    "1650232",
+    "1650500",
+    "1650501",
+    "1650502"
   ],
   "new_source_bindings": [],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
@@ -85,11 +86,11 @@
   "provider_fixture_rows": 20,
   "queries": 2,
   "quote_diagnostics": {
-    "accepted_bookmaker_market": 650,
-    "incomplete_supported_market": 95,
-    "unsupported_market_type": 2665
+    "accepted_bookmaker_market": 639,
+    "incomplete_supported_market": 88,
+    "unsupported_market_type": 2555
   },
   "request_budget_per_run": 2,
-  "requests_used_today": 4,
+  "requests_used_today": 6,
   "skipped_stale": 0
 }
