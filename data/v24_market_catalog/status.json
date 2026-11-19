@@ -1,34 +1,20 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-19T21:23:53.266265+00:00",
-  "attempts": [
-    {
-      "date": "2026-11-20",
-      "page": 4
-    },
-    {
-      "date": "2026-11-20",
-      "page": 5
-    }
-  ],
+  "at_utc": "2026-11-19T22:24:01.052988+00:00",
+  "attempts": [],
   "binding": {
     "catalog_snapshot_rejections": {
       "market_quotes_stale": 31
     },
     "fixtures_without_catalog": 209,
     "missing_catalog": 230,
-    "new_bindings": [
-      "1552827",
-      "1552827"
-    ],
+    "new_bindings": [],
     "out_of_window": 16,
     "v8_checked": 232,
     "v8_with_catalog": 2
   },
-  "catalog_rejection_counts": {
-    "no_supported_timestamped_market": 2
-  },
-  "completed_at_utc": "2026-11-19T21:23:59.632748+00:00",
+  "catalog_rejection_counts": {},
+  "completed_at_utc": "2026-11-19T22:24:01.443717+00:00",
   "coverage_health": {
     "catalog_snapshot_rejections": {
       "market_quotes_stale": 31
@@ -37,7 +23,7 @@
     "eligible_frozen_forecasts": 232,
     "fixtures_without_catalog": 209,
     "matched_market_forecasts": 2,
-    "new_identity_validated_packets": 2,
+    "new_identity_validated_packets": 0,
     "provider_request_errors": 0,
     "reason": "market_available_for_some_fixtures",
     "unmatched_market_forecasts": 230
@@ -62,40 +48,13 @@
     "2026-11-22",
     "2026-11-23"
   ],
-  "new_catalog_fixtures": [
-    "1552531",
-    "1552532",
-    "1552534",
-    "1552535",
-    "1552537",
-    "1552827",
-    "1553229",
-    "1553230",
-    "1554228",
-    "1555082",
-    "1555083",
-    "1555084",
-    "1555085",
-    "1555086",
-    "1556143",
-    "1556144",
-    "1556150",
-    "1556903"
-  ],
-  "new_source_bindings": [
-    "1552827",
-    "1552827"
-  ],
+  "new_catalog_fixtures": [],
+  "new_source_bindings": [],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
   "provider_errors": [],
-  "provider_fixture_rows": 20,
-  "queries": 2,
-  "quote_diagnostics": {
-    "accepted_bookmaker_market": 928,
-    "incomplete_supported_market": 109,
-    "stale_source_timestamp": 553,
-    "unsupported_market_type": 3922
-  },
+  "provider_fixture_rows": 0,
+  "queries": 0,
+  "quote_diagnostics": {},
   "request_budget_per_run": 2,
   "requests_used_today": 12,
   "skipped_stale": 0
