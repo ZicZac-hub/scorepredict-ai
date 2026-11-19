@@ -3,82 +3,82 @@
     "ai_gemini": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 8,
-      "pending": 1,
+      "miss": 6,
+      "pending": 3,
       "recorded": 9,
-      "verified": 8
+      "verified": 6
     },
     "ai_groqcloud": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 6,
-      "pending": 1,
+      "miss": 4,
+      "pending": 3,
       "recorded": 7,
-      "verified": 6
+      "verified": 4
     },
     "automatic_five_double": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 2,
-      "pending": 4,
+      "miss": 1,
+      "pending": 5,
       "recorded": 6,
-      "verified": 2
+      "verified": 1
     },
     "frozen_v10": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 6,
-      "pending": 6,
+      "miss": 4,
+      "pending": 8,
       "recorded": 12,
-      "verified": 6
+      "verified": 4
     },
     "frozen_v12": {
       "hit": 1,
-      "hit_rate": 0.16666666666666666,
-      "miss": 5,
-      "pending": 63,
+      "hit_rate": 0.25,
+      "miss": 3,
+      "pending": 65,
       "recorded": 69,
-      "verified": 6
+      "verified": 4
     },
     "frozen_v13": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 6,
-      "pending": 63,
+      "miss": 4,
+      "pending": 65,
       "recorded": 69,
-      "verified": 6
+      "verified": 4
     },
     "frozen_v8": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 8,
-      "pending": 217,
+      "miss": 6,
+      "pending": 219,
       "recorded": 225,
-      "verified": 8
+      "verified": 6
     },
     "frozen_v8_control": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 6,
-      "pending": 6,
+      "miss": 4,
+      "pending": 8,
       "recorded": 12,
-      "verified": 6
+      "verified": 4
     },
     "frozen_v8_near": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 8,
-      "pending": 6,
+      "miss": 6,
+      "pending": 8,
       "recorded": 14,
-      "verified": 8
+      "verified": 6
     },
     "frozen_v9": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 8,
-      "pending": 6,
+      "miss": 6,
+      "pending": 8,
       "recorded": 14,
-      "verified": 8
+      "verified": 6
     },
     "website_original": {
       "hit": 0,
@@ -89,16 +89,16 @@
       "verified": 0
     }
   },
-  "checked_at_utc": "2026-11-19T03:56:18.000934+00:00",
+  "checked_at_utc": "2026-11-19T05:02:52.276607+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
-    "miss": 2,
-    "pending": 4,
+    "miss": 1,
+    "pending": 5,
     "recorded": 6,
-    "verified": 2
+    "verified": 1
   },
-  "identity_conflicts": 0,
+  "identity_conflicts": 2,
   "legacy_records_without_verifiable_identity": 0,
   "note": "Pending results are neither hits nor misses. AI providers are tracked individually; no guarantee of exact-score accuracy.",
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
@@ -16681,9 +16681,7 @@
       "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T23:24:30.357215+00:00",
       "choices": [
         [
@@ -16705,18 +16703,14 @@
         }
       ],
       "model": "v12",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v12",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T07:28:55.645162+00:00",
       "choices": [
         [
@@ -16738,18 +16732,14 @@
         }
       ],
       "model": "v9",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v9",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T07:28:55.663730+00:00",
       "choices": [
         [
@@ -16771,18 +16761,14 @@
         }
       ],
       "model": "v10",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v10",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T23:24:30.381629+00:00",
       "choices": [
         [
@@ -16804,18 +16790,14 @@
         }
       ],
       "model": "v13",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v13",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T01:27:59.495510+00:00",
       "choices": [
         [
@@ -16837,18 +16819,14 @@
         }
       ],
       "model": "v8",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v8",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T01:50:49.750007+00:00",
       "choices": [
         [
@@ -16870,18 +16848,14 @@
         }
       ],
       "model": "v8_near",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v8_near",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T07:28:55.645162+00:00",
       "choices": [
         [
@@ -16903,18 +16877,14 @@
         }
       ],
       "model": "v8_control",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v8_control",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T23:24:31.811519+00:00",
       "choices": [
         [
@@ -16936,18 +16906,14 @@
         }
       ],
       "model": "v12",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v12",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T09:30:25.466100+00:00",
       "choices": [
         [
@@ -16969,18 +16935,14 @@
         }
       ],
       "model": "v10",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v10",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T09:30:25.424518+00:00",
       "choices": [
         [
@@ -17002,18 +16964,14 @@
         }
       ],
       "model": "v8_control",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v8_control",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T09:30:25.424518+00:00",
       "choices": [
         [
@@ -17035,18 +16993,14 @@
         }
       ],
       "model": "v9",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v9",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T23:24:31.833470+00:00",
       "choices": [
         [
@@ -17068,18 +17022,14 @@
         }
       ],
       "model": "v13",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v13",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T01:27:59.549927+00:00",
       "choices": [
         [
@@ -17101,18 +17051,14 @@
         }
       ],
       "model": "v8",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v8",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-17T01:50:50.022818+00:00",
       "choices": [
         [
@@ -17134,18 +17080,14 @@
         }
       ],
       "model": "v8_near",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "frozen_v8_near",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T12:45:34.240340+00:00",
       "choices": [
         [
@@ -17167,18 +17109,14 @@
         }
       ],
       "model": "gemini-3.5-flash-lite",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "ai_gemini",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "4-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T12:45:34.240340+00:00",
       "choices": [
         [
@@ -17200,18 +17138,14 @@
         }
       ],
       "model": "openai/gpt-oss-20b",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "ai_groqcloud",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T19:17:44.058565+00:00",
       "choices": [
         [
@@ -17233,18 +17167,14 @@
         }
       ],
       "model": "gemini-3.5-flash-lite",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "ai_gemini",
-      "status": "miss"
+      "status": "pending"
     },
     {
-      "actual_scores": [
-        "0-0"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-18T19:17:44.058565+00:00",
       "choices": [
         [
@@ -17266,13 +17196,11 @@
         }
       ],
       "model": "openai/gpt-oss-20b",
-      "option_hits": [
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-19T00:30:00.000000Z",
       "source": "ai_groqcloud",
-      "status": "miss"
+      "status": "pending"
     },
     {
       "actual_scores": [
@@ -17869,10 +17797,7 @@
       "status": "miss"
     },
     {
-      "actual_scores": [
-        "4-0",
-        "2-1"
-      ],
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T01:28:30.164394+00:00",
       "choices": [
         [
@@ -17920,17 +17845,11 @@
         }
       ],
       "model": "v8",
-      "option_hits": [
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
+      "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-18T23:30:00.000000Z",
       "source": "automatic_five_double",
-      "status": "miss"
+      "status": "pending"
     },
     {
       "actual_scores": [
@@ -18858,10 +18777,10 @@
   "schema_version": 1,
   "singles": {
     "hit": 1,
-    "hit_rate": 0.016129032258064516,
-    "miss": 61,
-    "pending": 564,
+    "hit_rate": 0.022727272727272728,
+    "miss": 43,
+    "pending": 582,
     "recorded": 626,
-    "verified": 62
+    "verified": 44
   }
 }
