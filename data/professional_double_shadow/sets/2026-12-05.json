@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-20T19:58:49.757898+00:00",
+  "prospective": true,
+  "record_sha256": "7385ce3a24cb98e6bc6ac2b1b18cf76735dd89fa9b1d3a52f9b3c25d327de80a",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.10776061085433013,
+        "joint_probability": 0.01157658940607005,
+        "score1": "2-0",
+        "score2": "1-1",
+        "second_probability": 0.10742876561565882
+      },
+      {
+        "first_probability": 0.09844467643907176,
+        "joint_probability": 0.01057579007128241,
+        "score1": "3-0",
+        "score2": "1-1",
+        "second_probability": 0.10742876561565882
+      },
+      {
+        "first_probability": 0.10776061085433013,
+        "joint_probability": 0.01053104279160839,
+        "score1": "2-0",
+        "score2": "1-2",
+        "second_probability": 0.09772627222616773
+      },
+      {
+        "first_probability": 0.10776061085433013,
+        "joint_probability": 0.00984769581564416,
+        "score1": "2-0",
+        "score2": "0-1",
+        "second_probability": 0.09138492940575653
+      },
+      {
+        "first_probability": 0.09844467643907176,
+        "joint_probability": 0.009620631248901727,
+        "score1": "3-0",
+        "score2": "1-2",
+        "second_probability": 0.09772627222616773
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.05215174933350674,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "185",
+        "name": "SC Paderborn 07"
+      },
+      "competition": {
+        "code": "BL1",
+        "name": "BL1"
+      },
+      "homeTeam": {
+        "id": "157",
+        "name": "Bayern M\u00fcnchen"
+      },
+      "id": "1575239",
+      "provider": "API-Football",
+      "utcDate": "2026-12-04T19:30:00+00:00"
+    },
+    "generated_at_utc": "2026-11-20T19:58:49.757848+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "85",
+        "name": "Paris Saint Germain"
+      },
+      "competition": {
+        "code": "FL1",
+        "name": "FL1"
+      },
+      "homeTeam": {
+        "id": "96",
+        "name": "Toulouse"
+      },
+      "id": "1552844",
+      "provider": "API-Football",
+      "utcDate": "2026-12-04T19:45:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "185",
+        "fixture_id": "1575239",
+        "forecast_id": "7786bf59e766e76efc5596f66c43e500d8ec39b0747e154d97506b35bad0285a",
+        "home_team_id": "157",
+        "input_digest": "6cc0e30be3ffd44d04b4e876e0233402d05a0e692585939b6f3082d3c88464ed",
+        "kickoff_utc": "2026-12-04T19:30:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "85",
+        "fixture_id": "1552844",
+        "forecast_id": "75998d2db5a3e95601f59f5d3a7ff1e408b904521c719714f8e61fbd882a3162",
+        "home_team_id": "96",
+        "input_digest": "d8e57651466ea922af55d8725b66f25fb5c52297805565dcabf43eb96c582d69",
+        "kickoff_utc": "2026-12-04T19:45:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-20T19:58:37.198812+00:00",
+      "2026-11-20T19:58:37.480829+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-05",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-05",
+  "target_70_percent_proven": false
+}
