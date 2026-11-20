@@ -32,41 +32,41 @@
       "verified_evaluated": 0
     }
   },
-  "checked_at_utc": "2026-11-20T22:47:50.802600+00:00",
+  "checked_at_utc": "2026-11-20T23:31:14.226903+00:00",
   "frozen_v22_vs_v8": {
     "baseline_v8": {
-      "hit_rate": null,
+      "hit_rate": 0.0,
       "hits": 0,
-      "pending": 1,
-      "verified": 0
+      "pending": 0,
+      "verified": 1
     },
     "v22_research": {
-      "hit_rate": null,
+      "hit_rate": 0.0,
       "hits": 0,
-      "pending": 1,
-      "verified": 0
+      "pending": 0,
+      "verified": 1
     }
   },
   "matched_ai_provider_results": {
     "gemini": {
-      "conservative_95pct_lower_bound": -0.002480233611120757,
-      "mean_paired_outcome_brier_advantage": 0.0003853831548757981,
+      "conservative_95pct_lower_bound": -0.002280886042695723,
+      "mean_paired_outcome_brier_advantage": 0.00035573829680844607,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 12
+      "source_matched_verified_fixtures": 13
     },
     "groqcloud": {
-      "conservative_95pct_lower_bound": -0.001477029946377106,
-      "mean_paired_outcome_brier_advantage": 0.0015324396737032369,
+      "conservative_95pct_lower_bound": -0.0013427010225475977,
+      "mean_paired_outcome_brier_advantage": 0.001393126976093872,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 10
+      "source_matched_verified_fixtures": 11
     }
   },
   "missing_records_are_not_wins_or_losses": true,
   "model_promoted": false,
   "note": "Training/retrospective figures do not prove five-double hit improvement.",
-  "observed_v22_accuracy_unavailable_if_no_verified_pairs": true,
+  "observed_v22_accuracy_unavailable_if_no_verified_pairs": false,
   "required_for_promotion": {
     "owner_approval_and_independent_holdout": true,
     "positive_calibration_out_of_sample": true,
@@ -80,7 +80,7 @@
   "source_capture_daily_attempts_used": 6,
   "source_capture_eligible_legs": 69,
   "source_capture_enabled": true,
-  "source_capture_last_run": "2026-11-20T22:47:45.161193+00:00",
+  "source_capture_last_run": "2026-11-20T23:31:07.098839+00:00",
   "source_capture_reason": "daily_attempt_budget_exhausted",
   "source_capture_saved_packets": 0,
   "source_capture_skipped_reasons": [
@@ -156,8 +156,8 @@
   ],
   "source_capture_source_queries": 0,
   "source_completeness": {
-    "packets_checked": 132,
-    "with_2_market_types": 129,
+    "packets_checked": 134,
+    "with_2_market_types": 131,
     "with_6_per_team": 20,
     "with_both_starting_XIs": 1,
     "with_historical_xg": 20,
@@ -191,7 +191,7 @@
         "row_count": 0
       }
     },
-    "last_run_utc": "2026-11-20T22:47:45.976355+00:00",
+    "last_run_utc": "2026-11-20T23:31:08.128132+00:00",
     "matched_future_fixtures_last_run": 0,
     "matched_historical_xg_last_run": 0,
     "provider_error_type": null,
@@ -207,27 +207,27 @@
     "unverified_source_packet_reasons": {}
   },
   "v23_early_market_capture_enabled": true,
-  "v23_early_market_last_run": "2026-11-20T22:47:43.967286+00:00",
+  "v23_early_market_last_run": "2026-11-20T23:31:05.868154+00:00",
   "v23_early_market_new_packets": 2,
   "v23_market_form_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
       "hits": 0,
-      "pending": 2,
-      "verified": 2
+      "pending": 1,
+      "verified": 3
     },
     "v23_market_form": {
       "hit_rate": 0.0,
       "hits": 0,
-      "pending": 2,
-      "verified": 2
+      "pending": 1,
+      "verified": 3
     }
   },
   "v23_not_observed_success_without_verified_pairs": false,
   "v23_source_qualified_pairs": 19,
   "v24_broad_market_collection": {
     "enabled": true,
-    "last_run_utc": "2026-11-20T22:47:42.686182+00:00",
+    "last_run_utc": "2026-11-20T23:31:04.218350+00:00",
     "max_requests_per_day": 12,
     "new_fixture_markets_last_run": 0,
     "new_v8_source_bindings_last_run": 0,

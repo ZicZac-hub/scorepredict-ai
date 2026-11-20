@@ -20,15 +20,15 @@
         "wilson_95": null
       },
       {
-        "absolute_gap": 0.0783091857521322,
+        "absolute_gap": 0.008116322681008037,
         "estimated_band": "70%\u201380%",
         "hits": 9,
-        "mean_estimated": 0.739872632429686,
-        "observed_rate": 0.8181818181818182,
-        "verified": 11,
+        "mean_estimated": 0.741883677318992,
+        "observed_rate": 0.75,
+        "verified": 12,
         "wilson_95": [
-          0.5230194380391558,
-          0.948632310253915
+          0.46769466506643437,
+          0.9110583316059452
         ]
       },
       {
@@ -56,22 +56,22 @@
         ]
       }
     ],
-    "brier": 0.13227838657505167,
-    "expected_calibration_error": 0.08497916032109042,
+    "brier": 0.16452306621037746,
+    "expected_calibration_error": 0.024337422362344128,
     "hits": 11,
-    "mean_model_estimate": 0.7611746858327558,
-    "observed_win_rate": 0.8461538461538461,
+    "mean_model_estimate": 0.7613768633519415,
+    "observed_win_rate": 0.7857142857142857,
     "sample_too_small_for_reliable_calibration": true,
-    "verified": 13,
+    "verified": 14,
     "wilson_95": [
-      0.5776536898051745,
-      0.9567418216419186
+      0.524107694133997,
+      0.924286132873068
     ]
   },
   "evaluated_forecasts_captured_pre_kickoff": true,
   "evaluation_type": "original_prospective_v8_only",
   "evidence": {
-    "awaiting_or_unverified": 220,
+    "awaiting_or_unverified": 219,
     "frozen_source_matches_valid": 233,
     "missing_feature_counts": {
       "independent_market_snapshot_unavailable": 233,
@@ -81,7 +81,7 @@
     },
     "no_extra_paid_calls": true,
     "source_rejections": {},
-    "verified_results": 13
+    "verified_results": 14
   },
   "note": "No new football observations are fabricated. Reliable calibration needs hundreds of verified pre-match predictions. Original five exact-score double results are tracked separately.",
   "per_league": {
@@ -100,6 +100,12 @@
     "FL1": {
       "brier": 0.07268193060151759,
       "observed_win_rate": 1.0,
+      "sample_too_small": true,
+      "verified": 1
+    },
+    "PD": {
+      "brier": 0.5837039014696128,
+      "observed_win_rate": 0.0,
       "sample_too_small": true,
       "verified": 1
     }
