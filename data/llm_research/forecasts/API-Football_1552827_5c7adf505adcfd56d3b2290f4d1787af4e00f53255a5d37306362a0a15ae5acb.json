@@ -1,0 +1,81 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "Le Havre",
+  "away_team_id": "111",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.3358435428207025,
+    "draw": 0.2695958653271924,
+    "home": 0.39456059185210507
+  },
+  "captured_at_utc": "2026-11-20T09:45:07.510505+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.3358435428207025,
+      "draw": 0.2695958653271924,
+      "home": 0.39456059185210507
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1552827",
+  "home_team": "Estac Troyes",
+  "home_team_id": "110",
+  "input_digest": "5c7adf505adcfd56d3b2290f4d1787af4e00f53255a5d37306362a0a15ae5acb",
+  "kickoff_utc": "2026-11-20T19:45:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_prompt_sha256": "45018480a984f02716f2391a9bdca0b197259de334307d86b06d5cc66baeb0d9",
+  "source_captured_at_utc": "2026-11-19T01:50:44.033635Z",
+  "source_forecast_id": "dba11ac1f30f672de8a603e5b3b832ff6029db775edd3ecf876bcf755c4d14ff",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "1ad5f39e7875fff693fdfd158fbfbc1be163e2ade588d3004edfa6cce2014cf8",
+  "votes": {
+    "gemini": {
+      "away": 0.3358435428207025,
+      "draw": 0.2695958653271924,
+      "factors": [
+        "Frozen statistical model projects a slight edge for Estac Troyes at home.",
+        "Bookmaker market consensus prices Estac Troyes as favorites around 43% win probability.",
+        "Expected goals model estimates a tight encounter with home expected goals at 1.37 and away at 1.24."
+      ],
+      "home": 0.39456059185210507,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate uncertainty due to missing verified starting XIs, tactical formations, and true shot-level xG data."
+    },
+    "groqcloud": {
+      "away": 0.3358435428207025,
+      "draw": 0.2695958653271924,
+      "factors": [
+        "Home expected goals slightly higher",
+        "Market odds align with statistical model",
+        "Rest days advantage marginally favors home"
+      ],
+      "home": 0.39456059185210507,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Limited data on player form, injuries, and tactical setup"
+    }
+  }
+}
