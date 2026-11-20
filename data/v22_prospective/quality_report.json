@@ -17,7 +17,7 @@
       "verified_evaluated": 0
     }
   },
-  "checked_at_utc": "2026-11-20T20:51:37.651397+00:00",
+  "checked_at_utc": "2026-11-20T21:48:15.788750+00:00",
   "frozen_v22_vs_v8": {
     "baseline_v8": {
       "hit_rate": null,
@@ -34,18 +34,18 @@
   },
   "matched_ai_provider_results": {
     "gemini": {
-      "conservative_95pct_lower_bound": -0.0030057817075381473,
-      "mean_paired_outcome_brier_advantage": 0.0004624597858509577,
+      "conservative_95pct_lower_bound": -0.0027178065015990016,
+      "mean_paired_outcome_brier_advantage": 0.0004204179871372343,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 10
+      "source_matched_verified_fixtures": 11
     },
     "groqcloud": {
-      "conservative_95pct_lower_bound": -0.0018464975021055727,
-      "mean_paired_outcome_brier_advantage": 0.0019155495921290462,
+      "conservative_95pct_lower_bound": -0.0016412260796986517,
+      "mean_paired_outcome_brier_advantage": 0.0017027107485591522,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 8
+      "source_matched_verified_fixtures": 9
     }
   },
   "missing_records_are_not_wins_or_losses": true,
@@ -63,9 +63,9 @@
   "source_capture_attempted_legs": 0,
   "source_capture_daily_attempts_limit": 6,
   "source_capture_daily_attempts_used": 6,
-  "source_capture_eligible_legs": 67,
+  "source_capture_eligible_legs": 68,
   "source_capture_enabled": true,
-  "source_capture_last_run": "2026-11-20T20:51:32.834314+00:00",
+  "source_capture_last_run": "2026-11-20T21:48:11.783643+00:00",
   "source_capture_reason": "daily_attempt_budget_exhausted",
   "source_capture_saved_packets": 0,
   "source_capture_skipped_reasons": [
@@ -135,12 +135,13 @@
     "1492460:daily_attempt_budget_exhausted",
     "1550198:daily_attempt_budget_exhausted",
     "1552822:daily_attempt_budget_exhausted",
-    "1570456:daily_attempt_budget_exhausted"
+    "1570456:daily_attempt_budget_exhausted",
+    "1492466:daily_attempt_budget_exhausted"
   ],
   "source_capture_source_queries": 0,
   "source_completeness": {
-    "packets_checked": 128,
-    "with_2_market_types": 125,
+    "packets_checked": 130,
+    "with_2_market_types": 127,
     "with_6_per_team": 20,
     "with_both_starting_XIs": 1,
     "with_historical_xg": 20,
@@ -174,7 +175,7 @@
         "row_count": 0
       }
     },
-    "last_run_utc": "2026-11-20T20:51:33.505031+00:00",
+    "last_run_utc": "2026-11-20T21:48:12.374672+00:00",
     "matched_future_fixtures_last_run": 0,
     "matched_historical_xg_last_run": 0,
     "provider_error_type": null,
@@ -190,7 +191,7 @@
     "unverified_source_packet_reasons": {}
   },
   "v23_early_market_capture_enabled": true,
-  "v23_early_market_last_run": "2026-11-20T20:51:31.801659+00:00",
+  "v23_early_market_last_run": "2026-11-20T21:48:10.934463+00:00",
   "v23_early_market_new_packets": 2,
   "v23_market_form_vs_v8": {
     "baseline_v8": {
@@ -207,10 +208,10 @@
     }
   },
   "v23_not_observed_success_without_verified_pairs": false,
-  "v23_source_qualified_pairs": 3,
+  "v23_source_qualified_pairs": 10,
   "v24_broad_market_collection": {
     "enabled": true,
-    "last_run_utc": "2026-11-20T20:51:30.710309+00:00",
+    "last_run_utc": "2026-11-20T21:48:10.039790+00:00",
     "max_requests_per_day": 12,
     "new_fixture_markets_last_run": 0,
     "new_v8_source_bindings_last_run": 0,
