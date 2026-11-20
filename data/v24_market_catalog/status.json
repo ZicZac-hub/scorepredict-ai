@@ -1,40 +1,40 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-20T00:17:49.555975+00:00",
+  "at_utc": "2026-11-20T01:47:54.828133+00:00",
   "attempts": [
     {
       "date": "2026-11-20",
-      "page": 1
+      "page": 3
     },
     {
       "date": "2026-11-20",
-      "page": 2
+      "page": 4
     }
   ],
   "binding": {
     "catalog_snapshot_rejections": {
-      "market_quotes_stale": 19
+      "market_quotes_stale": 15
     },
     "fixtures_without_catalog": 209,
     "missing_catalog": 224,
     "new_bindings": [
-      "1492457",
-      "1492457"
+      "1552827",
+      "1552827"
     ],
-    "out_of_window": 20,
-    "v8_checked": 228,
-    "v8_with_catalog": 4
+    "out_of_window": 22,
+    "v8_checked": 226,
+    "v8_with_catalog": 2
   },
   "catalog_rejection_counts": {},
-  "completed_at_utc": "2026-11-20T00:17:50.796005+00:00",
+  "completed_at_utc": "2026-11-20T01:47:55.932588+00:00",
   "coverage_health": {
     "catalog_snapshot_rejections": {
-      "market_quotes_stale": 19
+      "market_quotes_stale": 15
     },
     "does_not_establish_accuracy_gain": true,
-    "eligible_frozen_forecasts": 228,
+    "eligible_frozen_forecasts": 226,
     "fixtures_without_catalog": 209,
-    "matched_market_forecasts": 4,
+    "matched_market_forecasts": 2,
     "new_identity_validated_packets": 2,
     "provider_request_errors": 0,
     "reason": "market_available_for_some_fixtures",
@@ -60,41 +60,41 @@
     "2026-11-25"
   ],
   "new_catalog_fixtures": [
-    "1492457",
-    "1494808",
-    "1505563",
-    "1505569",
-    "1509219",
-    "1516189",
-    "1516190",
-    "1516192",
-    "1519198",
-    "1519199",
-    "1519200",
-    "1519201",
-    "1519202",
-    "1519203",
-    "1519204",
-    "1519234",
-    "1549058",
-    "1551149",
-    "1551377",
-    "1551380"
+    "1551493",
+    "1551887",
+    "1551888",
+    "1551889",
+    "1551890",
+    "1551891",
+    "1551892",
+    "1551893",
+    "1551894",
+    "1551895",
+    "1552531",
+    "1552532",
+    "1552534",
+    "1552535",
+    "1552536",
+    "1552537",
+    "1552539",
+    "1552827",
+    "1553229",
+    "1553230"
   ],
   "new_source_bindings": [
-    "1492457",
-    "1492457"
+    "1552827",
+    "1552827"
   ],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
   "provider_errors": [],
   "provider_fixture_rows": 20,
   "queries": 2,
   "quote_diagnostics": {
-    "accepted_bookmaker_market": 677,
-    "incomplete_supported_market": 94,
-    "unsupported_market_type": 2858
+    "accepted_bookmaker_market": 1049,
+    "incomplete_supported_market": 166,
+    "unsupported_market_type": 4522
   },
   "request_budget_per_run": 2,
-  "requests_used_today": 2,
+  "requests_used_today": 4,
   "skipped_stale": 0
 }

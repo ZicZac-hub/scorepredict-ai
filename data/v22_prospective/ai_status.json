@@ -2,27 +2,25 @@
   "ai_exact_score_probability_weight": 0.0,
   "automatic_promotion": false,
   "configured_keys_not_automatic_success": true,
-  "evaluated_at_utc": "2026-11-20T00:18:04.856406+00:00",
-  "excluded": {
-    "unmatched_identity_result_or_time": 2
-  },
+  "evaluated_at_utc": "2026-11-20T01:48:06.145984+00:00",
+  "excluded": {},
   "kind": "first_frozen_source_matched_AI_outcome_comparison",
   "min_required_verified_fixtures": 100,
   "note": "Brier superiority on 1X2 opinions is not proof of exact-score double superiority.",
   "provider_metrics": {
     "gemini": {
-      "conservative_95pct_lower_bound": -0.0038145508181560775,
-      "mean_paired_outcome_brier_advantage": 0.0005780747323136971,
+      "conservative_95pct_lower_bound": -0.0030057817075381473,
+      "mean_paired_outcome_brier_advantage": 0.0004624597858509577,
+      "passes_statistical_shadow_gate": false,
+      "production_weight": 0.0,
+      "source_matched_verified_fixtures": 10
+    },
+    "groqcloud": {
+      "conservative_95pct_lower_bound": -0.0018464975021055727,
+      "mean_paired_outcome_brier_advantage": 0.0019155495921290462,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
       "source_matched_verified_fixtures": 8
-    },
-    "groqcloud": {
-      "conservative_95pct_lower_bound": -0.002462500795987112,
-      "mean_paired_outcome_brier_advantage": 0.002554066122838728,
-      "passes_statistical_shadow_gate": false,
-      "production_weight": 0.0,
-      "source_matched_verified_fixtures": 6
     }
   },
   "saved_provider_panel_count": 10
