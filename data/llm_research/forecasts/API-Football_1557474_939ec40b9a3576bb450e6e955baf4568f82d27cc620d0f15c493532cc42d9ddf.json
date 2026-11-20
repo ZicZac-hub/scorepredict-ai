@@ -1,0 +1,84 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "Fulham",
+  "away_team_id": "36",
+  "baseline_predicted_score": [
+    1,
+    0
+  ],
+  "baseline_probabilities": {
+    "away": 0.18937722019286768,
+    "draw": 0.23349194017243544,
+    "home": 0.5771308396346969
+  },
+  "captured_at_utc": "2026-11-20T22:47:25.301403+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.18968861009643384,
+      "draw": 0.23324597008621772,
+      "home": 0.5770654198173484
+    },
+    "provider_count": 2,
+    "suggested_score": [
+      1,
+      0
+    ]
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1557474",
+  "home_team": "Manchester City",
+  "home_team_id": "50",
+  "input_digest": "939ec40b9a3576bb450e6e955baf4568f82d27cc620d0f15c493532cc42d9ddf",
+  "kickoff_utc": "2026-11-21T12:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_prompt_sha256": "944ac37340a55068c33bc32e7e6867c17cbbed8e3560c4f5a2153a4f49312d67",
+  "source_captured_at_utc": "2026-11-19T20:27:39.023015Z",
+  "source_forecast_id": "3a7b8900a3a009b42c03c6764d110ca363728d32f920fbceef39666876582def",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "c60e3e612389b656591b34934823df39df694c7060722d06944857b433d8a47a",
+  "votes": {
+    "gemini": {
+      "away": 0.19,
+      "draw": 0.233,
+      "factors": [
+        "Manchester City displays superior home shot volume and expected goal metrics.",
+        "Fulham's away profile registers lower offensive output and shot accuracy.",
+        "Squad absences include notable defensive concerns for Fulham alongside midfield knocks."
+      ],
+      "home": 0.577,
+      "score": [
+        2,
+        1
+      ],
+      "uncertainty": "Medium uncertainty due to partial historical sample windows and absent confirmed starting XIs."
+    },
+    "groqcloud": {
+      "away": 0.18937722019286768,
+      "draw": 0.23349194017243544,
+      "factors": [
+        "Manchester City high goal\u2011expectation vs. Fulham",
+        "Fulham injuries to key midfielders",
+        "High home shot\u2011on\u2011target advantage"
+      ],
+      "home": 0.5771308396346969,
+      "score": [
+        1,
+        0
+      ],
+      "uncertainty": "moderate"
+    }
+  }
+}

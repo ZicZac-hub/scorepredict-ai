@@ -1,12 +1,12 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-20T21:48:07.974974+00:00",
+  "evaluated_at_utc": "2026-11-20T22:47:39.758287+00:00",
   "external_requests": 0,
   "frozen_set_files": 6,
   "hits": 0,
   "note": "Only raw-policy prospective calibration bootstrap; premium still requires independent calibration evidence.",
   "observed_hit_rate": 0.0,
-  "pending_sets": 4,
+  "pending_sets": 3,
   "policy_id": "professional-probability-five-v1",
   "premium_release_approved": false,
   "result_rejections": {},
@@ -49,11 +49,14 @@
           3,
           1
         ],
-        null
+        [
+          0,
+          1
+        ]
       ],
       "estimated_coverage": 0.0705631294939516,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-21"
     },
     {
@@ -170,11 +173,50 @@
       "source_record_sha256": "f4365673a39606bfaf9a223d7901f47386281af55a9e38c35aba8a285ef921ba",
       "verification_status": "verified",
       "verified_at_utc": "2026-11-20T01:36:29.727083+00:00"
+    },
+    {
+      "estimated_coverage": 0.0705631294939516,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1552827"
+        ],
+        [
+          "API-Football",
+          "1570454"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Estac Troyes",
+          "Le Havre"
+        ],
+        [
+          "Athletic Club",
+          "Espanyol"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-20T19:45:00.000000Z",
+        "2026-11-20T20:00:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-19T01:52:02.113918+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "0464fabbdee11d92260ded72ad10154460d119ae279725c9243778fe104b0214",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-20T22:46:07.684017+00:00"
     }
   ],
-  "verified_sets": 2,
+  "verified_sets": 3,
   "wilson_95": [
-    0.0,
-    0.6576197724933469
+    5.551115123125783e-17,
+    0.5614970317550454
   ]
 }
