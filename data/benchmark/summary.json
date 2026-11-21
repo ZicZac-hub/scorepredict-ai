@@ -1,132 +1,132 @@
 {
   "diagnostics": {
-    "archived_fixture_ids": 259,
-    "awaiting_verified_results": 238,
-    "compatible_records": 21,
+    "archived_fixture_ids": 260,
+    "awaiting_verified_results": 220,
+    "compatible_records": 40,
     "conflicting_result_fixtures": 0,
-    "files_checked": 423,
-    "frozen_forecasts": 423,
+    "files_checked": 832,
+    "frozen_forecasts": 832,
     "missing_forecasts": 0,
     "rejected_results": 0,
-    "result_files_read": 23,
+    "result_files_read": 41,
     "skipped_records": 0,
     "truncated": false,
     "unreadable_files": 0,
     "unreadable_results": 0,
-    "verified_fixtures": 21
+    "verified_fixtures": 40
   },
   "five_double_accuracy_not_inferred": true,
   "model_promotion": "none",
   "models": {
     "fixed-always-1-1-v1": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.09523809523809523,
-      "fixtures": 21,
-      "full_distribution_count": 21,
+      "exact_hit_rate": 0.1,
+      "fixtures": 40,
+      "full_distribution_count": 40,
       "mean_top5_coverage": 1.0,
-      "multiclass_brier": 1.8095238095238095,
+      "multiclass_brier": 1.8,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.38095238095238093
+      "top5_hit_rate": 0.425
     },
     "market-informed-v9-experimental": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.09523809523809523,
-      "fixtures": 21,
-      "full_distribution_count": 21,
-      "mean_top5_coverage": 0.47680705944876256,
-      "multiclass_brier": 0.9112189010282715,
+      "exact_hit_rate": 0.07894736842105263,
+      "fixtures": 38,
+      "full_distribution_count": 38,
+      "mean_top5_coverage": 0.4647431374659631,
+      "multiclass_brier": 0.9230033090502531,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.7142857142857143
+      "top5_hit_rate": 0.6052631578947368
     },
     "prior-league-poisson-v1": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.09523809523809523,
-      "fixtures": 21,
-      "full_distribution_count": 21,
-      "mean_top5_coverage": 0.48005884880367816,
-      "multiclass_brier": 0.9197122161591951,
+      "exact_hit_rate": 0.1,
+      "fixtures": 40,
+      "full_distribution_count": 40,
+      "mean_top5_coverage": 0.4652794226896056,
+      "multiclass_brier": 0.9288932925710263,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.5714285714285714
+      "top5_hit_rate": 0.525
     },
     "reference-informed-v7": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.09523809523809523,
-      "fixtures": 21,
-      "full_distribution_count": 21,
-      "mean_top5_coverage": 0.49672813660525655,
-      "multiclass_brier": 0.9150082536916415,
+      "exact_hit_rate": 0.125,
+      "fixtures": 40,
+      "full_distribution_count": 40,
+      "mean_top5_coverage": 0.4860892672757912,
+      "multiclass_brier": 0.9248265350119012,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.6190476190476191
+      "top5_hit_rate": 0.55
     },
     "venue-form-ensemble-v6-competition-history": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.047619047619047616,
-      "fixtures": 21,
-      "full_distribution_count": 21,
-      "mean_top5_coverage": 0.4647123803392922,
-      "multiclass_brier": 0.9125507461625433,
+      "exact_hit_rate": 0.05,
+      "fixtures": 40,
+      "full_distribution_count": 40,
+      "mean_top5_coverage": 0.4533406335255824,
+      "multiclass_brier": 0.9253667606703744,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.6666666666666666
+      "top5_hit_rate": 0.6
     },
     "ziczac-evidence-ensemble-v8-experimental": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.09523809523809523,
-      "fixtures": 21,
-      "full_distribution_count": 21,
-      "mean_top5_coverage": 0.47190148005459437,
-      "multiclass_brier": 0.9117455328149211,
+      "exact_hit_rate": 0.075,
+      "fixtures": 40,
+      "full_distribution_count": 40,
+      "mean_top5_coverage": 0.4610793983206548,
+      "multiclass_brier": 0.9235365670971311,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.6190476190476191
+      "top5_hit_rate": 0.55
     },
     "ziczac-hybrid-v13-prospective-challenger": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.10526315789473684,
-      "fixtures": 19,
-      "full_distribution_count": 19,
-      "mean_top5_coverage": 0.47564556711617084,
-      "multiclass_brier": 0.9127294277662399,
+      "exact_hit_rate": 0.07894736842105263,
+      "fixtures": 38,
+      "full_distribution_count": 38,
+      "mean_top5_coverage": 0.46335250817733914,
+      "multiclass_brier": 0.924662395464452,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.5263157894736842
+      "top5_hit_rate": 0.5
     },
     "ziczac-multibook-score-v10-shadow-experimental": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.05263157894736842,
-      "fixtures": 19,
-      "full_distribution_count": 19,
-      "mean_top5_coverage": 0.5589898916484488,
-      "multiclass_brier": 0.9158187030513205,
+      "exact_hit_rate": 0.1111111111111111,
+      "fixtures": 36,
+      "full_distribution_count": 36,
+      "mean_top5_coverage": 0.5472221324472183,
+      "multiclass_brier": 0.9163510012294025,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.631578947368421
+      "top5_hit_rate": 0.6111111111111112
     },
     "ziczac-v12-league-residual-calibration-experimental": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.15789473684210525,
-      "fixtures": 19,
-      "full_distribution_count": 19,
-      "mean_top5_coverage": 0.4799569609237816,
-      "multiclass_brier": 0.9112325702578604,
-      "sample_status": "insufficient",
-      "top5_hit_rate": 0.6842105263157895
-    },
-    "ziczac-v8-market-time-matched-control-v1": {
-      "eligible_for_promotion": false,
       "exact_hit_rate": 0.10526315789473684,
-      "fixtures": 19,
-      "full_distribution_count": 19,
-      "mean_top5_coverage": 0.4730012759196038,
-      "multiclass_brier": 0.9122116820654043,
+      "fixtures": 38,
+      "full_distribution_count": 38,
+      "mean_top5_coverage": 0.46467648246841986,
+      "multiclass_brier": 0.9241585075651992,
       "sample_status": "insufficient",
       "top5_hit_rate": 0.5789473684210527
     },
+    "ziczac-v8-market-time-matched-control-v1": {
+      "eligible_for_promotion": false,
+      "exact_hit_rate": 0.09375,
+      "fixtures": 32,
+      "full_distribution_count": 32,
+      "mean_top5_coverage": 0.4595721261949161,
+      "multiclass_brier": 0.9196093038024268,
+      "sample_status": "insufficient",
+      "top5_hit_rate": 0.5625
+    },
     "ziczac-v8-near-kickoff-research-v1": {
       "eligible_for_promotion": false,
-      "exact_hit_rate": 0.09523809523809523,
-      "fixtures": 21,
-      "full_distribution_count": 21,
-      "mean_top5_coverage": 0.4722131587855447,
-      "multiclass_brier": 0.9116152545995012,
+      "exact_hit_rate": 0.075,
+      "fixtures": 40,
+      "full_distribution_count": 40,
+      "mean_top5_coverage": 0.46122730299402015,
+      "multiclass_brier": 0.9234411033830634,
       "sample_status": "insufficient",
-      "top5_hit_rate": 0.6190476190476191
+      "top5_hit_rate": 0.575
     }
   },
   "paired": {
@@ -134,116 +134,116 @@
     "models": {
       "fixed-always-1-1-v1": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
+        "exact_hit_rate": 0.125,
+        "fixtures": 32,
+        "full_distribution_count": 32,
         "mean_top5_coverage": 1.0,
-        "multiclass_brier": 1.7894736842105263,
+        "multiclass_brier": 1.75,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.3684210526315789
+        "top5_hit_rate": 0.4375
       },
       "market-informed-v9-experimental": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.47684900892816734,
-        "multiclass_brier": 0.9130190012584732,
+        "exact_hit_rate": 0.09375,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.46546227534767565,
+        "multiclass_brier": 0.9181913347402773,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.6842105263157895
+        "top5_hit_rate": 0.625
       },
       "prior-league-poisson-v1": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.47834868647347406,
-        "multiclass_brier": 0.9160353846988506,
+        "exact_hit_rate": 0.125,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.46350664159591015,
+        "multiclass_brier": 0.9227668846091626,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.631578947368421
+        "top5_hit_rate": 0.5625
       },
       "reference-informed-v7": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.49852351340723544,
-        "multiclass_brier": 0.9174850871331507,
+        "exact_hit_rate": 0.15625,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.4835532785073634,
+        "multiclass_brier": 0.9224157348059294,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.5789473684210527
+        "top5_hit_rate": 0.53125
       },
       "venue-form-ensemble-v6-competition-history": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.05263157894736842,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.4655732104983908,
-        "multiclass_brier": 0.9121658792842119,
+        "exact_hit_rate": 0.0625,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.4528037610793143,
+        "multiclass_brier": 0.9209214571158757,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.631578947368421
+        "top5_hit_rate": 0.625
       },
       "ziczac-evidence-ensemble-v8-experimental": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.472656788901185,
-        "multiclass_brier": 0.9123556737771842,
+        "exact_hit_rate": 0.09375,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.45936758702773,
+        "multiclass_brier": 0.9196947988812961,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.5789473684210527
+        "top5_hit_rate": 0.5625
       },
       "ziczac-hybrid-v13-prospective-challenger": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.47564556711617084,
-        "multiclass_brier": 0.9127294277662399,
+        "exact_hit_rate": 0.09375,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.4617498234944266,
+        "multiclass_brier": 0.9200088954071672,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.5263157894736842
+        "top5_hit_rate": 0.53125
       },
       "ziczac-multibook-score-v10-shadow-experimental": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.05263157894736842,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.5589898916484488,
-        "multiclass_brier": 0.9158187030513205,
+        "exact_hit_rate": 0.125,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.5475646522023042,
+        "multiclass_brier": 0.909094462183092,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.631578947368421
+        "top5_hit_rate": 0.65625
       },
       "ziczac-v12-league-residual-calibration-experimental": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.15789473684210525,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.4799569609237816,
-        "multiclass_brier": 0.9112325702578604,
+        "exact_hit_rate": 0.125,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.4645179281209007,
+        "multiclass_brier": 0.919515692436536,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.6842105263157895
+        "top5_hit_rate": 0.625
       },
       "ziczac-v8-market-time-matched-control-v1": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.4730012759196038,
-        "multiclass_brier": 0.9122116820654043,
+        "exact_hit_rate": 0.09375,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.4595721261949161,
+        "multiclass_brier": 0.9196093038024268,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.5789473684210527
+        "top5_hit_rate": 0.5625
       },
       "ziczac-v8-near-kickoff-research-v1": {
         "eligible_for_promotion": false,
-        "exact_hit_rate": 0.10526315789473684,
-        "fixtures": 19,
-        "full_distribution_count": 19,
-        "mean_top5_coverage": 0.4730012759196038,
-        "multiclass_brier": 0.9122116820654043,
+        "exact_hit_rate": 0.09375,
+        "fixtures": 32,
+        "full_distribution_count": 32,
+        "mean_top5_coverage": 0.45957212619491616,
+        "multiclass_brier": 0.9196093038024268,
         "sample_status": "insufficient",
-        "top5_hit_rate": 0.5789473684210527
+        "top5_hit_rate": 0.5625
       }
     },
-    "shared_fixtures": 19
+    "shared_fixtures": 32
   },
   "schema_version": 1,
   "source": "immutable_pre_kickoff_and_independent_verified_finals"
