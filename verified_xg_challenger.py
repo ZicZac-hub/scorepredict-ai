@@ -50,7 +50,11 @@ def _rows(fixture, history, snapshot, as_of):
         return None, [], "invalid_cutoff"
     if fixture.get("provider") != "API-Football" or not valid_snapshot(snapshot, fixture, now=cutoff):
         return None, [], "unverified_snapshot"
-    league = _competition_history(fixture, history)
+    league = [m for m in _competition_history(fixture, history)
+              if _date(m["utcDate"])+timedelta(hours=3) <= captured
+              and (not (m.get("observed_at_utc") or m.get("fetched_at_utc"))
+                   or (_date(m.get("observed_at_utc") or m.get("fetched_at_utc")) is not None
+                       and _date(m.get("observed_at_utc") or m.get("fetched_at_utc")) <= captured))]
     if not (fixture.get("competition") or {}).get("id") and not (fixture.get("competition") or {}).get("code"):
         return None, [], "unidentified_league"
     by_id = {}
