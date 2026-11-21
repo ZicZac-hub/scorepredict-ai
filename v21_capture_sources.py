@@ -347,7 +347,10 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             target=(str(leg["provider"]),str(leg["fixture_id"]),str(leg["forecast_id"])) in targets
             refresh_needed=bool(path.exists() and (late_window or target) and
                                 availability["refresh_reasons"])
-            marker=root/"refresh_attempts"/path.name
+            # An early fixed-pair refresh must not consume the later XI refresh.
+            # Preserve legacy markers for the near-kickoff phase conservatively.
+            phase = "refresh_attempts" if late_window else "early_target_refresh_attempts"
+            marker=root/phase/path.name
             if path.exists() and not refresh_needed:
                 result["skipped"].append(str(leg["fixture_id"])+":original_preserved")
                 continue
