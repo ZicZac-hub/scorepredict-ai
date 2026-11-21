@@ -89,6 +89,27 @@ def _finish(metrics):
     return result
 
 
+def _paired_delta(metrics):
+    """Identical admitted matches for both models; positive hit delta helps xG.
+
+    Negative loss/Brier deltas help xG. None means the denominator is zero.
+    These are descriptive differences, never a significance claim.
+    """
+    base, xg = metrics["dynamic_baseline"], metrics["verified_xg"]
+    n = base["evaluated"]
+    if n != xg["evaluated"]:
+        raise ValueError("unpaired_model_denominators")
+    def delta(key):
+        left, right = base[key], xg[key]
+        return right-left if n and left is not None and right is not None else None
+    return {
+        "matched_cases": n,
+        "exact_score_top1_hit_rate_delta_xg_minus_dc": delta("top1_hit_rate"),
+        "score_log_loss_delta_xg_minus_dc": delta("score_log_loss"),
+        "outcome_brier_delta_xg_minus_dc": delta("outcome_brier"),
+    }
+
+
 def evaluate(cases,cutoff="2026-01-01"):
     prepared=[r for r in (_case(case) for case in cases) if r is not None]
     prepared.sort(key=lambda r:(r["when"],str(r["fixture"].get("id"))))
@@ -133,12 +154,35 @@ def evaluate(cases,cutoff="2026-01-01"):
         n=row["pairs"]
         row["hit_rate"]=row["hits"]/n if n else None
         row["mean_predicted_coverage"]=row["coverage"]/n if n else None
+    finished = _finish(stats)
+    lineup_metrics = {key:_finish(value) for key,value in sorted(strata.items())}
+    base_pairs, xg_pairs = doubles["dynamic_baseline"], doubles["verified_xg"]
+    if base_pairs["pairs"] != xg_pairs["pairs"]:
+        raise ValueError("unpaired_five_double_denominators")
+    n_pairs = base_pairs["pairs"]
+    paired = {
+        "all": _paired_delta(finished),
+        "by_lineup_availability": {
+            key:_paired_delta(value) for key,value in lineup_metrics.items()},
+        "five_double": {
+            "matched_pairs": n_pairs,
+            "hit_rate_delta_xg_minus_dc": (
+                xg_pairs["hit_rate"]-base_pairs["hit_rate"] if n_pairs else None),
+            "mean_coverage_delta_xg_minus_dc": (
+                xg_pairs["mean_predicted_coverage"]-
+                base_pairs["mean_predicted_coverage"] if n_pairs else None),
+        },
+        "interpretation": (
+            "Positive exact-score and five-double hit deltas favor xG; "
+            "negative score-log-loss, outcome-Brier deltas favor xG. "
+            "These are descriptive paired comparisons, not proof of improvement."),
+    }
     return {
         "cutoff":cutoff,"received_cases":len(cases),
         "verified_cases":len(prepared),"training_cases":len(before),
         "holdout_cases":len(after),"factors_from_training_only":factors,
-        "model_metrics":_finish(stats),"by_lineup_availability":{
-            key:_finish(value) for key,value in strata.items()},
+        "model_metrics":finished,"by_lineup_availability":lineup_metrics,
+        "paired_differences":paired,
         "five_double":doubles,
         "caution":"Research-only. Requires independently archived pre-match snapshots; missing cases excluded. Historical replay is not prospective accuracy proof; calibration fitted only before cutoff. Missing lineups do not imply missing players."
     }
