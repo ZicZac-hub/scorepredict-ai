@@ -20,7 +20,7 @@ def evaluate(matches, start=None):
     ordered = sorted(_history(matches),key=lambda m:(_date(m['utcDate']),str(m.get('id'))))
     days=defaultdict(list)
     for m in ordered:
-        if min(m['score']['fullTime'].values())<0:
+        if min(m['score']['fullTime']['home'],m['score']['fullTime']['away'])<0:
             continue
         days[_date(m['utcDate']).astimezone(SYDNEY).date()].append(m)
     report={v:dict(pairs=0,hits=0,coverage=0.,brier=0.,score_log_loss=0.) for v in VARIANTS}
