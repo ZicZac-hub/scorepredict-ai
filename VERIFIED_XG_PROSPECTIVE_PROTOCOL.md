@@ -85,3 +85,27 @@ Until an independent audit explicitly approves a new protocol, leave
 `live_prediction_model_changed=false`, `automatic_promotion=false`,
 and `accuracy_improvement_verified=false`. Failed data capture is not
 a reason to manufacture xG, buy access, or silently change the live engine.
+
+## Post-merge capture verification (research workflow v2)
+
+The collector's source archive is only a **provider-packet** count; it is not a
+denominator for xG predictive accuracy. Every scheduled pre-match run now
+publishes a read-only `data/verified_xg_replay/latest_report.json` even on
+lightweight refreshes, including missing authenticated frozen inputs, rejected
+post-match/identity-invalid records, and separate model-ready vs abstaining cases.
+A synthetic collector-to-history-to-independent-result integration test verifies
+the plumbing without spending API quota. It is **not real accuracy evidence**.
+
+The pre-existing `data/professional_paired_study/` study is frozen v1. Its
+strict implementation fingerprint no longer matches current collection code;
+rewriting that protocol would falsify the original trial specification. The
+optional matched odds/xG ablation runs under an independent
+`data/professional_paired_study_v2/` protocol for new decisions only.
+Neither study modifies the dynamic Dixon-Coles baseline, xG study holdout,
+model serving, existing bets, or automatic-promotion gate.
+
+A GitHub Actions green check confirms code/integrity only. To verify that the
+collector is actually accumulating **new genuine evidence**, inspect the next
+scheduled main-branch capture job and confirm `frozen_history_records` rises,
+with a UTC pre-kickoff archived timestamp and intact original source hash.
+Do not claim live evidence collection solely from synthetic tests or job setup.
