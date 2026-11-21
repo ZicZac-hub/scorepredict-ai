@@ -58,6 +58,16 @@ def _event(original):
     return (utc(original["kickoff_utc"]).isoformat(),*names)
 
 
+def _panel_capture_time(panel):
+    """Order first observations by their actual instant, not ISO formatting."""
+    try:
+        return utc(panel["captured_at_utc"])
+    except (KeyError,TypeError,ValueError,OverflowError):
+        # Identity validation rejects this record; malformed timestamps must
+        # neither crash sorting nor displace an earlier valid observation.
+        return datetime.max.replace(tzinfo=timezone.utc)
+
+
 def evaluate(panels, originals, results, *, min_paired=MIN_PAIRED, as_of=None):
     clock=utc(as_of or datetime.now(timezone.utc))
     lookup={}
@@ -70,7 +80,7 @@ def evaluate(panels, originals, results, *, min_paired=MIN_PAIRED, as_of=None):
     excluded=defaultdict(int)
     provider_success=defaultdict(int)
     for panel in sorted((r for r in panels if isinstance(r,dict)),
-                        key=lambda x:str(x.get("captured_at_utc",""))):
+                        key=_panel_capture_time):
         original=lookup.get(str(panel.get("source_forecast_id")))
         verified=results.get(str(panel.get("fixture_id")))
         if not original or not verified or not _identity(panel,original,verified,as_of=clock):

@@ -83,9 +83,14 @@ def render(st,database_url=""):
     singles=report.get("singles") or {}
     doubles=report.get("five_doubles") or {}
     a,b,c=st.columns(3)
-    a.metric("Singles graded",str(singles.get("verified",0)))
+    a.metric("Single prediction records graded",str(singles.get("verified",0)))
     b.metric("Exact-score hits",str(singles.get("hit",0)))
     c.metric("Singles awaiting finals",str(singles.get("pending",0)))
+    if "unique_verified_single_fixtures" in report:
+        st.caption(str(singles.get("verified",0))+" settled prediction records cover "+
+                   str(report["unique_verified_single_fixtures"])+
+                   " distinct source fixtures. Multiple models can predict the same match; "
+                   "these records are not independent football trials.")
     x,y,z=st.columns(3)
     x.metric("Five-double sets graded",str(doubles.get("verified",0)))
     y.metric("Five-double hits",str(doubles.get("hit",0)))

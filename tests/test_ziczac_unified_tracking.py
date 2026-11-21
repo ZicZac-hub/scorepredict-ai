@@ -65,7 +65,7 @@ def test_distinct_v25_methods_remain_separate_and_gradable():
         "ai_five_double_v25_on_demand_robust_v1"}
     finals={(first["provider"],str(first["id"])):verified(first,1,0),
             (second["provider"],str(second["id"])):verified(second,1,1)}
-    result=summary(rows,finals,now=NOW)
+    result=summary(rows,finals,now=NOW+timedelta(days=5))
     assert result["five_doubles"]["verified"]==2
     assert result["five_doubles"]["hit"]==2
 
@@ -130,7 +130,7 @@ def test_exact_hits_misses_pending_and_five_double_full_pair_match():
     assert len(rows)==3
     ledger={(f1["provider"],str(f1["id"])):verified(f1,1,1),
             (f2["provider"],str(f2["id"])):verified(f2,2,2)}
-    report=summary(rows,ledger,now=NOW)
+    report=summary(rows,ledger,now=NOW+timedelta(days=5))
     assert report["singles"]["hit"]==1
     assert report["singles"]["miss"]==1
     assert report["five_doubles"]["hit"]==1
@@ -138,7 +138,7 @@ def test_exact_hits_misses_pending_and_five_double_full_pair_match():
     assert report["by_source"]["ai_gemini"]["hit"]==1
     assert report["by_source"]["ai_openai"]["miss"]==1
     ledger.pop((f2["provider"],str(f2["id"])))
-    pending=summary(rows,ledger,now=NOW)
+    pending=summary(rows,ledger,now=NOW+timedelta(days=5))
     assert pending["five_doubles"]["pending"]==1
     assert pending["five_doubles"]["verified"]==0
     assert pending["five_doubles"]["hit_rate"] is None
@@ -279,7 +279,7 @@ def test_five_double_methods_have_separate_write_once_ids_and_verified_results()
     finals = {(first["provider"], str(first["id"])): verified(first, 1, 1),
               (second["provider"], str(second["id"])): verified(second, 2, 2)}
     measured = summary(private_records(
-        [saved_original, saved_balanced, saved_research]), finals, now=NOW)
+        [saved_original, saved_balanced, saved_research]), finals, now=NOW+timedelta(days=5))
     assert measured["by_source"]["ai_five_double"]["miss"] == 1
     assert measured["by_source"]["ai_five_double_balanced_challenger"]["hit"] == 1
     assert measured["by_source"]["ai_five_double_goal_form_research"]["miss"] == 1

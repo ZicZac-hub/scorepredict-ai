@@ -93,6 +93,26 @@ def test_same_teams_on_distinct_days_remain_distinct_future_trials():
     assert report["provider_metrics"]["gemini"]["source_matched_verified_fixtures"]==2
 
 
+def test_first_vote_uses_actual_utc_order_across_offsets_and_invalid_times():
+    early,source,final=trial()
+    kickoff=gate.utc(source["kickoff_utc"])
+    early["captured_at_utc"]=(kickoff-timedelta(hours=2)).isoformat()
+    early["votes"]["gemini"]={"home":.2,"draw":.4,"away":.4}
+    later=deepcopy(early)
+    # This later UTC observation sorts before the earlier one as raw text.
+    later["captured_at_utc"]=(kickoff-timedelta(hours=1)).astimezone(
+        timezone(timedelta(hours=-12))).isoformat()
+    later["votes"]["gemini"]={"home":.8,"draw":.1,"away":.1}
+    invalid=deepcopy(later)
+    invalid["captured_at_utc"]="invalid timestamp"
+    expected=evaluate_one(early,source,final)
+    report=gate.evaluate([later,invalid,early],[source],
+                         {source["fixture_id"]:final},as_of=NOW)
+    assert report["provider_metrics"]==expected["provider_metrics"]
+    assert report["excluded"]=={"repeated_provider_fixture_or_event":1,
+                                 "unmatched_identity_result_or_time":1}
+
+
 def test_missing_event_names_and_boolean_probabilities_are_not_valid_evidence():
     panel,source,final=trial()
     source.pop("home_team")

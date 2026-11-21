@@ -1,20 +1,32 @@
 {
   "ai_panel_promoted": false,
   "calibration_and_promotion": "unproven_shadow_only",
-  "evaluated_at_utc": "2026-11-21T00:25:06.383401+00:00",
-  "kind": "only_immutable_frozen_matching_verified_final",
+  "conflicting_result_identities": 0,
+  "evaluated_at_utc": "2026-11-21T01:10:44.357465+00:00",
+  "evidence_rejections": {},
+  "external_requests": 0,
+  "intervals_are_descriptive_independence_not_established": true,
+  "kind": "source_reconstructed_immutable_same_pair_verified_final",
   "methods": {
     "baseline_v8": {
       "hit_rate": 0.0,
       "hits": 0,
       "pending": 1,
-      "verified": 3
+      "verified": 3,
+      "wilson_95": [
+        5.551115123125783e-17,
+        0.5614970317550454
+      ]
     },
     "v23_market_form": {
       "hit_rate": 0.0,
       "hits": 0,
       "pending": 1,
-      "verified": 3
+      "verified": 3,
+      "wilson_95": [
+        5.551115123125783e-17,
+        0.5614970317550454
+      ]
     }
   },
   "model_promoted": false,
@@ -66,5 +78,7 @@
     }
   ],
   "research_method": "v23_market_form",
-  "schema": 1
+  "result_rejections": {},
+  "schema": 2,
+  "target_70_percent_proven": false
 }

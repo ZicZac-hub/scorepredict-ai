@@ -53,7 +53,7 @@ def _training_rows(rows, verified, as_of):
                 continue
             goals=(int(final["home_goals"]),int(final["away_goals"]))
             league=str(row.get("competition") or "unknown")
-            filtered.append({"kickoff":kickoff,"available":available,
+            filtered.append({"kickoff":kickoff,"available":available,"predicted":saved,
                              "model_id":str(row.get("forecast_id") or ""),
                              "fixture":key,"league":league,
                              "matrix":grid,"goals":goals})
@@ -105,7 +105,7 @@ def chronological_evaluation(rows, verified, *,min_samples=MIN_PER_LEAGUE, as_of
         played=sorted(group,key=lambda x:(x["kickoff"],x["fixture"]))
         evaluated=[]
         for current in played:
-            known=[x for x in played if x["available"]<current["kickoff"]]
+            known=[x for x in played if x["available"]<current["predicted"]]
             if len(known)<min_samples:
                 continue
             candidates={}

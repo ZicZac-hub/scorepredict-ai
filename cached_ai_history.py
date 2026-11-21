@@ -48,8 +48,18 @@ def cached_history(row, *, as_of, api_key="", cache_root=None):
 
     evidence=load_evidence(fixture,as_of=cutoff,api_key=api_key,api_request=cache_only)
     ids={str(row.get("home_team_id")),str(row.get("away_team_id"))}
-    history=[game for game in evidence["history"] if ids.intersection(
-        str((game.get(side) or {}).get("id")) for side in ("homeTeam","awayTeam"))]
-    return {"history":history,"input_digest":evidence["input_digest"],
+    observed_by_season={str(item["season"]):item["fetched_at_utc"] for item in reads}
+    history=[]
+    for game in evidence["history"]:
+        if not ids.intersection(str((game.get(side) or {}).get("id"))
+                                for side in ("homeTeam","awayTeam")):
+            continue
+        observed=observed_by_season.get(str(game.get("season")))
+        history.append(dict(game,**({"fetched_at_utc":observed} if observed else {})))
+    research_digest=hashlib.sha256(json.dumps(
+        {"as_of_utc":cutoff.isoformat(),"history":history,"sources":reads},
+        sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
+    return {"history":history,"input_digest":research_digest,
+            "league_evidence_digest":evidence["input_digest"],
             "source_metadata":reads,"warnings":evidence.get("warnings") or [],
             "external_requests":0,"is_original_statistical_input":False}
