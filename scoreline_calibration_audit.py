@@ -169,6 +169,17 @@ def main():
     parser.add_argument("--output", type=Path, default=OUTPUT)
     args = parser.parse_args()
     report = build_report(args.root, args.prematch)
+    # Do not churn the report on every scheduled run when no evidence changed.
+    if args.output.exists():
+        try:
+            previous = json.loads(args.output.read_text(encoding="utf-8"))
+            comparable = lambda row: {k: v for k, v in row.items()
+                                      if k != "result_cutoff_utc"}
+            if isinstance(previous, dict) and comparable(previous) == comparable(report):
+                print("Scoreline audit unchanged; no report rewrite")
+                return
+        except (ValueError, OSError):
+            pass
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"counts": {key: value["verified_fixtures"]
