@@ -15,7 +15,7 @@ def test_archived_models_are_frozen_before_result_and_used_without_refitting(tmp
     frozen = freeze_history(fixture, inputs, path, root=root, provider_root=source)
     record = json.loads(frozen.read_text())
     assert record["schema"] == 2
-    assert record["frozen_shadow"]["status"] == "ready"
+    assert record["frozen_shadow"]["status"] == "ready", record["frozen_shadow"]
     assert validated_shadow(record["frozen_shadow"]) is not None
     cases, exclusions = load_cases(root=root, provider_root=source, results_path=results)
     assert len(cases) == 1 and not exclusions
