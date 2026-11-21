@@ -32,11 +32,14 @@ jobs:
       - name: Recalculate source-verified 3-0 and scoreline calibration (no provider calls)
         run: |
           python scoreline_calibration_audit.py --output data/accuracy_diagnosis/scoreline_calibration.json
+      - name: Recalculate matched prospective V8 versus V25 without hindsight
+        run: |
+          python v8_v25_matched_audit.py --output data/accuracy_diagnosis/v8_v25_matched.json
       - name: Commit newly verified scores and sanitized diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json
+          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
           git pull --rebase
