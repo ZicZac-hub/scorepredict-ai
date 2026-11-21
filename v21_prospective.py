@@ -298,6 +298,7 @@ def evaluate(*,root=ROOT,source_root=ORIGINAL_ROOT,verified=None,now=None):
              load_json(Path(source_root)/"verified_results.json",{}))
     rows=[]
     counts={m:{"wins":0,"verified":0,"pending":0} for m in MODEL_NAMES}
+    calibration={m:[] for m in MODEL_NAMES}
     rejected=Counter()
     result_rejections=Counter()
     seen_ids=set()
@@ -343,10 +344,19 @@ def evaluate(*,root=ROOT,source_root=ORIGINAL_ROOT,verified=None,now=None):
             counts[name]["verified"]+=1
             counts[name]["wins"]+=hit
             row["model_hits"][name]=bool(hit)
+            # Coverage is the forecast probability of at least one of five
+            # mutually exclusive outcomes, not an observed success rate.
+            probability=float(pair["methods"][name]["coverage"])
+            calibration[name].append((probability,hit))
         rows.append(row)
     for name,stats in counts.items():
         n=stats["verified"]
         stats["observed_hit_rate"]=stats["wins"]/n if n else None
+        samples=calibration[name]
+        stats["calibration_sample_size"]=len(samples)
+        stats["mean_predicted_five_coverage"]=sum(p for p,y in samples)/n if n else None
+        stats["five_event_brier_score"]=sum((p-y)**2 for p,y in samples)/n if n else None
+        stats["observed_minus_expected_rate"]=(stats["observed_hit_rate"]-stats["mean_predicted_five_coverage"]) if n else None
     return {"schema":1,"kind":"strictly_frozen_before_both_kickoffs",
             "evaluated_at_utc":clock.isoformat(),"valid_unique_pairs":len(rows),
             "evidence_rejections":dict(rejected),"result_rejections":dict(result_rejections),
