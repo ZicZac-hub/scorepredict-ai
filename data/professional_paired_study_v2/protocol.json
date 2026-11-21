@@ -1,0 +1,47 @@
+{
+  "implementation_sha256": {
+    "five_double_accuracy.py": "19845d7e87d802abc78a52d2b92cdc68be0942092c5a276c8df8a9e4e5ed1b6c",
+    "forecast_ledger.py": "3489da8696070c6a4f599d5edffcc9ddc7422fa243fdf4ede269422f4aefe0ab",
+    "professional_double_optimizer.py": "bbd4b1bd1d1cf4df41e51d6c6405be22c2fc25b8c4dc913c712b454d2df26995",
+    "professional_double_shadow.py": "df3896248bf5a91b6e3fe9276a8bc7211b4479d18a7a3b2f1539da817ba263e3",
+    "professional_paired_study.py": "40dacbb54000e88a39a4fd508503f9c7ca4a9166eeeec51c720531cc6325d985",
+    "v21_capture_sources.py": "359d3c39a1fa648a113968b7c928f5797d0b104feadcb5f2418fe4a1364847e6",
+    "v21_provider_evidence.py": "16cd2923b84a019641845897792ffa5c1eda4435a6458361d11743583d691c3e",
+    "v22_evidence_models.py": "83c560a23d02af14b87c4a2ff05ec4b1e33ee11d662bdaad3c415d66f9ef9a37",
+    "v22_prospective.py": "157294c0859bdb34426b19f060023c4e83eba7cdf527d0d266ee3b615d375b0a"
+  },
+  "protocol": {
+    "automatic_model_promotion": false,
+    "component_selection": "newest_usable_same_source_packet_at_common_cutoff_then_snapshot_hash",
+    "decision_rule": "first_scheduled_pass_5_to_60_minutes_before_earliest_kickoff",
+    "historical_xg_availability": "all_packet_xg_fixtures_kickoff_plus_3h_before_capture",
+    "market_max_total_variation": 0.15,
+    "market_strength": 0.35,
+    "maximum_component_age_seconds": 10800,
+    "maximum_lead_seconds_inclusive": 3600,
+    "maximum_market_quote_age_seconds": 43200,
+    "methods": [
+      "baseline_v8",
+      "market_only",
+      "xg_only",
+      "xg_market"
+    ],
+    "minimum_lead_seconds_exclusive": 300,
+    "minimum_xg_matches_per_team": 6,
+    "minimum_xg_venue_matches_per_team": 3,
+    "missing_arms": "abstain_preserve_baseline_opportunity_and_report_matched_overlap",
+    "numerical_ai_weight": 0.0,
+    "numerical_lineup_weight": 0.0,
+    "pair_selection": "existing_authenticated_professional_raw_baseline_set",
+    "primary_comparison": "paired_same_event_single_exact_score_log_loss",
+    "refit_or_threshold_tuning": false,
+    "secondary_comparison": "paired_same_event_1x2_brier",
+    "set_brier_comparison": "descriptive_different_five_score_events_not_proper_score_superiority",
+    "single_score_log_loss_floor": 1e-15,
+    "target_70_percent_proven": false,
+    "version": "professional-fixed-pair-ablation-v2",
+    "xg_blend_weight": 0.25
+  },
+  "protocol_sha256": "4a480ef6b074f00f47b73ba07eb9d3e61babb840de47d78a6623181a939c9e58",
+  "registered_at_utc": "2026-11-21T11:21:00.569665+00:00"
+}

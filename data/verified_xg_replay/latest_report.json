@@ -1,0 +1,132 @@
+{
+  "protocol": "verified-xg-prospective-paired-v1",
+  "collection_health": {
+    "api_football": {
+      "at_utc": "2026-11-21T11:20:42.728091+00:00",
+      "enabled": true,
+      "reason": "partial_or_complete_source_packets",
+      "eligible_legs": 69,
+      "attempted_legs": 2,
+      "daily_attempts_limit": 6,
+      "daily_attempts_used": 6,
+      "new_packets": [
+        "1557474"
+      ]
+    },
+    "sportmonks_independent_not_pooled": {
+      "at_utc": "2026-11-21T11:20:54.166808+00:00",
+      "enabled": true,
+      "reason": "daily_request_budget_exhausted",
+      "eligible_frozen_forecasts": 69,
+      "daily_request_limit": 4,
+      "daily_requests_used": 4,
+      "captured": 0,
+      "matched_historical_xg_fixtures": 0
+    },
+    "sportmonks_last_provider_reason": "provider_access_or_subscription"
+  },
+  "evidence_shortfall": {
+    "training_cases_needed": 30,
+    "holdout_cases_needed": 50,
+    "paired_days_needed": 20
+  },
+  "lineup_comparison_is_observational": true,
+  "holdout_start": "2026-12-15",
+  "authenticated_archive": {
+    "packets_seen": 182,
+    "authenticated_packets": 182,
+    "packets_with_3_xg_rows_each_side": 25,
+    "packets_with_6_xg_rows_each_side": 25,
+    "packets_with_both_provider_XIs": 1,
+    "unique_fixtures_with_authenticated_packets": 55
+  },
+  "frozen_history_records": 1,
+  "comparison_uses_original_pre_kickoff_probabilities": true,
+  "independently_settled_candidate_cases": 0,
+  "case_exclusions": {
+    "missing_verified_final": 1
+  },
+  "minimum_evidence": {
+    "training_cases": 30,
+    "holdout_cases": 50,
+    "paired_days": 20
+  },
+  "evidence_sufficient": false,
+  "status": "insufficient_matched_authenticated_evidence",
+  "comparison": {
+    "cutoff": "2026-12-15",
+    "received_cases": 0,
+    "verified_cases": 0,
+    "training_cases": 0,
+    "holdout_cases": 0,
+    "factors_from_training_only": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "model_metrics": {
+      "dynamic_baseline": {
+        "evaluated": 0,
+        "top1_hit_rate": null,
+        "score_log_loss": null,
+        "outcome_brier": null
+      },
+      "verified_xg": {
+        "evaluated": 0,
+        "top1_hit_rate": null,
+        "score_log_loss": null,
+        "outcome_brier": null
+      },
+      "verified_xg_calibrated": {
+        "evaluated": 0,
+        "top1_hit_rate": null,
+        "score_log_loss": null,
+        "outcome_brier": null
+      }
+    },
+    "by_lineup_availability": {},
+    "paired_differences": {
+      "all": {
+        "matched_cases": 0,
+        "exact_score_top1_hit_rate_delta_xg_minus_dc": null,
+        "score_log_loss_delta_xg_minus_dc": null,
+        "outcome_brier_delta_xg_minus_dc": null
+      },
+      "by_lineup_availability": {},
+      "five_double": {
+        "matched_pairs": 0,
+        "hit_rate_delta_xg_minus_dc": null,
+        "mean_coverage_delta_xg_minus_dc": null
+      },
+      "interpretation": "Positive exact-score and five-double hit deltas favor xG; negative score-log-loss, outcome-Brier deltas favor xG. These are descriptive paired comparisons, not proof of improvement."
+    },
+    "five_double": {
+      "dynamic_baseline": {
+        "pairs": 0,
+        "hits": 0,
+        "coverage": 0.0,
+        "hit_rate": null,
+        "mean_predicted_coverage": null
+      },
+      "verified_xg": {
+        "pairs": 0,
+        "hits": 0,
+        "coverage": 0.0,
+        "hit_rate": null,
+        "mean_predicted_coverage": null
+      },
+      "verified_xg_calibrated": {
+        "pairs": 0,
+        "hits": 0,
+        "coverage": 0.0,
+        "hit_rate": null,
+        "mean_predicted_coverage": null
+      }
+    },
+    "caution": "Research-only. Requires independently archived pre-match snapshots; missing cases excluded. Historical replay is not prospective accuracy proof; calibration fitted only before cutoff. Missing lineups do not imply missing players."
+  },
+  "live_prediction_model_changed": false,
+  "automatic_promotion": false,
+  "accuracy_improvement_verified": false,
+  "caution": "A passing coverage threshold is not statistical proof of superiority. Original historical inputs must be frozen before kickoff; old packets without archived inputs cannot be backfilled as prospective."
+}
