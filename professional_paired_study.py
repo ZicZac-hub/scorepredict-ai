@@ -1,6 +1,8 @@
 """Fixed-pair prospective odds/xG ablations, never a production promotion.
 
-The v1 protocol and already issued v1 forecasts are preserved read-only.\nThis v2 study is separately registered after verified implementation changes.\nThe pair is selected by the preserved raw-baseline policy before this study.
+The v1 protocol and already issued v1 forecasts are preserved read-only. 
+This v2 study is separately registered after verified implementation changes. 
+The pair is selected by the preserved raw-baseline policy before this study.
 All arms see the same two events and common pre-match evidence cutoff. Missing
 sources remain abstentions; lineup context has no fitted numerical weight.
 """
