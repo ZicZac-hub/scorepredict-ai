@@ -27,3 +27,12 @@ def test_matched_denominator_and_abstentions(monkeypatch):
     assert len(report['matched_trials'])==1
     assert report['matched_trials'][0]['fixture_ids']==[3,4]
     assert all(r['pairs']==1 for r in report['models'].values())
+
+    trial=report['matched_trials'][0]
+    assert trial['actual_scores']==[[0,0],[0,0]]
+    for model in trial['models'].values():
+        assert model['actual_leg_rank_minimum']==[1,1]
+        assert model['actual_joint_rank_minimum']==1
+        assert np.isclose(model['actual_joint_probability'],1/81)
+        assert np.isclose(model['actual_pair_mean_score_log_loss'],np.log(9))
+    assert all(c['mean_paired_score_log_loss_advantage']==0 for c in report['paired_comparisons'].values())
