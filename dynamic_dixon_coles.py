@@ -56,13 +56,15 @@ def _fit(rows):
     da = (count(a,w*gh)+PRIOR)/(count(a,w*bh*att[h]*defence[a])+PRIOR)
     return teams,bh,ba,att,defence,ah,aa,dh,da
 
-def _rates(model,h,a):
+def _rates(model,h,a,*,venue_deviations=True):
     teams,bh,ba,att,defence,ah,aa,dh,da = model
     if h not in teams or a not in teams:
         return None
     i,j = teams[h],teams[a]
-    return (float(np.clip(bh*att[i]*defence[j]*ah[i]*da[j],.15,12)),
-            float(np.clip(ba*att[j]*defence[i]*aa[j]*dh[i],.15,12)))
+    vh=ah[i]*da[j] if venue_deviations else 1.
+    va=aa[j]*dh[i] if venue_deviations else 1.
+    return (float(np.clip(bh*att[i]*defence[j]*vh,.15,12)),
+            float(np.clip(ba*att[j]*defence[i]*va,.15,12)))
 
 def _safe_rho(h,a,rho):
     return float(np.clip(rho, max(-.2,-.999/h,-.999/a), min(.2,.999/(h*a),.999)))
@@ -75,10 +77,10 @@ def _groups(matrix):
     i,j = np.indices(matrix.shape)
     return np.where(i+j<=1,0,np.where(i+j>=4,2,1))
 
-def _calibrate(rows, model):
+def _calibrate(rows, model, *, venue_deviations=True):
     holdout = []
     for _,h,a,gh,ga,w in rows:
-        rates = _rates(model,h,a)
+        rates = _rates(model,h,a,venue_deviations=venue_deviations)
         if rates is not None:
             holdout.append((*rates,gh,ga,w))
     if len(holdout)<20 or sum(row[-1] for row in holdout)<10:
@@ -95,7 +97,7 @@ def _calibrate(rows, model):
     factors = np.clip((observed+PRIOR)/(expected+PRIOR),.5,2.)
     return rho,factors,len(holdout)
 
-def fit_forecast(fixture,history,max_goals=10):
+def fit_forecast(fixture,history,max_goals=10,*,venue_deviations=True,goal_band_calibration=True):
     rows = _observations(fixture,history)
     if len(rows)<MIN_HISTORY or sum(r[-1] for r in rows)<30:
         return None
@@ -112,8 +114,10 @@ def fit_forecast(fixture,history,max_goals=10):
     early, full = _fit(training), _fit(rows)
     if early is None or full is None:
         return None
-    rho,factors,n = _calibrate(calibration,early)
-    rates = _rates(full,h,a)
+    rho,factors,n = _calibrate(calibration,early,venue_deviations=venue_deviations)
+    if not goal_band_calibration:
+        factors=np.ones(3)
+    rates = _rates(full,h,a,venue_deviations=venue_deviations)
     if rates is None:
         return None
     h_rate,a_rate = rates
@@ -123,7 +127,7 @@ def fit_forecast(fixture,history,max_goals=10):
     matrix /= matrix.sum()
     return dict(matrix=matrix,home_xg=h_rate,away_xg=a_rate,rho=rho,
                 calibration_matches=n,goal_band_factors=factors.tolist(),
-                league_history_count=len(rows),model_version='dynamic-dixon-coles-v1-experimental')
+                league_history_count=len(rows),model_version=('dynamic-dixon-coles-v1-experimental' if venue_deviations and goal_band_calibration else 'dynamic-dixon-coles-ablation-research-only'))
 
 def five_doubles(first,second):
     """Five distinct joint score events maximizing coverage under independence."""

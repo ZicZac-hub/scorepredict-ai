@@ -15,7 +15,7 @@ HASHES={
     "2023-24":"03e13eafbf78dfe00d7e89dd3bf6643986eb6e8fd86c7664aeb8c5bc0bed88d0",
     "2024-25":"c3d18f552d83382cd4b6b21127adbbfe38e7f8618ddc979fb5404f2df07d0a75",
 }
-def main():
+def load_matches():
     matches=[]
     missing=[]
     for season,digest in HASHES.items():
@@ -34,6 +34,10 @@ def main():
                 "competition":{"id":"en.1"},"utcDate":day+"T00:00:00Z",
                 "status":"FINISHED","homeTeam":{"id":m["team1"]},
                 "awayTeam":{"id":m["team2"]},"score":{"fullTime":{"home":score[0],"away":score[1]}}})
+    return matches,missing
+
+def main():
+    matches,missing=load_matches()
     # Exclude incomplete evaluation slates from all models equally.
     result=evaluate([m for m in matches if m["utcDate"][:10] not in missing],start="2024-08-01")
     print(json.dumps({"sources":HASHES,"source_date_surrogate":True,
