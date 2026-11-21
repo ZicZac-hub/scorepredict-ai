@@ -248,8 +248,41 @@ def audit_packets(*, provider_root=PROVIDER_ROOT):
     return dict(stats)
 
 
+def collection_health(*, provider_root=PROVIDER_ROOT,
+                      sportmonks_status=Path("data/sportmonks_xg/status.json")):
+    """Whitelisted collection diagnostics, not evidence of model skill.
+
+    Never include tokens, request URLs, provider payloads or raw responses.
+    Sportmonks observations are deliberately NOT mixed into API-Football
+    fixture-identity-qualified replay cases.
+    """
+    def safe(path):
+        try:
+            value = _read(path)
+            return value if isinstance(value, dict) else {}
+        except (OSError, ValueError, TypeError):
+            return {}
+    api = safe(Path(provider_root) / "status.json")
+    other = safe(sportmonks_status)
+    observed = other.get("last_provider_observation") or {}
+    if not isinstance(observed, dict):
+        observed = {}
+    return {
+        "api_football": {key: api.get(key) for key in (
+            "at_utc", "enabled", "reason", "eligible_legs", "attempted_legs",
+            "daily_attempts_limit", "daily_attempts_used", "new_packets")},
+        "sportmonks_independent_not_pooled": {
+            key: other.get(key) for key in (
+                "at_utc", "enabled", "reason", "eligible_frozen_forecasts",
+                "daily_request_limit", "daily_requests_used",
+                "captured", "matched_historical_xg_fixtures")},
+        "sportmonks_last_provider_reason": observed.get("reason"),
+    }
+
+
 def report(*, root=ROOT, provider_root=PROVIDER_ROOT, results_path=RESULTS,
-           cutoff=HOLDOUT_START):
+           cutoff=HOLDOUT_START,
+           sportmonks_status=Path("data/sportmonks_xg/status.json")):
     from verified_xg_calibration import evaluate
     cases, exclusions = load_cases(root=root, provider_root=provider_root,
                                    results_path=results_path)
@@ -258,8 +291,17 @@ def report(*, root=ROOT, provider_root=PROVIDER_ROOT, results_path=RESULTS,
     enough = (comparison["training_cases"] >= MIN_TRAIN
               and comparison["holdout_cases"] >= MIN_HOLDOUT
               and paired >= MIN_PAIRS)
+    shortfall = {
+        "training_cases_needed": max(0, MIN_TRAIN-comparison["training_cases"]),
+        "holdout_cases_needed": max(0, MIN_HOLDOUT-comparison["holdout_cases"]),
+        "paired_days_needed": max(0, MIN_PAIRS-paired),
+    }
     return {
         "protocol": "verified-xg-prospective-paired-v1",
+        "collection_health": collection_health(
+            provider_root=provider_root, sportmonks_status=sportmonks_status),
+        "evidence_shortfall": shortfall,
+        "lineup_comparison_is_observational": True,
         "holdout_start": cutoff,
         "authenticated_archive": audit_packets(provider_root=provider_root),
         "frozen_history_records": len(list((Path(root) / "history").glob("*.json"))),

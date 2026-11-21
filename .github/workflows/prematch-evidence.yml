@@ -200,6 +200,11 @@ jobs:
         # Zero extra provider calls; immutable, never promoted automatically.
         if: always()
         run: python v21_prospective.py
+      - name: Audit authenticated xG and matched shadow-model performance
+        # Read-only, independent comparison. No API requests, forecast updates,
+        # confidence increases, or automatic model promotion.
+        if: steps.cadence.outputs.heavy == 'true'
+        run: python verified_xg_evidence_pipeline.py --output data/verified_xg_replay/latest_report.json
       - name: Freeze and verify V22 xG + time-checked market five doubles (no API calls)
         if: always()
         run: python v22_prospective.py
