@@ -167,3 +167,21 @@ def test_archived_lazio_case_keeps_real_3_0_as_three_total_goals():
     assert metric["exact_3_0"]["predicted_probability"] == pytest.approx(.06955151006996509)
     assert metric["actual_exact_score_rank_min"] == 5
     assert metric["at_least_four_total_goals"]["observed"] == 0
+
+
+def test_real_saved_pair_grid_reproduces_manual_727_percent_not_70_percent():
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[1]
+    report = build_report(
+        repo / "data/v10_prospective",
+        repo / "data/prematch",
+        now=datetime(2026, 11, 22, 7, tzinfo=timezone.utc),
+    )
+    near = report["focused_two_match_reproduction"]["v8_near"]
+    assert near is not None
+    assert near["actual_scores"] == ["2-0", "3-0"]
+    assert near["actual_joint_rank_min"] == 21
+    assert near["actual_joint_model_mass"] == pytest.approx(.008604539848743696)
+    assert near["top_five_model_mass"] == pytest.approx(.07271889995221428)
+    assert near["actual_in_top_five"] is False
+    assert near["selection_is_reconstructed_not_saved_manual_prospective_pair"] is True
