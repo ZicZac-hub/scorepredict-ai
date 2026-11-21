@@ -16,7 +16,7 @@ from backtest_dynamic_dixon_coles import SYDNEY, evaluate, five_doubles
 from run_dynamic_dc_pinned_replay import load_matches
 from v21_goal_model_comparison import variants
 
-METHODS=("baseline_v8","poisson_marginal","negative_binomial_r3",
+METHODS=("engine_baseline","poisson_marginal","negative_binomial_r3",
          "bivariate_poisson_c012")
 SPLIT="2024-08-01"
 MIN_SELECTION_PAIRS=30
@@ -86,7 +86,10 @@ def compare_phase(matches,reference,start,stop=None):
         actual=tuple(tuple(score) for score in trial["actual_scores"])
         qualified+=1
         for name in METHODS:
-            result=grade_pair([leg[name] for leg in by_leg],actual)
+            # The archived V8 snapshot is not used: this is the historical
+            # engine baseline, identified separately to avoid false claims.
+            source_key="baseline_v8" if name=="engine_baseline" else name
+            result=grade_pair([leg[source_key] for leg in by_leg],actual)
             dest=accum[name]
             dest["hits"]+=result["hit"]
             for src,dst in (("coverage","sum_coverage"),("score_log_loss","sum_loss"),
@@ -119,6 +122,7 @@ def main():
                       "previously_explored_seasons":True,
                       "no_live_or_untouched_accuracy_claim":True,
                       "model_promotion":False,
+                      "baseline_identity":"engine.predict baseline, not immutable V8 forecasts",
                       "bookmaker_benchmark":"unavailable_no_timestamped_correct_score_odds",
                       "selection_rule":"lower prior season exact-score log loss; baseline included",
                       "selected_method":selected,"validation":validation,
