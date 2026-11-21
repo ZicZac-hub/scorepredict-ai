@@ -163,3 +163,29 @@ def test_replay_accepts_machine_epsilon_without_accepting_material_probability_c
     pair["methods"]["baseline_v8"]["coverage"]+=1e-6
     write(path,pair)
     assert grade(root,original,finals)["valid_unique_pairs"]==0
+
+
+def test_calibration_uses_verified_frozen_coverage_only(tmp_path):
+    root,original,path,sources,finals=archived_pair(tmp_path)
+    pair=json.loads(path.read_text())
+    report=grade(root,original,finals)
+    for method,stats in report["methods"].items():
+        p=pair["methods"][method]["coverage"]
+        y=stats["wins"]
+        metrics=report["calibration"][method]
+        assert metrics["calibration_sample_size"]==1
+        assert metrics["mean_predicted_five_coverage"]==pytest.approx(p)
+        assert metrics["five_event_brier_score"]==pytest.approx((p-y)**2)
+        assert metrics["observed_minus_expected_rate"]==pytest.approx(y-p)
+    missed=deepcopy(finals)
+    missed["100"]["home_goals"]=99
+    loss=grade(root,original,missed)
+    assert loss["methods"]["baseline_v8"]["wins"]==0
+    p=pair["methods"]["baseline_v8"]["coverage"]
+    assert loss["calibration"]["baseline_v8"]["five_event_brier_score"]==pytest.approx(p*p)
+    pending=grade(root,original,{"100":finals["100"]})
+    for metrics in pending["calibration"].values():
+        assert metrics=={"calibration_sample_size":0,
+                         "mean_predicted_five_coverage":None,
+                         "five_event_brier_score":None,
+                         "observed_minus_expected_rate":None}
