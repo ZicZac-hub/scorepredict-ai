@@ -1,0 +1,26 @@
+name: Dynamic Dixon-Coles chronological decay study
+on:
+  pull_request:
+    paths:
+      - 'run_dynamic_dc_decay_study.py'
+      - '.github/workflows/dc-decay-study.yml'
+permissions:
+  contents: read
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - run: python run_dynamic_dc_decay_study.py > dc-decay-study.json
+      - run: cat dc-decay-study.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dc-decay-study
+          path: dc-decay-study.json
