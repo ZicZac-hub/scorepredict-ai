@@ -1,0 +1,256 @@
+{
+  "archived_picks_modified": false,
+  "archived_sets_found": 5,
+  "evaluated_at_utc": "2026-11-21T23:02:18.319857+00:00",
+  "limitations": [
+    "The comparison grades two SAVED policies on identical pairs, not automatically selected V8 daily pairs.",
+    "V25 lower-envelope scores are not probabilities and cannot be used for log-loss or Brier.",
+    "V25 draws its sensitivity models from the same V8 underlying goal rates; evidence is not independent.",
+    "V8 mass assigned to V25 selections is a reference only, not calibrated V25 hit probability.",
+    "Future full V25 probability calibration requires separately timestamped normalized score matrices.",
+    "Archived JSON capture timestamps are checked but are not independent Git commit-time notarization.",
+    "Small and overlapping samples cannot establish superiority, reliable accuracy or 70% hit rate."
+  ],
+  "no_provider_calls": true,
+  "pending_matched_pairs": 1,
+  "production_model_promoted": false,
+  "repeated_verified_fixture_ids": 0,
+  "result_conflicts_excluded": 0,
+  "result_source_rejections": {},
+  "rows": [
+    {
+      "actual_scores": [
+        "0-1",
+        "2-0"
+      ],
+      "fixture_ids": [
+        "1492451",
+        "1492456"
+      ],
+      "selection_time_utc": "2026-11-17T23:11:34.363592+00:00",
+      "source_forecast_ids": [
+        "9a23543399159baf6db9c11f113adb8b5f05fe1a231fae3b223d87a1224e510d",
+        "7998b79b86df1b8dbc2c44eada8fb3b1cee6b00421c6f6c92f953f69a832ebf7"
+      ],
+      "status": "verified",
+      "sydney_date": "2026-11-19",
+      "v25_five_hit": true,
+      "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_selected_five_mass_under_v8_model": 0.052898207062901395,
+      "v8_five_hit": false,
+      "v8_five_model_mass": 0.059225282828107406,
+      "v8_score_probability_diagnostics": [
+        {
+          "actual_score": "0-1",
+          "actual_score_probability": 0.08513601636079564,
+          "exact_score_log_loss": 2.4635051089556694,
+          "full_score_multiclass_brier": 0.8923704706957237,
+          "top_one_event_brier": 0.014224433668298085,
+          "top_one_exact_score": "1-1",
+          "top_one_hit": false,
+          "top_one_probability": 0.11926623020913374
+        },
+        {
+          "actual_score": "2-0",
+          "actual_score_probability": 0.09658404428415336,
+          "exact_score_log_loss": 2.3373417244481245,
+          "full_score_multiclass_brier": 0.8740321113945893,
+          "top_one_event_brier": 0.012611777296822162,
+          "top_one_exact_score": "1-1",
+          "top_one_hit": false,
+          "top_one_probability": 0.11230216959979963
+        }
+      ]
+    },
+    {
+      "actual_scores": [
+        "2-1",
+        "2-1"
+      ],
+      "fixture_ids": [
+        "1492458",
+        "1492459"
+      ],
+      "selection_time_utc": "2026-11-18T23:24:36.337153+00:00",
+      "source_forecast_ids": [
+        "fc00bc409e61606fc55e023d1ed894ca8efcca3f4fa71e5cf33a65c5eebb1985",
+        "234417cf3765de416cd036879b9eb20611b4e1533e9146b9c2c1e68a1920b130"
+      ],
+      "status": "verified",
+      "sydney_date": "2026-11-20",
+      "v25_five_hit": false,
+      "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_selected_five_mass_under_v8_model": 0.05831467893493922,
+      "v8_five_hit": false,
+      "v8_five_model_mass": 0.06695245127816893,
+      "v8_score_probability_diagnostics": [
+        {
+          "actual_score": "2-1",
+          "actual_score_probability": 0.09511293539085641,
+          "exact_score_log_loss": 2.3526902998492174,
+          "full_score_multiclass_brier": 0.8771078311286722,
+          "top_one_event_brier": 0.014281205855629243,
+          "top_one_exact_score": "1-1",
+          "top_one_hit": false,
+          "top_one_probability": 0.1195039993290151
+        },
+        {
+          "actual_score": "2-1",
+          "actual_score_probability": 0.07881223519305462,
+          "exact_score_log_loss": 2.5406870252238853,
+          "full_score_multiclass_brier": 0.917683712961806,
+          "top_one_event_brier": 0.017643552745403548,
+          "top_one_exact_score": "1-1",
+          "top_one_hit": false,
+          "top_one_probability": 0.1328290357768344
+        }
+      ]
+    },
+    {
+      "actual_scores": [
+        "3-1",
+        "0-1"
+      ],
+      "fixture_ids": [
+        "1552827",
+        "1570454"
+      ],
+      "selection_time_utc": "2026-11-19T20:28:46.420013+00:00",
+      "source_forecast_ids": [
+        "dba11ac1f30f672de8a603e5b3b832ff6029db775edd3ecf876bcf755c4d14ff",
+        "c4752d57533dd6751eb3296acbe07fad91013f563a26db049af2c30698ea23a5"
+      ],
+      "status": "verified",
+      "sydney_date": "2026-11-21",
+      "v25_five_hit": false,
+      "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_selected_five_mass_under_v8_model": 0.0666280493404989,
+      "v8_five_hit": false,
+      "v8_five_model_mass": 0.0705631294939516,
+      "v8_score_probability_diagnostics": [
+        {
+          "actual_score": "3-1",
+          "actual_score_probability": 0.038002591749264875,
+          "exact_score_log_loss": 3.2701009176535103,
+          "full_score_multiclass_brier": 0.9927473217262937,
+          "top_one_event_brier": 0.015329005747962735,
+          "top_one_exact_score": "1-1",
+          "top_one_hit": false,
+          "top_one_probability": 0.12381036203792772
+        },
+        {
+          "actual_score": "0-1",
+          "actual_score_probability": 0.08318684252267754,
+          "exact_score_log_loss": 2.486666086417138,
+          "full_score_multiclass_brier": 0.9140625289017342,
+          "top_one_event_brier": 0.01767147076451753,
+          "top_one_exact_score": "1-0",
+          "top_one_hit": false,
+          "top_one_probability": 0.13293408428434572
+        }
+      ]
+    },
+    {
+      "actual_scores": [
+        "2-0",
+        "3-1"
+      ],
+      "fixture_ids": [
+        "1550200",
+        "1570453"
+      ],
+      "selection_time_utc": "2026-11-20T14:02:19.587433+00:00",
+      "source_forecast_ids": [
+        "56cc5604f8422f799960a5ce97bfb776bc0f9d5e5a6c3b51410208fd59619df8",
+        "3132f9c1fb8242cd897e3d9a14253426bd1fd14ed99b10b64cf12491a580be70"
+      ],
+      "status": "verified",
+      "sydney_date": "2026-11-22",
+      "v25_five_hit": false,
+      "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_selected_five_mass_under_v8_model": 0.07134417385436498,
+      "v8_five_hit": false,
+      "v8_five_model_mass": 0.07619753996352728,
+      "v8_score_probability_diagnostics": [
+        {
+          "actual_score": "2-0",
+          "actual_score_probability": 0.12371463739734755,
+          "exact_score_log_loss": 2.0897776767753227,
+          "full_score_multiclass_brier": 0.8331905126866417,
+          "top_one_event_brier": 0.020610256465245256,
+          "top_one_exact_score": "1-0",
+          "top_one_hit": false,
+          "top_one_probability": 0.14356272658752778
+        },
+        {
+          "actual_score": "3-1",
+          "actual_score_probability": 0.03895595162442401,
+          "exact_score_log_loss": 3.245323716684345,
+          "full_score_multiclass_brier": 0.9939427019458618,
+          "top_one_event_brier": 0.016692992687327483,
+          "top_one_exact_score": "1-1",
+          "top_one_hit": false,
+          "top_one_probability": 0.12920136488182887
+        }
+      ]
+    },
+    {
+      "fixture_ids": [
+        "1552825",
+        "1557472"
+      ],
+      "selection_time_utc": "2026-11-21T14:34:19.237293+00:00",
+      "source_forecast_ids": [
+        "169b1dc5d6f939a3bd8a304f9891c4351a70f5f31bfc04991bc3ba7b436c8529",
+        "7809f6ab1e1ec9f31c23492f52e7855843606d9be5ae1fc20f510663a4081815"
+      ],
+      "status": "pending",
+      "sydney_date": "2026-11-23",
+      "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_selected_five_mass_under_v8_model": 0.06327268746484016,
+      "v8_five_model_mass": 0.06544467166796027
+    }
+  ],
+  "same_pair_discordance": {
+    "exact_two_sided_mcnemar_p": 1.0,
+    "v25_only_hits": 1,
+    "v8_only_hits": 0
+  },
+  "schema_version": 1,
+  "seventy_percent_accuracy_proven": false,
+  "source_exclusions": {},
+  "source_valid_sets": 5,
+  "study": "original_v25_robust_selection_vs_original_v8_baseline_same_pairs",
+  "v25": {
+    "five_double_hit_rate": 0.25,
+    "five_double_hits": 1,
+    "wilson_95": [
+      0.04558726080970055,
+      0.6993581574175981
+    ]
+  },
+  "v25_probability_calibration": {
+    "exact_score_log_loss": null,
+    "multiclass_score_brier": null,
+    "status": "not_measurable_no_separately_frozen_normalized_v25_grid",
+    "top_one_brier": null
+  },
+  "v8": {
+    "five_double_hit_rate": 0.0,
+    "five_double_hits": 0,
+    "wilson_95": [
+      0.0,
+      0.4898908364545973
+    ]
+  },
+  "v8_exact_score_probability_calibration": {
+    "evaluated_leg_slots": 8,
+    "exact_score_log_loss": 2.5982615695009015,
+    "multiclass_score_brier": 0.9118921489301653,
+    "top_one_brier": 0.016133086903900754,
+    "top_one_expected_hits": 1.013409972706413,
+    "top_one_observed_hits": 0,
+    "verified_unique_legs": 8
+  },
+  "verified_matched_pairs": 4
+}
