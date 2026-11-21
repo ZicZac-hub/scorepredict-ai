@@ -24,6 +24,8 @@ def _timestamp(value):
 
 
 def _number(value):
+    if isinstance(value, bool):
+        return None
     try:
         value = float(value)
         return value if math.isfinite(value) and value >= 0 else None
@@ -33,9 +35,15 @@ def _number(value):
 
 def _identity(fixture):
     try:
-        assert fixture.get("provider") == "API-Football"
-        return (str(fixture["id"]), str(fixture["homeTeam"]["id"]),
-                str(fixture["awayTeam"]["id"]), utc(fixture["utcDate"]))
+        if fixture.get("provider") != "API-Football":
+            return None
+        ids = (fixture["id"], fixture["homeTeam"]["id"], fixture["awayTeam"]["id"])
+        if any(type(v) not in (int, str) or not str(v).isascii() or
+               not str(v).isdigit() or int(v) <= 0 for v in ids):
+            return None
+        if int(ids[1]) == int(ids[2]):
+            return None
+        return (*map(str, ids), utc(fixture["utcDate"]))
     except (KeyError, TypeError, AssertionError, ValueError):
         return None
 
@@ -71,14 +79,21 @@ def _goals_statistics(raw, home_id, away_id):
     """Only genuine API-Football 'Expected Goals' fixture statistics."""
     found = {}
     for row in raw if isinstance(raw, list) else []:
-        tid = str((row.get("team") or {}).get("id"))
+        if not isinstance(row, dict) or not isinstance(row.get("team"), dict):
+            continue
+        tid = str(row["team"].get("id"))
         if tid not in (str(home_id), str(away_id)):
             continue
-        for item in row.get("statistics") or []:
+        items = row.get("statistics")
+        for item in items if isinstance(items, list) else []:
+            if not isinstance(item, dict):
+                continue
             label = str(item.get("type") or "").strip().casefold().replace("_", " ")
             if label == "expected goals":
                 value = _number(item.get("value"))
                 if value is not None:
+                    if tid in found and found[tid] != value:
+                        return None
                     found[tid] = value
     return found if len(found) == 2 else None
 
