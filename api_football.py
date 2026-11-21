@@ -33,6 +33,12 @@ TTL = 21600  # six hours: preserve the free daily quota
 # The key is hashed; neither the key nor its value is displayed or persisted.
 _QUOTA_BLOCK_UNTIL = {}
 _QUOTA_PAUSE_SECONDS = 900
+# Dynamic pre-match facts must not lose their stale flag when a caller asks
+# for plain rows. Metadata-aware callers may inspect explicitly dated fallback
+# evidence; historical endpoint compatibility is preserved separately.
+_DYNAMIC_SOURCE_ENDPOINTS = frozenset((
+    "/fixtures/lineups", "/injuries", "/predictions", "/odds",
+))
 LEAGUES = {"PL":39, "PD":140, "BL1":78, "SA":135, "FL1":61,
            "CL":2, "EL":3, "DED":88, "PPL":94, "BSA":71, "ELC":40}
 NAMES = {"PL":"Premier League","PD":"La Liga","BL1":"Bundesliga",
@@ -128,7 +134,8 @@ def _request(key, endpoint, params, with_metadata=False):
         # Stale data remain useful only with their original fetch time. Fast
         # endpoints never receive a day-old fixture status or lineup fallback.
         stale_limit = min(86400, max(300, ttl*4))
-        if saved and time.time()-saved.get("time",0)<stale_limit:
+        can_label_fallback = with_metadata or endpoint not in _DYNAMIC_SOURCE_ENDPOINTS
+        if saved and can_label_fallback and time.time()-saved.get("time",0)<stale_limit:
             return _expose(saved['data'], saved['time'], ttl, 'stale_fallback', with_metadata)
         if isinstance(exc,(ProviderQuotaError,ProviderAccessError,ProviderRejectedError)):
             raise

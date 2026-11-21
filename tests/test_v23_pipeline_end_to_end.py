@@ -52,7 +52,7 @@ def _actual(candidate, home=1, away=1, valid=True):
         "home_goals": home, "away_goals": away
     }
 
-def test_v23_immutable_same_pair_pending_hit_miss_and_bad_identity(monkeypatch, tmp_path):
+def test_v23_freeze_preserves_choices_but_missing_original_evidence_cannot_be_graded(monkeypatch, tmp_path):
     first, second = _candidate(3001, 11, 12), _candidate(3002, 21, 22)
     monkeypatch.setattr(v23, "frozen_candidates", lambda **kwargs: [first, second])
 
@@ -69,31 +69,34 @@ def test_v23_immutable_same_pair_pending_hit_miss_and_bad_identity(monkeypatch, 
     assert record["no_production_promotion"]
     assert json.loads(files[0].read_text()) == record
 
-    # Preserve pre-match source identity in the settlement code, rather
-    # than replacing GitHub's immutable source inputs with a fake result.
+    # The earlier test patched a legacy lookup and never wrote the original
+    # grids or source packets. This must now fail closed, even with convenient
+    # result-friendly choices. The authenticated end-to-end cases are in
+    # test_verified_pair_reports.py and use actual archived source files.
     known = {x["source"]["fixture_id"]: x["source"] for x in (first, second)}
     monkeypatch.setattr(v22, "original_model",
                         lambda root, leg: known.get(str(leg["fixture_id"])))
 
     pending = v23.evaluate(root=tmp_path, source_root=tmp_path,
-                           verified={"3001": _actual(first)})
-    assert pending["methods"]["baseline_v8"]["pending"] == 1
-    assert pending["methods"]["v23_market_form"]["pending"] == 1
+                           verified={"3001": _actual(first)},now=NOW+timedelta(days=1))
+    assert pending["methods"]["baseline_v8"]["pending"] == 0
+    assert pending["methods"]["v23_market_form"]["pending"] == 0
     assert pending["methods"]["v23_market_form"]["hit_rate"] is None
+    assert pending["evidence_rejections"] == {"missing_original_forecast": 1}
 
     # Both matches must have provider-matched independently verified finals.
     completed = v23.evaluate(root=tmp_path, source_root=tmp_path, verified={
         "3001": _actual(first), "3002": _actual(second)
-    })
-    assert completed["methods"]["baseline_v8"]["verified"] == 1
-    assert completed["methods"]["baseline_v8"]["hits"] == 1
-    assert completed["methods"]["v23_market_form"]["verified"] == 1
+    },now=NOW+timedelta(days=1))
+    assert completed["methods"]["baseline_v8"]["verified"] == 0
+    assert completed["methods"]["baseline_v8"]["hits"] == 0
+    assert completed["methods"]["v23_market_form"]["verified"] == 0
     assert completed["methods"]["v23_market_form"]["hits"] == 0
 
     # Tampered provider identity does NOT become a false loss or a true hit.
     tampered = v23.evaluate(root=tmp_path, source_root=tmp_path, verified={
         "3001": _actual(first), "3002": _actual(second, valid=False)
-    })
-    assert tampered["methods"]["v23_market_form"]["pending"] == 1
+    },now=NOW+timedelta(days=1))
+    assert tampered["methods"]["v23_market_form"]["pending"] == 0
     assert tampered["methods"]["v23_market_form"]["verified"] == 0
     assert json.loads(files[0].read_text()) == record

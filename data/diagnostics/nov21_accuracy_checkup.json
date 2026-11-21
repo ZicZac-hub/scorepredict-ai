@@ -1,0 +1,531 @@
+{
+  "archive_integrity": {
+    "manifest_sha256": "03b1f30fe4db845a9367a6dbaa161714bc8cb91c70075347fe0e7bedf017b700",
+    "tracked_input_records_checked": 1061,
+    "unchanged_from_base": true
+  },
+  "base_commit": "e9f03266",
+  "hypotheses_rejected": [
+    "AI agreement alone establishes exact-score-double accuracy",
+    "Force high-scoring outcomes to fit observed misses",
+    "Promote xG-only from one matched pair"
+  ],
+  "latest_ai_attempt": {
+    "actual_successful_ai_votes": 2,
+    "checked_at_utc": "2026-11-20T22:47:17.463663+00:00",
+    "configured_providers": [
+      "openai",
+      "claude",
+      "gemini",
+      "grok",
+      "groqcloud",
+      "cohere"
+    ],
+    "enabled": true,
+    "last_attempt_errors": {
+      "claude": {
+        "http_status": 400,
+        "reason": "invalid_request_or_model",
+        "type": "HTTPError"
+      },
+      "cohere": {
+        "reason": "response_format_or_model_configuration",
+        "type": "ValueError"
+      },
+      "grok": {
+        "http_status": 400,
+        "reason": "invalid_request_or_model",
+        "type": "HTTPError"
+      },
+      "openai": {
+        "http_status": 429,
+        "reason": "quota_or_rate_limit",
+        "type": "HTTPError"
+      }
+    },
+    "provider_error_details": {
+      "claude": {
+        "http_status": 400,
+        "reason": "invalid_request_or_model",
+        "type": "HTTPError"
+      },
+      "cohere": {
+        "reason": "response_format_or_model_configuration",
+        "type": "ValueError"
+      },
+      "grok": {
+        "http_status": 400,
+        "reason": "invalid_request_or_model",
+        "type": "HTTPError"
+      },
+      "openai": {
+        "http_status": 429,
+        "reason": "quota_or_rate_limit",
+        "type": "HTTPError"
+      }
+    }
+  },
+  "live_accuracy_improvement_established": false,
+  "matched_study": {
+    "methods": {
+      "baseline_v8": {
+        "abstained": 0,
+        "hit_rate": 0.0,
+        "hits": 0,
+        "invalid_opportunities": 0,
+        "issued": 3,
+        "opportunities": 3,
+        "outcome_brier": 0.6001039812394502,
+        "pending": 0,
+        "set_brier_descriptive": 0.004831220513805937,
+        "single_fixtures_evaluated": 6,
+        "single_score_log_loss": 2.9188308517479746,
+        "verified": 3,
+        "wilson_95": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ]
+      },
+      "market_only": {
+        "abstained": 2,
+        "hit_rate": 0.0,
+        "hits": 0,
+        "invalid_opportunities": 0,
+        "issued": 1,
+        "opportunities": 3,
+        "outcome_brier": 0.81559233080157,
+        "pending": 0,
+        "set_brier_descriptive": 0.0046818186782722525,
+        "single_fixtures_evaluated": 2,
+        "single_score_log_loss": 3.0934435695846743,
+        "verified": 1,
+        "wilson_95": [
+          0.0,
+          0.7934506856227626
+        ]
+      },
+      "xg_market": {
+        "abstained": 2,
+        "hit_rate": 0.0,
+        "hits": 0,
+        "invalid_opportunities": 0,
+        "issued": 1,
+        "opportunities": 3,
+        "outcome_brier": 0.8165979934827783,
+        "pending": 0,
+        "set_brier_descriptive": 0.004723157759721581,
+        "single_fixtures_evaluated": 2,
+        "single_score_log_loss": 3.092663720832448,
+        "verified": 1,
+        "wilson_95": [
+          0.0,
+          0.7934506856227626
+        ]
+      },
+      "xg_only": {
+        "abstained": 2,
+        "hit_rate": 0.0,
+        "hits": 0,
+        "invalid_opportunities": 0,
+        "issued": 1,
+        "opportunities": 3,
+        "outcome_brier": 0.7327567442525276,
+        "pending": 0,
+        "set_brier_descriptive": 0.004922875808343161,
+        "single_fixtures_evaluated": 2,
+        "single_score_log_loss": 2.870234528957,
+        "verified": 1,
+        "wilson_95": [
+          0.0,
+          0.7934506856227626
+        ]
+      }
+    },
+    "paired_comparisons": {
+      "market_only": {
+        "baseline_only_set_wins": 0,
+        "challenger_only_set_wins": 0,
+        "positive_advantage_means_lower_challenger_loss": true,
+        "proper_same_event_outcome_brier_advantage": {
+          "mean": -0.08977053313181771,
+          "normal_95_interval": null,
+          "sample_pairs": 1
+        },
+        "proper_same_event_score_log_loss_advantage": {
+          "mean": -0.21506006754935036,
+          "normal_95_interval": null,
+          "sample_pairs": 1
+        },
+        "same_pair_metrics": {
+          "baseline_v8": {
+            "hit_rate": 0.0,
+            "hits": 0,
+            "outcome_brier": 0.7258217976697523,
+            "single_score_log_loss": 2.878383502035324,
+            "verified_sets": 1,
+            "wilson_95": [
+              0.0,
+              0.7934506856227626
+            ]
+          },
+          "market_only": {
+            "hit_rate": 0.0,
+            "hits": 0,
+            "outcome_brier": 0.81559233080157,
+            "single_score_log_loss": 3.0934435695846743,
+            "verified_sets": 1,
+            "wilson_95": [
+              0.0,
+              0.7934506856227626
+            ]
+          }
+        },
+        "verified_common_pairs": 1
+      },
+      "xg_market": {
+        "baseline_only_set_wins": 0,
+        "challenger_only_set_wins": 0,
+        "positive_advantage_means_lower_challenger_loss": true,
+        "proper_same_event_outcome_brier_advantage": {
+          "mean": -0.09077619581302598,
+          "normal_95_interval": null,
+          "sample_pairs": 1
+        },
+        "proper_same_event_score_log_loss_advantage": {
+          "mean": -0.214280218797124,
+          "normal_95_interval": null,
+          "sample_pairs": 1
+        },
+        "same_pair_metrics": {
+          "baseline_v8": {
+            "hit_rate": 0.0,
+            "hits": 0,
+            "outcome_brier": 0.7258217976697523,
+            "single_score_log_loss": 2.878383502035324,
+            "verified_sets": 1,
+            "wilson_95": [
+              0.0,
+              0.7934506856227626
+            ]
+          },
+          "xg_market": {
+            "hit_rate": 0.0,
+            "hits": 0,
+            "outcome_brier": 0.8165979934827783,
+            "single_score_log_loss": 3.092663720832448,
+            "verified_sets": 1,
+            "wilson_95": [
+              0.0,
+              0.7934506856227626
+            ]
+          }
+        },
+        "verified_common_pairs": 1
+      },
+      "xg_only": {
+        "baseline_only_set_wins": 0,
+        "challenger_only_set_wins": 0,
+        "positive_advantage_means_lower_challenger_loss": true,
+        "proper_same_event_outcome_brier_advantage": {
+          "mean": -0.00693494658277527,
+          "normal_95_interval": null,
+          "sample_pairs": 1
+        },
+        "proper_same_event_score_log_loss_advantage": {
+          "mean": 0.008148973078323962,
+          "normal_95_interval": null,
+          "sample_pairs": 1
+        },
+        "same_pair_metrics": {
+          "baseline_v8": {
+            "hit_rate": 0.0,
+            "hits": 0,
+            "outcome_brier": 0.7258217976697523,
+            "single_score_log_loss": 2.878383502035324,
+            "verified_sets": 1,
+            "wilson_95": [
+              0.0,
+              0.7934506856227626
+            ]
+          },
+          "xg_only": {
+            "hit_rate": 0.0,
+            "hits": 0,
+            "outcome_brier": 0.7327567442525276,
+            "single_score_log_loss": 2.870234528957,
+            "verified_sets": 1,
+            "wilson_95": [
+              0.0,
+              0.7934506856227626
+            ]
+          }
+        },
+        "verified_common_pairs": 1
+      }
+    },
+    "verified_opportunities": 3
+  },
+  "miss_geometry": [
+    {
+      "actual_joint_model_probability": 0.0010459384258794861,
+      "actual_joint_rank": 211,
+      "actual_leg_ranks": [
+        6,
+        17
+      ],
+      "actual_scores": [
+        [
+          2,
+          1
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "combinations_to_cover_70_percent_of_same_model_mass": 119,
+      "five_double_model_coverage": 0.0709357143143145,
+      "not_betting_recommendation_or_observed_hit_rate": true,
+      "sydney_date": "2026-11-19"
+    },
+    {
+      "actual_joint_model_probability": 0.007496063033925984,
+      "actual_joint_rank": 26,
+      "actual_leg_ranks": [
+        3,
+        5
+      ],
+      "actual_scores": [
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "combinations_to_cover_70_percent_of_same_model_mass": 132,
+      "five_double_model_coverage": 0.06695245127816893,
+      "not_betting_recommendation_or_observed_hit_rate": true,
+      "sydney_date": "2026-11-20"
+    },
+    {
+      "actual_joint_model_probability": 0.003161315615299702,
+      "actual_joint_rank": 95,
+      "actual_leg_ranks": [
+        10,
+        6
+      ],
+      "actual_scores": [
+        [
+          3,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "combinations_to_cover_70_percent_of_same_model_mass": 121,
+      "five_double_model_coverage": 0.0705631294939516,
+      "not_betting_recommendation_or_observed_hit_rate": true,
+      "sydney_date": "2026-11-21"
+    }
+  ],
+  "new_model_promoted": false,
+  "new_provider_requests_during_audit": 0,
+  "next_highest_value_step": "Continue the fixed prospective same-pair evidence experiment and measure any gain on future matched results before promotion",
+  "observed_at_utc": "2026-11-21T01:10:43.061907+00:00",
+  "old_forecasts_modified": false,
+  "professional_raw": {
+    "hits": 0,
+    "observed_hit_rate": 0.0,
+    "pending_sets": 3,
+    "source_valid_sets": 6,
+    "verified_sets": 3,
+    "wilson_95": [
+      5.551115123125783e-17,
+      0.5614970317550454
+    ]
+  },
+  "references": {
+    "claude": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+    "cohere": "https://docs.cohere.com/v2/reference/chat",
+    "gemini": "https://ai.google.dev/api/generate-content",
+    "openai": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create"
+  },
+  "remaining_limitations": [
+    "Only small verified football sample, with many correlated model records",
+    "Four configured providers reported quota/request/response errors at last recorded attempt",
+    "Actions secret/model settings cannot be inspected with this integration (HTTP403); configured keys remain protected",
+    "Legacy data are retained, including source packets with unknown endpoint freshness",
+    "Physical/mobile live UI cannot be authenticated from public browser session"
+  ],
+  "repairs": [
+    "Reject unlabelled stale dynamic API fallback",
+    "Authenticate V21/V22/V23 choices and source packets before accuracy reporting",
+    "Exclude future result timestamps and repeated events from AI gate",
+    "Normalize equivalent UTC final identities",
+    "Fit retrospective calibration before forecast capture instead of later kickoff",
+    "Run source capture before AI briefing",
+    "Provide all configured AIs one persisted qualified history/evidence dossier without extra football requests",
+    "Use documented OpenAI completion-token parameter and preserve safe completion failure reasons",
+    "Display distinct source-fixture count alongside repeated-model prediction records"
+  ],
+  "roi": {
+    "available": false,
+    "reason": "Executable accepted double prices, stakes and returns unavailable"
+  },
+  "schema_version": 1,
+  "software_validation": {
+    "compile_passed": true,
+    "football_accuracy_claim_from_software_tests": false,
+    "git_diff_check_passed": true,
+    "local_database_dependent_skipped": 17,
+    "local_passed": 1025,
+    "registered_v1_protocol_hash_check_passed": true,
+    "subtests_passed": 8
+  },
+  "source_completeness": {
+    "packets_checked": 140,
+    "with_2_market_types": 137,
+    "with_6_per_team": 22,
+    "with_both_starting_XIs": 1,
+    "with_historical_xg": 22,
+    "with_independent_provider_prediction": 22,
+    "with_reported_injuries": 9,
+    "with_stats_but_no_genuine_xg": 0,
+    "with_verified_historical_match_statistics": 22
+  },
+  "target_70_percent_proven": false,
+  "unified_after": {
+    "by_source": {
+      "ai_gemini": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 13,
+        "pending": 1,
+        "recorded": 14,
+        "verified": 13
+      },
+      "ai_groqcloud": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 11,
+        "pending": 1,
+        "recorded": 12,
+        "verified": 11
+      },
+      "automatic_five_double": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 3,
+        "pending": 3,
+        "recorded": 6,
+        "verified": 3
+      },
+      "frozen_v10": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 12,
+        "pending": 25,
+        "recorded": 37,
+        "verified": 12
+      },
+      "frozen_v12": {
+        "hit": 1,
+        "hit_rate": 0.08333333333333333,
+        "miss": 11,
+        "pending": 95,
+        "recorded": 107,
+        "verified": 12
+      },
+      "frozen_v13": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 12,
+        "pending": 95,
+        "recorded": 107,
+        "verified": 12
+      },
+      "frozen_v8": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 14,
+        "pending": 219,
+        "recorded": 233,
+        "verified": 14
+      },
+      "frozen_v8_control": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 12,
+        "pending": 16,
+        "recorded": 28,
+        "verified": 12
+      },
+      "frozen_v8_near": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 14,
+        "pending": 24,
+        "recorded": 38,
+        "verified": 14
+      },
+      "frozen_v9": {
+        "hit": 0,
+        "hit_rate": 0.0,
+        "miss": 14,
+        "pending": 25,
+        "recorded": 39,
+        "verified": 14
+      },
+      "website_original": {
+        "hit": 0,
+        "hit_rate": null,
+        "miss": 0,
+        "pending": 203,
+        "recorded": 203,
+        "verified": 0
+      }
+    },
+    "five_doubles": {
+      "hit": 0,
+      "hit_rate": 0.0,
+      "miss": 3,
+      "pending": 3,
+      "recorded": 6,
+      "verified": 3
+    },
+    "identity_conflicts": 0,
+    "singles": {
+      "hit": 1,
+      "hit_rate": 0.008771929824561403,
+      "miss": 113,
+      "pending": 704,
+      "recorded": 818,
+      "verified": 114
+    },
+    "unique_verified_single_fixtures": 14
+  },
+  "unified_before": {
+    "five_doubles": {
+      "hit": 0,
+      "hit_rate": 0.0,
+      "miss": 2,
+      "pending": 4,
+      "recorded": 6,
+      "verified": 2
+    },
+    "identity_conflicts": 2,
+    "singles": {
+      "hit": 1,
+      "hit_rate": 0.010416666666666666,
+      "miss": 95,
+      "pending": 722,
+      "recorded": 818,
+      "verified": 96
+    }
+  }
+}

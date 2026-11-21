@@ -13,6 +13,7 @@ from v10_prospective import ROOT as V8_ROOT,read_latest,utc
 from v22_ai_gate import main as ai_gate
 from v22_calibration import chronological_evaluation
 from sportmonks_xg_validation import verify_packet_collection
+from verified_pair_reports import evaluate as verified_pair_evaluation
 
 ROOT=Path("data/v22_prospective")
 SOURCE_ROOT=Path("data/v21_sources")
@@ -24,8 +25,10 @@ def report(*,original_root=V8_ROOT,root=ROOT,source_root=SOURCE_ROOT):
     calibration=chronological_evaluation(originals,verified)
     ai_results_path=Path(root)/"ai_status.json"
     providers=load_json(ai_results_path,{})
-    prospective=load_json(Path(root)/"performance.json",{})
-    v23_report=load_json(Path("data/v23_prospective")/"performance.json",{})
+    prospective=verified_pair_evaluation(root=root,source_root=original_root,
+        provider_root=source_root,research_method="v22_research")
+    v23_report=verified_pair_evaluation(root=Path("data/v23_prospective"),source_root=original_root,
+        provider_root=source_root,research_method="v23_market_form")
     v23_status=load_json(Path("data/v23_prospective")/"status.json",{})
     source_files=(list(Path(source_root).glob("API-Football_*.json"))+
                   list((Path(source_root)/"versions").glob("API-Football_*.json")))

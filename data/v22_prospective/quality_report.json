@@ -32,32 +32,40 @@
       "verified_evaluated": 0
     }
   },
-  "checked_at_utc": "2026-11-21T00:25:08.306780+00:00",
+  "checked_at_utc": "2026-11-21T01:10:47.237617+00:00",
   "frozen_v22_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
       "hits": 0,
       "pending": 0,
-      "verified": 1
+      "verified": 1,
+      "wilson_95": [
+        0.0,
+        0.7934506856227626
+      ]
     },
     "v22_research": {
       "hit_rate": 0.0,
       "hits": 0,
       "pending": 0,
-      "verified": 1
+      "verified": 1,
+      "wilson_95": [
+        0.0,
+        0.7934506856227626
+      ]
     }
   },
   "matched_ai_provider_results": {
     "gemini": {
-      "conservative_95pct_lower_bound": -0.002280886042695723,
-      "mean_paired_outcome_brier_advantage": 0.00035573829680844607,
+      "conservative_95pct_lower_bound": -0.0022808860426957135,
+      "mean_paired_outcome_brier_advantage": 0.00035573829680845463,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
       "source_matched_verified_fixtures": 13
     },
     "groqcloud": {
-      "conservative_95pct_lower_bound": -0.0013427010225475977,
-      "mean_paired_outcome_brier_advantage": 0.001393126976093872,
+      "conservative_95pct_lower_bound": -0.0013427010225475794,
+      "mean_paired_outcome_brier_advantage": 0.001393126976093887,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
       "source_matched_verified_fixtures": 11
@@ -223,13 +231,21 @@
       "hit_rate": 0.0,
       "hits": 0,
       "pending": 1,
-      "verified": 3
+      "verified": 3,
+      "wilson_95": [
+        5.551115123125783e-17,
+        0.5614970317550454
+      ]
     },
     "v23_market_form": {
       "hit_rate": 0.0,
       "hits": 0,
       "pending": 1,
-      "verified": 3
+      "verified": 3,
+      "wilson_95": [
+        5.551115123125783e-17,
+        0.5614970317550454
+      ]
     }
   },
   "v23_not_observed_success_without_verified_pairs": false,

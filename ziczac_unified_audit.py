@@ -76,7 +76,7 @@ def _final_matches(leg,final):
     return True
 
 
-def _status(legs,choices,results):
+def _status(legs,choices,results,*,as_of=None):
     if not choices or not legs:
         return "invalid",[],[]
     actual=[]
@@ -84,6 +84,8 @@ def _status(legs,choices,results):
         key=(str(leg["provider"]),str(leg["fixture_id"]))
         final=results.get(key)
         if not _final_matches(leg,final):
+            return "pending",[],[]
+        if as_of is not None and utc(final["verified_at_utc"])>utc(as_of):
             return "pending",[],[]
         actual.append(f"{final['home_goals']}-{final['away_goals']}")
     choices=[tuple(row) for row in choices]
@@ -107,11 +109,18 @@ def _collect_finals(v10_root,prematch_root,extra=None):
             if not all(key):
                 continue
             existing=finals.get(key)
-            signature=tuple(row.get(k) for k in (
-                "kickoff_utc","home_team_id","away_team_id","home_goals","away_goals"))
+            try:
+                # Equivalent UTC spellings and integer/string team IDs are
+                # the same football identity, not conflicting final scores.
+                signature=(utc(row["kickoff_utc"]).isoformat(),
+                           str(row.get("home_team_id")),str(row.get("away_team_id")),
+                           row.get("home_goals"),row.get("away_goals"),row.get("score_basis"))
+            except (KeyError,TypeError,ValueError,OverflowError):
+                continue
             if existing is not None:
-                old=tuple(existing.get(k) for k in (
-                    "kickoff_utc","home_team_id","away_team_id","home_goals","away_goals"))
+                old=(utc(existing["kickoff_utc"]).isoformat(),
+                     str(existing.get("home_team_id")),str(existing.get("away_team_id")),
+                     existing.get("home_goals"),existing.get("away_goals"),existing.get("score_basis"))
                 if signature!=old:
                     conflicted.add(key)
             else:
@@ -344,7 +353,7 @@ def summary(records,finals,*,now=None,private_connection="not_loaded",conflicts=
     clock=utc(now or datetime.now(timezone.utc))
     graded=[]
     for record in records:
-        status,actual,per_option=_status(record["legs"],record["choices"],finals)
+        status,actual,per_option=_status(record["legs"],record["choices"],finals,as_of=clock)
         graded.append({**record,"status":status,"actual_scores":actual,
                        "option_hits":per_option,
                        "scheduled_kickoff_utc":min(leg["kickoff_utc"]
@@ -372,6 +381,10 @@ def summary(records,finals,*,now=None,private_connection="not_loaded",conflicts=
     return {"schema_version":1,"checked_at_utc":clock.isoformat(),
             "policy":"first_saved_pre_kickoff_only_verified_regulation_time",
             "singles":totals(singles),"five_doubles":totals(doubles),
+            "unique_verified_single_fixtures":len({
+                (str(row["legs"][0]["provider"]),str(row["legs"][0]["fixture_id"]))
+                for row in singles if row["status"] in ("hit","miss")}),
+            "single_record_counts_include_multiple_models":True,
             "by_source":groups,"records":ordered,
             "private_database_status":private_connection,
             "identity_conflicts":len(conflicts),

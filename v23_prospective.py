@@ -13,8 +13,7 @@ from v16_pair_research import original_model
 from v21_capture_sources import best_packet
 from v21_prospective import _write_once
 from v22_prospective import (
-    _fixture,_short,_options,rank_pairs as rank_common,
-    evaluate as strict_evaluate)
+    _fixture,_short,_options,rank_pairs as rank_common)
 from v23_market_form import shadow as score_market_form
 
 ROOT=Path("data/v23_prospective")
@@ -102,9 +101,11 @@ def freeze(*,now=None,root=ROOT,source_root=V8_ROOT,provider_root=SOURCE_ROOT):
     return status
 
 
-def evaluate(*,root=ROOT,source_root=V8_ROOT,verified=None):
-    return strict_evaluate(root=root,source_root=source_root,verified=verified,
-                           research_method=METHOD)
+def evaluate(*,root=ROOT,source_root=V8_ROOT,verified=None,
+             provider_root=SOURCE_ROOT,prematch_root=Path("data/prematch"),now=None):
+    from verified_pair_reports import evaluate as source_verified_evaluate
+    return source_verified_evaluate(root=root,source_root=source_root,verified=verified,
+        provider_root=provider_root,prematch_root=prematch_root,now=now,research_method=METHOD)
 
 
 def main():

@@ -20,6 +20,7 @@ import requests
 
 from persist_prematch import load_json, verified_result, write_json
 from v10_prospective import ROOT as V10_ROOT, read_latest, utc
+from source_capture_clock import capture_clock
 
 ROOT = Path("data/llm_research")
 PANEL_DIR = ROOT / "forecasts"
@@ -73,8 +74,8 @@ def panel_path(row, root=ROOT):
     return Path(root) / "forecasts" / (provider + "_" + identifier + "_" + digest + ".json")
 
 
-def briefing(row, provider_packet=None, *, as_of=None, history=None):
-    """Same dated frozen source packet to ALL AI providers, no invented facts."""
+def briefing_evidence(row, provider_packet=None, *, as_of=None, history=None):
+    """Build the complete common research dossier once for saving and prompts."""
     info = {
         "home_team": row["home_team"], "away_team": row["away_team"],
         "league": row.get("competition"), "kickoff_utc": row["kickoff_utc"],
@@ -96,6 +97,10 @@ def briefing(row, provider_packet=None, *, as_of=None, history=None):
         provider_packet=provider_packet,
         statistical={side+"_xg": (row.get("expected_goals") or {}).get(side)
                      for side in ("home", "away")})
+    return info
+
+
+def _briefing_text(info):
     return (
         "Independently assess this football fixture using ONLY these frozen "
         "pre-match facts. Do not claim independent live browsing or make up xG, "
@@ -109,11 +114,19 @@ def briefing(row, provider_packet=None, *, as_of=None, history=None):
     )
 
 
+def briefing(row, provider_packet=None, *, as_of=None, history=None):
+    """Same dated frozen source packet to ALL AI providers, no invented facts."""
+    return _briefing_text(briefing_evidence(
+        row,provider_packet,as_of=as_of,history=history))
+
+
 def _extract(response, name):
     """Accept documented provider response shapes; require JSON, no prose guesses."""
     payload = response.json()
     if not isinstance(payload, dict):
         raise ValueError("Provider response must be an object")
+    from provider_response_diagnostics import check_completion
+    check_completion(payload,name)
     if name == "perplexity":
         text = "".join(part.get("text", "") for item in payload.get("output", [])
                        if isinstance(item, dict) and item.get("type") == "message"
@@ -230,6 +243,10 @@ def ask(name, key, model, prompt, request=None, endpoint=None):
         headers = {"Authorization": "Bearer " + key}
         body = {"model": model, "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": 800}
+        if name == "openai":
+            # The documented modern Chat Completions parameter supports
+            # o-series models, which reject the legacy max_tokens field.
+            body["max_completion_tokens"] = body.pop("max_tokens")
         # JSON mode is supported by these APIs; schema validity is still
         # checked locally before freezing any pre-match vote.
         if name in ("openai", "grok", "groqcloud", "mistral"):
@@ -268,6 +285,9 @@ def consensus(votes):
 
 def classify_provider_error(exc):
     """Safe diagnostics: no credential, URL query, request body or provider text."""
+    from provider_response_diagnostics import ProviderResponseError
+    if isinstance(exc,ProviderResponseError):
+        return {"type":type(exc).__name__,"reason":exc.reason}
     response = getattr(exc, "response", None)
     code = getattr(response, "status_code", None) if response is not None else None
     reason = {400:"invalid_request_or_model", 401:"invalid_or_expired_key",
@@ -321,8 +341,9 @@ def paired_candidates(rows,limit=1):
 
 
 def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
-            max_matches=MAX_MATCHES_PER_RUN):
-    clock = utc(now or datetime.now(timezone.utc))
+            max_matches=MAX_MATCHES_PER_RUN, clock=None,
+            provider_root=Path("data/v21_sources"),history_cache_root=None):
+    clock,observation_time = capture_clock(now,clock)
     env = os.environ if environ is None else environ
     configured = settings(env)
     status = {"checked_at_utc": clock.isoformat(), "enabled": env.get("LLM_RESEARCH_ENABLED") == "true",
@@ -399,11 +420,16 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
     status["selected_fixture_ids"]=[str(r["fixture_id"]) for r in rows]
     status["planned_model_requests"]=len(rows)*len(configured)
     status["actual_successful_ai_votes"]=0
-    status["source_quality"]="statistical_frozen_packet_only_no_external_facts"
+    status["source_quality"]="shared_time_checked_research_dossier_missing_inputs_explicit"
+    status["research_context_counts"]={"with_cached_history":0,"with_provider_packet":0}
+    status["research_history_external_requests"]=0
     status["prioritization_policy"]=(
         "exact_original_frozen_v8_two_match_pair_first_when_eligible"
         if budget==2 else "single_fixture_default_no_extra_paid_calls")
     for row in rows:
+        clock=observation_time()
+        if not eligible(row,clock):
+            continue
         path = panel_path(row, root)
         if path.exists():
             continue
@@ -413,11 +439,23 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         # V22: provide the same independently captured, source- and
         # forecast-matched pre-match data to every enabled AI adapter.
         from v21_capture_sources import best_packet
-        extra_record=best_packet(Path("data/v21_sources"),row,now=clock)
+        extra_record=best_packet(provider_root,row,now=clock)
         extra=(extra_record or {}).get("provider_snapshot")
-        prompt = briefing(row,provider_packet=extra,as_of=clock)
+        from cached_ai_history import cached_history
+        research=cached_history(row,as_of=clock,api_key=env.get("API_FOOTBALL_KEY", ""),
+                                cache_root=history_cache_root)
+        shared_evidence=briefing_evidence(row,provider_packet=extra,as_of=clock,
+                                          history=research["history"])
+        prompt = _briefing_text(shared_evidence)
+        status["research_context_counts"]["with_cached_history"]+=bool(research["history"])
+        status["research_context_counts"]["with_provider_packet"]+=bool(
+            shared_evidence["professional_match_evidence"]["provider_snapshot_sha256"])
+        common_cutoff=clock
         votes, models = {}, {}
         for name, (key, model) in configured.items():
+            if observation_time()>=utc(row["kickoff_utc"])-timedelta(minutes=5):
+                status["provider_error_details"][name]={"reason":"pre_match_window_expired"}
+                break
             try:
                 votes[name] = ask(name, key, model, prompt, request=request,
                                   endpoint=env.get("QWEN_API_URL") if name == "qwen" else None)
@@ -426,7 +464,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
             except (requests.RequestException, ValueError, KeyError, TypeError, RuntimeError) as exc:
                 status["provider_error_types"][name] = type(exc).__name__
                 status["provider_error_details"][name] = classify_provider_error(exc)
-        frozen = datetime.now(timezone.utc)
+        frozen = observation_time()
         if not votes or frozen >= utc(row["kickoff_utc"]):
             continue
         record = {"schema_version": 1, "research_only": True,
@@ -440,11 +478,23 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                   "source_captured_at_utc": row["captured_at_utc"],
                   "input_digest": row["input_digest"],
                   "captured_at_utc": frozen.isoformat(), "models": models,
+                  "research_as_of_utc":common_cutoff.isoformat(),
+                  "research_history_digest":research["input_digest"],
+                  "research_league_evidence_digest":research["league_evidence_digest"],
+                  "research_history_matches":len(research["history"]),
+                  "research_history":research["history"],
+                  "research_history_sources":research["source_metadata"],
+                  "research_history_warnings":research["warnings"],
+                  "research_history_external_requests":0,
                   "votes": votes, "consensus": consensus(votes),
                   "baseline_predicted_score": row["predicted_score"],
                   "baseline_probabilities": row["outcome_probabilities"],
                   "verified_source_packet_sha256":extra.get("snapshot_sha256") if extra else None,
                   "shared_prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                  "shared_evidence":shared_evidence,
+                  "shared_evidence_sha256":hashlib.sha256(json.dumps(
+                      shared_evidence,sort_keys=True,separators=(",",":"),
+                      allow_nan=False).encode()).hexdigest(),
                   "ai_numeric_weight": 0.0,
                   "provider_count": len(votes),
                   "configured_provider_count": len(configured),
