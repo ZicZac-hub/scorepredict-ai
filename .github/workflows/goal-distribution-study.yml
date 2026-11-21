@@ -1,0 +1,28 @@
+name: Matched goal distribution historical study
+on:
+  pull_request:
+    paths:
+      - 'run_goal_distribution_study.py'
+      - 'tests/test_goal_distribution_study.py'
+      - '.github/workflows/goal-distribution-study.yml'
+permissions:
+  contents: read
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy
+      - run: python run_goal_distribution_study.py > goal-distribution-results.json
+      - name: Print fixed comparison summary
+        run: python -c "import json; r=json.load(open('goal-distribution-results.json')); print(json.dumps({k:v for k,v in r.items() if k in ('selected_method','selected_evaluation','validation','evaluation')},indent=2))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: goal-distribution-results
+          path: goal-distribution-results.json
