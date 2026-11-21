@@ -10,6 +10,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 import json
 import math
+import heapq
 from pathlib import Path
 import re
 
@@ -67,6 +68,51 @@ def _candidate(record, path, result, now):
         return (captured, record, matrix, actual)
     except (ValueError, TypeError, KeyError, OSError, OverflowError):
         return None
+
+
+def _frozen_pair_reproduction(chosen, family):
+    """Reproduce top-five selection from two *existing* archived grids only.
+
+    This is a post-settlement read-only diagnostic of the archived inputs,
+    never a substitute for an original saved screenshot or a prospective hit.
+    """
+    first = chosen.get(("API-Football", "1550200", family))
+    second = chosen.get(("API-Football", "1550202", family))
+    if first is None or second is None:
+        return None
+    _, left, grid1, goals1 = first
+    _, right, grid2, goals2 = second
+    actual_mass = grid1[goals1[0]][goals1[1]] * grid2[goals2[0]][goals2[1]]
+    cells = ((p * q, h, a, x, y)
+             for h, row in enumerate(grid1) for a, p in enumerate(row)
+             for x, other in enumerate(grid2) for y, q in enumerate(other))
+    five = heapq.nlargest(5, cells, key=lambda item: item[0])
+    rank = 1 + sum(
+        p * q > actual_mass
+        for row in grid1 for p in row for other in grid2 for q in other
+    )
+    return {
+        "first_forecast_id": left["forecast_id"],
+        "second_forecast_id": right["forecast_id"],
+        "actual_scores": [
+            str(goals1[0]) + "-" + str(goals1[1]),
+            str(goals2[0]) + "-" + str(goals2[1]),
+        ],
+        "actual_joint_model_mass": actual_mass,
+        "actual_joint_rank_min": rank,
+        "top_five_model_mass": math.fsum(row[0] for row in five),
+        "actual_in_top_five": any(
+            (h, a, x, y) == (*goals1, *goals2)
+            for _, h, a, x, y in five
+        ),
+        "model_selected_top_five": [
+            {"score1": str(h) + "-" + str(a),
+             "score2": str(x) + "-" + str(y),
+             "joint_probability": p}
+            for p, h, a, x, y in five
+        ],
+        "selection_is_reconstructed_not_saved_manual_prospective_pair": True,
+    }
 
 
 def build_report(root=ROOT, prematch=PREMATCH, *, now=None):
@@ -148,6 +194,9 @@ def build_report(root=ROOT, prematch=PREMATCH, *, now=None):
             for fixture_id in ("1550200", "1550202")
         },
         "observations": details,
+        "focused_two_match_reproduction": {
+            family: _frozen_pair_reproduction(chosen, family) for family in MODEL_KEYS
+        },
         "no_provider_calls": True,
         "forecasts_unchanged": True,
         "production_model_promoted": False,
