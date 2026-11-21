@@ -48,10 +48,14 @@ def freeze_shadow(fixture, history, snapshot):
             return {"status": "abstained", "reason": "verified_xg_not_eligible"}
         dc_matrix = _matrix(baseline["matrix"])
         xg_matrix = _matrix(challenger["matrix"])
-        if (dc_matrix is None or xg_matrix is None
-                or dc_matrix.shape != xg_matrix.shape
-                or challenger.get("lineup_status") not in LINEUP_STATES):
-            return {"status": "abstained", "reason": "invalid_shadow_probabilities"}
+        if dc_matrix is None:
+            return {"status": "abstained", "reason": "invalid_baseline_probabilities"}
+        if xg_matrix is None:
+            return {"status": "abstained", "reason": "invalid_xg_probabilities"}
+        if dc_matrix.shape != xg_matrix.shape:
+            return {"status": "abstained", "reason": "incompatible_shadow_grid"}
+        if challenger.get("lineup_status") not in LINEUP_STATES:
+            return {"status": "abstained", "reason": "invalid_lineup_evidence_category"}
         return {
             "status": "ready", "policy": SHADOW_POLICY,
             "baseline_model_version": str(baseline["model_version"]),
