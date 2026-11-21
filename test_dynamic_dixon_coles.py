@@ -50,6 +50,20 @@ class DynamicDixonColesTests(unittest.TestCase):
         recent=[fixture(i,2+i%4,2+(i+1)%4) for i in range(900,1050)]
         self.assertIsNone(fit_forecast(fixture(1060,0,1),stale+recent))
 
+    def test_research_ablation_keeps_default_and_normalization(self):
+        target=fixture(160,0,1)
+        past=history()
+        original=fit_forecast(target,past)
+        explicit=fit_forecast(target,past,venue_deviations=True,goal_band_calibration=True)
+        np.testing.assert_array_equal(original['matrix'],explicit['matrix'])
+        for venue,bands in ((False,True),(True,False),(False,False)):
+            result=fit_forecast(target,past,venue_deviations=venue,goal_band_calibration=bands)
+            self.assertAlmostEqual(result['matrix'].sum(),1.)
+            self.assertTrue(np.isfinite(result['matrix']).all())
+            self.assertGreaterEqual(result['matrix'].min(),0.)
+            if not bands:
+                self.assertEqual(result['goal_band_factors'],[1.,1.,1.])
+
     def test_rho_bounds(self):
         for h,a in ((.15,.15),(12.,12.),(12.,.15)):
             for rho in (-.2,.2):
