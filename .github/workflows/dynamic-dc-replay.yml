@@ -1,0 +1,26 @@
+name: Dynamic Dixon-Coles historical replay
+on:
+  pull_request:
+    paths:
+      - 'run_dynamic_dc_pinned_replay.py'
+      - '.github/workflows/dynamic-dc-replay.yml'
+permissions:
+  contents: read
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - run: python run_dynamic_dc_pinned_replay.py > dynamic-dc-report.json
+      - run: python -c "import json; r=json.load(open('dynamic-dc-report.json')); print(json.dumps({k:v for k,v in r['comparison'].items() if k!='matched_trials'},indent=2))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dynamic-dc-development-report
+          path: dynamic-dc-report.json
