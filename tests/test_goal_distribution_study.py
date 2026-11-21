@@ -9,7 +9,7 @@ def test_same_actual_scores_and_valid_probability_grids():
     source=_grid(1.5,1.1)
     saved=source.copy()
     choices=variants(source)
-    assert tuple(choices)==METHODS
+    assert tuple(choices)==('baseline_v8',*METHODS[1:])
     np.testing.assert_array_equal(source,saved)
     for method,matrix in choices.items():
         assert np.isclose(matrix.sum(),1.)
@@ -26,7 +26,7 @@ def test_same_actual_scores_and_valid_probability_grids():
 def test_model_selection_prefers_log_loss_not_retrospective_hit_count():
     sample={"matched_pairs":40,"models":{
         name:{"score_log_loss":3.5+i/100,"hits":10+i} for i,name in enumerate(METHODS)}}
-    assert select_model(sample)=="baseline_v8"
+    assert select_model(sample)=="engine_baseline"
     sample["models"]["bivariate_poisson_c012"]["score_log_loss"]=3.0
     assert select_model(sample)=="bivariate_poisson_c012"
     sample["matched_pairs"]=29
