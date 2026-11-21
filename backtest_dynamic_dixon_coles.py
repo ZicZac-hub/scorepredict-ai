@@ -17,7 +17,10 @@ VARIANTS = ('baseline','dixon_coles','dynamic_dixon_coles')
 SYDNEY = ZoneInfo('Australia/Sydney')
 
 def evaluate(matches, start=None):
-    ordered = sorted(_history(matches),key=lambda m:(_date(m['utcDate']),str(m.get('id'))))
+    # Reject negative regulation scores before both selection and training.
+    ordered = sorted((m for m in _history(matches)
+                      if min(m['score']['fullTime']['home'],m['score']['fullTime']['away'])>=0),
+                     key=lambda m:(_date(m['utcDate']),str(m.get('id'))))
     days=defaultdict(list)
     for m in ordered:
         if min(m['score']['fullTime']['home'],m['score']['fullTime']['away'])<0:
@@ -25,6 +28,8 @@ def evaluate(matches, start=None):
         days[_date(m['utcDate']).astimezone(SYDNEY).date()].append(m)
     report={v:dict(pairs=0,hits=0,coverage=0.,brier=0.,score_log_loss=0.) for v in VARIANTS}
     offered=0
+    unavailable={v:0 for v in VARIANTS}
+    rows=[]
     for day, games in sorted(days.items()):
         if start and day.isoformat()<start:
             continue
@@ -49,8 +54,13 @@ def evaluate(matches, start=None):
         past=[m for m in ordered if _date(m['utcDate'])<cutoff
               and _date(m['utcDate']).astimezone(SYDNEY).date()<day]
         forecasts={v:[predict(m,past,variant=v) for m in pair] for v in VARIANTS}
-        if any(f is None for group in forecasts.values() for f in group):
+        missing=[v for v,group in forecasts.items() if any(f is None for f in group)]
+        for v in missing:
+            unavailable[v]+=1
+        if missing:
             continue
+        trial={'sydney_date':day.isoformat(),'fixture_ids':[m.get('id') for m in pair],
+               'provider':pair[0].get('provider','football-data.org'),'models':{}}
         actual=tuple((m['score']['fullTime']['home'],m['score']['fullTime']['away']) for m in pair)
         for v, group in forecasts.items():
             a,b=(f['matrix'] for f in group)
@@ -62,15 +72,21 @@ def evaluate(matches, start=None):
             row['hits']+=hit
             row['coverage']+=coverage
             row['brier']+=(coverage-hit)**2
+            trial['models'][v]={'hit':hit,'coverage':float(coverage),'brier':float((coverage-hit)**2)}
             for matrix,(h,g) in zip((a,b),actual):
                 p=float(matrix[h,g]) if h<matrix.shape[0] and g<matrix.shape[1] else 0.
                 row['score_log_loss']-=math.log(max(p,1e-12))
+        rows.append(trial)
     for row in report.values():
         n=row['pairs']
         row['hit_rate']=row['hits']/n if n else None
         for key in ('coverage','brier','score_log_loss'):
             row[key]=row[key]/(2*n if key=='score_log_loss' else n) if n else None
-    return {'offered_pairs':offered,'matched_pairs':report['baseline']['pairs'],
+    matched=report['baseline']['pairs']
+    return {'offered_pairs':offered,'matched_pairs':matched,
+            'excluded_unmatched_pairs':offered-matched,
+            'matched_fraction':matched/offered if offered else None,
+            'unavailable_pairs_by_model':unavailable,'matched_trials':rows,
             'models':report,'note':'Historical matched-pair evaluation only; no production promotion. Joint coverage assumes independent fixtures.'}
 
 if __name__=='__main__':
