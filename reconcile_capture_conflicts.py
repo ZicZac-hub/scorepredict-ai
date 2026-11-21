@@ -21,6 +21,7 @@ REPORT_PREFIXES = (
     "data/prospective_ledger/discovery/",
 )
 REPORT_EXACT = frozenset((
+    "data/tracking/status.json",  # Regenerated audit summary; not an immutable forecast
     "data/prematch/accuracy_report.json",
     "data/prematch/prospective_comparison.json",
     "data/prematch/prospective_double_comparison.json",
