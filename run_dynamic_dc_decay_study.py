@@ -40,7 +40,7 @@ def fit_decay(fixture, history, half_life):
     rates=_rates(full,h,a)
     if rates is None:
         return None
-    matrix=_grid(*rates,rho=_safe_rho(*rates,rho))
+    matrix=_grid(*rates,10,rho=_safe_rho(*rates,rho))
     matrix*=factors[_groups(matrix)]
     matrix/=matrix.sum()
     return {"matrix":matrix,"model_version":"decay-research-only"}
