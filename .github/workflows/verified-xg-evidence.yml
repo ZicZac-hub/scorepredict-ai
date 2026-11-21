@@ -1,0 +1,50 @@
+name: Verified xG evidence and prospective replay
+
+on:
+  pull_request:
+    paths:
+      - 'verified_xg_evidence_pipeline.py'
+      - 'test_verified_xg_evidence_pipeline.py'
+      - 'verified_xg_challenger.py'
+      - 'verified_xg_calibration.py'
+      - 'v21_capture_sources.py'
+      - '.github/workflows/verified-xg-evidence.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'verified_xg_evidence_pipeline.py'
+      - 'v21_capture_sources.py'
+      - 'data/v21_sources/**'
+      - 'data/verified_xg_replay/**'
+      - 'data/v10_prospective/verified_results.json'
+  schedule:
+    - cron: '19 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent analysis dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'pytest>=8,<10'
+      - name: Validate seals, identity and chronology (synthetic tests only)
+        run: python -m pytest -q test_verified_xg_challenger.py test_verified_xg_evidence_pipeline.py
+      - name: Audit archived xG and run independent matched shadow replay
+        run: python verified_xg_evidence_pipeline.py --output verified-xg-evidence-report.json
+      - name: Publish audit as non-production evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-xg-research-evidence
+          path: verified-xg-evidence-report.json
+          if-no-files-found: warn
