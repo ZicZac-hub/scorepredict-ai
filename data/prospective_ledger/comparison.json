@@ -3,12 +3,12 @@
     "T24h": {
       "always_1_1": {
         "calibration": [],
-        "evaluated": 6,
+        "evaluated": 8,
         "exact_hit_rate": 0.0,
         "exact_hits": 0,
         "exact_rate_wilson95": [
-          2.7755575615628914e-17,
-          0.3903342879021653
+          0,
+          0.32440756488388023
         ],
         "expected_exact_hits": null,
         "out_of_grid_actuals": 0,
@@ -23,77 +23,84 @@
         "calibration": [
           {
             "lower": 0.1,
-            "matches": 6,
-            "mean_probability": 0.12111426571405833,
+            "matches": 8,
+            "mean_probability": 0.12229609058404994,
             "observed_rate": 0.0,
             "upper": 0.15
           }
         ],
-        "evaluated": 6,
+        "evaluated": 8,
         "exact_hit_rate": 0.0,
         "exact_hits": 0,
         "exact_rate_wilson95": [
-          2.7755575615628914e-17,
-          0.3903342879021653
+          0,
+          0.32440756488388023
         ],
-        "expected_exact_hits": 0.72668559428435,
+        "expected_exact_hits": 0.9783687246723995,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.6666666666666666,
-        "outcome_brier": 0.552140364743118,
-        "probability_evaluated": 6,
-        "score_log_loss": 2.6483898353019386,
-        "top3_hit_rate": 0.3333333333333333,
+        "outcome_accuracy": 0.75,
+        "outcome_brier": 0.5518368441268768,
+        "probability_evaluated": 8,
+        "score_log_loss": 2.7547108864105567,
+        "top3_hit_rate": 0.25,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       },
       "v6": {
         "calibration": [
           {
             "lower": 0.1,
-            "matches": 6,
-            "mean_probability": 0.12060562159632941,
+            "matches": 8,
+            "mean_probability": 0.11994494348443184,
             "observed_rate": 0.0,
             "upper": 0.15
           }
         ],
-        "evaluated": 6,
+        "evaluated": 8,
         "exact_hit_rate": 0.0,
         "exact_hits": 0,
         "exact_rate_wilson95": [
-          2.7755575615628914e-17,
-          0.3903342879021653
+          0,
+          0.32440756488388023
         ],
-        "expected_exact_hits": 0.7236337295779764,
+        "expected_exact_hits": 0.9595595478754547,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.8333333333333334,
-        "outcome_brier": 0.4946878954134026,
-        "probability_evaluated": 6,
-        "score_log_loss": 2.5750166978646245,
-        "top3_hit_rate": 0.3333333333333333,
+        "outcome_accuracy": 0.875,
+        "outcome_brier": 0.45093723378002604,
+        "probability_evaluated": 8,
+        "score_log_loss": 2.5834704826211,
+        "top3_hit_rate": 0.375,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       },
       "v7": {
         "calibration": [
           {
             "lower": 0.1,
-            "matches": 6,
-            "mean_probability": 0.12728246157930687,
+            "matches": 7,
+            "mean_probability": 0.12974076068240523,
             "observed_rate": 0.0,
             "upper": 0.15
+          },
+          {
+            "lower": 0.15,
+            "matches": 1,
+            "mean_probability": 0.17203158377149297,
+            "observed_rate": 0.0,
+            "upper": 0.2
           }
         ],
-        "evaluated": 6,
+        "evaluated": 8,
         "exact_hit_rate": 0.0,
         "exact_hits": 0,
         "exact_rate_wilson95": [
-          2.7755575615628914e-17,
-          0.3903342879021653
+          0,
+          0.32440756488388023
         ],
-        "expected_exact_hits": 0.7636947694758411,
+        "expected_exact_hits": 1.0802169085483295,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.8333333333333334,
-        "outcome_brier": 0.4759889408886145,
-        "probability_evaluated": 6,
-        "score_log_loss": 2.5830732087525625,
+        "outcome_accuracy": 0.875,
+        "outcome_brier": 0.40410951041482746,
+        "probability_evaluated": 8,
+        "score_log_loss": 2.4907456379478075,
         "top3_hit_rate": 0.5,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       }
@@ -101,12 +108,12 @@
     "T30m": {
       "always_1_1": {
         "calibration": [],
-        "evaluated": 3,
-        "exact_hit_rate": 0.3333333333333333,
+        "evaluated": 5,
+        "exact_hit_rate": 0.2,
         "exact_hits": 1,
         "exact_rate_wilson95": [
-          0.06149194472039621,
-          0.7923403991979522
+          0.03622410863243014,
+          0.6244653702374747
         ],
         "expected_exact_hits": null,
         "out_of_grid_actuals": 0,
@@ -128,26 +135,26 @@
           },
           {
             "lower": 0.1,
-            "matches": 2,
-            "mean_probability": 0.12005169371763882,
+            "matches": 4,
+            "mean_probability": 0.12294662945583179,
             "observed_rate": 0.0,
             "upper": 0.15
           }
         ],
-        "evaluated": 3,
-        "exact_hit_rate": 0.3333333333333333,
+        "evaluated": 5,
+        "exact_hit_rate": 0.2,
         "exact_hits": 1,
         "exact_rate_wilson95": [
-          0.06149194472039621,
-          0.7923403991979522
+          0.03622410863243014,
+          0.6244653702374747
         ],
-        "expected_exact_hits": 0.3399039085542224,
+        "expected_exact_hits": 0.5915870389422719,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.6666666666666666,
-        "outcome_brier": 0.5791080502043277,
-        "probability_evaluated": 3,
-        "score_log_loss": 2.5831643277628102,
-        "top3_hit_rate": 0.3333333333333333,
+        "outcome_accuracy": 0.8,
+        "outcome_brier": 0.5678353430338579,
+        "probability_evaluated": 5,
+        "score_log_loss": 2.7793682125522507,
+        "top3_hit_rate": 0.2,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       },
       "v6": {
@@ -161,26 +168,26 @@
           },
           {
             "lower": 0.1,
-            "matches": 2,
-            "mean_probability": 0.12127450979367127,
+            "matches": 4,
+            "mean_probability": 0.11961870947120522,
             "observed_rate": 0.0,
             "upper": 0.15
           }
         ],
-        "evaluated": 3,
+        "evaluated": 5,
         "exact_hit_rate": 0.0,
         "exact_hits": 0,
         "exact_rate_wilson95": [
-          5.551115123125783e-17,
-          0.5614970317550454
+          0,
+          0.43448246478317476
         ],
-        "expected_exact_hits": 0.3326865171130405,
+        "expected_exact_hits": 0.5686123354105188,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.6666666666666666,
-        "outcome_brier": 0.7051913467544836,
-        "probability_evaluated": 3,
-        "score_log_loss": 2.772906723134888,
-        "top3_hit_rate": 0.0,
+        "outcome_accuracy": 0.8,
+        "outcome_brier": 0.5509889076046488,
+        "probability_evaluated": 5,
+        "score_log_loss": 2.7072767686371435,
+        "top3_hit_rate": 0.2,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       },
       "v7": {
@@ -194,26 +201,33 @@
           },
           {
             "lower": 0.1,
-            "matches": 2,
-            "mean_probability": 0.12204423868547418,
+            "matches": 3,
+            "mean_probability": 0.12952634422398127,
             "observed_rate": 0.0,
             "upper": 0.15
+          },
+          {
+            "lower": 0.15,
+            "matches": 1,
+            "mean_probability": 0.17203158377149297,
+            "observed_rate": 0.0,
+            "upper": 0.2
           }
         ],
-        "evaluated": 3,
+        "evaluated": 5,
         "exact_hit_rate": 0.0,
         "exact_hits": 0,
         "exact_rate_wilson95": [
-          5.551115123125783e-17,
-          0.5614970317550454
+          0,
+          0.43448246478317476
         ],
-        "expected_exact_hits": 0.33498897036468167,
+        "expected_exact_hits": 0.6515111094371702,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.6666666666666666,
-        "outcome_brier": 0.8402584672741998,
-        "probability_evaluated": 3,
-        "score_log_loss": 3.156141875347202,
-        "top3_hit_rate": 0.3333333333333333,
+        "outcome_accuracy": 0.8,
+        "outcome_brier": 0.5795435679619064,
+        "probability_evaluated": 5,
+        "score_log_loss": 2.779190295421739,
+        "top3_hit_rate": 0.4,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       }
     },
@@ -332,12 +346,12 @@
     "research": {
       "always_1_1": {
         "calibration": [],
-        "evaluated": 19,
-        "exact_hit_rate": 0.10526315789473684,
+        "evaluated": 21,
+        "exact_hit_rate": 0.09523809523809523,
         "exact_hits": 2,
         "exact_rate_wilson95": [
-          0.02935856029887013,
-          0.31394082711109006
+          0.02651876743807452,
+          0.2891413907391826
         ],
         "expected_exact_hits": null,
         "out_of_grid_actuals": 0,
@@ -359,26 +373,26 @@
           },
           {
             "lower": 0.1,
-            "matches": 18,
-            "mean_probability": 0.12083802812618094,
-            "observed_rate": 0.05555555555555555,
+            "matches": 20,
+            "mean_probability": 0.12133838183296534,
+            "observed_rate": 0.05,
             "upper": 0.15
           }
         ],
-        "evaluated": 19,
-        "exact_hit_rate": 0.10526315789473684,
+        "evaluated": 21,
+        "exact_hit_rate": 0.09523809523809523,
         "exact_hits": 2,
         "exact_rate_wilson95": [
-          0.02935856029887013,
-          0.31394082711109006
+          0.02651876743807452,
+          0.2891413907391826
         ],
-        "expected_exact_hits": 2.2748850273902015,
+        "expected_exact_hits": 2.5265681577782515,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.5263157894736842,
-        "outcome_brier": 0.620709258539572,
-        "probability_evaluated": 19,
-        "score_log_loss": 2.6303911168850975,
-        "top3_hit_rate": 0.3684210526315789,
+        "outcome_accuracy": 0.5714285714285714,
+        "outcome_brier": 0.6140632608003891,
+        "probability_evaluated": 21,
+        "score_log_loss": 2.6726085381090328,
+        "top3_hit_rate": 0.3333333333333333,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       },
       "v6": {
@@ -392,26 +406,26 @@
           },
           {
             "lower": 0.1,
-            "matches": 16,
-            "mean_probability": 0.11934766108562482,
-            "observed_rate": 0.0625,
+            "matches": 18,
+            "mean_probability": 0.11919379975930416,
+            "observed_rate": 0.05555555555555555,
             "upper": 0.15
           }
         ],
-        "evaluated": 19,
-        "exact_hit_rate": 0.05263157894736842,
+        "evaluated": 21,
+        "exact_hit_rate": 0.047619047619047616,
         "exact_hits": 1,
         "exact_rate_wilson95": [
-          0.009351994062300362,
-          0.24638731166898786
+          0.008455987809826399,
+          0.22669360074122563
         ],
-        "expected_exact_hits": 2.1967884941074485,
+        "expected_exact_hits": 2.4327143124049266,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.5263157894736842,
-        "outcome_brier": 0.6026388417190646,
-        "probability_evaluated": 19,
-        "score_log_loss": 2.653845519106142,
-        "top3_hit_rate": 0.3684210526315789,
+        "outcome_accuracy": 0.5714285714285714,
+        "outcome_brier": 0.5756908804962867,
+        "probability_evaluated": 21,
+        "score_log_loss": 2.6495585017522743,
+        "top3_hit_rate": 0.38095238095238093,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       },
       "v7": {
@@ -425,26 +439,33 @@
           },
           {
             "lower": 0.1,
-            "matches": 17,
-            "mean_probability": 0.12772989658745793,
-            "observed_rate": 0.058823529411764705,
+            "matches": 18,
+            "mean_probability": 0.12866104429376557,
+            "observed_rate": 0.05555555555555555,
             "upper": 0.15
+          },
+          {
+            "lower": 0.15,
+            "matches": 1,
+            "mean_probability": 0.17203158377149297,
+            "observed_rate": 0.0,
+            "upper": 0.2
           }
         ],
-        "evaluated": 19,
-        "exact_hit_rate": 0.10526315789473684,
+        "evaluated": 21,
+        "exact_hit_rate": 0.09523809523809523,
         "exact_hits": 2,
         "exact_rate_wilson95": [
-          0.02935856029887013,
-          0.31394082711109006
+          0.02651876743807452,
+          0.2891413907391826
         ],
-        "expected_exact_hits": 2.3451545534924385,
+        "expected_exact_hits": 2.661676692564927,
         "out_of_grid_actuals": 0,
-        "outcome_accuracy": 0.5789473684210527,
-        "outcome_brier": 0.6203960046968011,
-        "probability_evaluated": 19,
-        "score_log_loss": 2.72323706847432,
-        "top3_hit_rate": 0.47368421052631576,
+        "outcome_accuracy": 0.6190476190476191,
+        "outcome_brier": 0.5792603108202931,
+        "probability_evaluated": 21,
+        "score_log_loss": 2.6747157215275794,
+        "top3_hit_rate": 0.47619047619047616,
         "wilson_interval_status": "one_slot_per_physical_fixture"
       }
     }
@@ -979,6 +1000,99 @@
         "top3_hit_rate": 1.0,
         "wilson_interval_status": "suppressed_repeated_fixture_horizons"
       }
+    },
+    "SA": {
+      "always_1_1": {
+        "calibration": [],
+        "evaluated": 6,
+        "exact_hit_rate": 0.0,
+        "exact_hits": 0,
+        "exact_rate_wilson95": null,
+        "expected_exact_hits": null,
+        "out_of_grid_actuals": 0,
+        "outcome_accuracy": null,
+        "outcome_brier": null,
+        "probability_evaluated": 0,
+        "score_log_loss": null,
+        "top3_hit_rate": null,
+        "wilson_interval_status": "suppressed_repeated_fixture_horizons"
+      },
+      "league_poisson": {
+        "calibration": [
+          {
+            "lower": 0.1,
+            "matches": 6,
+            "mean_probability": 0.12584156519402476,
+            "observed_rate": 0.0,
+            "upper": 0.15
+          }
+        ],
+        "evaluated": 6,
+        "exact_hit_rate": 0.0,
+        "exact_hits": 0,
+        "exact_rate_wilson95": null,
+        "expected_exact_hits": 0.7550493911641486,
+        "out_of_grid_actuals": 0,
+        "outcome_accuracy": 1.0,
+        "outcome_brier": 0.5509262822781532,
+        "probability_evaluated": 6,
+        "score_log_loss": 3.073674039736412,
+        "top3_hit_rate": 0.0,
+        "wilson_interval_status": "suppressed_repeated_fixture_horizons"
+      },
+      "v6": {
+        "calibration": [
+          {
+            "lower": 0.1,
+            "matches": 6,
+            "mean_probability": 0.11796290914873914,
+            "observed_rate": 0.0,
+            "upper": 0.15
+          }
+        ],
+        "evaluated": 6,
+        "exact_hit_rate": 0.0,
+        "exact_hits": 0,
+        "exact_rate_wilson95": null,
+        "expected_exact_hits": 0.7077774548924348,
+        "out_of_grid_actuals": 0,
+        "outcome_accuracy": 1.0,
+        "outcome_brier": 0.3196852488798965,
+        "probability_evaluated": 6,
+        "score_log_loss": 2.6088318368905266,
+        "top3_hit_rate": 0.5,
+        "wilson_interval_status": "suppressed_repeated_fixture_horizons"
+      },
+      "v7": {
+        "calibration": [
+          {
+            "lower": 0.1,
+            "matches": 3,
+            "mean_probability": 0.1444905553009954,
+            "observed_rate": 0.0,
+            "upper": 0.15
+          },
+          {
+            "lower": 0.15,
+            "matches": 3,
+            "mean_probability": 0.17203158377149297,
+            "observed_rate": 0.0,
+            "upper": 0.2
+          }
+        ],
+        "evaluated": 6,
+        "exact_hit_rate": 0.0,
+        "exact_hits": 0,
+        "exact_rate_wilson95": null,
+        "expected_exact_hits": 0.9495664172174652,
+        "out_of_grid_actuals": 0,
+        "outcome_accuracy": 1.0,
+        "outcome_brier": 0.1884712189934664,
+        "probability_evaluated": 6,
+        "score_log_loss": 2.213762925533544,
+        "top3_hit_rate": 0.5,
+        "wilson_interval_status": "suppressed_repeated_fixture_horizons"
+      }
     }
   },
   "common_frozen_fixtures": 344,
@@ -987,14 +1101,14 @@
   "comparison_kind": "genuine_prospective_same_evidence",
   "count_unit": "provider fixture and forecast horizon",
   "exclusions": {
-    "awaiting_verified_result": 302
+    "awaiting_verified_result": 296
   },
   "fixed_baseline_note": "Always 1-1 is a point-forecast benchmark. Its artificial one-hot grid is excluded from probability, top-three and calibration metrics.",
   "models": {
     "always_1_1": {
       "calibration": [],
-      "evaluated": 42,
-      "exact_hit_rate": 0.09523809523809523,
+      "evaluated": 48,
+      "exact_hit_rate": 0.08333333333333333,
       "exact_hits": 4,
       "exact_rate_wilson95": null,
       "expected_exact_hits": null,
@@ -1017,23 +1131,23 @@
         },
         {
           "lower": 0.1,
-          "matches": 40,
-          "mean_probability": 0.120886982967142,
-          "observed_rate": 0.05,
+          "matches": 46,
+          "mean_probability": 0.12153323282282234,
+          "observed_rate": 0.043478260869565216,
           "upper": 0.15
         }
       ],
-      "evaluated": 42,
-      "exact_hit_rate": 0.09523809523809523,
+      "evaluated": 48,
+      "exact_hit_rate": 0.08333333333333333,
       "exact_hits": 4,
       "exact_rate_wilson95": null,
-      "expected_exact_hits": 5.035080360923569,
+      "expected_exact_hits": 5.790129752087717,
       "out_of_grid_actuals": 0,
-      "outcome_accuracy": 0.5714285714285714,
-      "outcome_brier": 0.6002070993457298,
-      "probability_evaluated": 42,
-      "score_log_loss": 2.621085905122758,
-      "top3_hit_rate": 0.38095238095238093,
+      "outcome_accuracy": 0.625,
+      "outcome_brier": 0.5940469972122827,
+      "probability_evaluated": 48,
+      "score_log_loss": 2.677659421949464,
+      "top3_hit_rate": 0.3333333333333333,
       "wilson_interval_status": "suppressed_repeated_fixture_horizons"
     },
     "v6": {
@@ -1047,23 +1161,23 @@
         },
         {
           "lower": 0.1,
-          "matches": 36,
-          "mean_probability": 0.1197821089509691,
-          "observed_rate": 0.05555555555555555,
+          "matches": 42,
+          "mean_probability": 0.11952222326493626,
+          "observed_rate": 0.047619047619047616,
           "upper": 0.15
         }
       ],
-      "evaluated": 42,
-      "exact_hit_rate": 0.047619047619047616,
+      "evaluated": 48,
+      "exact_hit_rate": 0.041666666666666664,
       "exact_hits": 2,
       "exact_rate_wilson95": null,
-      "expected_exact_hits": 4.8866077557097904,
+      "expected_exact_hits": 5.594385210602226,
       "out_of_grid_actuals": 0,
-      "outcome_accuracy": 0.5714285714285714,
-      "outcome_brier": 0.586522507754703,
-      "probability_evaluated": 42,
-      "score_log_loss": 2.644835848147823,
-      "top3_hit_rate": 0.38095238095238093,
+      "outcome_accuracy": 0.625,
+      "outcome_brier": 0.5531678503953523,
+      "probability_evaluated": 48,
+      "score_log_loss": 2.640335346740661,
+      "top3_hit_rate": 0.3958333333333333,
       "wilson_interval_status": "suppressed_repeated_fixture_horizons"
     },
     "v7": {
@@ -1077,23 +1191,30 @@
         },
         {
           "lower": 0.1,
-          "matches": 38,
-          "mean_probability": 0.12793813907976775,
-          "observed_rate": 0.05263157894736842,
+          "matches": 41,
+          "mean_probability": 0.12914929148619902,
+          "observed_rate": 0.04878048780487805,
           "upper": 0.15
+        },
+        {
+          "lower": 0.15,
+          "matches": 3,
+          "mean_probability": 0.17203158377149297,
+          "observed_rate": 0.0,
+          "upper": 0.2
         }
       ],
-      "evaluated": 42,
-      "exact_hit_rate": 0.09523809523809523,
+      "evaluated": 48,
+      "exact_hit_rate": 0.08333333333333333,
       "exact_hits": 4,
       "exact_rate_wilson95": null,
-      "expected_exact_hits": 5.20914190804248,
+      "expected_exact_hits": 6.158708325259947,
       "out_of_grid_actuals": 0,
-      "outcome_accuracy": 0.6190476190476191,
-      "outcome_brier": 0.6008931751687431,
-      "probability_evaluated": 42,
-      "score_log_loss": 2.7160036494804065,
-      "top3_hit_rate": 0.47619047619047616,
+      "outcome_accuracy": 0.6666666666666666,
+      "outcome_brier": 0.5493404306468334,
+      "probability_evaluated": 48,
+      "score_log_loss": 2.6532235589870488,
+      "top3_hit_rate": 0.4791666666666667,
       "wilson_interval_status": "suppressed_repeated_fixture_horizons"
     }
   },
@@ -1101,18 +1222,18 @@
   "paired": {
     "both_hits": 0,
     "league_date_block_bootstrap95": [
-      -0.16216216216216217,
-      0.2702702702702703
+      -0.125,
+      0.2545647969052224
     ],
-    "matches": 42,
+    "matches": 48,
     "mcnemar_exact_p": null,
     "mcnemar_status": "suppressed_repeated_fixture_horizons",
-    "neither_hits": 36,
-    "repeated_fixture_slots": 23,
+    "neither_hits": 42,
+    "repeated_fixture_slots": 27,
     "uncertainty_note": "Diagnostic intervals; shared teams, repeated horizons and evolving histories limit independence assumptions. No automatic model promotion.",
-    "unique_fixtures": 19,
+    "unique_fixtures": 21,
     "v6_only_hits": 2,
-    "v7_minus_v6_exact_rate": 0.047619047619047616,
+    "v7_minus_v6_exact_rate": 0.041666666666666664,
     "v7_only_hits": 4
   },
   "paired_by_horizon": {
@@ -1122,13 +1243,13 @@
         0.0,
         0.0
       ],
-      "matches": 6,
+      "matches": 8,
       "mcnemar_exact_p": 1.0,
       "mcnemar_status": "one_slot_per_physical_fixture",
-      "neither_hits": 6,
+      "neither_hits": 8,
       "repeated_fixture_slots": 0,
       "uncertainty_note": "Diagnostic intervals; shared teams, repeated horizons and evolving histories limit independence assumptions. No automatic model promotion.",
-      "unique_fixtures": 6,
+      "unique_fixtures": 8,
       "v6_only_hits": 0,
       "v7_minus_v6_exact_rate": 0.0,
       "v7_only_hits": 0
@@ -1139,13 +1260,13 @@
         0.0,
         0.0
       ],
-      "matches": 3,
+      "matches": 5,
       "mcnemar_exact_p": 1.0,
       "mcnemar_status": "one_slot_per_physical_fixture",
-      "neither_hits": 3,
+      "neither_hits": 5,
       "repeated_fixture_slots": 0,
       "uncertainty_note": "Diagnostic intervals; shared teams, repeated horizons and evolving histories limit independence assumptions. No automatic model promotion.",
-      "unique_fixtures": 3,
+      "unique_fixtures": 5,
       "v6_only_hits": 0,
       "v7_minus_v6_exact_rate": 0.0,
       "v7_only_hits": 0
@@ -1170,30 +1291,30 @@
     "research": {
       "both_hits": 0,
       "league_date_block_bootstrap95": [
-        -0.17647058823529413,
-        0.2916666666666667
+        -0.14285714285714285,
+        0.2727272727272727
       ],
-      "matches": 19,
+      "matches": 21,
       "mcnemar_exact_p": 1.0,
       "mcnemar_status": "one_slot_per_physical_fixture",
-      "neither_hits": 16,
+      "neither_hits": 18,
       "repeated_fixture_slots": 0,
       "uncertainty_note": "Diagnostic intervals; shared teams, repeated horizons and evolving histories limit independence assumptions. No automatic model promotion.",
-      "unique_fixtures": 19,
+      "unique_fixtures": 21,
       "v6_only_hits": 1,
-      "v7_minus_v6_exact_rate": 0.05263157894736842,
+      "v7_minus_v6_exact_rate": 0.047619047619047616,
       "v7_only_hits": 2
     }
   },
-  "paired_verified_matches": 42,
-  "paired_verified_slots": 42,
-  "pending_common_forecasts": 302,
+  "paired_verified_matches": 48,
+  "paired_verified_slots": 48,
+  "pending_common_forecasts": 296,
   "persistence": {
     "database": {
       "state": "not_configured"
     },
     "file_settlement_errors": 0,
-    "file_settlements_written": 0,
+    "file_settlements_written": 2,
     "state": "complete"
   },
   "rows": [
@@ -2049,6 +2170,210 @@
     },
     {
       "actual_score": [
+        2,
+        0
+      ],
+      "always_1_1_hit": false,
+      "always_1_1_score": [
+        1,
+        1
+      ],
+      "captured_at_utc": "2026-11-13T09:18:02.300926+00:00",
+      "competition": "SA",
+      "fixture_id": "1550200",
+      "horizon": "research",
+      "input_digest": "222a667967e75a0bd40d4872116218adebc6a1121da0bb4f867584d25afb5189",
+      "kickoff_utc": "2026-11-21T14:00:00+00:00",
+      "league_poisson_hit": false,
+      "league_poisson_score": [
+        1,
+        1
+      ],
+      "pair_id": "e2043ec4da515733ccd71fde4f79c7e412bf2f1d48e0532fb12b0f6527977bab",
+      "provider": "API-Football",
+      "v6_hit": false,
+      "v6_score": [
+        1,
+        0
+      ],
+      "v7_hit": false,
+      "v7_score": [
+        1,
+        0
+      ]
+    },
+    {
+      "actual_score": [
+        2,
+        0
+      ],
+      "always_1_1_hit": false,
+      "always_1_1_score": [
+        1,
+        1
+      ],
+      "captured_at_utc": "2026-11-21T13:34:17.478148+00:00",
+      "competition": "SA",
+      "fixture_id": "1550200",
+      "horizon": "T30m",
+      "input_digest": "a91ece1dc1166806c09eb4a8ce1639702b05a1f1485f4a0d378fec28bb5060e8",
+      "kickoff_utc": "2026-11-21T14:00:00+00:00",
+      "league_poisson_hit": false,
+      "league_poisson_score": [
+        1,
+        1
+      ],
+      "pair_id": "3ab508c0ac0cf6c4f22f732c0fccaa24ef9f1987ceffe7a1fa9915f08acbdaee",
+      "provider": "API-Football",
+      "v6_hit": false,
+      "v6_score": [
+        1,
+        0
+      ],
+      "v7_hit": false,
+      "v7_score": [
+        1,
+        0
+      ]
+    },
+    {
+      "actual_score": [
+        2,
+        0
+      ],
+      "always_1_1_hit": false,
+      "always_1_1_score": [
+        1,
+        1
+      ],
+      "captured_at_utc": "2026-11-20T14:02:15.079086+00:00",
+      "competition": "SA",
+      "fixture_id": "1550200",
+      "horizon": "T24h",
+      "input_digest": "62f18b1f2e35a36d91ee99531ecc25d1de5cd1080268314f831a3da0a36c798b",
+      "kickoff_utc": "2026-11-21T14:00:00+00:00",
+      "league_poisson_hit": false,
+      "league_poisson_score": [
+        1,
+        1
+      ],
+      "pair_id": "70da1ec31520299af048dee086fe2573849f15d3448018639d06b0c2ea1c2dc3",
+      "provider": "API-Football",
+      "v6_hit": false,
+      "v6_score": [
+        1,
+        0
+      ],
+      "v7_hit": false,
+      "v7_score": [
+        1,
+        0
+      ]
+    },
+    {
+      "actual_score": [
+        3,
+        0
+      ],
+      "always_1_1_hit": false,
+      "always_1_1_score": [
+        1,
+        1
+      ],
+      "captured_at_utc": "2026-11-13T09:18:02.401692+00:00",
+      "competition": "SA",
+      "fixture_id": "1550202",
+      "horizon": "research",
+      "input_digest": "22a752a378ea00203148ae0cd6b65cfe3f2823694e0e2113bb210957edc02d53",
+      "kickoff_utc": "2026-11-21T14:00:00+00:00",
+      "league_poisson_hit": false,
+      "league_poisson_score": [
+        1,
+        1
+      ],
+      "pair_id": "68bedc92bb7e183529909383a84132cd1f58eb3b9994ee884f790e1a02a377b3",
+      "provider": "API-Football",
+      "v6_hit": false,
+      "v6_score": [
+        1,
+        1
+      ],
+      "v7_hit": false,
+      "v7_score": [
+        1,
+        0
+      ]
+    },
+    {
+      "actual_score": [
+        3,
+        0
+      ],
+      "always_1_1_hit": false,
+      "always_1_1_score": [
+        1,
+        1
+      ],
+      "captured_at_utc": "2026-11-21T13:34:18.585957+00:00",
+      "competition": "SA",
+      "fixture_id": "1550202",
+      "horizon": "T30m",
+      "input_digest": "f112c0c88d6ee423bfa4ac433964a99604570923965a0146e58c1286d99558f3",
+      "kickoff_utc": "2026-11-21T14:00:00+00:00",
+      "league_poisson_hit": false,
+      "league_poisson_score": [
+        1,
+        1
+      ],
+      "pair_id": "51ef24c634efd66b73827a4d11e167bfbad55eb5c56c1f60c0f0f19b0ff1dd56",
+      "provider": "API-Football",
+      "v6_hit": false,
+      "v6_score": [
+        1,
+        1
+      ],
+      "v7_hit": false,
+      "v7_score": [
+        1,
+        0
+      ]
+    },
+    {
+      "actual_score": [
+        3,
+        0
+      ],
+      "always_1_1_hit": false,
+      "always_1_1_score": [
+        1,
+        1
+      ],
+      "captured_at_utc": "2026-11-20T14:02:15.505815+00:00",
+      "competition": "SA",
+      "fixture_id": "1550202",
+      "horizon": "T24h",
+      "input_digest": "f6cfbf167e75f868d75e00d5cdf5f596d2308203b28418984d326493a21eb23e",
+      "kickoff_utc": "2026-11-21T14:00:00+00:00",
+      "league_poisson_hit": false,
+      "league_poisson_score": [
+        1,
+        1
+      ],
+      "pair_id": "43b25b6da13005d231d62561f787f0cd210eee8fc751fd20cbbd292aef8e45ac",
+      "provider": "API-Football",
+      "v6_hit": false,
+      "v6_score": [
+        1,
+        1
+      ],
+      "v7_hit": false,
+      "v7_score": [
+        1,
+        0
+      ]
+    },
+    {
+      "actual_score": [
         3,
         1
       ],
@@ -2628,5 +2953,5 @@
   ],
   "schema_version": 1,
   "tail_policy": "Full stored grids are scored; out-of-grid actual probability uses epsilon=1e-12 and is counted.",
-  "unique_verified_fixtures": 19
+  "unique_verified_fixtures": 21
 }
