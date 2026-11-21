@@ -15,6 +15,7 @@ import numpy as np
 from dynamic_dixon_coles import _groups, fit_forecast, five_doubles
 from engine import _date
 from verified_xg_challenger import predict_shadow
+from verified_xg_prediction_archive import validated_shadow
 
 SYDNEY = ZoneInfo("Australia/Sydney")
 MODELS = ("dynamic_baseline", "verified_xg", "verified_xg_calibrated")
@@ -35,13 +36,25 @@ def _case(row):
     when=_date(fixture.get("utcDate"))
     if when is None:
         return None
-    base=fit_forecast(fixture,history)
-    xg=predict_shadow(fixture,history,snapshot)
-    if base is None or xg is None:
-        return None
+    if "frozen_shadow" in row:
+        # Genuine archived cases are graded on matrices sealed at capture time.
+        # Never silently recompute them with later changes to model code.
+        pinned=validated_shadow(row["frozen_shadow"])
+        if pinned is None:
+            return None
+        baseline_matrix,xg_matrix,lineup_status=pinned
+    else:
+        # Direct-input replay is retained for isolated synthetic research tests;
+        # the production archive loader always supplies frozen_shadow.
+        base=fit_forecast(fixture,history)
+        xg=predict_shadow(fixture,history,snapshot)
+        if base is None or xg is None:
+            return None
+        baseline_matrix,xg_matrix=base["matrix"],xg["matrix"]
+        lineup_status=xg["lineup_status"]
     return {"fixture":fixture,"actual":tuple(actual),"when":when,
-            "baseline":base["matrix"],"xg":xg["matrix"],
-            "lineup_status":xg["lineup_status"]}
+            "baseline":baseline_matrix,"xg":xg_matrix,
+            "lineup_status":lineup_status}
 
 
 def fit_bands(training, prior=20.):

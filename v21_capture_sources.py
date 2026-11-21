@@ -441,16 +441,23 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                 # Freeze the already-fetched historical inputs at the SAME
                 # pre-kickoff decision. This uses zero additional provider
                 # requests and never rewrites existing source or pick files.
-                if provider.get("verified_historical_fixture_xg"):
+                # Only a complete as-of evidence envelope can be frozen.
+                # Incomplete diagnostics/test stubs are never qualified history.
+                if (isinstance(evidence, dict) and evidence.get("as_of_utc")
+                        and evidence.get("input_digest")
+                        and isinstance(evidence.get("history"), list)):
                     try:
                         from verified_xg_evidence_pipeline import freeze_history
                         frozen = freeze_history(fixture, evidence, path,
                                                 provider_root=root)
                         if frozen:
-                            result.setdefault("frozen_xg_histories", []).append(str(frozen))
+                            result.setdefault("frozen_history_inputs", []).append(str(frozen))
                     except (OSError, ValueError, KeyError, TypeError, OverflowError) as exc:
                         result["skipped"].append(str(leg["fixture_id"]) +
                                                  ":history_freeze_" + type(exc).__name__)
+                else:
+                    result.setdefault("history_missing_asof_integrity", []).append(
+                        str(leg["fixture_id"]))
             except FileExistsError:
                 result["skipped"].append(str(leg["fixture_id"])+":race_preserved")
         except (ValueError,TypeError,KeyError,OSError):
