@@ -1,0 +1,163 @@
+{
+  "away_team": "Werder Bremen",
+  "away_team_id": 162,
+  "captured_at_utc": "2026-11-21T18:14:06.687305+00:00",
+  "competition": "BL1",
+  "double_top10_scores": [
+    [
+      1,
+      1,
+      0.10513877955661455
+    ],
+    [
+      2,
+      1,
+      0.08688313289180263
+    ],
+    [
+      1,
+      2,
+      0.0800407768474696
+    ],
+    [
+      1,
+      0,
+      0.06905332133219952
+    ],
+    [
+      2,
+      2,
+      0.06614299196670022
+    ],
+    [
+      0,
+      1,
+      0.06361512642747567
+    ],
+    [
+      2,
+      0,
+      0.057063330192978184
+    ],
+    [
+      0,
+      2,
+      0.04842936317102045
+    ],
+    [
+      3,
+      1,
+      0.047864855783492435
+    ],
+    [
+      0,
+      0,
+      0.0417813083365643
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-21T18:14:06.097714+00:00",
+  "expected_goals": {
+    "away": 1.5225738245205651,
+    "home": 1.6527323839633936
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1575243,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Eintracht Frankfurt",
+  "home_team_id": 169,
+  "injuries": [],
+  "input_digest": "11a9aaf9922acef9ced4f4f32206f65e31757fbe56ee6b9a8f8f4a08219f3704",
+  "kickoff_utc": "2026-12-05T17:30:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.3547255701871801,
+    "draw": 0.23477963301086702,
+    "home": 0.41049479680195283
+  },
+  "predicted_score": [
+    1,
+    1
+  ],
+  "predicted_score_probability": 0.10513877955661455,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.0005142688751220703,
+      "cache_status": "committed_discovery_cache",
+      "discovery_age_seconds": 16787.318272,
+      "fetched_at_utc": "2026-11-21T13:34:13.996264+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-21T13:34:13.996778+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    "history_days": 730,
+    "news_sources": [],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-21T18:14:06.097714+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.005129337310791016,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-21T18:14:06.301558+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-21T18:14:06.306688+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.004762411117553711,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-21T18:14:06.523193+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-21T18:14:06.527955+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 1.4121780218850446,
+      "home": 1.8723920849009386
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.2932020188095369,
+      "draw": 0.22078179402160802,
+      "home": 0.4860161871688553
+    },
+    "predicted_score": [
+      1,
+      1
+    ],
+    "score_probability": 0.09706030408052607
+  },
+  "score_basis": "regulation"
+}

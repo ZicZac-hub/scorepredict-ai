@@ -2,32 +2,125 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 57
+    "awaiting_both_verified_results": 44
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.058964260186040916,
-      "win_rate": 0.0,
-      "wins": 0
+      "mean_estimated_probability_coverage": 0.05425095903505396,
+      "win_rate": 0.05555555555555555,
+      "wins": 1
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.04428255630376514,
+      "mean_estimated_probability_coverage": 0.041558677919582954,
       "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.05906447477813431,
-      "win_rate": 0.0,
-      "wins": 0
+      "mean_estimated_probability_coverage": 0.054919608534664634,
+      "win_rate": 0.05555555555555555,
+      "wins": 1
     }
   },
   "note": "Only genuine frozen pre-kickoff five-combination sets are evaluated. Both actual scores must match within one same row. Old snapshots never backfilled. No automatic promotion.",
   "original_only_vs_balanced": 0,
-  "original_only_vs_diversified": 0,
+  "original_only_vs_diversified": 1,
   "pairs_frozen": 62,
-  "pairs_verified": 5,
+  "pairs_verified": 18,
   "rows": [
+    {
+      "actual_scores": [
+        "1-1",
+        "4-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.04342186223573906,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.036420701377086556,
+      "first_match": "Bayern M\u00fcnchen vs 1. FC K\u00f6ln",
+      "league": "BL1",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.04581462160399338,
+      "pair_key": "BL1_1575221_1575222",
+      "second_match": "Bayer Leverkusen vs SC Paderborn 07"
+    },
+    {
+      "actual_scores": [
+        "1-0",
+        "1-5"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.03936775249904694,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.030502581714905413,
+      "first_match": "Eintracht Frankfurt vs 1899 Hoffenheim",
+      "league": "BL1",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.040437460293471415,
+      "pair_key": "BL1_1575223_1575225",
+      "second_match": "Union Berlin vs RB Leipzig"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "0-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.037848359840971096,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.029166353071110217,
+      "first_match": "Borussia M\u00f6nchengladbach vs Borussia Dortmund",
+      "league": "BL1",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.0384239964251277,
+      "pair_key": "BL1_1575226_1575229",
+      "second_match": "SV Elversberg vs SC Freiburg"
+    },
     {
       "actual_scores": [
         "0-0",
@@ -182,6 +275,316 @@
       "original_probability_coverage": 0.062027809090210835,
       "pair_key": "BSA_1492458_1492459",
       "second_match": "Vitoria vs RB Bragantino"
+    },
+    {
+      "actual_scores": [
+        "2-0",
+        "1-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": true,
+      "balanced_probability_coverage": 0.055036043374889015,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04211773203160401,
+      "first_match": "Southampton vs Derby",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "original_hit": true,
+      "original_probability_coverage": 0.055036043374889015,
+      "pair_key": "ELC_1563263_1563270",
+      "second_match": "Bolton vs Portsmouth"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "2-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05375176268882753,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.040666433106239894,
+      "first_match": "Lincoln vs Wrexham",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05375176268882753,
+      "pair_key": "ELC_1563265_1563266",
+      "second_match": "Middlesbrough vs Bristol City"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "2-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.04276169122528211,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.03256782151874214,
+      "first_match": "Millwall vs QPR",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.043729280595985943,
+      "pair_key": "ELC_1563267_1563268",
+      "second_match": "Norwich vs Cardiff"
+    },
+    {
+      "actual_scores": [
+        "4-0",
+        "1-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.0655063551821875,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.049145258976935134,
+      "first_match": "Sheffield Utd vs Watford",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.0655063551821875,
+      "pair_key": "ELC_1563269_1563271",
+      "second_match": "Stoke City vs Birmingham"
+    },
+    {
+      "actual_scores": [
+        "2-2",
+        "1-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05202946169499677,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.039869620472640185,
+      "first_match": "Swansea vs West Brom",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05202946169499677,
+      "pair_key": "ELC_1563272_1563273",
+      "second_match": "West Ham vs Preston"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "3-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.0673095137870247,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.05142046298448799,
+      "first_match": "Athletic Club vs Espanyol",
+      "league": "PD",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.06857745637796421,
+      "pair_key": "PD_1570453_1570454",
+      "second_match": "Alaves vs Deportivo La Coruna"
+    },
+    {
+      "actual_scores": [
+        "1-1",
+        "0-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05677819626344589,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04376334889561742,
+      "first_match": "Manchester City vs Fulham",
+      "league": "PL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05808237859604454,
+      "pair_key": "PL_1557467_1557474",
+      "second_match": "Aston Villa vs Sunderland"
+    },
+    {
+      "actual_scores": [
+        "2-0",
+        "1-4"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.06260575977911179,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04836187065181624,
+      "first_match": "Bournemouth vs Nottingham Forest",
+      "league": "PL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.06415461319498504,
+      "pair_key": "PL_1557468_1557470",
+      "second_match": "Chelsea vs Leeds"
+    },
+    {
+      "actual_scores": [
+        "3-2",
+        "2-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.04725048657636218,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.0364102715639123,
+      "first_match": "Coventry vs Crystal Palace",
+      "league": "PL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.04887097524075222,
+      "pair_key": "PL_1557471_1557476",
+      "second_match": "Tottenham vs Ipswich"
+    },
+    {
+      "actual_scores": [
+        "2-0",
+        "3-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.058028716552882206,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04623096466857001,
+      "first_match": "Como vs Cagliari",
+      "league": "SA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05881617446406666,
+      "pair_key": "SA_1550200_1550202",
+      "second_match": "Lazio vs Lecce"
     }
   ]
 }
