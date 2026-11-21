@@ -20,6 +20,7 @@ import requests
 
 from persist_prematch import load_json, verified_result, write_json
 from v10_prospective import ROOT as V10_ROOT, read_latest, utc
+from source_capture_clock import capture_clock
 
 ROOT = Path("data/llm_research")
 PANEL_DIR = ROOT / "forecasts"
@@ -321,8 +322,9 @@ def paired_candidates(rows,limit=1):
 
 
 def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
-            max_matches=MAX_MATCHES_PER_RUN):
-    clock = utc(now or datetime.now(timezone.utc))
+            max_matches=MAX_MATCHES_PER_RUN, clock=None,
+            provider_root=Path("data/v21_sources"),history_cache_root=None):
+    clock,observation_time = capture_clock(now,clock)
     env = os.environ if environ is None else environ
     configured = settings(env)
     status = {"checked_at_utc": clock.isoformat(), "enabled": env.get("LLM_RESEARCH_ENABLED") == "true",
@@ -404,6 +406,9 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         "exact_original_frozen_v8_two_match_pair_first_when_eligible"
         if budget==2 else "single_fixture_default_no_extra_paid_calls")
     for row in rows:
+        clock=observation_time()
+        if not eligible(row,clock):
+            continue
         path = panel_path(row, root)
         if path.exists():
             continue
@@ -413,11 +418,18 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
         # V22: provide the same independently captured, source- and
         # forecast-matched pre-match data to every enabled AI adapter.
         from v21_capture_sources import best_packet
-        extra_record=best_packet(Path("data/v21_sources"),row,now=clock)
+        extra_record=best_packet(provider_root,row,now=clock)
         extra=(extra_record or {}).get("provider_snapshot")
-        prompt = briefing(row,provider_packet=extra,as_of=clock)
+        from cached_ai_history import cached_history
+        research=cached_history(row,as_of=clock,api_key=env.get("API_FOOTBALL_KEY", ""),
+                                cache_root=history_cache_root)
+        prompt = briefing(row,provider_packet=extra,as_of=clock,history=research["history"])
+        common_cutoff=clock
         votes, models = {}, {}
         for name, (key, model) in configured.items():
+            if observation_time()>=utc(row["kickoff_utc"])-timedelta(minutes=5):
+                status["provider_error_details"][name]={"reason":"pre_match_window_expired"}
+                break
             try:
                 votes[name] = ask(name, key, model, prompt, request=request,
                                   endpoint=env.get("QWEN_API_URL") if name == "qwen" else None)
@@ -426,7 +438,7 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
             except (requests.RequestException, ValueError, KeyError, TypeError, RuntimeError) as exc:
                 status["provider_error_types"][name] = type(exc).__name__
                 status["provider_error_details"][name] = classify_provider_error(exc)
-        frozen = datetime.now(timezone.utc)
+        frozen = observation_time()
         if not votes or frozen >= utc(row["kickoff_utc"]):
             continue
         record = {"schema_version": 1, "research_only": True,
@@ -440,6 +452,12 @@ def capture(now=None, *, environ=None, root=ROOT, source=V10_ROOT, request=None,
                   "source_captured_at_utc": row["captured_at_utc"],
                   "input_digest": row["input_digest"],
                   "captured_at_utc": frozen.isoformat(), "models": models,
+                  "research_as_of_utc":common_cutoff.isoformat(),
+                  "research_history_digest":research["input_digest"],
+                  "research_history_matches":len(research["history"]),
+                  "research_history_sources":research["source_metadata"],
+                  "research_history_warnings":research["warnings"],
+                  "research_history_external_requests":0,
                   "votes": votes, "consensus": consensus(votes),
                   "baseline_predicted_score": row["predicted_score"],
                   "baseline_probabilities": row["outcome_probabilities"],

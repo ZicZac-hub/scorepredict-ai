@@ -207,28 +207,129 @@ def _verified(leg,actual):
         return False
 
 
-def evaluate(*,root=ROOT,source_root=ORIGINAL_ROOT,verified=None):
+def _same_frozen_calculation(saved,expected):
+    """Exact keys/choices, with only machine-scale numeric tolerance."""
+    if type(saved) in (int,float) and type(expected) in (int,float):
+        return (math.isfinite(saved) and math.isfinite(expected) and
+                math.isclose(saved,expected,rel_tol=0,abs_tol=1e-12))
+    if type(saved) is not type(expected):
+        return False
+    if isinstance(saved,dict):
+        return saved.keys()==expected.keys() and all(
+            _same_frozen_calculation(saved[key],expected[key]) for key in saved)
+    if isinstance(saved,list):
+        return len(saved)==len(expected) and all(
+            _same_frozen_calculation(a,b) for a,b in zip(saved,expected))
+    return saved==expected
+
+
+def _evaluation_sources(pair,file,*,root,source_root,clock):
+    """Reconstruct every fixed variant from its real pre-selection source.
+
+    A label, filename or saved winning choice cannot authenticate a trial.
+    Earlier archived variants and original forecasts are read, never repaired.
+    """
+    if (not isinstance(pair,dict) or pair.get("schema")!=1 or
+            pair.get("status")!="frozen_pre_kickoff"):
+        raise ValueError("not_a_frozen_v21_pair")
+    captured=utc(pair["captured_at_utc"])
+    if captured>clock:
+        raise ValueError("pair_not_available_at_evaluation")
+    day=pair["sydney_date"]
+    if file.stem!=day:
+        raise ValueError("filename_sydney_date_mismatch")
+    models=[]
+    reconstructed=[]
+    for leg in (pair["first"],pair["second"]):
+        source=original_model(source_root,leg)
+        if source is None or source.get("input_digest")!=leg.get("input_digest"):
+            raise ValueError("original_source_identity_or_digest_mismatch")
+        kickoff=utc(source["kickoff_utc"])
+        if not captured+timedelta(minutes=MIN_LEAD_MINUTES)<kickoff<=captured+timedelta(hours=MAX_LEAD_HOURS):
+            raise ValueError("pair_outside_predeclared_pre_match_window")
+        if kickoff.astimezone(SYDNEY).date().isoformat()!=day:
+            raise ValueError("fixture_outside_declared_sydney_date")
+        original_capture=utc(source["captured_at_utc"])
+        if not utc(source["evidence_as_of_utc"])<=original_capture<=captured:
+            raise ValueError("original_evidence_observed_after_selection")
+        frozen=load_json(Path(root)/"forecasts"/(_row_key(leg)+".json"),{})
+        keys=("provider","fixture_id","forecast_id","input_digest","home_team_id","away_team_id")
+        if (not isinstance(frozen,dict) or frozen.get("status")!="frozen_pre_kickoff" or
+                any(str(frozen.get(key))!=str(source[key]) for key in keys) or
+                utc(frozen["kickoff_utc"])!=kickoff or
+                utc(frozen["baseline_captured_at_utc"])!=original_capture or
+                not original_capture<=utc(frozen["captured_at_utc"])<=captured or
+                frozen.get("league_history_matches")!=source.get("league_history_matches") or
+                int(source.get("league_history_matches") or 0)<MIN_LEAGUE_HISTORY):
+            raise ValueError("frozen_variant_source_or_time_mismatch")
+        for key in ("home_team","away_team","evidence_as_of_utc","competition"):
+            if frozen.get(key)!=source.get(key):
+                raise ValueError("frozen_variant_context_source_mismatch")
+        expected=_models(source)
+        if not _same_frozen_calculation(frozen.get("model_results"),expected):
+            raise ValueError("frozen_variants_do_not_reproduce_from_original")
+        models.append(source)
+        reconstructed.append({"model_results":expected})
+    identities={(str(m["provider"]),str(m["fixture_id"])) for m in models}
+    teams={(str(m["provider"]),str(m[key])) for m in models
+           for key in ("home_team_id","away_team_id")}
+    names=[" ".join(str(m.get(key) or "").casefold().split()) for m in models
+           for key in ("home_team","away_team")]
+    if len(identities)!=2 or len(teams)!=4 or not all(names) or len(set(names))!=4:
+        raise ValueError("two_events_and_four_distinct_known_teams_required")
+    expected_methods={}
+    for name in MODEL_NAMES:
+        choices,coverage=_join(*reconstructed,name)
+        expected_methods[name]={"doubles":choices,"coverage":coverage}
+    robust=min(expected_methods[name]["coverage"] for name in
+               ("baseline_v8","negative_binomial_r3","bivariate_poisson_c012"))
+    if (not _same_frozen_calculation(pair.get("methods"),expected_methods) or
+            not _same_frozen_calculation(pair.get("robust_model_coverage"),robust)):
+        raise ValueError("five_doubles_or_coverage_do_not_reproduce_from_original")
+    events={(utc(m["kickoff_utc"]).isoformat(),
+             " ".join(str(m["home_team"]).casefold().split()),
+             " ".join(str(m["away_team"]).casefold().split())) for m in models}
+    return models,identities,events
+
+
+def evaluate(*,root=ROOT,source_root=ORIGINAL_ROOT,verified=None,now=None):
+    clock=utc(now or datetime.now(timezone.utc))
     results=(verified if verified is not None else
              load_json(Path(source_root)/"verified_results.json",{}))
     rows=[]
     counts={m:{"wins":0,"verified":0,"pending":0} for m in MODEL_NAMES}
+    rejected=Counter()
+    result_rejections=Counter()
+    seen_ids=set()
+    seen_events=set()
     for file in sorted((Path(root)/"pairs").glob("*.json")):
-        pair=load_json(file,{})
-        if pair.get("status")!="frozen_pre_kickoff":continue
-        first,second=pair.get("first") or {},pair.get("second") or {}
-        source1=original_model(source_root,first)
-        source2=original_model(source_root,second)
-        if not source1 or not source2 or any(
-           actual.get("input_digest") != leg.get("input_digest")
-           for actual,leg in ((source1,first),(source2,second))):
+        try:
+            pair=load_json(file,{})
+            sources,identities,events=_evaluation_sources(pair,file,root=root,
+                source_root=source_root,clock=clock)
+            if seen_ids.intersection(identities) or seen_events.intersection(events):
+                raise ValueError("repeated_fixture_or_cross_provider_event")
+            seen_ids.update(identities)
+            seen_events.update(events)
+        except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError) as exc:
+            rejected[str(exc) if isinstance(exc,ValueError) else "malformed_frozen_evidence"]+=1
             continue
+        first,second=pair["first"],pair["second"]
         a=results.get(str(first["fixture_id"]))
         b=results.get(str(second["fixture_id"]))
-        finished=_verified(first,a) and _verified(second,b)
+        available=[]
+        for leg,result in ((first,a),(second,b)):
+            valid=_verified(leg,result)
+            if valid and utc(result["verified_at_utc"])>clock:
+                valid=False
+                result_rejections["result_observed_after_evaluation"]+=1
+            available.append(valid)
+        finished=all(available)
         score1=f"{a['home_goals']}-{a['away_goals']}" if finished else None
         score2=f"{b['home_goals']}-{b['away_goals']}" if finished else None
         row={"sydney_date":pair["sydney_date"],"verified":bool(finished),
-             "actual_scores":[score1,score2] if finished else None,"model_hits":{}}
+             "actual_scores":[score1,score2] if finished else None,"model_hits":{},
+             "source_model_versions":[m.get("model_version") or "unknown" for m in sources]}
         for name in MODEL_NAMES:
             choices=(pair.get("methods") or {}).get(name,{}).get("doubles") or []
             if len(choices)!=5:
@@ -247,6 +348,9 @@ def evaluate(*,root=ROOT,source_root=ORIGINAL_ROOT,verified=None):
         n=stats["verified"]
         stats["observed_hit_rate"]=stats["wins"]/n if n else None
     return {"schema":1,"kind":"strictly_frozen_before_both_kickoffs",
+            "evaluated_at_utc":clock.isoformat(),"valid_unique_pairs":len(rows),
+            "evidence_rejections":dict(rejected),"result_rejections":dict(result_rejections),
+            "full_variant_and_choice_reconstruction":True,"fixture_reuse_in_denominator_allowed":False,
             "methods":counts,"pairs":rows,"models_promoted":False,
             "measured_improvement_proven":False,
             "note":"Pending results not losses; future model promotion requires independent sample, calibration and uncertainty."}

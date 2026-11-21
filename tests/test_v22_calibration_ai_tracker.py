@@ -68,12 +68,12 @@ def test_ai_provider_vote_must_match_frozen_original_forecast():
            "votes":{"gemini":{"home":.8,"draw":.1,"away":.1}}}
     # Prediction after original but before kickoff: actual kickoff is NOW-6d.
     panel["captured_at_utc"]=(NOW-timedelta(days=6,hours=2)).isoformat()
-    report=gate.evaluate([panel],[original],{"999":result},min_paired=1)
+    report=gate.evaluate([panel],[original],{"999":result},min_paired=1,as_of=NOW)
     assert report["provider_metrics"]["gemini"]["source_matched_verified_fixtures"]==1
     assert report["provider_metrics"]["gemini"]["production_weight"]==0
     panel["input_digest"]="future_or_other_source"
     assert not gate.evaluate([panel],[original],{"999":result},
-                             min_paired=1)["provider_metrics"]
+                             min_paired=1,as_of=NOW)["provider_metrics"]
 
 
 def candidate(fid,home,away):

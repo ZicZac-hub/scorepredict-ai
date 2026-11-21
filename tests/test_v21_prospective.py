@@ -41,7 +41,7 @@ def test_all_same_day_pairs_ranked_and_source_frozen_once(monkeypatch,tmp_path):
     assert run["newly_frozen_days"]
     assert len(list((tmp_path/"pairs").glob("*.json")))==1
     assert research.freeze_pairs(root=tmp_path,now=NOW)["newly_frozen_days"]==[]
-    result=research.evaluate(root=tmp_path,source_root=tmp_path,verified={})
+    result=research.evaluate(root=tmp_path,source_root=tmp_path,verified={},now=NOW)
     assert result["methods"]["baseline_v8"]["verified"]==0
     assert result["methods"]["baseline_v8"]["pending"]==1
     assert not result["models_promoted"]
