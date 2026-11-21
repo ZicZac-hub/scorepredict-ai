@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-21T14:34:23.465123+00:00",
+  "prospective": true,
+  "record_sha256": "49455217ec5ab11595caf5eec63f1853fd13681ed8ead5cd51efb73e0a72da57",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.1101438461862854,
+        "joint_probability": 0.012400328923648491,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.11258303893506602
+      },
+      {
+        "first_probability": 0.1101438461862854,
+        "joint_probability": 0.010183326752907297,
+        "score1": "1-1",
+        "score2": "2-1",
+        "second_probability": 0.09245479530181212
+      },
+      {
+        "first_probability": 0.08723008181067136,
+        "joint_probability": 0.009820627696799809,
+        "score1": "1-2",
+        "score2": "1-1",
+        "second_probability": 0.11258303893506602
+      },
+      {
+        "first_probability": 0.1101438461862854,
+        "joint_probability": 0.009814812026556988,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.08910903664973963
+      },
+      {
+        "first_probability": 0.0798990740256143,
+        "joint_probability": 0.008995280561901457,
+        "score1": "2-1",
+        "score2": "1-1",
+        "second_probability": 0.11258303893506602
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.051214375961814045,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "544",
+        "name": "Deportivo La Coruna"
+      },
+      "competition": {
+        "code": "PD",
+        "name": "PD"
+      },
+      "homeTeam": {
+        "id": "4665",
+        "name": "Racing Santander"
+      },
+      "id": "1570479",
+      "provider": "API-Football",
+      "utcDate": "2026-12-05T13:00:00+00:00"
+    },
+    "generated_at_utc": "2026-11-21T14:34:23.465024+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "175",
+        "name": "Hamburger SV"
+      },
+      "competition": {
+        "code": "BL1",
+        "name": "BL1"
+      },
+      "homeTeam": {
+        "id": "182",
+        "name": "Union Berlin"
+      },
+      "id": "1575245",
+      "provider": "API-Football",
+      "utcDate": "2026-12-05T14:30:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "544",
+        "fixture_id": "1570479",
+        "forecast_id": "0a2b0a563298e823d8e083e1b6badfd37a9a8a493f69fd5c189fba46d4af076a",
+        "home_team_id": "4665",
+        "input_digest": "cb1403b2f09b2f974df0be019945c50d9c7fe3c296c8b21ca08dbaea3da5be93",
+        "kickoff_utc": "2026-12-05T13:00:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "175",
+        "fixture_id": "1575245",
+        "forecast_id": "3a29aed8ad21ce56d3f4d786b7f3064f6fdeb45c8384f0cb729932c4521426a6",
+        "home_team_id": "182",
+        "input_digest": "9abb41124de6f1637f0342d90fb9c7725c4535f55cb33cdb8641f909051fd67e",
+        "kickoff_utc": "2026-12-05T14:30:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-21T13:34:29.044683+00:00",
+      "2026-11-21T14:34:17.157608+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-06",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-06",
+  "target_70_percent_proven": false
+}

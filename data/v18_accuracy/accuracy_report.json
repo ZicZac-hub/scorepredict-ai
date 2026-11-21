@@ -20,26 +20,26 @@
         "wilson_95": null
       },
       {
-        "absolute_gap": 0.008116322681008037,
+        "absolute_gap": 0.026170641203099976,
         "estimated_band": "70%\u201380%",
-        "hits": 9,
-        "mean_estimated": 0.741883677318992,
-        "observed_rate": 0.75,
-        "verified": 12,
+        "hits": 10,
+        "mean_estimated": 0.7430601280276693,
+        "observed_rate": 0.7692307692307693,
+        "verified": 13,
         "wilson_95": [
-          0.46769466506643437,
-          0.9110583316059452
+          0.49743624053272495,
+          0.9182047128150143
         ]
       },
       {
-        "absolute_gap": 0.16507775332908092,
+        "absolute_gap": 0.17722748676097422,
         "estimated_band": "80%\u201390%",
-        "hits": 1,
-        "mean_estimated": 0.8349222466709191,
+        "hits": 2,
+        "mean_estimated": 0.8227725132390258,
         "observed_rate": 1.0,
-        "verified": 1,
+        "verified": 2,
         "wilson_95": [
-          0.20654931437723742,
+          0.3423802275066531,
           1.0
         ]
       },
@@ -56,32 +56,32 @@
         ]
       }
     ],
-    "brier": 0.16452306621037746,
-    "expected_calibration_error": 0.024337422362344128,
-    "hits": 11,
-    "mean_model_estimate": 0.7613768633519415,
-    "observed_win_rate": 0.7857142857142857,
+    "brier": 0.14988433795237682,
+    "expected_calibration_error": 0.048307724795868034,
+    "hits": 13,
+    "mean_model_estimate": 0.764192275204132,
+    "observed_win_rate": 0.8125,
     "sample_too_small_for_reliable_calibration": true,
-    "verified": 14,
+    "verified": 16,
     "wilson_95": [
-      0.524107694133997,
-      0.924286132873068
+      0.5699111903802586,
+      0.9340840092857186
     ]
   },
   "evaluated_forecasts_captured_pre_kickoff": true,
   "evaluation_type": "original_prospective_v8_only",
   "evidence": {
-    "awaiting_or_unverified": 225,
-    "frozen_source_matches_valid": 239,
+    "awaiting_or_unverified": 229,
+    "frozen_source_matches_valid": 245,
     "missing_feature_counts": {
-      "independent_market_snapshot_unavailable": 239,
-      "lineup_adjustment_not_validated": 239,
+      "independent_market_snapshot_unavailable": 245,
+      "lineup_adjustment_not_validated": 245,
       "short_last_ten_sample": 6,
-      "shot_based_xg_not_verified": 239
+      "shot_based_xg_not_verified": 245
     },
     "no_extra_paid_calls": true,
     "source_rejections": {},
-    "verified_results": 14
+    "verified_results": 16
   },
   "note": "No new football observations are fabricated. Reliable calibration needs hundreds of verified pre-match predictions. Original five exact-score double results are tracked separately.",
   "per_league": {
@@ -97,6 +97,12 @@
       "sample_too_small": true,
       "verified": 11
     },
+    "ELC": {
+      "brier": 0.0589627487647669,
+      "observed_win_rate": 1.0,
+      "sample_too_small": true,
+      "verified": 1
+    },
     "FL1": {
       "brier": 0.07268193060151759,
       "observed_win_rate": 1.0,
@@ -106,6 +112,12 @@
     "PD": {
       "brier": 0.5837039014696128,
       "observed_win_rate": 0.0,
+      "sample_too_small": true,
+      "verified": 1
+    },
+    "PL": {
+      "brier": 0.035863731527977866,
+      "observed_win_rate": 1.0,
       "sample_too_small": true,
       "verified": 1
     }
