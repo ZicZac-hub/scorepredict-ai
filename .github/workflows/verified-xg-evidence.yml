@@ -40,7 +40,7 @@ jobs:
       - name: Install independent analysis dependencies
         run: python -m pip install 'numpy>=1.26,<3' 'pytest>=8,<10'
       - name: Validate seals, identity and chronology (synthetic tests only)
-        run: python -m pytest -q test_verified_xg_challenger.py test_verified_xg_evidence_pipeline.py
+        run: python -m pytest -q test_verified_xg_challenger.py test_verified_xg_evidence_pipeline.py tests/test_verified_xg_research_reporting.py
       - name: Audit archived xG and run independent matched shadow replay
         run: python verified_xg_evidence_pipeline.py --output verified-xg-evidence-report.json
       - name: Publish audit as non-production evidence artifact
