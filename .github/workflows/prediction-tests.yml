@@ -33,5 +33,9 @@ jobs:
         run: python -m pip install -r requirements.txt 'pytest>=8,<10'
       - name: Run all regression tests
         run: python -m pytest -q
+      - name: Independently reproduce archived V8 versus V25 matched study
+        run: |
+          python v8_v25_matched_audit.py --output /tmp/v8_v25_matched.json
+          python -c 'import json; r=json.load(open("/tmp/v8_v25_matched.json")); assert r["source_valid_sets"] > 0, "No original frozen pairs passed independent provenance checks"; print("V8/V25 matched archive:", r["verified_matched_pairs"], "verified,", r["pending_matched_pairs"], "pending; v8 hits:", r["v8"]["five_double_hits"], "v25 hits:", r["v25"]["five_double_hits"])
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
