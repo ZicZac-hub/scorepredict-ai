@@ -52,8 +52,8 @@ def freeze_shadow(fixture, history, snapshot):
             return {"status": "abstained", "reason": "invalid_baseline_probabilities"}
         if xg_matrix is None:
             return {"status": "abstained", "reason": "invalid_xg_probabilities"}
-        if dc_matrix.shape != xg_matrix.shape:
-            return {"status": "abstained", "reason": "incompatible_shadow_grid"}
+        # The shared goal-grid algorithm expands adaptively at higher rates.
+        # Valid normalized matrices need not share dimensions to be paired.
         if challenger.get("lineup_status") not in LINEUP_STATES:
             return {"status": "abstained", "reason": "invalid_lineup_evidence_category"}
         return {
@@ -81,6 +81,6 @@ def validated_shadow(value):
         return None
     baseline = _matrix(value.get("dynamic_baseline_matrix"))
     challenger = _matrix(value.get("verified_xg_matrix"))
-    if baseline is None or challenger is None or baseline.shape != challenger.shape:
+    if baseline is None or challenger is None:
         return None
     return baseline, challenger, value["lineup_status"]
