@@ -13,7 +13,9 @@ PRIOR = 8.0
 
 def _observations(fixture, history):
     cutoff = _date(fixture.get('utcDate'))
-    if cutoff is None:
+    competition = fixture.get('competition') or {}
+    # This challenger is league-specific: never pool unknown leagues.
+    if cutoff is None or (competition.get('id') is None and not competition.get('code')):
         return []
     rows = []
     for m in _competition_history(fixture, history):
@@ -98,7 +100,11 @@ def fit_forecast(fixture,history,max_goals=10):
     if len(rows)<MIN_HISTORY or sum(r[-1] for r in rows)<30:
         return None
     h,a = fixture['homeTeam']['id'],fixture['awayTeam']['id']
+    # Five stale appearances are not five recent-equivalent observations.
     if min(sum(t in r[1:3] for r in rows) for t in (h,a))<5:
+        return None
+    team_weight = [sum(r[-1] for r in rows if t in r[1:3]) for t in (h,a)]
+    if min(team_weight)<3.0:
         return None
     cutoff = rows[int(.75*len(rows))][0]
     training = [r for r in rows if r[0]<cutoff]

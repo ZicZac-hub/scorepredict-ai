@@ -40,6 +40,16 @@ class DynamicDixonColesTests(unittest.TestCase):
     def test_thin_history_abstains(self):
         self.assertIsNone(fit_forecast(fixture(160,0,1), history()[:40]))
 
+    def test_missing_competition_abstains(self):
+        target=fixture(160,0,1)
+        target.pop('competition')
+        self.assertIsNone(fit_forecast(target,history()))
+
+    def test_stale_team_history_abstains_even_with_fresh_league(self):
+        stale=[fixture(i,0,1) for i in range(10)]
+        recent=[fixture(i,2+i%4,2+(i+1)%4) for i in range(900,1050)]
+        self.assertIsNone(fit_forecast(fixture(1060,0,1),stale+recent))
+
     def test_rho_bounds(self):
         for h,a in ((.15,.15),(12.,12.),(12.,.15)):
             for rho in (-.2,.2):
