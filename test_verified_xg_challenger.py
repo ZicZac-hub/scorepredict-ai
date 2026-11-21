@@ -84,6 +84,7 @@ def test_future_results_and_unrelated_leagues_do_not_change_output():
     base=predict_shadow(fixture,history,packet)
     future=match(179)
     future["id"]=50000
+    future["utcDate"]=(START+timedelta(days=179,hours=23)).isoformat()
     outside=match(75)
     outside["id"]=50001
     outside["competition"]={"id":99,"code":"OUT"}
