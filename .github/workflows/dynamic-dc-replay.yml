@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'run_dynamic_dc_pinned_replay.py'
+      - 'backtest_dynamic_dixon_coles.py'
+      - 'dynamic_dixon_coles.py'
       - '.github/workflows/dynamic-dc-replay.yml'
 permissions:
   contents: read
