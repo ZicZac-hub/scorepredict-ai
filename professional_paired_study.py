@@ -1,6 +1,6 @@
 """Fixed-pair prospective odds/xG ablations, never a production promotion.
 
-The pair is selected by the preserved raw-baseline policy before this study.
+The v1 protocol and already issued v1 forecasts are preserved read-only.\nThis v2 study is separately registered after verified implementation changes.\nThe pair is selected by the preserved raw-baseline policy before this study.
 All arms see the same two events and common pre-match evidence cutoff. Missing
 sources remain abstentions; lineup context has no fitted numerical weight.
 """
@@ -22,10 +22,10 @@ from v21_capture_sources import qualified_packet, source_packet_path
 from v22_evidence_models import calibrate_markets, combine_goal_evidence, lineup_status, xg_profile
 from v22_prospective import _fixture
 
-ROOT = Path("data/professional_paired_study")
+ROOT = Path("data/professional_paired_study_v2")
 PROVIDER_ROOT = Path("data/v21_sources")
 PREMATCH_ROOT = Path("data/prematch")
-VERSION = "professional-fixed-pair-ablation-v1"
+VERSION = "professional-fixed-pair-ablation-v2"
 METHODS = ("baseline_v8", "market_only", "xg_only", "xg_market")
 PROTOCOL = {
     "version": VERSION,
