@@ -144,3 +144,26 @@ def test_no_results_has_unavailable_rates_not_false_confidence(tmp_path):
     report = build_report(tmp_path / "none", tmp_path / "prematch", now=NOW)
     assert report["aggregates"]["v8"]["events"]["exact_3_0"]["observed_rate"] is None
     assert report["improvement_claimed"] is False
+
+
+def test_archived_lazio_case_keeps_real_3_0_as_three_total_goals():
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[1]
+    source = repo / (
+        "data/v10_prospective/forecasts/API-Football/1550202/"
+        "6b3f81042ebecce9e6df174ccdb319823ed397dcfbc43277c59ae8c8862dc65e.json"
+    )
+    record = json.loads(source.read_text(encoding="utf-8"))
+    finals = json.loads((repo / "data/prematch/verified_results.json").read_text(encoding="utf-8"))
+    final = finals["1550202"]
+    assert record["fixture_id"] == "1550202" == str(final["fixture_id"])
+    assert record["home_team_id"] == str(final["home_team_id"])
+    assert record["away_team_id"] == str(final["away_team_id"])
+    assert record["model_key"] == "v8_near"
+    assert datetime.fromisoformat(record["captured_at_utc"].replace("Z", "+00:00")) < KICKOFF.replace(year=2026, month=11, day=21)
+    actual = (final["home_goals"], final["away_goals"])
+    assert actual == (3, 0)
+    metric = _events(record["score_matrix"], actual)
+    assert metric["exact_3_0"]["predicted_probability"] == pytest.approx(.06955151006996509)
+    assert metric["actual_exact_score_rank_min"] == 5
+    assert metric["at_least_four_total_goals"]["observed"] == 0
