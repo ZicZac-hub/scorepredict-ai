@@ -1,31 +1,31 @@
 {
   "calibration": {
     "baseline_v8": {
-      "calibration_sample_size": 3,
-      "five_event_brier_score": 0.004557683863551021,
-      "mean_predicted_five_coverage": 0.06746994855122485,
-      "observed_minus_expected_rate": -0.06746994855122485
+      "calibration_sample_size": 4,
+      "five_event_brier_score": 0.0048697791717866,
+      "mean_predicted_five_coverage": 0.06965184640430046,
+      "observed_minus_expected_rate": -0.06965184640430046
     },
     "bivariate_poisson_c012": {
-      "calibration_sample_size": 3,
-      "five_event_brier_score": 0.004826591236072501,
-      "mean_predicted_five_coverage": 0.06938232390816267,
-      "observed_minus_expected_rate": -0.06938232390816267
+      "calibration_sample_size": 4,
+      "five_event_brier_score": 0.0051581918030886185,
+      "mean_predicted_five_coverage": 0.0716469977486546,
+      "observed_minus_expected_rate": -0.0716469977486546
     },
     "negative_binomial_r3": {
-      "calibration_sample_size": 3,
-      "five_event_brier_score": 0.004566243692751205,
-      "mean_predicted_five_coverage": 0.06738953844894434,
-      "observed_minus_expected_rate": -0.06738953844894434
+      "calibration_sample_size": 4,
+      "five_event_brier_score": 0.004908010903315132,
+      "mean_predicted_five_coverage": 0.06979915343264562,
+      "observed_minus_expected_rate": -0.06979915343264562
     },
     "poisson_marginal": {
-      "calibration_sample_size": 3,
-      "five_event_brier_score": 0.00452177840471729,
-      "mean_predicted_five_coverage": 0.06718176926905413,
-      "observed_minus_expected_rate": -0.06718176926905413
+      "calibration_sample_size": 4,
+      "five_event_brier_score": 0.00482648098348229,
+      "mean_predicted_five_coverage": 0.06932799517256989,
+      "observed_minus_expected_rate": -0.06932799517256989
     }
   },
-  "evaluated_at_utc": "2026-11-21T15:29:28.307077+00:00",
+  "evaluated_at_utc": "2026-11-21T16:21:23.456534+00:00",
   "evidence_rejections": {},
   "fixture_reuse_in_denominator_allowed": false,
   "full_variant_and_choice_reconstruction": true,
@@ -34,26 +34,26 @@
   "methods": {
     "baseline_v8": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
-      "verified": 3,
+      "pending": 1,
+      "verified": 4,
       "wins": 0
     },
     "bivariate_poisson_c012": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
-      "verified": 3,
+      "pending": 1,
+      "verified": 4,
       "wins": 0
     },
     "negative_binomial_r3": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
-      "verified": 3,
+      "pending": 1,
+      "verified": 4,
       "wins": 0
     },
     "poisson_marginal": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
-      "verified": 3,
+      "pending": 1,
+      "verified": 4,
       "wins": 0
     }
   },
@@ -115,19 +115,22 @@
       "verified": true
     },
     {
-      "actual_scores": null,
+      "actual_scores": [
+        "2-0",
+        "3-1"
+      ],
       "model_hits": {
-        "baseline_v8": null,
-        "bivariate_poisson_c012": null,
-        "negative_binomial_r3": null,
-        "poisson_marginal": null
+        "baseline_v8": false,
+        "bivariate_poisson_c012": false,
+        "negative_binomial_r3": false,
+        "poisson_marginal": false
       },
       "source_model_versions": [
         "ziczac-v8-near-kickoff-research-v1",
         "ziczac-v8-near-kickoff-research-v1"
       ],
       "sydney_date": "2026-11-22",
-      "verified": false
+      "verified": true
     },
     {
       "actual_scores": null,

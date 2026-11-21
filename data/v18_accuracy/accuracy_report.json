@@ -32,14 +32,14 @@
         ]
       },
       {
-        "absolute_gap": 0.17722748676097422,
+        "absolute_gap": 0.16363275215107753,
         "estimated_band": "80%\u201390%",
-        "hits": 2,
-        "mean_estimated": 0.8227725132390258,
+        "hits": 4,
+        "mean_estimated": 0.8363672478489225,
         "observed_rate": 1.0,
-        "verified": 2,
+        "verified": 4,
         "wilson_95": [
-          0.3423802275066531,
+          0.5101091635454027,
           1.0
         ]
       },
@@ -56,32 +56,32 @@
         ]
       }
     ],
-    "brier": 0.13979328952099426,
-    "expected_calibration_error": 0.06971350017025106,
-    "hits": 15,
-    "mean_model_estimate": 0.7636198331630824,
-    "observed_win_rate": 0.8333333333333334,
+    "brier": 0.12808460789901016,
+    "expected_calibration_error": 0.07774595190734404,
+    "hits": 17,
+    "mean_model_estimate": 0.7722540480926561,
+    "observed_win_rate": 0.85,
     "sample_too_small_for_reliable_calibration": true,
-    "verified": 18,
+    "verified": 20,
     "wilson_95": [
-      0.6077796189608428,
-      0.9416342319413855
+      0.639581135259243,
+      0.9476312541037835
     ]
   },
   "evaluated_forecasts_captured_pre_kickoff": true,
   "evaluation_type": "original_prospective_v8_only",
   "evidence": {
-    "awaiting_or_unverified": 238,
-    "frozen_source_matches_valid": 256,
+    "awaiting_or_unverified": 239,
+    "frozen_source_matches_valid": 259,
     "missing_feature_counts": {
-      "independent_market_snapshot_unavailable": 256,
-      "lineup_adjustment_not_validated": 256,
+      "independent_market_snapshot_unavailable": 259,
+      "lineup_adjustment_not_validated": 259,
       "short_last_ten_sample": 6,
-      "shot_based_xg_not_verified": 256
+      "shot_based_xg_not_verified": 259
     },
     "no_extra_paid_calls": true,
     "source_rejections": {},
-    "verified_results": 18
+    "verified_results": 20
   },
   "note": "No new football observations are fabricated. Reliable calibration needs hundreds of verified pre-match predictions. Original five exact-score double results are tracked separately.",
   "per_league": {
@@ -98,10 +98,10 @@
       "verified": 11
     },
     "ELC": {
-      "brier": 0.05138135875242018,
+      "brier": 0.040426047190642835,
       "observed_win_rate": 1.0,
       "sample_too_small": true,
-      "verified": 2
+      "verified": 3
     },
     "FL1": {
       "brier": 0.07268193060151759,
@@ -117,6 +117,12 @@
     },
     "PL": {
       "brier": 0.035863731527977866,
+      "observed_win_rate": 1.0,
+      "sample_too_small": true,
+      "verified": 1
+    },
+    "SA": {
+      "brier": 0.02689752253521874,
       "observed_win_rate": 1.0,
       "sample_too_small": true,
       "verified": 1

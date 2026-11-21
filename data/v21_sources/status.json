@@ -1,15 +1,15 @@
 {
-  "at_utc": "2026-11-21T15:29:25.488051+00:00",
+  "at_utc": "2026-11-21T16:21:19.792155+00:00",
   "attempted_legs": 0,
   "calls": 0,
   "capture_window_minutes": [
     8,
     2880
   ],
-  "completed_at_utc": "2026-11-21T15:29:26.318764+00:00",
+  "completed_at_utc": "2026-11-21T16:21:20.874802+00:00",
   "daily_attempts_limit": 6,
   "daily_attempts_used": 6,
-  "eligible_legs": 42,
+  "eligible_legs": 41,
   "enabled": true,
   "maximum_near_refresh_attempts_per_original": 1,
   "near_refresh_window_minutes": [
@@ -19,7 +19,6 @@
   "new_packets": [],
   "reason": "daily_attempt_budget_exhausted",
   "skipped": [
-    "1552824:daily_attempt_budget_exhausted",
     "1550205:daily_attempt_budget_exhausted",
     "1557475:daily_attempt_budget_exhausted",
     "1570462:daily_attempt_budget_exhausted",
@@ -312,16 +311,18 @@
     "1552225": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
-        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": null,
-      "source_observed_within_3_hours": false,
+      "source_captured_at_utc": "2026-11-21T16:21:19.552469+00:00",
+      "source_observed_within_3_hours": true,
       "xg_fixtures_by_team": {
         "194": 0,
         "198": 0
@@ -547,24 +548,6 @@
         "91": 0
       }
     },
-    "1552824": {
-      "confirmed_xi_team_ids": [],
-      "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
-      "lineups_have_zero_numerical_weight": true,
-      "refresh_reasons": [
-        "source_not_observed_within_3_hours",
-        "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
-      ],
-      "source_captured_at_utc": "2026-11-21T03:52:43.948711+00:00",
-      "source_observed_within_3_hours": false,
-      "xg_fixtures_by_team": {
-        "84": 0,
-        "85": 0
-      }
-    },
     "1552825": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
@@ -681,16 +664,18 @@
     "1570455": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
-        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": null,
-      "source_observed_within_3_hours": false,
+      "source_captured_at_utc": "2026-11-21T16:21:19.372596+00:00",
+      "source_observed_within_3_hours": true,
       "xg_fixtures_by_team": {
         "529": 0,
         "533": 0
@@ -831,15 +816,18 @@
     "1575228": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
         "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": null,
+      "source_captured_at_utc": "2026-11-21T10:23:03.212287+00:00",
       "source_observed_within_3_hours": false,
       "xg_fixtures_by_team": {
         "172": 0,
