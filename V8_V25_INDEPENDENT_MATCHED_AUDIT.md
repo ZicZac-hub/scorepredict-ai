@@ -31,23 +31,23 @@ The auditor checks:
 - V8 per-leg probability diagnostics include top-one score calibration,
   full-multiclass score Brier and actual-score log loss.
 
-## Critical calibration limitation
+## Prospective probability comparison
 
-V25's saved robust selections are formed by a **lower envelope across four
-sensitivity models using V8-based goal rates**. That envelope is neither a
-proper normalized score matrix nor an independently calibrated distribution.
+Each new write-once V25 set saves a separate score matrix per fixture under
+`v25_probability`. Version `v25-equal-sensitivity-mixture-v1` equally weights
+the Poisson, negative-binomial and bivariate Poisson sensitivity matrices on
+the original V8 score grid. The components share V8-derived goal rates, and the
+weights are fixed before results. Each matrix records the freeze timestamp and
+inherits the fixture, source forecast ID, input digest and capture timestamp from
+the enclosing leg. The auditor checks the evidence timestamp against the source
+and requires the same cutoff as the saved selections.
 
-Consequently, **V25 full exact-score probability calibration is reported as
-unavailable**. The report shows the probability *V8* assigned to the V25
-selections strictly as a common-reference diagnostic; it is not a V25 forecast
-probability, a valid estimate of real win probability, or a proxy for V25's
-log loss. Do not present it as evidence that V25 is calibrated.
-
-Future V25 revisions should freeze a separately versioned, normalized
-distribution per fixture **before kickoff**, with provenance and source
-timestamps, to permit truly symmetric V8/V25 score-distribution Brier and
-log-loss comparisons. Never construct a historical probability after
-settlement and relabel it prospective.
+The matched probability report compares top-one Brier, exact-score multiclass
+Brier and exact-score log loss on identical verified legs. The original V8-only
+diagnostics still cover the wider archive. Pairs without two valid V25 matrices
+can still count toward five-double performance once verified. Historical V25
+matrices are never reconstructed. V8 mass on V25's robust five remains a
+reference diagnostic, and the lower envelope still determines the five picks.
 
 ## Automation and tests
 
