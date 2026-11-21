@@ -6,7 +6,11 @@ Research only. Do not promote the xG challenger, increase live confidence, or cl
 a 70% exact-score five-double hit rate without independently verified evidence.
 
 The first step is **chronologically frozen, authenticated API-Football history**
-and provider-qualified pre-kickoff xG evidence. The current evaluator does not
+and provider-qualified pre-kickoff xG evidence. A qualifying packet now
+freezes the exact Dixon–Coles and xG probability matrices **before kickoff**;
+those saved probabilities, not later refits, are graded when independently
+verified results arrive. Packets without usable xG are kept as explicit
+pre-kickoff abstentions and can never be retroactively filled after kickoff. The current evaluator does not
 consider a post-match reconstruction of historical inputs a valid prospective
 case. The pre-kickoff freeze happens on new `v21_capture_sources.py` captures.
 Older API-Football packets can contain genuine historical xG but may have no
@@ -25,7 +29,7 @@ review. Missing subscription access or query coverage is reported as missing.
   `V21_DAILY_CAPTURE_ATTEMPTS`; Sportmonks uses its separately bounded token.
   Do not add paid calls or loosen quotas simply to increase sample counts.
 - `v21_capture_sources.py` preserves source packets under
-  `data/v21_sources/` and, for new accepted xG packets, calls
+  `data/v21_sources/` and, for new authenticated packets, calls
   `freeze_history` to preserve the exact as-of model inputs in
   `data/verified_xg_replay/history/`. Existing packets are write-once.
 - Once each six-hour heavy refresh is due, the workflow writes
