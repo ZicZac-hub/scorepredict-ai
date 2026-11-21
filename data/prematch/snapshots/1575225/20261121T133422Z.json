@@ -1,0 +1,245 @@
+{
+  "away_team": "RB Leipzig",
+  "away_team_id": 173,
+  "captured_at_utc": "2026-11-21T13:34:22.342912+00:00",
+  "competition": "BL1",
+  "double_top10_scores": [
+    [
+      1,
+      1,
+      0.10005652762987308
+    ],
+    [
+      2,
+      1,
+      0.08357773105313503
+    ],
+    [
+      1,
+      2,
+      0.08195588795555811
+    ],
+    [
+      2,
+      2,
+      0.06845817383458196
+    ],
+    [
+      1,
+      0,
+      0.06107742208086591
+    ],
+    [
+      0,
+      1,
+      0.0598922021165112
+    ],
+    [
+      2,
+      0,
+      0.05101828413411129
+    ],
+    [
+      0,
+      2,
+      0.04905745504411184
+    ],
+    [
+      3,
+      1,
+      0.04654193846522309
+    ],
+    [
+      1,
+      3,
+      0.044753152574116335
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-21T13:34:21.453501+00:00",
+  "expected_goals": {
+    "away": 1.6381917281544596,
+    "home": 1.6706102646756629
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1575225,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Union Berlin",
+  "home_team_id": 182,
+  "injuries": [
+    {
+      "player": "J. Juranovic",
+      "reason": "Illness",
+      "team": "Union Berlin"
+    },
+    {
+      "player": "A. Markgraf",
+      "reason": "Knee Injury",
+      "team": "Union Berlin"
+    },
+    {
+      "player": "S. Nsoki",
+      "reason": "Muscle Injury",
+      "team": "Union Berlin"
+    },
+    {
+      "player": "R. Skov",
+      "reason": "Injury",
+      "team": "Union Berlin"
+    },
+    {
+      "player": "F. Uduokhai",
+      "reason": "Muscle Injury",
+      "team": "Union Berlin"
+    },
+    {
+      "player": "L. Burcu",
+      "reason": "Injury",
+      "team": "Union Berlin"
+    },
+    {
+      "player": "M. Guiu",
+      "reason": "Hamstring Injury",
+      "team": "RB Leipzig"
+    },
+    {
+      "player": "A. Ouedraogo",
+      "reason": "Shoulder Injury",
+      "team": "RB Leipzig"
+    }
+  ],
+  "input_digest": "61e3ce524251bf8c7d73b2dc585dcfc175e0604ea94afdc936b5022f62213ee0",
+  "kickoff_utc": "2026-11-21T14:30:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [
+    {
+      "age_seconds": 0.00022482872009277344,
+      "cache_status": "network",
+      "endpoint": "/fixtures/lineups",
+      "fetched_at_utc": "2026-11-21T13:34:22.067253+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-21T13:34:22.067477+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    {
+      "age_seconds": 0.000324249267578125,
+      "cache_status": "network",
+      "endpoint": "/injuries",
+      "fetched_at_utc": "2026-11-21T13:34:22.279732+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-21T13:34:22.280056+00:00",
+      "stale": false,
+      "ttl_seconds": 14400
+    }
+  ],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.3782420328084666,
+    "draw": 0.22987378635981234,
+    "home": 0.39188418083172116
+  },
+  "predicted_score": [
+    1,
+    1
+  ],
+  "predicted_score_probability": 0.10005652762987308,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.00027561187744140625,
+      "cache_status": "network",
+      "fetched_at_utc": "2026-11-21T13:34:21.672606+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-21T13:34:21.672882+00:00",
+      "stale": false,
+      "ttl_seconds": 60
+    },
+    "history_days": 730,
+    "news_sources": [
+      {
+        "age_seconds": 0.00022482872009277344,
+        "cache_status": "network",
+        "endpoint": "/fixtures/lineups",
+        "fetched_at_utc": "2026-11-21T13:34:22.067253+00:00",
+        "freshness_known": true,
+        "retrieved_at_utc": "2026-11-21T13:34:22.067477+00:00",
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.000324249267578125,
+        "cache_status": "network",
+        "endpoint": "/injuries",
+        "fetched_at_utc": "2026-11-21T13:34:22.279732+00:00",
+        "freshness_known": true,
+        "retrieved_at_utc": "2026-11-21T13:34:22.280056+00:00",
+        "stale": false,
+        "ttl_seconds": 14400
+      }
+    ],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-21T13:34:21.453501+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.004481792449951172,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-21T13:34:19.121646+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-21T13:34:19.126128+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.004664897918701172,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-21T13:34:19.359741+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-21T13:34:19.364406+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 2.1247529977906137,
+      "home": 1.1544152013724418
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.5943218888911389,
+      "draw": 0.20750150699526607,
+      "home": 0.1981766041135951
+    },
+    "predicted_score": [
+      1,
+      2
+    ],
+    "score_probability": 0.09813508171588313
+  },
+  "score_basis": "regulation"
+}

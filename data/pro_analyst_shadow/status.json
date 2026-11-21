@@ -38,7 +38,7 @@
             "as_of_utc": "2026-11-14T01:37:02.041739Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 13.15,
-            "evidence_age_hours_at_decision": 178.69,
+            "evidence_age_hours_at_decision": 179.96,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 13.24,
@@ -83,7 +83,7 @@
         "model_version": "pro-analyst-v25-robust-sensitivity-shadow",
         "no_claim_of_updated_team_news": true,
         "production_model_changed": false,
-        "qualified_fixtures": 43,
+        "qualified_fixtures": 41,
         "real_win_rate_not_known_at_selection": true,
         "robust_five_v8_model_mass": 0.08970947465363988,
         "robust_lower_envelope_model_mass": 0.08159744151038847,
@@ -99,7 +99,7 @@
             "as_of_utc": "2026-11-14T01:37:02.819154Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 13.1,
-            "evidence_age_hours_at_decision": 178.69,
+            "evidence_age_hours_at_decision": 179.96,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 14.0,
@@ -116,7 +116,7 @@
           "model_version": "ziczac-evidence-ensemble-v8-experimental",
           "provider": "API-Football"
         },
-        "selected_at_utc": "2026-11-21T12:18:39.468295+00:00",
+        "selected_at_utc": "2026-11-21T13:34:32.275768+00:00",
         "sensitivity_model_names": [
           "baseline_v8",
           "poisson_marginal",
@@ -124,29 +124,34 @@
           "bivariate_poisson_c012"
         ],
         "source_age_hours": [
-          178.69,
-          178.69
+          179.96,
+          179.96
         ],
         "source_freshness_warning": true,
         "sydney_date": "2026-11-22",
         "v8_optimal_five_model_mass": 0.09129940382980187
+      },
+      "2026-11-23": {
+        "decision": "ABSTAIN",
+        "qualified_fixtures": 3,
+        "reason": "no_qualified_pair_or_insufficient_model_mass"
       }
     },
     "early_frozen_source_allowed_only_for_shadow": true,
-    "eligible_fixtures": 43,
+    "eligible_fixtures": 44,
     "excluded": {
-      "invalid_source_time": 28,
-      "not_original_v8_model": 342,
-      "outside_research_freeze_window": 181
+      "invalid_source_time": 38,
+      "not_original_v8_model": 368,
+      "outside_research_freeze_window": 178
     },
-    "next_possible_pair_window_utc": "2026-11-21T13:30:00+00:00",
+    "next_possible_pair_window_utc": "2026-11-21T14:00:00+00:00",
     "next_possible_sydney_day": "2026-11-23",
     "next_window_is_not_guaranteed_selection": true,
     "version": "pro-analyst-v25-robust-sensitivity-shadow"
   },
   "conflicting_verified_results_excluded": 0,
   "external_api_requests": 0,
-  "generated_at_utc": "2026-11-21T12:18:39.468295+00:00",
+  "generated_at_utc": "2026-11-21T13:34:32.275768+00:00",
   "model_promotion": false,
   "model_version": "pro-analyst-v25-robust-sensitivity-shadow",
   "never_a_claim_of_70_percent_accuracy": true,
