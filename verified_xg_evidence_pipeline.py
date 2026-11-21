@@ -14,6 +14,7 @@ from pathlib import Path
 from history_pipeline import build_evidence
 from v10_prospective import utc
 from v21_provider_evidence import valid_snapshot
+from verified_xg_prediction_archive import freeze_shadow, validated_shadow
 
 ROOT = Path("data/verified_xg_replay")
 PROVIDER_ROOT = Path("data/v21_sources")
@@ -73,10 +74,10 @@ def freeze_history(fixture, evidence, packet_path, *, root=ROOT,
     if (rebuilt["input_digest"] != evidence["input_digest"]
             or len(rebuilt["history"]) != len(evidence["history"])):
         raise ValueError("historical_asof_integrity_failed")
-    if not (snapshot.get("verified_historical_fixture_xg") or []):
-        return None  # Still preserve the provider packet. No fabricated xG.
+    # Preserve every authenticated as-of history, including explicit xG
+    # abstentions. A future result cannot be used to reconstruct this input.
     record = {
-        "schema": 1,
+        "schema": 2,
         "scope": "shadow_only_no_production_promotion",
         "fixture": rebuilt["fixture"],
         "history": rebuilt["history"],
@@ -86,6 +87,7 @@ def freeze_history(fixture, evidence, packet_path, *, root=ROOT,
         "snapshot_relative_path": str(relative),
         "snapshot_sha256": snapshot["snapshot_sha256"],
         "captured_at_utc": snapshot["captured_at_utc"],
+        "frozen_shadow": freeze_shadow(rebuilt["fixture"], rebuilt["history"], snapshot),
     }
     record["record_sha256"] = _digest(record)
     dest = root / "history" / (str(fixture["id"]) + "_" +
@@ -104,7 +106,9 @@ def freeze_history(fixture, evidence, packet_path, *, root=ROOT,
 
 def _authenticated_record(path, provider_root):
     record = _read(path)
-    if not isinstance(record, dict):
+    if not isinstance(record, dict) or record.get("schema") != 2:
+        return None  # Older input-only records cannot prove a frozen forecast.
+    if not isinstance(record.get("frozen_shadow"), dict):
         return None
     seal = record.get("record_sha256")
     if not isinstance(seal, str) or seal != _digest(
@@ -137,7 +141,7 @@ def _authenticated_record(path, provider_root):
             or len(rebuilt["history"]) != len(history)):
         return None
     return {"fixture": fixture, "history": history, "snapshot": packet,
-            "capture": captured}
+            "frozen_shadow": record["frozen_shadow"], "capture": captured}
 
 
 def _verified_actual(result, fixture):
@@ -174,6 +178,11 @@ def load_cases(*, root=ROOT, provider_root=PROVIDER_ROOT, results_path=RESULTS):
                 continue
             fixture = record["fixture"]
             fid = str(fixture["id"])
+            # Admit only frozen, paired probabilities. An abstention cannot be
+            # regenerated with newer model code after the final score exists.
+            if validated_shadow(record["frozen_shadow"]) is None:
+                rejection["pre_kickoff_shadow_abstained_or_invalid"] += 1
+                continue
             actual = _verified_actual(results.get(fid), fixture)
             if actual is None:
                 rejection["missing_verified_final"] += 1
@@ -181,7 +190,8 @@ def load_cases(*, root=ROOT, provider_root=PROVIDER_ROOT, results_path=RESULTS):
             # One fixture contributes once. Select earliest valid archived
             # decision without consulting the result or model probabilities.
             row = {"fixture": fixture, "history": record["history"],
-                   "snapshot": record["snapshot"], "actual": actual}
+                   "snapshot": record["snapshot"], "actual": actual,
+                   "frozen_shadow": record["frozen_shadow"]}
             candidate = (record["capture"], str(path), row)
             if fid not in candidates or candidate[:2] < candidates[fid][:2]:
                 candidates[fid] = candidate
@@ -305,6 +315,7 @@ def report(*, root=ROOT, provider_root=PROVIDER_ROOT, results_path=RESULTS,
         "holdout_start": cutoff,
         "authenticated_archive": audit_packets(provider_root=provider_root),
         "frozen_history_records": len(list((Path(root) / "history").glob("*.json"))),
+        "comparison_uses_original_pre_kickoff_probabilities": True,
         "independently_settled_candidate_cases": len(cases),
         "case_exclusions": exclusions,
         "minimum_evidence": {"training_cases": MIN_TRAIN,
