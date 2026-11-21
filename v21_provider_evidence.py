@@ -293,17 +293,33 @@ def capture(fixture, history, api_key, *, now=None, request=None, max_history_pe
     if observation_time() >= kickoff:
         return {"status": "unavailable", "reason": "capture_completed_after_kickoff",
                 "diagnostics": diag}
-    lineups = []
+    lineup_by_team = {}
+    conflicting_teams = set()
     for data in lineup_raw if isinstance(lineup_raw, list) else []:
-        tid = str((data.get("team") or {}).get("id"))
+        if not isinstance(data, dict) or not isinstance(data.get("team"), dict):
+            continue
+        tid = str(data["team"].get("id"))
         if tid not in (home, away):
             continue
-        starters = [str((p.get("player") or {}).get("name") or "")[:100]
-                    for p in data.get("startXI") or []]
-        starters = [n for n in starters if n]
-        if len(starters) == 11:
-            lineups.append({"team_id": tid, "formation": data.get("formation"),
-                            "starting_xi": starters, "provider_reported": True})
+        entries = data.get("startXI")
+        if not isinstance(entries, list) or len(entries) != 11:
+            continue
+        players = [p.get("player") for p in entries if isinstance(p, dict)]
+        if len(players) != 11 or any(not isinstance(p, dict) for p in players):
+            continue
+        starters = [str(p.get("name") or "").strip()[:100] for p in players]
+        normalized = [" ".join(n.casefold().split()) for n in starters]
+        ids = [str(p["id"]) for p in players if p.get("id") is not None]
+        if not all(normalized) or len(set(normalized)) != 11 or len(set(ids)) != len(ids):
+            continue
+        row = {"team_id": tid, "formation": data.get("formation"),
+               "starting_xi": starters, "provider_reported": True}
+        if tid in lineup_by_team and lineup_by_team[tid] != row:
+            conflicting_teams.add(tid)
+        else:
+            lineup_by_team[tid] = row
+    lineups = [row for tid, row in lineup_by_team.items() if tid not in conflicting_teams]
+    diag["conflicting_lineup_team_ids"] = sorted(conflicting_teams)
     injuries = []
     for data in injury_raw if isinstance(injury_raw, list) else []:
         tid = str((data.get("team") or {}).get("id"))
