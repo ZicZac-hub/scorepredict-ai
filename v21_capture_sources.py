@@ -278,7 +278,7 @@ def current_pair(root=ORIGINAL_ROOT,now=None):
 
 def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                  api_key=None,enabled=None,api_request=None,clock=None,
-                 pair_root=PAIR_ROOT):
+                 pair_root=PAIR_ROOT,archive_root=Path("data/verified_xg_replay")):
     clock,observation_time=capture_clock(now,clock)
     active=(os.environ.get("V21_EVIDENCE_ENABLED")=="true" if enabled is None else bool(enabled))
     result={"at_utc":clock.isoformat(),"enabled":active,
@@ -449,9 +449,15 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
                     try:
                         from verified_xg_evidence_pipeline import freeze_history
                         frozen = freeze_history(fixture, evidence, path,
-                                                provider_root=root)
+                                                root=archive_root,provider_root=root)
                         if frozen:
                             result.setdefault("frozen_history_inputs", []).append(str(frozen))
+                            shadow=load_json(frozen,{}).get("frozen_shadow") or {}
+                            status=shadow.get("status")
+                            if status in ("ready","abstained"):
+                                key=("frozen_shadow_ready" if status=="ready" else
+                                     "frozen_shadow_abstained")
+                                result[key]=result.get(key,0)+1
                     except (OSError, ValueError, KeyError, TypeError, OverflowError) as exc:
                         result["skipped"].append(str(leg["fixture_id"]) +
                                                  ":history_freeze_" + type(exc).__name__)

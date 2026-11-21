@@ -200,10 +200,10 @@ jobs:
         # Zero extra provider calls; immutable, never promoted automatically.
         if: always()
         run: python v21_prospective.py
-      - name: Audit authenticated xG and matched shadow-model performance
-        # Read-only, independent comparison. No API requests, forecast updates,
-        # confidence increases, or automatic model promotion.
-        if: steps.cadence.outputs.heavy == 'true'
+      - name: Audit every scheduled capture for frozen prospective xG evidence
+        # Recompute readiness each scheduled run, even when the paid collector
+        # abstains or another optional research study later fails. No API calls.
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         run: python verified_xg_evidence_pipeline.py --output data/verified_xg_replay/latest_report.json
       - name: Freeze and verify V22 xG + time-checked market five doubles (no API calls)
         if: always()
@@ -213,7 +213,7 @@ jobs:
         # No additional external API calls; records never overwrite prior picks.
         if: always()
         run: python v23_prospective.py
-      - name: Freeze matched odds and xG ablations on the original professional pair
+      - name: Freeze versioned v2 matched odds/xG research (preserve immutable v1)
         # Runs after bounded source collection. All arms share the original
         # two fixtures and a common pre-kickoff decision; no new API calls.
         # Missing sources remain explicit abstentions, not retrospective fixes.
@@ -255,8 +255,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis data/pro_analyst_shadow data/sportmonks_xg data/professional_double_shadow data/professional_paired_study data/verified_xg_replay
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/ data/pro_analyst_shadow/ data/sportmonks_xg/ data/professional_double_shadow/ data/professional_paired_study/ data/verified_xg_replay/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis data/pro_analyst_shadow data/sportmonks_xg data/professional_double_shadow data/professional_paired_study data/professional_paired_study_v2 data/verified_xg_replay
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/ data/pro_analyst_shadow/ data/sportmonks_xg/ data/professional_double_shadow/ data/professional_paired_study/ data/professional_paired_study_v2/ data/verified_xg_replay/
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
@@ -325,6 +325,7 @@ jobs:
             data/pro_analyst_shadow/
             data/professional_double_shadow/
             data/professional_paired_study/
+            data/professional_paired_study_v2/
             data/verified_xg_replay/
             data/independent_football/status.json
             data/independent_football/evaluation.json
