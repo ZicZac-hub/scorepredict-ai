@@ -17,6 +17,13 @@ observed share as 33.0789% and predicted share as 33.1692% on 393
 retrospective development fixtures. This does not support blanket
 inflation of high-goal scores.
 
+A direct read-only reproduction from the two archived 19 Nov near-kickoff
+score grids gives 7.271889995% model mass for the five highest joint cells.
+The actual Como 2–0 / Lazio 3–0 cell has 0.860453985% model mass and ranks
+21st among all score-pair cells. This is why it was absent from the highest
+five joint combinations despite Lazio 3–0 ranking fifth by itself.
+These are uncalibrated model masses, not historical hit probabilities.
+
 The screenshots depict a manually selected Como–Lazio pair; this is
 different from the V10 automatically frozen daily pair and the V25 archived
 automatic shadow pair. Do not insert screenshot selections into either
