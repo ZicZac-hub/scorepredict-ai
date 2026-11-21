@@ -1,0 +1,163 @@
+{
+  "away_team": "SC Paderborn 07",
+  "away_team_id": 185,
+  "captured_at_utc": "2026-11-20T19:58:37.308218+00:00",
+  "competition": "BL1",
+  "double_top10_scores": [
+    [
+      2,
+      1,
+      0.09785859091925599
+    ],
+    [
+      2,
+      0,
+      0.09534805985403798
+    ],
+    [
+      1,
+      1,
+      0.08612258162774672
+    ],
+    [
+      1,
+      0,
+      0.08391313415295495
+    ],
+    [
+      3,
+      1,
+      0.07412925186175966
+    ],
+    [
+      3,
+      0,
+      0.0722274894524289
+    ],
+    [
+      2,
+      2,
+      0.05021761235289955
+    ],
+    [
+      1,
+      2,
+      0.044195102120176896
+    ],
+    [
+      4,
+      1,
+      0.04211545912804651
+    ],
+    [
+      4,
+      0,
+      0.04103500040210675
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-20T19:58:36.866250+00:00",
+  "expected_goals": {
+    "away": 1.0263301746156261,
+    "home": 2.2725419760925556
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1575239,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Bayern M\u00fcnchen",
+  "home_team_id": 157,
+  "injuries": [],
+  "input_digest": "6cc0e30be3ffd44d04b4e876e0233402d05a0e692585939b6f3082d3c88464ed",
+  "kickoff_utc": "2026-12-04T19:30:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.15761429060697824,
+    "draw": 0.1883651661846375,
+    "home": 0.6540205432083843
+  },
+  "predicted_score": [
+    2,
+    1
+  ],
+  "predicted_score_probability": 0.09785859091925599,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.00045299530029296875,
+      "cache_status": "committed_discovery_cache",
+      "discovery_age_seconds": 21380.725912,
+      "fetched_at_utc": "2026-11-20T14:02:12.693209+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-20T14:02:12.693662+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    "history_days": 730,
+    "news_sources": [],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-20T19:58:36.866250+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.003109455108642578,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-20T19:58:37.011256+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-20T19:58:37.014365+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.0038776397705078125,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-20T19:58:37.166286+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-20T19:58:37.170164+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 0.5641773352825866,
+      "home": 2.9998151078657163
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.042637315647134875,
+      "draw": 0.10155442030924183,
+      "home": 0.8558082640436234
+    },
+    "predicted_score": [
+      2,
+      0
+    ],
+    "score_probability": 0.1274490869737166
+  },
+  "score_basis": "regulation"
+}

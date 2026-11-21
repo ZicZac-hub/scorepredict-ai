@@ -1,0 +1,149 @@
+{
+  "captured_at_utc": "2026-11-19T09:00:28.269060+00:00",
+  "first": {
+    "away_team_id": "111",
+    "fixture_id": "1552827",
+    "forecast_id": "dba11ac1f30f672de8a603e5b3b832ff6029db775edd3ecf876bcf755c4d14ff",
+    "home_team_id": "110",
+    "input_digest": "5c7adf505adcfd56d3b2290f4d1787af4e00f53255a5d37306362a0a15ae5acb",
+    "kickoff_utc": "2026-11-20T19:45:00.000000Z",
+    "provider": "API-Football"
+  },
+  "methods": {
+    "baseline_v8": {
+      "coverage": 0.0705631294939516,
+      "doubles": [
+        {
+          "joint_probability": 0.01645861710242524,
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.01576033385705902,
+          "score1": "1-1",
+          "score2": "1-1"
+        },
+        {
+          "joint_probability": 0.013367592053846973,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.012800450507020627,
+          "score1": "1-0",
+          "score2": "1-1"
+        },
+        {
+          "joint_probability": 0.012176135973599742,
+          "score1": "1-1",
+          "score2": "2-0"
+        }
+      ]
+    },
+    "bivariate_poisson_c012": {
+      "coverage": 0.07430392615628129,
+      "doubles": [
+        {
+          "joint_probability": 0.01769793461538608,
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.015722951788021907,
+          "score1": "1-1",
+          "score2": "1-1"
+        },
+        {
+          "joint_probability": 0.01451051899817425,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.013309328076498341,
+          "score1": "1-1",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.013063192678200698,
+          "score1": "0-1",
+          "score2": "1-0"
+        }
+      ]
+    },
+    "negative_binomial_r3": {
+      "coverage": 0.07423562148533806,
+      "doubles": [
+        {
+          "joint_probability": 0.015746552195412357,
+          "score1": "0-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.015390830182491188,
+          "score1": "0-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.014794730511432054,
+          "score1": "1-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.01446051059758411,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.01384299799841835,
+          "score1": "0-1",
+          "score2": "0-0"
+        }
+      ]
+    },
+    "poisson_marginal": {
+      "coverage": 0.07110283701215117,
+      "doubles": [
+        {
+          "joint_probability": 0.016962740880027454,
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.015574557060176629,
+          "score1": "1-1",
+          "score2": "1-1"
+        },
+        {
+          "joint_probability": 0.013641044758961376,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.012524699366776124,
+          "score1": "1-0",
+          "score2": "1-1"
+        },
+        {
+          "joint_probability": 0.012399794946209587,
+          "score1": "0-1",
+          "score2": "1-0"
+        }
+      ]
+    }
+  },
+  "not_promoted": true,
+  "policy": "rank_all_eligible_pairs_or_abstain; no_future_results",
+  "robust_model_coverage": 0.0705631294939516,
+  "schema": 1,
+  "second": {
+    "away_team_id": "540",
+    "fixture_id": "1570454",
+    "forecast_id": "c4752d57533dd6751eb3296acbe07fad91013f563a26db049af2c30698ea23a5",
+    "home_team_id": "531",
+    "input_digest": "3a85b0357b77c9a91af4c4b575683b906ce9579c76e48e667138331fcbdab5b8",
+    "kickoff_utc": "2026-11-20T20:00:00.000000Z",
+    "provider": "API-Football"
+  },
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-21"
+}

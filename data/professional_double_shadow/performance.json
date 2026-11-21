@@ -1,12 +1,12 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-19T01:52:02.295601+00:00",
+  "evaluated_at_utc": "2026-11-21T00:24:48.771045+00:00",
   "external_requests": 0,
-  "frozen_set_files": 4,
+  "frozen_set_files": 6,
   "hits": 0,
   "note": "Only raw-policy prospective calibration bootstrap; premium still requires independent calibration evidence.",
-  "observed_hit_rate": null,
-  "pending_sets": 4,
+  "observed_hit_rate": 0.0,
+  "pending_sets": 3,
   "policy_id": "professional-probability-five-v1",
   "premium_release_approved": false,
   "result_rejections": {},
@@ -17,32 +17,57 @@
           2,
           1
         ],
-        null
+        [
+          4,
+          0
+        ]
       ],
       "estimated_coverage": 0.0709357143143145,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-19"
     },
     {
       "actual_scores": [
-        null,
-        null
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ]
       ],
       "estimated_coverage": 0.06695245127816893,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-20"
+    },
+    {
+      "actual_scores": [
+        [
+          3,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "estimated_coverage": 0.0705631294939516,
+      "hit": false,
+      "status": "verified",
+      "sydney_date": "2026-11-21"
     },
     {
       "actual_scores": [
         null,
         null
       ],
-      "estimated_coverage": 0.0705631294939516,
+      "estimated_coverage": 0.07619753996352728,
       "hit": null,
       "status": "pending",
-      "sydney_date": "2026-11-21"
+      "sydney_date": "2026-11-22"
     },
     {
       "actual_scores": [
@@ -53,14 +78,145 @@
       "hit": null,
       "status": "pending",
       "sydney_date": "2026-12-03"
+    },
+    {
+      "actual_scores": [
+        null,
+        null
+      ],
+      "estimated_coverage": 0.05215174933350674,
+      "hit": null,
+      "status": "pending",
+      "sydney_date": "2026-12-05"
     }
   ],
   "schema_version": 1,
   "selection_scope": "auto_max_raw_coverage_same_day_v1",
   "source_rejections": {},
-  "source_valid_sets": 4,
+  "source_valid_sets": 6,
   "target_70_percent_proven": false,
-  "trials": [],
-  "verified_sets": 0,
-  "wilson_95": null
+  "trials": [
+    {
+      "estimated_coverage": 0.0709357143143145,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1492452"
+        ],
+        [
+          "API-Football",
+          "1492450"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Cruzeiro",
+          "Palmeiras"
+        ],
+        [
+          "Corinthians",
+          "Botafogo"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-18T23:30:00.000000Z",
+        "2026-11-19T00:30:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-18T00:35:49.159622+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "1eb0a02bf81cd595f49100afa4dd6265f31f6b8dedf0e619f75e70e82da47817",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-19T02:51:18.573406+00:00"
+    },
+    {
+      "estimated_coverage": 0.06695245127816893,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1492458"
+        ],
+        [
+          "API-Football",
+          "1492459"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Vasco DA Gama",
+          "Internacional"
+        ],
+        [
+          "Vitoria",
+          "RB Bragantino"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-19T22:30:00.000000Z",
+        "2026-11-19T22:30:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-18T00:35:49.166620+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "f4365673a39606bfaf9a223d7901f47386281af55a9e38c35aba8a285ef921ba",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-20T01:36:29.727083+00:00"
+    },
+    {
+      "estimated_coverage": 0.0705631294939516,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1552827"
+        ],
+        [
+          "API-Football",
+          "1570454"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Estac Troyes",
+          "Le Havre"
+        ],
+        [
+          "Athletic Club",
+          "Espanyol"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-20T19:45:00.000000Z",
+        "2026-11-20T20:00:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-19T01:52:02.113918+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "0464fabbdee11d92260ded72ad10154460d119ae279725c9243778fe104b0214",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-20T22:46:07.684017+00:00"
+    }
+  ],
+  "verified_sets": 3,
+  "wilson_95": [
+    5.551115123125783e-17,
+    0.5614970317550454
+  ]
 }

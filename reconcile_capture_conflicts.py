@@ -51,6 +51,20 @@ RESULT_FIELDS = ("provider","fixture_id","kickoff_utc","home_team_id",
                  "evidence_version")
 
 
+def _same_result_field(field, left, right):
+    """Treat timezone-equivalent UTC kickoffs as identical, not changed evidence.
+
+    Invalid or timezone-naive timestamps are never silently normalized.
+    Every other identity and final-score field remains an exact comparison.
+    """
+    if field != "kickoff_utc" or left == right:
+        return left == right
+    try:
+        return _timestamp(left) == _timestamp(right)
+    except (ValueError, TypeError, OverflowError):
+        return False
+
+
 def merge_verified(upstream, local):
     """Union genuinely verified results; never silently change final scores."""
     if not isinstance(upstream,dict) or not isinstance(local,dict):
@@ -61,7 +75,7 @@ def merge_verified(upstream, local):
             if not isinstance(row,dict) or row.get("evidence_version") != 2:
                 raise ValueError("Cannot merge an unverified-result candidate")
             merged[fixture_id]=row
-        elif any(merged[fixture_id].get(field)!=row.get(field)
+        elif any(not _same_result_field(field, merged[fixture_id].get(field), row.get(field))
                  for field in RESULT_FIELDS):
             raise ValueError("Conflicting final-score identity for "+str(fixture_id))
         # Prefer the already published final-score proof and original

@@ -1,0 +1,84 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "1. FC K\u00f6ln",
+  "away_team_id": "192",
+  "baseline_predicted_score": [
+    3,
+    0
+  ],
+  "baseline_probabilities": {
+    "away": 0.07825028757163958,
+    "draw": 0.10456138467331831,
+    "home": 0.8171883277550421
+  },
+  "captured_at_utc": "2026-11-20T02:52:36.388514+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.07825028757163958,
+      "draw": 0.10456138467331831,
+      "home": 0.8171883277550421
+    },
+    "provider_count": 2,
+    "suggested_score": [
+      3,
+      0
+    ]
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1575221",
+  "home_team": "Bayern M\u00fcnchen",
+  "home_team_id": "157",
+  "input_digest": "94175ef484177154843d4f683c1a2182a82e8b87e98e344d11c34b797a61334f",
+  "kickoff_utc": "2026-11-20T19:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_prompt_sha256": "8425ba988381beb3b006d07261a29e7a988542bf9df69a633e7a0de019541854",
+  "source_captured_at_utc": "2026-11-19T01:50:42.493338Z",
+  "source_forecast_id": "b1e123802e73fa192ecd13fc6deee1997ae02423ef8cf6a00f8a53c0bb85f897",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "a403390b443f0db7b360c5d5fe71379761a0f03294546f92b116d968e3c5d1a8",
+  "votes": {
+    "gemini": {
+      "away": 0.07825028757163958,
+      "draw": 0.10456138467331831,
+      "factors": [
+        "Bayern M\u00fcnchen heavily favored by statistical model and market odds",
+        "Model expected goals heavily tilt toward the home side (3.48 vs 0.93)",
+        "Bookmaker 1x2 and over/under markets price a strong home win outcome"
+      ],
+      "home": 0.8171883277550421,
+      "score": [
+        3,
+        0
+      ],
+      "uncertainty": "Missing verified true xG feed, confirmed lineups, and player-level availability data."
+    },
+    "groqcloud": {
+      "away": 0.07825028757163958,
+      "draw": 0.10456138467331831,
+      "factors": [
+        "Home team\u2019s strong attack (3.48 expected goals)",
+        "Away team\u2019s low goal output (0.93 expected goals)",
+        "1-day rest advantage for the home side"
+      ],
+      "home": 0.8171883277550421,
+      "score": [
+        3,
+        1
+      ],
+      "uncertainty": "Moderate, missing lineup, injury, and tactical data"
+    }
+  }
+}

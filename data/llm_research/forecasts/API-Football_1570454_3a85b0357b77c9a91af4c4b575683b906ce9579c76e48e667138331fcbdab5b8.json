@@ -1,0 +1,84 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "Espanyol",
+  "away_team_id": "540",
+  "baseline_predicted_score": [
+    1,
+    0
+  ],
+  "baseline_probabilities": {
+    "away": 0.23599482889864368,
+    "draw": 0.2723256728918746,
+    "home": 0.49167949820948165
+  },
+  "captured_at_utc": "2026-11-20T15:58:19.451597+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.2359948288986437,
+      "draw": 0.27232567289187465,
+      "home": 0.4916794982094817
+    },
+    "provider_count": 2,
+    "suggested_score": [
+      1,
+      0
+    ]
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1570454",
+  "home_team": "Athletic Club",
+  "home_team_id": "531",
+  "input_digest": "3a85b0357b77c9a91af4c4b575683b906ce9579c76e48e667138331fcbdab5b8",
+  "kickoff_utc": "2026-11-20T20:00:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_prompt_sha256": "f8bed34db08981701e424468c2ec4d1559281a557d469d138fafddfd38339ee0",
+  "source_captured_at_utc": "2026-11-19T01:50:45.536966Z",
+  "source_forecast_id": "c4752d57533dd6751eb3296acbe07fad91013f563a26db049af2c30698ea23a5",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "34cd03e35e8b9e213b5c4273a14472243f7903d80eada3fe031fc83efde4fbc6",
+  "votes": {
+    "gemini": {
+      "away": 0.2359948288986437,
+      "draw": 0.27232567289187465,
+      "factors": [
+        "Model estimates higher scoring expectation for Athletic Club (1.45) compared to Espanyol (0.92).",
+        "Historical baseline win probability favors the home side at approximately 49%.",
+        "Missing tactical formations, live injuries, and market odds limit fine-grained adjustments."
+      ],
+      "home": 0.4916794982094817,
+      "score": [
+        1,
+        0
+      ],
+      "uncertainty": "Moderate uncertainty due to lack of verified starting lineups, true xG feeds, and bookmaker odds integration."
+    },
+    "groqcloud": {
+      "away": 0.2359948288986437,
+      "draw": 0.27232567289187465,
+      "factors": [
+        "expected goals differential (home 1.45 vs away 0.92)",
+        "rest days almost equal (difference -0.1)",
+        "missing formation and xG data"
+      ],
+      "home": 0.4916794982094817,
+      "score": [
+        1,
+        0
+      ],
+      "uncertainty": "limited due to missing tactical and xG inputs"
+    }
+  }
+}

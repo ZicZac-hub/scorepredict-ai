@@ -1,0 +1,81 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "RB Bragantino",
+  "away_team_id": "794",
+  "baseline_predicted_score": [
+    1,
+    1
+  ],
+  "baseline_probabilities": {
+    "away": 0.35909594773836917,
+    "draw": 0.28098454603339457,
+    "home": 0.3599195062282364
+  },
+  "captured_at_utc": "2026-11-19T20:28:44.121476+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.35909594773836917,
+      "draw": 0.28098454603339457,
+      "home": 0.3599195062282364
+    },
+    "provider_count": 2,
+    "suggested_score": null
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492459",
+  "home_team": "Vitoria",
+  "home_team_id": "136",
+  "input_digest": "4f8a48a7ea724c3073d239376895331b552ef3a84e395ac3a2bc2c98d3bf3d51",
+  "kickoff_utc": "2026-11-19T22:30:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b"
+  },
+  "provider": "API-Football",
+  "provider_count": 2,
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_prompt_sha256": "b6fca13f131e7974ed0864f9aab0111327a3b5dc7558a84e03314ccb415b9a6d",
+  "source_captured_at_utc": "2026-11-17T23:10:38.338367Z",
+  "source_forecast_id": "234417cf3765de416cd036879b9eb20611b4e1533e9146b9c2c1e68a1920b130",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "9e61b698542a7b71fd63743557345bb90c649669b5c12770cd79e80e2c65e469",
+  "votes": {
+    "gemini": {
+      "away": 0.35909594773836917,
+      "draw": 0.28098454603339457,
+      "factors": [
+        "Statistical model projects virtually identical baseline expected goals for both teams (Home: 1.22, Away: 1.21).",
+        "Away side (RB Bragantino) shows higher shot and shots-on-target volume in recent matches.",
+        "Prior statistical forecast assesses near-even probabilities across home win, draw, and away win."
+      ],
+      "home": 0.3599195062282364,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "High degree of parity in model goal rates and identical near-even outcome probabilities."
+    },
+    "groqcloud": {
+      "away": 0.35909594773836917,
+      "draw": 0.28098454603339457,
+      "factors": [
+        "Balanced goal expectations (~1.2 each)",
+        "Recent shots disparity (home fewer shots on target)",
+        "Rest differential of -4 days"
+      ],
+      "home": 0.3599195062282364,
+      "score": [
+        1,
+        1
+      ],
+      "uncertainty": "Moderate due to missing lineup, injury and weather data"
+    }
+  }
+}

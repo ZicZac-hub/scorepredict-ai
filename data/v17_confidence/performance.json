@@ -14,26 +14,39 @@
     },
     {
       "pair_status": "abstained",
-      "single_status": "pending",
+      "single_status": "win",
       "sydney_date": "2026-11-20"
+    },
+    {
+      "pair_status": "loss",
+      "single_status": "win",
+      "sydney_date": "2026-11-21"
+    },
+    {
+      "pair_status": "abstained",
+      "single_status": "pending",
+      "sydney_date": "2026-11-22"
     }
   ],
   "single": {
     "pending": 1,
     "rate": 1.0,
-    "verified": 1,
+    "verified": 3,
     "wilson_95": [
-      0.20654931437723742,
+      0.4385029682449545,
       1.0
     ],
-    "wins": 1
+    "wins": 3
   },
   "threshold_basis": "uncalibrated_pre_match_model_estimate_not_measured_accuracy",
   "two_match_double_chance": {
     "pending": 0,
-    "rate": null,
-    "verified": 0,
-    "wilson_95": null,
+    "rate": 0.0,
+    "verified": 1,
+    "wilson_95": [
+      0.0,
+      0.7934506856227626
+    ],
     "wins": 0
   },
   "version": "v17-unvalidated-outcome-confidence-v1"

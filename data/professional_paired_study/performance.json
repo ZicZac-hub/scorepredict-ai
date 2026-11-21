@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-19T01:52:17.621432+00:00",
+  "evaluated_at_utc": "2026-11-21T00:25:06.631326+00:00",
   "external_requests": 0,
   "invalid_opportunities": 0,
   "limitations": [
@@ -18,172 +18,202 @@
   "methods": {
     "baseline_v8": {
       "abstained": 0,
-      "hit_rate": null,
+      "hit_rate": 0.0,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 3,
+      "opportunities": 3,
+      "outcome_brier": 0.6001039812394502,
+      "pending": 0,
+      "set_brier_descriptive": 0.004831220513805937,
+      "single_fixtures_evaluated": 6,
+      "single_score_log_loss": 2.9188308517479746,
+      "verified": 3,
+      "wilson_95": [
+        5.551115123125783e-17,
+        0.5614970317550454
+      ]
+    },
+    "market_only": {
+      "abstained": 2,
+      "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
       "issued": 1,
-      "opportunities": 1,
-      "outcome_brier": null,
-      "pending": 1,
-      "set_brier_descriptive": null,
-      "single_fixtures_evaluated": 0,
-      "single_score_log_loss": null,
-      "verified": 0,
-      "wilson_95": null
-    },
-    "market_only": {
-      "abstained": 1,
-      "hit_rate": null,
-      "hits": 0,
-      "invalid_opportunities": 0,
-      "issued": 0,
-      "opportunities": 1,
-      "outcome_brier": null,
+      "opportunities": 3,
+      "outcome_brier": 0.81559233080157,
       "pending": 0,
-      "set_brier_descriptive": null,
-      "single_fixtures_evaluated": 0,
-      "single_score_log_loss": null,
-      "verified": 0,
-      "wilson_95": null
+      "set_brier_descriptive": 0.0046818186782722525,
+      "single_fixtures_evaluated": 2,
+      "single_score_log_loss": 3.0934435695846743,
+      "verified": 1,
+      "wilson_95": [
+        0.0,
+        0.7934506856227626
+      ]
     },
     "xg_market": {
-      "abstained": 1,
-      "hit_rate": null,
+      "abstained": 2,
+      "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 0,
-      "opportunities": 1,
-      "outcome_brier": null,
+      "issued": 1,
+      "opportunities": 3,
+      "outcome_brier": 0.8165979934827783,
       "pending": 0,
-      "set_brier_descriptive": null,
-      "single_fixtures_evaluated": 0,
-      "single_score_log_loss": null,
-      "verified": 0,
-      "wilson_95": null
+      "set_brier_descriptive": 0.004723157759721581,
+      "single_fixtures_evaluated": 2,
+      "single_score_log_loss": 3.092663720832448,
+      "verified": 1,
+      "wilson_95": [
+        0.0,
+        0.7934506856227626
+      ]
     },
     "xg_only": {
-      "abstained": 1,
-      "hit_rate": null,
+      "abstained": 2,
+      "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 0,
-      "opportunities": 1,
-      "outcome_brier": null,
+      "issued": 1,
+      "opportunities": 3,
+      "outcome_brier": 0.7327567442525276,
       "pending": 0,
-      "set_brier_descriptive": null,
-      "single_fixtures_evaluated": 0,
-      "single_score_log_loss": null,
-      "verified": 0,
-      "wilson_95": null
+      "set_brier_descriptive": 0.004922875808343161,
+      "single_fixtures_evaluated": 2,
+      "single_score_log_loss": 2.870234528957,
+      "verified": 1,
+      "wilson_95": [
+        0.0,
+        0.7934506856227626
+      ]
     }
   },
   "model_promoted": false,
-  "opportunities": 1,
+  "opportunities": 3,
   "paired_comparisons": {
     "market_only": {
       "baseline_only_set_wins": 0,
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": null,
+        "mean": -0.08977053313181771,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": null,
+        "mean": -0.21506006754935036,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "same_pair_metrics": {
         "baseline_v8": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.7258217976697523,
+          "single_score_log_loss": 2.878383502035324,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         },
         "market_only": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.81559233080157,
+          "single_score_log_loss": 3.0934435695846743,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         }
       },
-      "verified_common_pairs": 0
+      "verified_common_pairs": 1
     },
     "xg_market": {
       "baseline_only_set_wins": 0,
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": null,
+        "mean": -0.09077619581302598,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": null,
+        "mean": -0.214280218797124,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "same_pair_metrics": {
         "baseline_v8": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.7258217976697523,
+          "single_score_log_loss": 2.878383502035324,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         },
         "xg_market": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.8165979934827783,
+          "single_score_log_loss": 3.092663720832448,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         }
       },
-      "verified_common_pairs": 0
+      "verified_common_pairs": 1
     },
     "xg_only": {
       "baseline_only_set_wins": 0,
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": null,
+        "mean": -0.00693494658277527,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": null,
+        "mean": 0.008148973078323962,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "same_pair_metrics": {
         "baseline_v8": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.7258217976697523,
+          "single_score_log_loss": 2.878383502035324,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         },
         "xg_only": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.7327567442525276,
+          "single_score_log_loss": 2.870234528957,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         }
       },
-      "verified_common_pairs": 0
+      "verified_common_pairs": 1
     }
   },
-  "pending_opportunities": 1,
+  "pending_opportunities": 0,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -193,7 +223,10 @@
           2,
           1
         ],
-        null
+        [
+          4,
+          0
+        ]
       ],
       "lineup_context": [
         {
@@ -213,8 +246,14 @@
       ],
       "methods": {
         "baseline_v8": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.0709357143143145,
+            "hit": false,
+            "outcome_brier": 0.5734501612298828,
+            "score_log_loss": 3.4314203906720473,
+            "set_brier_descriptive": 0.005031875565282043
+          },
+          "status": "verified"
         },
         "market_only": {
           "metrics": null,
@@ -229,13 +268,139 @@
           "status": "abstained"
         }
       },
-      "status": "pending",
+      "status": "verified",
       "sydney_date": "2026-11-19"
+    },
+    {
+      "actual_scores": [
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "lineup_context": [
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        },
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        }
+      ],
+      "methods": {
+        "baseline_v8": {
+          "metrics": {
+            "estimated_coverage": 0.06695245127816893,
+            "hit": false,
+            "outcome_brier": 0.5010399848187155,
+            "score_log_loss": 2.4466886625365514,
+            "set_brier_descriptive": 0.004482630732155584
+          },
+          "status": "verified"
+        },
+        "market_only": {
+          "metrics": null,
+          "status": "abstained"
+        },
+        "xg_market": {
+          "metrics": null,
+          "status": "abstained"
+        },
+        "xg_only": {
+          "metrics": null,
+          "status": "abstained"
+        }
+      },
+      "status": "verified",
+      "sydney_date": "2026-11-20"
+    },
+    {
+      "actual_scores": [
+        [
+          3,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "lineup_context": [
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        },
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        }
+      ],
+      "methods": {
+        "baseline_v8": {
+          "metrics": {
+            "estimated_coverage": 0.0705631294939516,
+            "hit": false,
+            "outcome_brier": 0.7258217976697523,
+            "score_log_loss": 2.878383502035324,
+            "set_brier_descriptive": 0.004979155243980183
+          },
+          "status": "verified"
+        },
+        "market_only": {
+          "metrics": {
+            "estimated_coverage": 0.06842381660118246,
+            "hit": false,
+            "outcome_brier": 0.81559233080157,
+            "score_log_loss": 3.0934435695846743,
+            "set_brier_descriptive": 0.0046818186782722525
+          },
+          "status": "verified"
+        },
+        "xg_market": {
+          "metrics": {
+            "estimated_coverage": 0.06872523379168369,
+            "hit": false,
+            "outcome_brier": 0.8165979934827783,
+            "score_log_loss": 3.092663720832448,
+            "set_brier_descriptive": 0.004723157759721581
+          },
+          "status": "verified"
+        },
+        "xg_only": {
+          "metrics": {
+            "estimated_coverage": 0.07016320836694372,
+            "hit": false,
+            "outcome_brier": 0.7327567442525276,
+            "score_log_loss": 2.870234528957,
+            "set_brier_descriptive": 0.004922875808343161
+          },
+          "status": "verified"
+        }
+      },
+      "status": "verified",
+      "sydney_date": "2026-11-21"
     }
   ],
   "source_rejections": {},
   "target_70_percent_proven": false,
-  "valid_opportunities": 1,
-  "verified_opportunities": 0,
+  "valid_opportunities": 3,
+  "verified_opportunities": 3,
   "version": "professional-fixed-pair-ablation-v1"
 }
