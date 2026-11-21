@@ -196,7 +196,7 @@ def audit_packets(*, provider_root=PROVIDER_ROOT):
     stats = Counter()
     fixtures = set()
     for folder in (root, root / "versions"):
-        for path in sorted(folder.glob("*.json")):
+        for path in sorted(folder.glob("API-Football_*.json")):
             stats["packets_seen"] += 1
             try:
                 record = _read(path)
