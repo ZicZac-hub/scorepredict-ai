@@ -19,7 +19,7 @@ def setup_case(tmp_path):
     inputs = build_evidence(fixture, history, as_of)
     root, provider_root = tmp_path / "archive", tmp_path / "source"
     provider_root.mkdir()
-    path = provider_root / "packet.json"
+    path = provider_root / "API-Football_9001_test.json"
     wrapper = {
         "source_forecast": {
             "provider": "API-Football",
