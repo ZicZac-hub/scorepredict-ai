@@ -73,6 +73,8 @@ def freeze(*,now=None,root=ROOT,source_root=V8_ROOT,provider_root=SOURCE_ROOT):
     for match in ranked:
         per_day.setdefault(match["day"],match)
     saved=[]
+    existing=[]
+    not_written=[]
     for day,pair in per_day.items():
         leg1,leg2=pair["a"]["source"],pair["b"]["source"]
         if clock>=min(utc(x["kickoff_utc"]) for x in (leg1,leg2)):
@@ -91,11 +93,18 @@ def freeze(*,now=None,root=ROOT,source_root=V8_ROOT,provider_root=SOURCE_ROOT):
                 "no_production_promotion":True,
                 "calibrated_hit_rate_claim":False,
                 "source_fallback":"genuine_xg_is_optional_never_invented"}
-        if _write_once(Path(root)/"pairs"/(day+".json"),record):
+        destination=Path(root)/"pairs"/(day+".json")
+        if _write_once(destination,record):
             saved.append(day)
+        elif destination.is_file():
+            existing.append(day)
+        else:
+            not_written.append(day)
     status={"checked_at_utc":clock.isoformat(),
             "eligible_source_qualified_fixtures":len(choices),
             "qualifying_pairs":len(ranked),"newly_frozen_days":saved,
+            "already_archived_days":existing,"archive_not_written_days":not_written,
+            "candidate_days":sorted(per_day),
             "abstained":not ranked,"model_estimates_are_not_observed_accuracy":True}
     write_json(Path(root)/"status.json",status)
     return status
