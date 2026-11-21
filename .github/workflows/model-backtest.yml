@@ -9,6 +9,10 @@ on:
       - 'reference_model.py'
       - 'reference_provider_benchmark.py'
       - 'backtest.py'
+      - 'dynamic_dixon_coles.py'
+      - 'backtest_dynamic_dixon_coles.py'
+      - 'test_dynamic_dixon_coles.py'
+      - 'test_backtest_dynamic_validation.py'
       - 'calibration_backtest.py'
       - 'xg_holdout.py'
       - 'score_diversity_audit.py'
@@ -40,7 +44,7 @@ jobs:
       - name: Install model dependencies
         run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
       - name: Run model regression tests
-        run: python -m unittest -v test_engine_recency.py test_double_score_selection.py
+        run: python -m unittest -v test_engine_recency.py test_double_score_selection.py test_dynamic_dixon_coles.py test_backtest_dynamic_validation.py
       - name: Validate backtest module
         run: python -m py_compile engine.py backtest.py calibration_backtest.py xg_holdout.py score_diversity_audit.py hybrid_calibration.py home_away_calibration.py league_calibration.py exact_score_audit.py challenger_audit.py league_opponent_model.py ensemble_ranking.py double_score_backtest.py balanced_double_backtest.py double_score_selection.py fetch_backtest_history.py
       - name: Fetch verified multi-season results using API-Football Pro
@@ -52,6 +56,11 @@ jobs:
             --seasons 2025,2026 \
             --max-matches 3500 \
             --output data/backtest_finished_matches.json
+      - name: Compare dynamic Dixon-Coles on matched historical pairs
+        timeout-minutes: 30
+        run: |
+          python backtest_dynamic_dixon_coles.py data/backtest_finished_matches.json --start 2026-01-01 | tee dynamic_dixon_coles_results.json
+        shell: bash
       - name: Run historical backtest
         run: |
           python backtest.py data/backtest_finished_matches.json --output backtest_results.json
@@ -85,6 +94,7 @@ jobs:
         with:
           name: ziczac-backtest-results
           path: |
+            dynamic_dixon_coles_results.json
             backtest_results.json
             reference_model_provider_results.json
             calibration_results.json
