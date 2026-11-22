@@ -2,31 +2,31 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 36
+    "awaiting_both_verified_results": 35
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.05294782851761784,
-      "win_rate": 0.07692307692307693,
+      "mean_estimated_probability_coverage": 0.05278092877084664,
+      "win_rate": 0.07407407407407407,
       "wins": 2
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.040573285813697055,
+      "mean_estimated_probability_coverage": 0.04045005122338785,
       "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.05356124338587135,
-      "win_rate": 0.07692307692307693,
+      "mean_estimated_probability_coverage": 0.05341808569047926,
+      "win_rate": 0.07407407407407407,
       "wins": 2
     }
   },
-  "note": "Only genuine frozen pre-kickoff five-combination sets are evaluated. Both actual scores must match within one same row. Old snapshots never backfilled. No automatic promotion.",
+  "note": "Consecutive same-league pairs from a single snapshot batch. New pairs record the decision time before both kickoffs and require identity-matched verified finals. Both scores must match within one saved row. No automatic promotion.",
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 2,
   "pairs_frozen": 62,
-  "pairs_verified": 26,
+  "pairs_verified": 27,
   "rows": [
     {
       "actual_scores": [
@@ -306,6 +306,37 @@
       "original_probability_coverage": 0.062027809090210835,
       "pair_key": "BSA_1492458_1492459",
       "second_match": "Vitoria vs RB Bragantino"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "1-2"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.04844153535479545,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.03724595187534859,
+      "first_match": "Bahia vs Coritiba",
+      "league": "BSA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.049695985610284904,
+      "pair_key": "BSA_1492462_1492465",
+      "second_match": "Chapecoense-sc vs Cruzeiro"
     },
     {
       "actual_scores": [
