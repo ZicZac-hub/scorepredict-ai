@@ -13,6 +13,8 @@ model promotion. Real improvement must be demonstrated prospectively.
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from math import fsum
+
+from v25_score_accuracy_research import describe_score
 import json
 from pathlib import Path
 
@@ -31,6 +33,9 @@ MAX_DECISION_AGE = timedelta(minutes=20)
 BASELINE_WEIGHT = 0.75
 SENSITIVITY_WEIGHT = 0.25
 EVALUATION_MIN_PAIRS = 100
+CALIBRATION_POLICIES = ("original_v8", "original_v25_sensitivity", "anchored_v25")
+CALIBRATION_METRICS = ("exact_score_log_loss", "multiclass_score_brier",
+                       "goal_mae", "over_3_5_brier", "under_1_5_brier")
 
 
 def _frozen_eligible(original, now):
@@ -41,25 +46,38 @@ def _frozen_eligible(original, now):
     return original.get("policy") == "FROZEN"
 
 
-def _anchored_grid(item):
-    """Fixed, nonfitted shrinkage to the actually frozen original V8 grid."""
-    v8 = np.asarray(item["grid"], dtype=float)
-    if (v8.ndim != 2 or not np.isfinite(v8).all() or
-            np.any(v8 < 0) or not np.isclose(v8.sum(), 1.0, atol=1e-6)):
+def _mixture_grid(item):
+    """Source-only V25 sensitivity mixture, frozen before each kickoff.
+
+    This is the original fixed equal-sensitivity V25 probability policy,
+    not the V25 uncalibrated lower-envelope *selection* score.
+    """
+    original = np.asarray(item["grid"], dtype=float)
+    if (original.ndim != 2 or not np.isfinite(original).all() or
+            np.any(original < 0) or not np.isclose(original.sum(), 1.0, atol=1e-6)):
         raise ValueError("invalid_frozen_original_v8_grid")
-    sensitivity = np.zeros_like(v8)
     if not all(name in item["alternatives"] for name in VARIANTS[1:]):
         raise ValueError("missing_source_based_sensitivity")
+    sensitivity = np.zeros_like(original)
     for name in VARIANTS[1:]:
         alternative = np.asarray(item["alternatives"][name], dtype=float)
         if (alternative.ndim != 2 or
-                any(alternative.shape[d] > v8.shape[d] for d in (0, 1)) or
+                any(alternative.shape[d] > original.shape[d] for d in (0, 1)) or
                 not np.isfinite(alternative).all() or np.any(alternative < 0) or
                 not np.isclose(alternative.sum(), 1.0, atol=1e-6)):
             raise ValueError("invalid_sensitivity_grid")
         sensitivity[:alternative.shape[0], :alternative.shape[1]] += (
             alternative / len(VARIANTS[1:]))
-    blend = BASELINE_WEIGHT*v8 + SENSITIVITY_WEIGHT*sensitivity
+    if not np.isclose(sensitivity.sum(), 1.0, atol=1e-6):
+        raise ValueError("unnormalized_sensitivity_grid")
+    return (sensitivity / float(sensitivity.sum())).tolist()
+
+
+def _anchored_grid(item):
+    """Prespecified shrinkage, never fitted on any result being scored."""
+    v8 = np.asarray(item["grid"], dtype=float)
+    sensitivity = np.asarray(_mixture_grid(item), dtype=float)
+    blend = BASELINE_WEIGHT * v8 + SENSITIVITY_WEIGHT * sensitivity
     blend /= float(blend.sum())
     return blend.tolist()
 
@@ -84,6 +102,8 @@ def _portfolio(original, items, clock):
         raise ValueError("not_at_least_45_minutes_before_both_kickoffs")
     if len(legs[0]["teams"] | legs[1]["teams"]) != 4:
         raise ValueError("not_four_distinct_teams")
+    original_grids = [x["grid"].tolist() for x in legs]
+    mixture_grids = [_mixture_grid(x) for x in legs]
     grids = [_anchored_grid(x) for x in legs]
     choices = joint_geometry(*grids)["optimal_five"]
     if len(choices) != 5 or len({(x["score1"], x["score2"]) for x in choices}) != 5:
@@ -99,6 +119,9 @@ def _portfolio(original, items, clock):
         "original_source_forecast_ids": selected["source_forecast_ids"],
         "v8_anchor_weight": BASELINE_WEIGHT,
         "v25_sensitivity_weight": SENSITIVITY_WEIGHT,
+        # Freeze all comparator distributions NOW, not after the scores.
+        "frozen_original_v8_score_grids": original_grids,
+        "frozen_v25_equal_sensitivity_score_grids": mixture_grids,
         "frozen_anchored_score_grids": grids,
         "five_anchored_v25": choices,
         "original_v25_robust_five": selected["five_original_v25_robust_scores"],
@@ -154,6 +177,82 @@ def _verify_frozen(file, *, root, v28_out, clock):
     return packet
 
 
+def _score_calibration(packet, actual_scores):
+    """Proper scoring of three independently PRE-FROZEN grids per same leg."""
+    if len(actual_scores) != 2:
+        raise ValueError("two_independently_verified_regulation_scores_required")
+    goals = []
+    for score in actual_scores:
+        parts = score.split("-") if isinstance(score, str) else []
+        if len(parts) != 2 or not all(p.isdigit() for p in parts):
+            raise ValueError("invalid_verified_regulation_score")
+        goals.append(tuple(map(int, parts)))
+    grids = {
+        "original_v8": packet["frozen_original_v8_score_grids"],
+        "original_v25_sensitivity": packet["frozen_v25_equal_sensitivity_score_grids"],
+        "anchored_v25": packet["frozen_anchored_score_grids"],
+    }
+    out = {}
+    for policy in CALIBRATION_POLICIES:
+        if len(grids[policy]) != 2:
+            raise ValueError("missing_original_frozen_leg_probabilities")
+        legs = [describe_score(grid, score)
+                for grid, score in zip(grids[policy], goals)]
+        out[policy] = {
+            "leg_scores": [{key: score[key] for key in (
+                "actual_score", "exact_score_probability",
+                "exact_score_log_loss", "multiclass_score_brier",
+                "goal_mae", "over_3_5_brier", "under_1_5_brier",
+                "top_one_hit", "top_five_hit", "over_3_5_probability",
+                "under_1_5_probability")} for score in legs],
+            **{"pair_mean_" + key: fsum(x[key] for x in legs) / 2
+               for key in CALIBRATION_METRICS},
+        }
+    return out
+
+
+def _overall_proper_scores(rows):
+    """Deduplicate repeated physical fixtures; compare only same-event slots."""
+    original, reused = {}, 0
+    for row in sorted(rows, key=lambda r: (r["frozen_at_utc"], r["sydney_day"])):
+        for i, key in enumerate(row["original_selected_fixture_keys"]):
+            physical = tuple(key)
+            if physical in original:
+                reused += 1
+                continue
+            original[physical] = {
+                name: row["proper_score_comparison"][name]["leg_scores"][i]
+                for name in CALIBRATION_POLICIES}
+    report = {}
+    for policy in CALIBRATION_POLICIES:
+        legs = [metric[policy] for metric in original.values()]
+        report[policy] = {
+            "unique_physical_fixtures": len(legs),
+            **{"mean_" + key: (fsum(x[key] for x in legs)/len(legs)
+                                if legs else None)
+               for key in CALIBRATION_METRICS},
+            "single_match_top_one_hits":sum(x["top_one_hit"] for x in legs),
+            "single_match_top_five_hits":sum(x["top_five_hit"] for x in legs),
+        }
+    def diff(candidate, metric):
+        a = report[candidate]["mean_" + metric]
+        b = report["original_v8"]["mean_" + metric]
+        return a-b if a is not None and b is not None else None
+    return {
+        "models": report,
+        "anchored_minus_v8": {
+            metric: diff("anchored_v25", metric)
+            for metric in CALIBRATION_METRICS},
+        "equal_v25_sensitivity_minus_v8": {
+            metric: diff("original_v25_sensitivity", metric)
+            for metric in CALIBRATION_METRICS},
+        "unique_independently_verified_physical_fixtures":len(original),
+        "repeated_fixture_slots_excluded":reused,
+        "negative_log_loss_or_brier_delta_is_better":True,
+        "model_score_metrics_are_not_five_double_win_rates":True,
+    }
+
+
 def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
              v28_out=V28_ROOT, out=OUT, now=None):
     clock = utc(now or datetime.now(timezone.utc))
@@ -174,7 +273,9 @@ def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
             row = {"sydney_day":packet["sydney_day"],
                    "status": "pending",
                    "same_pair_comparison": True,
-                   "original_candidate_catalog_sha256":packet["original_candidate_catalog_sha256"]}
+                   "original_candidate_catalog_sha256":packet["original_candidate_catalog_sha256"],
+                   "frozen_at_utc":packet["frozen_at_utc"],
+                   "original_selected_fixture_keys":packet["original_selected_fixture_keys"]}
             if matches:
                 actual = matches[0]["actual_scores"]
                 row.update({
@@ -184,6 +285,7 @@ def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
                     "anchored_v25_hit": _picks_hit(packet["five_anchored_v25"],actual),
                     "frozen_anchored_actual_joint_probability":
                         _joint_mass_at_actual(packet["frozen_anchored_score_grids"],actual),
+                    "proper_score_comparison":_score_calibration(packet,actual),
                 })
             results.append(row)
         except (OSError, ValueError, KeyError, TypeError, IndexError, OverflowError) as exc:
@@ -206,6 +308,8 @@ def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
         "same_original_pair_matched_policy_hit_rates":
             {name:counts[name]/n if n else None for name in counts},
         "anchored_v25_wilson95":wilson(counts["anchored_v25"],n),
+        "independent_original_frozen_score_calibration":
+            _overall_proper_scores(verified),
         "anchored_only_wins_over_robust":anchor_only,
         "original_robust_only_wins_over_anchor":original_only,
         "initial_review_verified_pairs_target":EVALUATION_MIN_PAIRS,
@@ -214,6 +318,8 @@ def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
         "pending_is_not_a_miss":True,
         "same_fixture_pairs_are_required_for_every_comparison":True,
         "estimated_model_mass_is_not_observed_accuracy":True,
+        "all_score_calibration_models_frozen_pre_kickoff":True,
+        "no_post_result_probability_reconstruction":True,
         "new_anchored_model_not_promoted_to_live":True,
         "seventy_percent_five_double_hit_rate_unproven":True,
     }
