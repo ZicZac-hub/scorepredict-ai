@@ -113,6 +113,10 @@ def test_same_pair_results_independently_reproduced(tmp_path):
     assert report["same_pair_discordance"]["exact_two_sided_mcnemar_p"] == 1
     assert report["v8_exact_score_probability_calibration"]["evaluated_leg_slots"] == 2
     assert report["v25_probability_calibration"]["exact_score_log_loss"] is None
+    paired = report["matched_probability_calibration"]
+    assert paired["paired_metric_differences"]["evaluated_leg_slots"] == 0
+    assert paired["paired_metric_differences"]["v25_minus_v8"]["exact_score_log_loss"] is None
+    assert paired["same_frozen_cohort_five_double"]["verified_pairs"] == 0
     assert report["production_model_promoted"] is False
     assert report["seventy_percent_accuracy_proven"] is False
     assert (root / "forecasts/API-Football/100/a.json").read_bytes() == original_bytes
@@ -239,6 +243,18 @@ def test_frozen_v25_probabilities_use_same_verified_legs_and_preserve_five_doubl
     v25 = report["v25_probability_calibration"]
     assert v25["evaluated_leg_slots"] == 2
     assert v25["exact_score_log_loss"] != comparison["v8_on_same_legs"]["exact_score_log_loss"]
+    paired = comparison["paired_metric_differences"]
+    assert paired["evaluated_leg_slots"] == 2
+    assert paired["v25_minus_v8"]["exact_score_log_loss"] == pytest.approx(
+        v25["exact_score_log_loss"] - comparison["v8_on_same_legs"]["exact_score_log_loss"]
+    )
+    assert paired["v25_minus_v8"]["multiclass_score_brier"] == pytest.approx(
+        v25["multiclass_score_brier"] - comparison["v8_on_same_legs"]["multiclass_score_brier"]
+    )
+    assert comparison["same_frozen_cohort_five_double"]["verified_pairs"] == 1
+    assert comparison["same_frozen_cohort_five_double"]["v25"]["five_double_hits"] == 1
+    assert comparison["same_frozen_cohort_five_double"]["v8"]["five_double_hits"] == 0
+    assert comparison["verified_distinct_fixture_ids"] == 2
     assert report["v25"]["five_double_hits"] == 1
     assert report["matched_mixture_five"]["verified_pairs"] == 1
     assert report["matched_mixture_five"]["v25_robust"]["five_double_hits"] == 1
