@@ -123,6 +123,42 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                             for key, label in (("v8", "V8"), ("v25_robust", "V25 robust"),
                                                ("v25_mixture", "V25 probability mixture"))
                         ], use_container_width=True, hide_index=True)
+                try:
+                    freeze_health = json.loads(
+                        Path("data/accuracy_diagnosis/v25_freeze_monitor.json")
+                        .read_text(encoding="utf-8")
+                    )
+                except (OSError, ValueError, TypeError):
+                    freeze_health = {}
+                if freeze_health:
+                    st.markdown("#### V25 prospective probability freezing")
+                    st.write({
+                        "Older sets (not backfilled)": int(
+                            freeze_health.get("legacy_sets_not_backfilled") or 0),
+                        "New sets with both verified frozen probability grids": int(
+                            freeze_health.get(
+                                "new_sets_with_both_valid_grids_and_mixture") or 0),
+                        "New completed pairs": int(
+                            freeze_health.get("new_verified_pairs") or 0),
+                        "New pending pairs": int(
+                            freeze_health.get("new_pending_pairs") or 0),
+                    })
+                    if not freeze_health.get("check_passed", False):
+                        st.error("V25 freeze integrity check failed. New score "
+                                 "probability results must not be promoted.")
+                    elif not freeze_health.get("prospective_sets_since_rollout"):
+                        st.info("The archived V25 five-double selections predate the "
+                                "new frozen-probability research cohort. "
+                                "Waiting for genuinely new write-once predictions; "
+                                "old V25 probabilities are never reconstructed.")
+                    else:
+                        goal = freeze_health.get("initial_100_pair_evaluation") or {}
+                        st.caption(
+                            f"Independent V25 score-probability evaluation: "
+                            f"{goal.get('verified', 0)}/{goal.get('goal', 100)} "
+                            "verified matched pairs towards an initial evidence "
+                            "review, not a guaranteed accuracy target."
+                        )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")
