@@ -101,7 +101,7 @@ def test_no_openai_request_is_made_when_disabled(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("AI_RESEARCH_BOT_ENABLED", "false")
     r = run(root=tmp_path/"bot", use_ai=True)
-    assert "requires_AI_RESEARCH_BOT_ENABLED" == r["ai_connection"]
+    assert "AI_research_disabled_by_GitHub_variable" == r["ai_connection"]
     assert (tmp_path/"bot"/"status.json").is_file()
 
 
