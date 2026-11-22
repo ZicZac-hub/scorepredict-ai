@@ -85,6 +85,33 @@ collecting honest results and showing clear gaps rather than declaring
 success by hiding misses, increasing ticket count, modifying forecasts after
 kickoff, or cherry-picking verified days.
 
+## Test a replacement OpenAI key immediately (owner only)
+
+GitHub stores the original failed OpenAI attempt as
+`data/autobot/openai_attempt_YYYY-MM-DD.json`. A new API secret **does not**
+remove the earlier failure and ordinary 15-minute checks will not bypass the
+one-attempt daily cost limit. If and only if the last attempt was **401** and
+you have updated the `OPENAI_API_KEY` repository secret:
+
+1. Open the
+   [24/7 Five-Double Bot workflow](https://github.com/ZicZac-hub/scorepredict-ai/actions/workflows/continuous-five-double-bot.yml).
+2. Tap **Run workflow**, select **main**, and check
+   **retry_openai_after_key_rotation**.
+3. Run once. This allows **one additional owner-authorized request** for
+   that UTC date, recorded in `data/autobot/openai_retry_YYYY-MM-DD.json`;
+   the original receipt stays unchanged. No repeat retry is permitted.
+4. Check `data/autobot/status.json` after the job. If
+   `ai_connection == "daily_research_memo_saved"`, the key worked.
+   An updated `api_http_401` means authentication still needs checking.
+   An `api_http_429` or a 403 must be resolved through the API project
+   access, rate limits, or billing rather than repeatedly running requests.
+
+GitHub's normal scheduled workflow and push workflow **cannot** use this
+manual retry input. The manual flag never enables extra retries for 429
+results, is not executable AI code, cannot alter forecasts and never removes
+the original request receipt. API key values, bearer tokens, response
+bodies and user secrets are not written to the report or logs.
+
 ## Monitoring and troubleshooting
 
 - Open the website's **⚙️ 24/7 Bot** section for saved status, method hit
