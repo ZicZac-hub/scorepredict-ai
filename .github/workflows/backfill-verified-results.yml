@@ -41,11 +41,13 @@ jobs:
         run: python v25_five_double_frontier.py
       - name: Score V26 frozen same-pair challenger without issuing new predictions
         run: python v26_temporal_score.py --verify-only
+      - name: Independently verify V27 candidate rankings and settled day-level pairs
+        run: python v27_pair_selection.py --verify-only
       - name: Commit newly verified scores and sanitized diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/
+          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
           git pull --rebase
