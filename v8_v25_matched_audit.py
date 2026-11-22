@@ -16,6 +16,9 @@ from pathlib import Path
 import re
 from zoneinfo import ZoneInfo
 
+import numpy as np
+from v21_goal_model_comparison import variants
+
 from five_double_accuracy import (
     _final, _validated_grid, joint_geometry, utc, wilson,
 )
@@ -169,6 +172,18 @@ def _v25_probability(frozen, source, selected):
     grid = _validated_grid(record["score_matrix"])
     if (len(grid), len(grid[0])) != (len(source["score_matrix"]), len(source["score_matrix"][0])):
         raise ValueError("v25_probability_support_mismatch")
+    # Independently reproduce the preregistered fixed mixture from the
+    # ORIGINAL archived V8 matrix. This only checks a previously frozen
+    # distribution; it must never fill in missing historical V25 snapshots.
+    baseline = np.asarray(source["score_matrix"], dtype=float)
+    alternatives = variants(baseline)
+    expected = np.zeros_like(baseline)
+    for name in ("poisson_marginal", "negative_binomial_r3", "bivariate_poisson_c012"):
+        component = alternatives[name]
+        expected[:component.shape[0], :component.shape[1]] += component / 3
+    expected /= expected.sum()
+    if not np.allclose(np.asarray(grid, dtype=float), expected, rtol=0, atol=1e-11):
+        raise ValueError("v25_probability_not_reproducible_from_frozen_source")
     return grid
 
 
