@@ -260,3 +260,32 @@ def test_frozen_v25_probabilities_use_same_verified_legs_and_preserve_five_doubl
     assert invalid["rows"][0]["v25_probability_status"] == "invalid"
     assert invalid["v25_probability_calibration"]["evaluated_leg_slots"] == 0
     assert invalid["v25"]["five_double_hits"] == 1
+
+
+def test_normalized_but_tampered_v25_probability_is_rejected(tmp_path):
+    from professional_analyst_shadow_v25 import propose
+
+    root, prematch, sets, packet, first, second = setup(tmp_path)
+    for model in (first, second):
+        model.update(home_team="Home", away_team="Away")
+    frozen = propose([first, second], SELECTED, min_envelope=0)["days"][DAY]
+    for side in ("first", "second"):
+        packet[side]["v25_probability"] = deepcopy(frozen[side]["v25_probability"])
+    packet["mixture_five"] = frozen["mixture_five"]
+    packet["mixture_five_policy"] = frozen["mixture_five_policy"]
+
+    original = build_report(root, prematch, sets, now=NOW)
+    assert original["matched_probability_calibration"]["verified_pairs"] == 0
+
+    matrix = packet["first"]["v25_probability"]["score_matrix"]
+    amount = min(matrix[0][0] / 2, 0.0001)
+    matrix[0][0] -= amount
+    matrix[0][1] += amount  # remains normalized with the same saved cutoff
+    overwrite_set(sets, packet)
+
+    report = build_report(root, prematch, sets, now=NOW)
+    assert report["rows"][0]["v25_probability_status"] == "invalid"
+    assert report["matched_probability_calibration"]["verified_pairs"] == 0
+    assert report["v25_probability_calibration"]["evaluated_leg_slots"] == 0
+    assert report["verified_matched_pairs"] == 1
+    assert report["v25"]["five_double_hits"] == 1
