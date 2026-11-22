@@ -61,7 +61,7 @@ jobs:
         run: |
           python -m unittest -q test_v25_anchored_challenger.py
           python v25_anchored_challenger.py --verify-only
-          python -c 'import json; r=json.load(open("data/v25_anchored_challenger/status.json")); assert r["pending_is_not_a_miss"] and r["same_fixture_pairs_are_required_for_every_comparison"] and r["new_anchored_model_not_promoted_to_live"] and r["seventy_percent_five_double_hit_rate_unproven"]; assert not r["invalid_or_tampered_challengers_excluded"]; print("V25 anchored prospective:",r["frozen_prospective_same_pair_days"],"verified:",r["verified_matched_pair_days"])'
+          python -c 'import json; r=json.load(open("data/v25_anchored_challenger/status.json")); assert r["pending_is_not_a_miss"] and r["same_fixture_pairs_are_required_for_every_comparison"] and r["new_anchored_model_not_promoted_to_live"] and r["seventy_percent_five_double_hit_rate_unproven"]; assert r["all_score_calibration_models_frozen_pre_kickoff"] and r["no_post_result_probability_reconstruction"]; assert not r["invalid_or_tampered_challengers_excluded"]; print("V25 anchored prospective:",r["frozen_prospective_same_pair_days"],"verified:",r["verified_matched_pair_days"],"unique calibrated fixtures:",r["independent_original_frozen_score_calibration"]["unique_independently_verified_physical_fixtures"])'
       - name: Independently validate new V29 pair-sensitivity and V28 readiness
         run: |
           python v29_pair_sensitivity.py --verify-only
