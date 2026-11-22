@@ -155,7 +155,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
             "authorizes_code_execution": False, "authorizes_model_promotion": False}
 
 
-def run(*, root=ROOT, now=None, use_ai=True):
+def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
     clock = now or datetime.now(timezone.utc)
     data = assemble(
         load("data/accuracy_diagnosis/report.json"),
@@ -170,6 +170,14 @@ def run(*, root=ROOT, now=None, use_ai=True):
     day = clock.astimezone(timezone.utc).date().isoformat()
     note_path = destination / ("openai_research_" + day + ".json")
     attempt_path = destination / ("openai_attempt_" + day + ".json")
+    retry_path = destination / ("openai_retry_" + day + ".json")
+    prior_attempt = load(attempt_path) if attempt_path.is_file() else None
+    # Only one explicit owner-requested retry for a failed 401 after key rotation.
+    # Scheduled runs, failed 429s and repeat manual dispatches cannot bypass it.
+    retry_allowed = (manual_retry is True and
+                     isinstance(prior_attempt, dict) and
+                     prior_attempt.get("status") == "api_http_401" and
+                     not retry_path.exists())
     key = os.getenv("OPENAI_API_KEY", "")
     allowed = os.getenv("AI_RESEARCH_BOT_ENABLED", "").strip().lower() not in ("false", "0", "off", "no")
     if note_path.is_file():
@@ -185,8 +193,10 @@ def run(*, root=ROOT, now=None, use_ai=True):
         data["ai_connection"] = "AI_research_disabled_by_GitHub_variable"
     elif not key:
         data["ai_connection"] = "requires_OPENAI_API_KEY_GitHub_secret"
-    elif attempt_path.is_file():
-        previous = load(attempt_path) or {}
+    elif attempt_path.is_file() and not retry_allowed:
+        # Preserve the original attempt, but surface the more recent owner
+        # retry's status if one has been saved.
+        previous = load(retry_path) or prior_attempt or {}
         # Even errors count toward the one-per-day attempt budget. Repeated
         # runs may inspect reports, but cannot repeatedly charge the API.
         data["ai_connection"] = previous.get("status", "daily_api_attempt_already_recorded")
@@ -209,12 +219,14 @@ def run(*, root=ROOT, now=None, use_ai=True):
             data["ai_connection"] = ("api_request_failed_" +
                 (str(exc)[:100] if isinstance(exc, ValueError) else type(exc).__name__))
         finally:
-            # Durable attempt receipt prevents repeated paid requests on each
-            # quarter-hour scheduled run, even when the API returns an error.
-            attempt_path.write_text(json.dumps({
+            # Keep the original once-daily receipt immutable. A manually
+            # authorized 401 key-rotation test gets ONE separate receipt.
+            receipt = retry_path if retry_allowed else attempt_path
+            receipt.write_text(json.dumps({
                 "date_utc": day, "attempted_at_utc": clock.isoformat(),
                 "status": data.get("ai_connection", "no_api_result"),
                 "model": model, "max_attempts_per_day": MAX_AI_CALLS_PER_UTC_DAY,
+                "manual_key_rotation_retry": bool(retry_allowed),
             }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     status = destination / "status.json"
     status.write_text(json.dumps(data, indent=2, sort_keys=True, allow_nan=False) + "\n",
@@ -225,8 +237,11 @@ def run(*, root=ROOT, now=None, use_ai=True):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-ai", action="store_true")
+    parser.add_argument("--retry-after-key-rotation", action="store_true",
+                        help="One manual retry only after a recorded 401; never for 429 or scheduled runs")
     args = parser.parse_args()
-    result = run(use_ai=not args.no_ai)
+    result = run(use_ai=not args.no_ai,
+                 manual_retry=args.retry_after_key_rotation)
     print(json.dumps({
         "target":result["target_five_double_hit_rate"],
         "verified_v8":result["original_v8_daily_five_doubles"]["verified_sets"],
