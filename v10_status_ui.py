@@ -187,6 +187,56 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                         "These numbers apply only to the saved V8 score grids. "
                         "No V25 improvement or 70% hit rate has been verified."
                     )
+                try:
+                    v26 = json.loads(Path("data/v26_temporal_calibration/status.json")
+                                     .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    v26 = {}
+                if v26 and v26.get("version") == "v26-temporal-tail-calibration-v1-research-only":
+                    st.markdown("#### V26 · Chronological goal calibration trial")
+                    retrospective = v26.get("chronological_research_replay") or {}
+                    future = v26.get("prospective_verified") or {}
+                    readiness = retrospective.get("training_readiness") or {}
+                    st.write({
+                        "Verified original V8 fixtures available as past training":
+                            readiness.get("verified_original_v8_fixtures_known_now", 0),
+                        "Most prior results available before a historical forecast":
+                            readiness.get(
+                                "max_prior_verified_before_any_historical_source_capture", 0),
+                        "Historical chronological test fixtures":
+                            retrospective.get("verified_holdout_fixtures", 0),
+                        "Future-frozen V26 verified match pairs":
+                            future.get("verified_pairs", 0),
+                        "Future-frozen V26 pending pairs":
+                            future.get("pending_pairs", 0),
+                        "V26 verified five-double wins":
+                            (future.get("same_pair_five_hits") or {}).get(
+                                "v26_calibrated", 0),
+                        "V25 robust wins on those same future pairs":
+                            (future.get("same_pair_five_hits") or {}).get(
+                                "v25_robust", 0),
+                    })
+                    retrospective_delta = retrospective.get("v26_minus_v8_log_loss")
+                    if retrospective_delta is not None:
+                        st.caption(
+                            "Exploratory chronological historical V26-minus-V8 "
+                            f"exact-score log loss: {retrospective_delta:+.4f} "
+                            "(negative favours V26). The method was developed "
+                            "after these games, so this is NOT a prospective win."
+                        )
+                    if future.get("verified_pairs"):
+                        st.caption(
+                            "Frozen prospective V26-minus-V8 exact-score log loss "
+                            f"on identical verified fixtures: "
+                            f"{future['v26_minus_v8_log_loss']:+.4f}. "
+                            "Too few results can be inconclusive."
+                        )
+                    else:
+                        st.info(
+                            "V26 has not yet completed a genuinely frozen "
+                            "prospective two-match set. It remains research-only. "
+                            "Historical replay results cannot justify promotion."
+                        )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")
