@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.21707471929797617,
-          "expected_events": 25.17141965237628,
-          "observed_events": 24,
-          "observed_rate": 0.3380281690140845,
-          "predicted_rate": 0.35452703735741237,
-          "rate_gap_observed_minus_predicted": -0.01649886834332788
+          "brier": 0.22096954086961337,
+          "expected_events": 26.812829021498807,
+          "observed_events": 26,
+          "observed_rate": 0.3466666666666667,
+          "predicted_rate": 0.35750438695331743,
+          "rate_gap_observed_minus_predicted": -0.010837720286650759
         },
         "exact_0_3": {
-          "brier": 0.000706341171211103,
-          "expected_events": 1.5574568365553951,
+          "brier": 0.000692505234894034,
+          "expected_events": 1.641369388455919,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021936011782470354,
-          "rate_gap_observed_minus_predicted": -0.021936011782470354
+          "predicted_rate": 0.021884925179412255,
+          "rate_gap_observed_minus_predicted": -0.021884925179412255
         },
         "exact_3_0": {
-          "brier": 0.026618580518314037,
-          "expected_events": 2.987570936383576,
+          "brier": 0.02526456626541214,
+          "expected_events": 3.127009614010353,
           "observed_events": 2,
-          "observed_rate": 0.028169014084507043,
-          "predicted_rate": 0.04207846389272642,
-          "rate_gap_observed_minus_predicted": -0.013909449808219378
+          "observed_rate": 0.02666666666666667,
+          "predicted_rate": 0.04169346152013804,
+          "rate_gap_observed_minus_predicted": -0.015026794853471373
         },
         "winning_margin_at_least_three": {
-          "brier": 0.1424210708452062,
-          "expected_events": 12.592660651088101,
-          "observed_events": 12,
-          "observed_rate": 0.16901408450704225,
-          "predicted_rate": 0.17736141762095917,
-          "rate_gap_observed_minus_predicted": -0.008347333113916918
+          "brier": 0.15452563051380677,
+          "expected_events": 13.239236529292464,
+          "observed_events": 14,
+          "observed_rate": 0.18666666666666668,
+          "predicted_rate": 0.1765231537238995,
+          "rate_gap_observed_minus_predicted": 0.010143512942767146
         }
       },
-      "verified_fixtures": 71
+      "verified_fixtures": 75
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22210351336169143,
-          "expected_events": 23.068566543299195,
-          "observed_events": 22,
-          "observed_rate": 0.3333333333333333,
-          "predicted_rate": 0.34952373550453325,
-          "rate_gap_observed_minus_predicted": -0.01619040217119992
+          "brier": 0.22595913586918479,
+          "expected_events": 24.710685637282044,
+          "observed_events": 24,
+          "observed_rate": 0.34285714285714286,
+          "predicted_rate": 0.3530097948183149,
+          "rate_gap_observed_minus_predicted": -0.010152651961172054
         },
         "exact_0_3": {
-          "brier": 0.0006860832770849486,
-          "expected_events": 1.4471241586963763,
+          "brier": 0.0006725093778909122,
+          "expected_events": 1.5311884568767131,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021926123616611764,
-          "rate_gap_observed_minus_predicted": -0.021926123616611764
+          "predicted_rate": 0.02187412081252447,
+          "rate_gap_observed_minus_predicted": -0.02187412081252447
         },
         "exact_3_0": {
-          "brier": 0.02837063766870802,
-          "expected_events": 2.7345973540506052,
+          "brier": 0.02681955159656595,
+          "expected_events": 2.873789304847142,
           "observed_events": 2,
-          "observed_rate": 0.030303030303030304,
-          "predicted_rate": 0.04143329324319099,
-          "rate_gap_observed_minus_predicted": -0.011130262940160686
+          "observed_rate": 0.02857142857142857,
+          "predicted_rate": 0.041054132926387744,
+          "rate_gap_observed_minus_predicted": -0.012482704354959174
         },
         "winning_margin_at_least_three": {
-          "brier": 0.14929220557019207,
-          "expected_events": 11.46150223459726,
-          "observed_events": 12,
-          "observed_rate": 0.18181818181818182,
-          "predicted_rate": 0.17365912476662515,
-          "rate_gap_observed_minus_predicted": 0.008159057051556664
+          "brier": 0.161865025824329,
+          "expected_events": 12.108021843364492,
+          "observed_events": 14,
+          "observed_rate": 0.2,
+          "predicted_rate": 0.17297174061949275,
+          "rate_gap_observed_minus_predicted": 0.027028259380507257
         }
       },
-      "verified_fixtures": 66
+      "verified_fixtures": 70
     }
   },
   "focus": {
@@ -703,6 +703,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "5-1",
+        "captured_at_utc": "2026-11-22T16:22:04.524061+00:00",
+        "fixture_id": "1550197",
+        "fixture_name": "AC Milan vs Frosinone",
+        "forecast_id": "2cb87f508f9cb854c3df797698cfaabd91e7a6a9755c4f7668c172a149f5990e",
+        "kickoff_utc": "2026-11-22T17:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.009670683329619248,
+          "actual_exact_score_rank_min": 23,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4647940687095841
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.021650829628743293
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.033472651352792246
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.1766897520059907
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-1",
         "captured_at_utc": "2026-11-14T01:55:56.114898+00:00",
         "fixture_id": "1550199",
@@ -964,6 +993,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "0-1",
+        "captured_at_utc": "2026-11-22T14:35:09.470579+00:00",
+        "fixture_id": "1552227",
+        "fixture_name": "GO Ahead Eagles vs Fortuna Sittard",
+        "forecast_id": "44f039ee3ea51e9055e7f59c292bd5b5106f8af3584a66c57abfd025cf9f123e",
+        "kickoff_utc": "2026-11-22T15:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.046895053740020926,
+          "actual_exact_score_rank_min": 8,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.47126465292584035
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.022919002384804994
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.03117122837386145
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.17578580603904934
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-3",
         "captured_at_utc": "2026-11-21T19:12:16.161749+00:00",
         "fixture_id": "1552228",
@@ -1191,6 +1249,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.09643072953776982
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-1",
+        "captured_at_utc": "2026-11-22T15:29:37.106626+00:00",
+        "fixture_id": "1552821",
+        "fixture_name": "Lorient vs Rennes",
+        "forecast_id": "8e8cd16f385ee2278d0291a41b85c16ea2d4c7ab2412c1f0fcc397d94240658e",
+        "kickoff_utc": "2026-11-22T16:15:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.10421248666845037,
+          "actual_exact_score_rank_min": 1,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.4042483527301077
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.022810274014003255
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.033270757323223925
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.15677492182345149
           }
         },
         "provider": "API-Football"
@@ -1481,6 +1568,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.11848212624917327
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "4-0",
+        "captured_at_utc": "2026-11-22T15:29:38.066863+00:00",
+        "fixture_id": "1557473",
+        "fixture_name": "Liverpool vs Manchester United",
+        "forecast_id": "d04200515fca71d967cdeddf45555a4ed419eb2b0e26cdb77aa3b8c4c6160026",
+        "kickoff_utc": "2026-11-22T16:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.016915790935444524,
+          "actual_exact_score_rank_min": 16,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.30110229475699507
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.016532445872972267
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0415240405768996
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.13732539833587093
           }
         },
         "provider": "API-Football"
@@ -2706,6 +2822,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "5-1",
+        "captured_at_utc": "2026-11-22T13:34:31.861157+00:00",
+        "fixture_id": "1550197",
+        "fixture_name": "AC Milan vs Frosinone",
+        "forecast_id": "cef9989bcc31c3cc16598d05f9e8790287c279b933568642ccaa0d40b42bbe45",
+        "kickoff_utc": "2026-11-22T17:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.009606473494354097,
+          "actual_exact_score_rank_min": 24,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.46617222557504057
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.021850879793970112
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.03315767383954911
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.17681000137371794
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-1",
         "captured_at_utc": "2026-11-22T00:24:24.779068+00:00",
         "fixture_id": "1550199",
@@ -2938,6 +3083,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "0-1",
+        "captured_at_utc": "2026-11-22T13:34:28.424851+00:00",
+        "fixture_id": "1552227",
+        "fixture_name": "GO Ahead Eagles vs Fortuna Sittard",
+        "forecast_id": "3f2b9389d363207e09914201a4d577b441b4ed524eb941f2e7bc3da138f05906",
+        "kickoff_utc": "2026-11-22T15:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.047053407221881685,
+          "actual_exact_score_rank_min": 8,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.47059622092070746
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.022870698499391065
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.03123947905686442
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.17560928723419172
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-3",
         "captured_at_utc": "2026-11-21T18:14:25.524178+00:00",
         "fixture_id": "1552228",
@@ -3136,6 +3310,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.09643072953776982
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-1",
+        "captured_at_utc": "2026-11-22T13:34:29.301419+00:00",
+        "fixture_id": "1552821",
+        "fixture_name": "Lorient vs Rennes",
+        "forecast_id": "7e6f2276b0a9dcdde69ba3d9cfaf87f495b850dd0ef9e8391239cdadb722f263",
+        "kickoff_utc": "2026-11-22T16:15:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.10421248666845037,
+          "actual_exact_score_rank_min": 1,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.4042483527301077
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.022810274014003255
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.033270757323223925
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.15677492182345149
           }
         },
         "provider": "API-Football"
@@ -3426,6 +3629,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.11833425783893003
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "4-0",
+        "captured_at_utc": "2026-11-22T13:34:30.119225+00:00",
+        "fixture_id": "1557473",
+        "fixture_name": "Liverpool vs Manchester United",
+        "forecast_id": "a88c186f603be5b49fbf68ee93c0b9638a13cb19454733f27ab10f7094e7c593",
+        "kickoff_utc": "2026-11-22T16:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.016915790935444524,
+          "actual_exact_score_rank_min": 16,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.30110229475699507
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.016532445872972267
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0415240405768996
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.13732539833587093
           }
         },
         "provider": "API-Football"
@@ -4275,7 +4507,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-22T18:01:11.393664+00:00",
+  "result_cutoff_utc": "2026-11-22T19:16:54.417630+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
