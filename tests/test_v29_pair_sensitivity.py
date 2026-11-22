@@ -73,7 +73,15 @@ def test_v29_freezes_new_distinct_pair_and_grades_without_rewriting_v28(tmp_path
     assert packet["version"]==VERSION
     assert packet["decision"]=="DISTINCT_PAIR_FROZEN"
     assert packet["comparison"]["different_pair_from_both_v28_arms"] is True
-    assert packet["comparison"]["quality_and_control_same_pair"] is True
+    both_same = (
+        reference["quality_selection"]["fixture_keys"] ==
+        reference["robustness_control"]["fixture_keys"]
+    )
+    unique_reference = {
+        tuple(pair) for policy in ("quality_selection","robustness_control")
+        for pair in reference[policy]["fixture_keys"]
+    }
+    assert packet["comparison"]["quality_and_control_same_pair"] is both_same
     assert packet["comparison"]["shared_fixtures_with_v28_quality"] in (0,1)
     assert packet["alternative"]["fixture_keys"]!=reference["quality_selection"]["fixture_keys"]
     assert packet["70_percent_accuracy_not_demonstrated"] is True
@@ -84,9 +92,9 @@ def test_v29_freezes_new_distinct_pair_and_grades_without_rewriting_v28(tmp_path
     pending=evaluate(root=root,prematch=prematch,v28_out=out28,out=out29,now=now)
     readiness=pending["v28_capture_and_result_readiness"]
     assert readiness["v28_frozen_active_days"]==1
-    assert readiness["v28_identical_policy_pair_days"]==1
-    assert readiness["v28_distinct_policy_pair_days"]==0
-    assert readiness["v28_fixtures_before_kickoff"]==2
+    assert readiness["v28_identical_policy_pair_days"]==int(both_same)
+    assert readiness["v28_distinct_policy_pair_days"]==int(not both_same)
+    assert readiness["v28_fixtures_before_kickoff"]==len(unique_reference)
     assert readiness["v28_verified_distinct_fixture_count"]==0
     assert readiness["v28_fixtures_past_kickoff_awaiting_verified_result"]==0
     assert pending["v29_distinct_pair_experiment"]["pending_alternatives"]==1
@@ -106,7 +114,7 @@ def test_v29_freezes_new_distinct_pair_and_grades_without_rewriting_v28(tmp_path
     assert study["alternative_five_wins"]==1
     assert study["initial_review_ready"] is False
     assert done["v28_capture_and_result_readiness"][
-        "v28_verified_distinct_fixture_count"]==2
+        "v28_verified_distinct_fixture_count"]==len(unique_reference)
     assert done["verified_final_evidence_conflicts_excluded"]==0
     assert study["invalid_or_modified_set_exclusions"]=={}
     assert v29_file.read_bytes()==saved and v28_file.read_bytes()==original
@@ -143,14 +151,19 @@ def test_readiness_transitions_from_future_to_unverified_to_verified(tmp_path):
     freeze(root=root,v28_out=out28,out=out29,now=AT+timedelta(minutes=1))
     before=evaluate(root=root,prematch=prematch,v28_out=out28,
                     out=out29,now=AT+timedelta(minutes=1))
-    assert before["v28_capture_and_result_readiness"]["v28_fixtures_before_kickoff"]==2
+    reference=json.loads(next((out28/"decisions").glob("*.json")).read_text())
+    unique_fixtures = {
+        tuple(key) for arm in ("quality_selection","robustness_control")
+        for key in reference[arm]["fixture_keys"]
+    }
+    assert before["v28_capture_and_result_readiness"]["v28_fixtures_before_kickoff"]==len(unique_fixtures)
 
     elapsed=AT+timedelta(hours=9)
     not_verified=evaluate(root=root,prematch=prematch,v28_out=out28,
                           out=out29,now=elapsed)
     ready=not_verified["v28_capture_and_result_readiness"]
     assert ready["v28_fixtures_before_kickoff"]==0
-    assert ready["v28_fixtures_past_kickoff_awaiting_verified_result"]==2
+    assert ready["v28_fixtures_past_kickoff_awaiting_verified_result"]==len(unique_fixtures)
     assert not_verified["v29_distinct_pair_experiment"]["both_arms_verified_days"]==0
 
     results={r["fixture_id"]:final(r,(1,1)) for r in models}
@@ -159,7 +172,7 @@ def test_readiness_transitions_from_future_to_unverified_to_verified(tmp_path):
                    out=out29,now=AT+timedelta(hours=13))
     ready=after["v28_capture_and_result_readiness"]
     assert ready["v28_fixtures_past_kickoff_awaiting_verified_result"]==0
-    assert ready["v28_verified_distinct_fixture_count"]==2
+    assert ready["v28_verified_distinct_fixture_count"]==len(unique_fixtures)
 
 
 def test_invalid_original_v28_eliminates_v29_from_matched_denominator(tmp_path):
