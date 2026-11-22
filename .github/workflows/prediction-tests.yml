@@ -65,5 +65,10 @@ jobs:
         run: |
           python v30_full_slate_audit.py
           python -c 'import json; x=json.load(open("data/v30_full_slate_ranking/status.json")); assert x["no_new_predictions_or_past_score_reconstruction"]; assert x["overlapping_pairs_are_not_independent_samples"]; assert x["no_production_model_promotion"]; assert x["seventy_percent_five_double_hit_rate_not_proven"]; assert not x["invalid_or_tampered_frozen_days_excluded"]; print("V30 frozen candidate pairs:",x["frozen_candidate_pair_rows"], "verified pair rows:",x["candidate_pair_rows_independently_verified"], "fully verified Sydney slates:",x["fully_verified_slate_days"])'
+      - name: Research-only V32 within-day rank-discrimination regression
+        run: |
+          python -m unittest -q test_v32_rank_discrimination.py
+          python v32_rank_discrimination.py
+          python -c 'import json; r=json.load(open("data/v32_rank_discrimination/status.json")); assert r["no_hindsight_selections_or_new_predictions"] and r["live_model_unchanged"] and r["seventy_percent_five_double_accuracy_not_proven"]; print("V32 fully verified slate days:", r["completed_independently_verified_days"], "target:",r["initial_review_complete_day_target"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
