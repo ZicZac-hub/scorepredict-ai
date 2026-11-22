@@ -58,6 +58,13 @@ def test_every_upcoming_same_day_pair_is_browsable_and_unchanged():
         "v8_optimal_five_estimated_mass"]+1e-10
     assert all(report["early_frozen_source"])
     assert report["accuracy_70pct_not_proven"] is True
+    frontier = report["five_double_seventy_percent_model_feasibility"]
+    assert frontier["max_five_model_mass_from_original_v8"] == pytest.approx(
+        report["v8_optimal_five_estimated_mass"]
+    )
+    assert frontier["minimum_distinct_combinations_for_70pct_model_mass"] > 5
+    assert frontier["five_original_v8_choices_reach_70pct_mass"] is False
+    assert frontier["model_estimate_not_empirical_accuracy"] is True
     assert fixtures==originals
 
 
