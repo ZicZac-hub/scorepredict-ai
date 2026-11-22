@@ -170,3 +170,87 @@ def test_http_429_is_logged_and_never_retried_same_utc_day(tmp_path, monkeypatch
     assert len(attempts_file) == 1
     import json
     assert json.loads(attempts_file[0].read_text())["max_attempts_per_day"] == 1
+
+
+def test_manual_key_rotation_retries_one_prior_401_once(tmp_path, monkeypatch):
+    import json
+    import requests
+    import continuous_accuracy_bot as module
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("AI_RESEARCH_BOT_ENABLED", "")
+    monkeypatch.setenv("OPENAI_API_KEY", "rotated-test-key")
+    now=datetime(2035,1,1,tzinfo=timezone.utc)
+    attempts=[]
+    def unauthorized(report, *, key, model):
+        attempts.append("401")
+        response=requests.Response()
+        response.status_code=401
+        raise requests.HTTPError("Unauthorized", response=response)
+    monkeypatch.setattr(module,"api_research_memo",unauthorized)
+    first=module.run(root=tmp_path/"bot",now=now)
+    assert first["ai_connection"]=="api_http_401"
+    original=list((tmp_path/"bot").glob("openai_attempt_*.json"))
+    assert len(original)==1
+    old=original[0].read_bytes()
+    def successful(report, *, key, model):
+        attempts.append("success")
+        assert key=="rotated-test-key"
+        return {"memo":"Evaluate future-only frozen pairs.",
+                "authorizes_code_execution":False}
+    monkeypatch.setattr(module,"api_research_memo",successful)
+    second=module.run(root=tmp_path/"bot",now=now,manual_retry=True)
+    assert second["ai_connection"]=="daily_research_memo_saved"
+    assert attempts==["401","success"]
+    assert original[0].read_bytes()==old
+    retry=list((tmp_path/"bot").glob("openai_retry_*.json"))
+    assert len(retry)==1
+    assert json.loads(retry[0].read_text())["manual_key_rotation_retry"] is True
+    assert len(list((tmp_path/"bot").glob("openai_research_*.json")))==1
+    module.run(root=tmp_path/"bot",now=now,manual_retry=True)
+    assert attempts==["401","success"]
+
+
+def test_manual_retry_cannot_bypass_429_or_repeat_401(tmp_path, monkeypatch):
+    import requests
+    import json
+    import continuous_accuracy_bot as module
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("AI_RESEARCH_BOT_ENABLED","")
+    monkeypatch.setenv("OPENAI_API_KEY","dummy")
+    now=datetime(2035,1,1,tzinfo=timezone.utc)
+    attempts=[]
+    def reject(report, *, key, model):
+        attempts.append("request")
+        response=requests.Response()
+        response.status_code=401
+        raise requests.HTTPError("Unauthorized",response=response)
+    monkeypatch.setattr(module,"api_research_memo",reject)
+    first=module.run(root=tmp_path/"bot",now=now,manual_retry=True)
+    assert first["ai_connection"]=="api_http_401"
+    module.run(root=tmp_path/"bot",now=now,manual_retry=True)
+    module.run(root=tmp_path/"bot",now=now,manual_retry=True)
+    assert attempts==["request","request"]
+    assert len(list((tmp_path/"bot").glob("openai_retry_*.json")))==1
+    retry=json.loads(list((tmp_path/"bot").glob("openai_retry_*.json"))[0].read_text())
+    assert retry["status"]=="api_http_401"
+
+    later=datetime(2035,1,2,tzinfo=timezone.utc)
+    def limited(report, *, key, model):
+        attempts.append("429")
+        response=requests.Response()
+        response.status_code=429
+        raise requests.HTTPError("Too many requests",response=response)
+    monkeypatch.setattr(module,"api_research_memo",limited)
+    module.run(root=tmp_path/"bot",now=later)
+    module.run(root=tmp_path/"bot",now=later,manual_retry=True)
+    assert attempts==["request","request","429"]
+    assert not (tmp_path/"bot"/"openai_retry_2035-01-02.json").exists()
+
+
+def test_workflow_uses_manual_owner_dispatch_only():
+    from pathlib import Path
+    source=Path(".github/workflows/continuous-five-double-bot.yml").read_text()
+    assert "retry_openai_after_key_rotation:" in source
+    assert "github.event_name == 'workflow_dispatch'" in source
+    assert "python continuous_accuracy_bot.py --retry-after-key-rotation" in source
+    assert "data/autobot/openai_retry_*.json" in source
