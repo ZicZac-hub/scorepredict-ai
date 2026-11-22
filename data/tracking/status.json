@@ -44,24 +44,24 @@
       "hit": 10,
       "hit_rate": 0.13333333333333333,
       "miss": 65,
-      "pending": 141,
-      "recorded": 216,
+      "pending": 142,
+      "recorded": 217,
       "verified": 75
     },
     "frozen_v13": {
       "hit": 10,
       "hit_rate": 0.13333333333333333,
       "miss": 65,
-      "pending": 141,
-      "recorded": 216,
+      "pending": 142,
+      "recorded": 217,
       "verified": 75
     },
     "frozen_v8": {
       "hit": 9,
       "hit_rate": 0.11688311688311688,
       "miss": 68,
-      "pending": 222,
-      "recorded": 299,
+      "pending": 223,
+      "recorded": 300,
       "verified": 77
     },
     "frozen_v8_control": {
@@ -92,12 +92,12 @@
       "hit": 8,
       "hit_rate": 0.1702127659574468,
       "miss": 39,
-      "pending": 222,
-      "recorded": 269,
+      "pending": 223,
+      "recorded": 270,
       "verified": 47
     }
   },
-  "checked_at_utc": "2026-11-22T20:07:01.730986+00:00",
+  "checked_at_utc": "2026-11-22T21:00:34.475384+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -112,6 +112,122 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-22T20:59:44.462346+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('website_original', '1575558')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Academico Viseu",
+          "away_team_id": "238",
+          "fixture_id": "1575558",
+          "home_team": "Famalicao",
+          "home_team_id": "242",
+          "kickoff_utc": "2026-12-06T20:30:00Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "reference-informed-v7-v6-retained",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-06T20:30:00Z",
+      "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-22T20:59:44.399760+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575558', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Academico Viseu",
+          "away_team_id": "238",
+          "fixture_id": "1575558",
+          "home_team": "Famalicao",
+          "home_team_id": "242",
+          "kickoff_utc": "2026-12-06T20:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-06T20:30:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-22T20:59:44.414931+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575558', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Academico Viseu",
+          "away_team_id": "238",
+          "fixture_id": "1575558",
+          "home_team": "Famalicao",
+          "home_team_id": "242",
+          "kickoff_utc": "2026-12-06T20:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-06T20:30:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-22T20:59:44.403837+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575558', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Academico Viseu",
+          "away_team_id": "238",
+          "fixture_id": "1575558",
+          "home_team": "Famalicao",
+          "home_team_id": "242",
+          "kickoff_utc": "2026-12-06T20:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-06T20:30:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-22T20:03:56.255076+00:00",
@@ -21165,14 +21281,14 @@
     },
     {
       "actual_scores": [],
-      "captured_at_utc": "2026-11-14T01:57:49.833217+00:00",
+      "captured_at_utc": "2026-11-21T21:24:08.573088+00:00",
       "choices": [
         [
-          "1-1"
+          "1-0"
         ]
       ],
       "detail": "",
-      "id": "('API-Football', '1492466', 'v8')",
+      "id": "('API-Football', '1492466', 'v13')",
       "kind": "single",
       "legs": [
         {
@@ -21185,11 +21301,11 @@
           "provider": "API-Football"
         }
       ],
-      "model": "v8",
+      "model": "v13",
       "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-22T21:30:00.000000Z",
-      "source": "frozen_v8",
+      "source": "frozen_v13",
       "status": "pending"
     },
     {
@@ -21252,14 +21368,14 @@
     },
     {
       "actual_scores": [],
-      "captured_at_utc": "2026-11-21T21:24:08.573088+00:00",
+      "captured_at_utc": "2026-11-14T01:57:49.833217+00:00",
       "choices": [
         [
-          "1-0"
+          "1-1"
         ]
       ],
       "detail": "",
-      "id": "('API-Football', '1492466', 'v13')",
+      "id": "('API-Football', '1492466', 'v8')",
       "kind": "single",
       "legs": [
         {
@@ -21272,40 +21388,11 @@
           "provider": "API-Football"
         }
       ],
-      "model": "v13",
+      "model": "v8",
       "option_hits": [],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-22T21:30:00.000000Z",
-      "source": "frozen_v13",
-      "status": "pending"
-    },
-    {
-      "actual_scores": [],
-      "captured_at_utc": "2026-11-22T20:03:59.666314+00:00",
-      "choices": [
-        [
-          "1-0"
-        ]
-      ],
-      "detail": "",
-      "id": "('API-Football', '1492466', 'v8_near')",
-      "kind": "single",
-      "legs": [
-        {
-          "away_team": "Mirassol",
-          "away_team_id": "7848",
-          "fixture_id": "1492466",
-          "home_team": "Fluminense",
-          "home_team_id": "124",
-          "kickoff_utc": "2026-11-22T21:30:00.000000Z",
-          "provider": "API-Football"
-        }
-      ],
-      "model": "v8_near",
-      "option_hits": [],
-      "private": false,
-      "scheduled_kickoff_utc": "2026-11-22T21:30:00.000000Z",
-      "source": "frozen_v8_near",
+      "source": "frozen_v8",
       "status": "pending"
     },
     {
@@ -21335,6 +21422,35 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-22T21:30:00.000000Z",
       "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-22T20:03:59.666314+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492466', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Mirassol",
+          "away_team_id": "7848",
+          "fixture_id": "1492466",
+          "home_team": "Fluminense",
+          "home_team_id": "124",
+          "kickoff_utc": "2026-11-22T21:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-22T21:30:00.000000Z",
+      "source": "frozen_v8_near",
       "status": "pending"
     },
     {
@@ -41094,8 +41210,8 @@
     "hit": 73,
     "hit_rate": 0.12943262411347517,
     "miss": 491,
-    "pending": 756,
-    "recorded": 1320,
+    "pending": 760,
+    "recorded": 1324,
     "verified": 564
   },
   "unique_verified_single_fixtures": 77
