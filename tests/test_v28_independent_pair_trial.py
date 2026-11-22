@@ -193,8 +193,8 @@ def test_45minute_lead_and_forecast_window_enforced(tmp_path):
     root,prematch,out,models=sample(tmp_path,lead_hours=0.5)
     reply=freeze(root=root,out=out,now=SELECT)
     assert reply["created"]==[]
-    assert reply["skipped"]=={}
-    assert reply["source_ineligibility"].get("outside_research_freeze_window")==4
+    assert reply["skipped"]["insufficient_eligible_fixtures_retry_later"]==1
+    assert reply["source_ineligibility"].get("outside_research_freeze_window")==2
 
 
 def test_statistical_significance_is_not_guaranteed_by_one_win():
