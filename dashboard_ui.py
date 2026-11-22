@@ -10,6 +10,7 @@ PAGES = {
     'single50': ('Single Match 50+ Odds', 'One-match research and estimated fair exact-score odds, not bookmaker quotes.'),
     'doubles': ('Five Score Doubles', 'Select two matches and generate five exact-score combinations.'),
     'ai_five': ('AI Five-Double Studio', 'Choose two matches, consult available AI providers and view five research-backed score doubles.'),
+    'autobot': ('24/7 Research Bot', 'Monitor autonomous tests, independently verified five-double results, and research hypotheses.'),
     'archive': ('Prediction History', 'Your original forecasts, timestamps and verified final scores.'),
     'finished': ('Real Performance', 'Actual hits and misses from predictions saved before kickoff.'),
     'private': ('Private Access', 'Secure your match research on your iPhone and MacBook.'),
