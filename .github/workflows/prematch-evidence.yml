@@ -110,6 +110,14 @@ jobs:
         # New paired picks are write-once; result status is verified separately.
         if: always()
         run: python professional_analyst_shadow_v25.py
+      - name: Independently audit V25 frozen probabilities and research coverage
+        # This checks newly generated write-once sets against original source
+        # matrices, same pair, policy and cutoff BEFORE any result is scored.
+        # No new provider or AI calls, no rewriting legacy probability grids.
+        if: always()
+        run: |
+          python v8_v25_matched_audit.py --output data/accuracy_diagnosis/v8_v25_matched.json
+          python v25_prospective_monitor.py --require-provenance
       - name: Freeze and verify professional probability-policy calibration trials
         # Uses existing immutable grids only; no new sports or AI requests.
         if: always()
