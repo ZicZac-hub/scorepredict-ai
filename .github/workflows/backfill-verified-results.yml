@@ -37,11 +37,13 @@ jobs:
           python v8_v25_matched_audit.py --output data/accuracy_diagnosis/v8_v25_matched.json
       - name: Check prospective V25 probability freeze integrity
         run: python v25_prospective_monitor.py --require-provenance
+      - name: Recalculate V25 five-score feasibility against verified originals
+        run: python v25_five_double_frontier.py
       - name: Commit newly verified scores and sanitized diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json
+          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
           git pull --rebase
