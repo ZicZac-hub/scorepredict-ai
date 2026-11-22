@@ -245,6 +245,27 @@ def _calibration(metrics):
     }
 
 
+def _paired_metric_deltas(v8_legs, v25_legs):
+    """V25 minus V8 on exactly the same eligible finished leg slots.
+
+    A negative difference means the frozen V25 grid scored better. Do not
+    synthesize a comparison until both archived models have been graded.
+    """
+    if len(v8_legs) != len(v25_legs):
+        raise ValueError("different_calibration_cohorts")
+    baseline, challenger = _calibration(v8_legs), _calibration(v25_legs)
+    metrics = ("top_one_brier", "multiclass_score_brier", "exact_score_log_loss")
+    return {
+        "evaluated_leg_slots": len(v8_legs),
+        "v25_minus_v8": {
+            metric: challenger[metric] - baseline[metric] if v8_legs else None
+            for metric in metrics
+        },
+        "negative_difference_favors_v25": True,
+        "statistical_superiority_established": False,
+    }
+
+
 def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
     clock = utc(now or datetime.now(timezone.utc))
     finals, conflicts, result_rejections = index_verified_results(root, prematch, clock)
@@ -332,6 +353,9 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
     finished = [r for r in rows if r["status"] == "verified"]
     n = len(finished)
     mixture_finished = [r for r in finished if "v25_mixture_five_hit" in r]
+    probability_finished = [
+        r for r in finished if "v25_score_probability_diagnostics" in r
+    ]
     challenger_only = sum(r["v25_five_hit"] and not r["v8_five_hit"] for r in finished)
     baseline_only = sum(r["v8_five_hit"] and not r["v25_five_hit"] for r in finished)
     discordant = challenger_only + baseline_only
@@ -381,6 +405,15 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             "pending_pairs": probability_coverage["frozen"] - len(matched_v25) // 2,
             "v25_grid_coverage_by_pair": dict(probability_coverage),
             "v8_on_same_legs": _calibration(matched_v8),
+            "paired_metric_differences": _paired_metric_deltas(matched_v8, matched_v25),
+            "same_frozen_cohort_five_double": {
+                "verified_pairs": len(probability_finished),
+                "v8": _set_performance(probability_finished, "v8_five_hit"),
+                "v25": _set_performance(probability_finished, "v25_five_hit"),
+            },
+            "verified_distinct_fixture_ids": len({
+                fixture for row in probability_finished for fixture in row["fixture_ids"]
+            }),
         },
         "rows": rows,
         "no_provider_calls": True,
@@ -395,6 +428,8 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             "Probability comparison uses only verified pairs with both frozen V25 grids, without reconstructing historical probabilities.",
             "Archived JSON capture timestamps are checked but are not independent Git commit-time notarization.",
             "Small and overlapping samples cannot establish superiority, reliable accuracy or 70% hit rate.",
+            "Paired metric differences are V25 minus V8 (negative is better), not evidence of statistical significance.",
+            "Only future write-once frozen V25 grids can enter the paired calibration cohort; no old grids are reconstructed.",
         ],
     }
 

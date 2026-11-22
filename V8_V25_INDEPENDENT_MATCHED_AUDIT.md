@@ -43,7 +43,13 @@ the enclosing leg. The auditor checks the evidence timestamp against the source
 and requires the same cutoff as the saved selections.
 
 The matched probability report compares top-one Brier, exact-score multiclass
-Brier and exact-score log loss on identical verified legs. The original V8-only
+Brier and exact-score log loss on identical verified legs. It also publishes
+**paired V25-minus-V8 metric differences** (negative is better) and V8/V25
+five-double hit rates restricted to exactly the same verified, probability-frozen
+pairs. Missing older grids produce null differences, **never reconstructed
+scores or artificial zero losses**. The matched report lists distinct fixture
+identities so overlapping legs remain visible; these are descriptive metrics,
+not a statistical superiority claim. The original V8-only
 diagnostics still cover the wider archive. Pairs without two valid V25 matrices
 can still count toward five-double performance once verified. Historical V25
 matrices are never reconstructed. V8 mass on V25's robust five remains a
