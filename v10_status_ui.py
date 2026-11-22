@@ -343,6 +343,59 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                         "are requested for an initial statistical review. "
                         "No 70% accuracy claim or live model promotion."
                     )
+                try:
+                    v29 = json.loads(Path("data/v29_pair_sensitivity/status.json")
+                                     .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    v29 = {}
+                if v29.get("version") == "v29-distinct-pair-sensitivity-v1-research-only":
+                    st.markdown("#### V29 · Distinct match-pair research and verified-result readiness")
+                    report = v29.get("research") or {}
+                    readiness = report.get("v28_capture_and_result_readiness") or {}
+                    alt = report.get("v29_distinct_pair_experiment") or {}
+                    st.write({
+                        "V28 originally frozen active days":
+                            readiness.get("v28_frozen_active_days", 0),
+                        "Days V28 quality and control picked exactly the same pair":
+                            readiness.get("v28_identical_policy_pair_days", 0),
+                        "Distinct saved V28 fixtures with independently verified results":
+                            str(readiness.get("v28_verified_distinct_fixture_count", 0)) +
+                            "/" + str(readiness.get("v28_total_distinct_fixture_count", 0)),
+                        "Fixtures before kickoff":
+                            readiness.get("v28_fixtures_before_kickoff", 0),
+                        "Fixtures finished or past kickoff, awaiting verified result":
+                            readiness.get(
+                                "v28_fixtures_past_kickoff_awaiting_verified_result", 0),
+                        "New V29 different-pair alternatives frozen":
+                            alt.get("frozen_alternatives", 0),
+                        "Future V29 alternative pairs still pending":
+                            alt.get("pending_alternatives", 0),
+                        "Matched V29 alternative/control comparison days verified":
+                            alt.get("both_arms_verified_days", 0),
+                        "V29 alternative five-double wins":
+                            alt.get("alternative_five_wins", 0),
+                        "Original V28 quality-control five-double wins":
+                            alt.get("v28_quality_control_five_wins", 0),
+                    })
+                    next_kickoff = readiness.get("next_saved_fixture_kickoff_utc")
+                    if next_kickoff:
+                        st.caption(
+                            "Next already frozen V28 fixture kickoff (UTC): "+
+                            str(next_kickoff)
+                        )
+                    if readiness.get("invalid_original_v28_days_excluded") or (
+                            alt.get("invalid_or_modified_set_exclusions")):
+                        st.error(
+                            "Some saved research decisions failed original-source "
+                            "verification. Those were excluded, not counted as losses."
+                        )
+                    st.caption(
+                        "V29 prospectively freezes the highest-ranked DIFFERENT "
+                        "eligible pair, using the same original V28 source slate. "
+                        "Sharing one match is possible; this is a correlated "
+                        "same-day sensitivity check, not independent evidence. "
+                        "Only independently verified full results count as wins/losses."
+                    )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")

@@ -57,5 +57,9 @@ jobs:
         run: |
           python v28_independent_pair_trial.py --verify-only
           python -c 'import json; r=json.load(open("data/v28_independent_pair_trial/status.json")); assert not r["forecast_production_model_modified"]; assert r["original_v8_v25_v26_v27_forecasts_changed"] is False; print("V28 verified matched policy days:",r["verified_comparison"]["verified_paired_days"], "new future-only decisions:",r["verified_comparison"]["original_frozen_decisions"])'
+      - name: Independently validate new V29 pair-sensitivity and V28 readiness
+        run: |
+          python v29_pair_sensitivity.py --verify-only
+          python -c 'import json; r=json.load(open("data/v29_pair_sensitivity/status.json")); s=r["research"]; assert s["no_source_or_forecast_changes"]; assert s["live_predictions_unchanged"]; assert s["seventy_percent_not_proven"]; assert not s["v28_capture_and_result_readiness"]["invalid_original_v28_days_excluded"]; print("V28 real frozen days:", s["v28_capture_and_result_readiness"]["v28_frozen_active_days"], "identical quality/control:", s["v28_capture_and_result_readiness"]["v28_identical_policy_pair_days"], "V29 verified alternate days:", s["v29_distinct_pair_experiment"]["both_arms_verified_days"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
