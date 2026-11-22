@@ -286,6 +286,63 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                         "V25 pair when at least 30 earlier verified sources qualify. "
                         "Do not combine these different denominators."
                     )
+                try:
+                    v28 = json.loads(Path("data/v28_independent_pair_trial/status.json")
+                                     .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    v28 = {}
+                if v28.get("version") == "v28-independent-paired-pair-policy-v1-research-only":
+                    st.markdown("#### V28 · Independent prospective pair selection")
+                    comparison = v28.get("verified_comparison") or {}
+                    recent_freeze = v28.get("freeze") or {}
+                    st.write({
+                        "Days frozen without needing a new V25 daily selection":
+                            comparison.get("original_frozen_decisions", 0),
+                        "Both policies fully verified on the same day":
+                            comparison.get("verified_paired_days", 0),
+                        "Pending pairs (not losses)":
+                            comparison.get("pending_days", 0),
+                        "Explicit abstention days":
+                            comparison.get("abstained_days", 0),
+                        "Quality/freshness policy five-double wins":
+                            comparison.get("quality_wins", 0),
+                        "V25-style robustness control five-double wins":
+                            comparison.get("robustness_control_wins", 0),
+                        "Different pairs selected on the same day":
+                            comparison.get("different_pair_days", 0),
+                    })
+                    skipped = recent_freeze.get("skipped") or {}
+                    if skipped:
+                        st.caption("Source-readiness and no-freeze reasons: "+
+                                   ", ".join(str(k)+": "+str(v)
+                                             for k, v in skipped.items()))
+                    if comparison.get("excluded_invalid_or_tampered_files"):
+                        st.error("Some V28 frozen policy comparisons failed "
+                                 "immutable-source validation and were excluded.")
+                    if comparison.get("verified_paired_days"):
+                        probability = comparison.get(
+                            "exact_paired_test_two_sided_p")
+                        st.caption(
+                            "Both policies are issued from the same original "
+                            "pre-match slate. They may select DIFFERENT "
+                            "fixtures; this tests the pair-choice policy, "
+                            "not identical-fixture model calibration. "
+                            "Paired exact-test p: "+(
+                                f"{probability:.3g}" if probability is not None
+                                else "not estimable from current results")
+                        )
+                    else:
+                        st.info(
+                            "V28 can freeze its own forward-only pairs without "
+                            "waiting for a newly created V25 set. Accuracy is "
+                            "not measurable until independently verified "
+                            "future matches finish."
+                        )
+                    st.caption(
+                        "At least 100 future verified policy-comparison days "
+                        "are requested for an initial statistical review. "
+                        "No 70% accuracy claim or live model promotion."
+                    )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")
