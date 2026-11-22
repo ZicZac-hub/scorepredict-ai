@@ -56,6 +56,9 @@ def render(st):
     st.write("**Next research priority:** " + str(status.get("next_priority", "Collect verified, frozen outcomes.")))
     st.caption("Source-integrity status: " + str(status.get("integrity", "Unknown")))
     st.caption("OpenAI research connection: " + str(status.get("ai_connection", "Not configured")))
+    if status.get("ai_connection") == "api_http_401":
+        st.warning("The last saved OpenAI authentication test returned 401. If the API key was updated after that test, use the bot workflow's Run workflow option with 'retry_openai_after_key_rotation' checked. Only one manual retry is allowed for a recorded 401 each UTC day.")
+        st.caption("Never paste your API key into the website or this chat. A new key is managed in GitHub Actions secrets, not in the bot dashboard.")
     if status.get("ai_memo"):
         with st.expander("Daily ChatGPT/OpenAI research analysis", expanded=False):
             st.write(status["ai_memo"])
