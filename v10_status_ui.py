@@ -159,6 +159,34 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                             "verified matched pairs towards an initial evidence "
                             "review, not a guaranteed accuracy target."
                         )
+                try:
+                    feasibility = json.loads(
+                        Path("data/accuracy_diagnosis/v25_five_double_frontier.json")
+                        .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    feasibility = {}
+                if feasibility and feasibility.get("original_archived_sets"):
+                    st.markdown("#### V25 70% goal · model feasibility")
+                    least = feasibility.get(
+                        "min_number_of_combinations_to_70pct_model_mass")
+                    most = feasibility.get(
+                        "max_number_of_combinations_to_70pct_model_mass")
+                    st.write({
+                        "Source-verified archived pairs": feasibility["original_archived_sets"],
+                        "Best-five minimum model mass":
+                            f"{feasibility['five_model_coverage_min']:.1%}",
+                        "Best-five maximum model mass":
+                            f"{feasibility['five_model_coverage_max']:.1%}",
+                        "Combinations for 70% estimated coverage":
+                            f"{least}–{most}" if least is not None else "Unknown",
+                        "Five-ticket sets meeting 70% model mass":
+                            feasibility["sets_with_70pct_model_mass_in_only_five"],
+                    })
+                    st.caption(
+                        "Model-estimated coverage is NOT measured accuracy. "
+                        "These numbers apply only to the saved V8 score grids. "
+                        "No V25 improvement or 70% hit rate has been verified."
+                    )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")
