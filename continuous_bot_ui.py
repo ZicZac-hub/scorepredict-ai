@@ -67,4 +67,4 @@ def render(st):
         st.link_button("View bot runs", ACTIONS, use_container_width=True)
     with c2:
         st.link_button("Configure API secrets", REPO_SETTINGS, use_container_width=True)
-    st.caption("Optional AI connection requires an OpenAI API key plus AI_RESEARCH_BOT_ENABLED=true in GitHub Actions variables. Usage is capped at one small API memo per UTC day; API charges are separate from a ChatGPT subscription.")
+    st.caption("Optional AI connection uses OPENAI_API_KEY in GitHub Actions secrets. Set AI_RESEARCH_BOT_ENABLED=false in GitHub variables to disable paid calls. Usage is capped at one small API memo per UTC day; API charges are separate from a ChatGPT subscription.")
