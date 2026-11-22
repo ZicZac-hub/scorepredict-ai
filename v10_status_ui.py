@@ -123,6 +123,77 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                             for key, label in (("v8", "V8"), ("v25_robust", "V25 robust"),
                                                ("v25_mixture", "V25 probability mixture"))
                         ], use_container_width=True, hide_index=True)
+                research = matched.get("v25_score_accuracy_research") or {}
+                if research:
+                    st.markdown("#### V25 score accuracy · Verified evidence")
+                    baseline_shape = research.get("same_original_v8_verified_legs") or {}
+                    slots = int(baseline_shape.get("verified_leg_slots") or 0)
+                    st.caption(
+                        f"{slots} original V8 leg results from matched V25 research sets. "
+                        "The alternative score-shape replay is retrospective, "
+                        "NOT frozen V25 accuracy."
+                    )
+                    if slots:
+                        st.write({
+                            "Original V8 top-one exact hits": baseline_shape.get("top_one_exact_hits"),
+                            "Original V8 top-three exact hits": baseline_shape.get("top_three_exact_hits"),
+                            "Original V8 top-five exact hits": baseline_shape.get("top_five_exact_hits"),
+                            "Actual 4+ goal games": baseline_shape.get("high_goal_4_plus_observed"),
+                            "Mean predicted 4+ goal chance": round(
+                                baseline_shape.get("mean_over_3_5_probability") or 0, 3),
+                            "Mean actual 4+ goal frequency": round(
+                                baseline_shape.get("mean_over_3_5_observed") or 0, 3),
+                        })
+                    paired_shape = (research.get("prospective_same_leg_probability_comparison")
+                                    or {})
+                    paired_slots = int(paired_shape.get("verified_leg_slots") or 0)
+                    if paired_slots:
+                        st.caption(
+                            f"True frozen V8–V25 probability comparison on "
+                            f"{paired_slots} identical verified match legs "
+                            "(lower loss is better)."
+                        )
+                        st.dataframe([
+                            {
+                                "Frozen model": label,
+                                "Exact top-one hits": (paired_shape.get(key) or {}).get(
+                                    "top_one_exact_hits"),
+                                "Exact log loss": round((paired_shape.get(key) or {}).get(
+                                    "mean_exact_score_log_loss"), 3),
+                                "Full-score Brier": round((paired_shape.get(key) or {}).get(
+                                    "mean_multiclass_score_brier"), 3),
+                            }
+                            for key, label in (
+                                ("v8_on_exact_same_legs", "V8"),
+                                ("v25_frozen_on_exact_same_legs", "V25"),
+                            )
+                        ], use_container_width=True, hide_index=True)
+                    else:
+                        st.info(
+                            "No independently verified V25 score-probability pair "
+                            "has both originally frozen distributions yet. "
+                            "Historical V25 probabilities are never reconstructed."
+                        )
+                    replay = research.get("retrospective_same_source_sensitivity_replays") or {}
+                    comparison_rows = [
+                        {
+                            "Retrospective score shape": key,
+                            "Matched leg results": value.get("verified_leg_slots"),
+                            "Top-one exact hits": value.get("top_one_exact_hits"),
+                            "Log loss": round(value["mean_exact_score_log_loss"], 3),
+                            "4+ goal probability": round(
+                                value["mean_over_3_5_probability"], 3),
+                        }
+                        for key, value in replay.items()
+                        if value.get("verified_leg_slots")
+                    ]
+                    if comparison_rows:
+                        st.caption(
+                            "Exploratory fixed mathematical sensitivity on archived "
+                            "V8 grids; NOT a new future-tested V25 win rate."
+                        )
+                        st.dataframe(comparison_rows, use_container_width=True,
+                                     hide_index=True)
                 examples = (professional.get("outcomes") or [])[-8:]
                 if examples:
                     st.dataframe(examples, use_container_width=True,
