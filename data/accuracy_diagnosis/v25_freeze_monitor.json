@@ -2,7 +2,7 @@
   "70_percent_hit_rate_proven": false,
   "all_eligible_verified_probability_pairs": 0,
   "archived_picks_modified": false,
-  "archived_sets_found": 5,
+  "archived_sets_found": 6,
   "check_passed": true,
   "initial_100_pair_evaluation": {
     "goal": 100,
@@ -50,16 +50,24 @@
     }
   ],
   "legacy_sets_not_backfilled": 5,
-  "new_pending_pairs": 0,
-  "new_sets_with_both_valid_grids_and_mixture": 0,
+  "new_pending_pairs": 1,
+  "new_sets_with_both_valid_grids_and_mixture": 1,
   "new_verified_pairs": 0,
   "old_probability_grids_reconstructed": false,
   "policy": "independent_original_frozen_v25_scores_only",
   "probability_required_from_utc": "2026-11-22T05:17:27+00:00",
   "production_model_promoted": false,
-  "prospective_rows": [],
-  "prospective_sets_since_rollout": 0,
+  "prospective_rows": [
+    {
+      "cohort": "prospective_probability_required",
+      "mixture_five_status": "frozen",
+      "probability_status": "frozen",
+      "result_status": "pending",
+      "sydney_date": "2026-11-24"
+    }
+  ],
+  "prospective_sets_since_rollout": 1,
   "schema_version": 1,
-  "source_valid_sets": 5,
-  "status": "awaiting_new_frozen_sets"
+  "source_valid_sets": 6,
+  "status": "awaiting_verified_two_leg_results"
 }

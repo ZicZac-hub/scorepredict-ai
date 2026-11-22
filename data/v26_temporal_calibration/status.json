@@ -24,7 +24,7 @@
       "total_goals_bias_actual_minus_expected": null,
       "verified_leg_slots": 0
     },
-    "finished_original_v8_fixtures": 75,
+    "finished_original_v8_fixtures": 77,
     "holdout_source_receipts": [],
     "kind": "retrospective_chronological_replay_from_real_original_pre_match_forecasts",
     "limitations": [
@@ -48,7 +48,7 @@
       "historical_chronological_test_ready": false,
       "max_prior_verified_before_any_historical_source_capture": 0,
       "minimum_prior_verified_fixtures_for_correction": 30,
-      "verified_original_v8_fixtures_known_now": 75
+      "verified_original_v8_fixtures_known_now": 77
     },
     "v26_minus_v8_log_loss": null,
     "v26_minus_v8_multiclass_brier": null,
@@ -79,23 +79,35 @@
     "verified_holdout_fixtures": 0,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
-  "evaluated_at_utc": "2026-11-22T19:16:55.299241+00:00",
+  "evaluated_at_utc": "2026-11-22T20:05:52.362217+00:00",
   "no_provider_calls": true,
   "original_frozen_forecasts_changed": false,
   "production_model_promoted": false,
   "prospective_freeze": {
-    "abstentions": {},
+    "abstentions": {
+      "v25_set_not_new_in_same_freeze_window": 5
+    },
     "live_model_changed": false,
     "model": "v26-temporal-tail-calibration-v1-research-only",
-    "new_frozen_days": []
+    "new_frozen_days": [
+      "2026-11-24"
+    ]
   },
   "prospective_verified": {
     "70_percent_proven": false,
     "invalid_or_tampered_sets_excluded": {},
     "no_historical_v26_probability_backfill": true,
     "no_model_promotion": true,
-    "pending_pairs": 0,
-    "rows": [],
+    "pending_pairs": 1,
+    "rows": [
+      {
+        "new_v26_selection_at_utc": "2026-11-22T20:05:52.362217+00:00",
+        "original_v25_source_selected_at_utc": "2026-11-22T20:05:51.006701+00:00",
+        "status": "pending",
+        "sydney_date": "2026-11-24",
+        "training_fixtures_before_selection": 77
+      }
+    ],
     "same_legs_v26_score_metrics": {
       "high_goal_4_plus_observed": 0,
       "high_goal_probability_gap_observed_minus_predicted": null,

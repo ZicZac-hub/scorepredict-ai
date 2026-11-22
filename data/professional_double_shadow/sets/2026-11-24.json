@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-22T20:06:27.200603+00:00",
+  "prospective": true,
+  "record_sha256": "375aa87f0df158c18065ef07f1e67a67f507674cdb37884b30236d00a40eb226",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.1283047341490805,
+        "joint_probability": 0.01672728484481021,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.1303715327087959
+      },
+      {
+        "first_probability": 0.1283047341490805,
+        "joint_probability": 0.016000312461198245,
+        "score1": "1-0",
+        "score2": "1-0",
+        "second_probability": 0.12470555016782996
+      },
+      {
+        "first_probability": 0.12160868039800038,
+        "joint_probability": 0.015854310054181413,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.1303715327087959
+      },
+      {
+        "first_probability": 0.12160868039800038,
+        "joint_probability": 0.015165277394216435,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.12470555016782996
+      },
+      {
+        "first_probability": 0.10317548529638804,
+        "joint_probability": 0.013451146156063944,
+        "score1": "2-0",
+        "score2": "1-1",
+        "second_probability": 0.1303715327087959
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.07719833091047025,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "136",
+        "name": "Vitoria"
+      },
+      "competition": {
+        "code": "BSA",
+        "name": "BSA"
+      },
+      "homeTeam": {
+        "id": "119",
+        "name": "Internacional"
+      },
+      "id": "1492467",
+      "provider": "API-Football",
+      "utcDate": "2026-11-23T22:30:00+00:00"
+    },
+    "generated_at_utc": "2026-11-22T20:06:27.200507+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "126",
+        "name": "Sao Paulo"
+      },
+      "competition": {
+        "code": "BSA",
+        "name": "BSA"
+      },
+      "homeTeam": {
+        "id": "120",
+        "name": "Botafogo"
+      },
+      "id": "1492463",
+      "provider": "API-Football",
+      "utcDate": "2026-11-23T23:00:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "136",
+        "fixture_id": "1492467",
+        "forecast_id": "ecac672b5a342595e9d306e43ead4c8eb224a2925490dc3cbc8686095d8e793d",
+        "home_team_id": "119",
+        "input_digest": "3e25a169824721120b7313d708b60218d59877bafb4cc85f37842168e83f924d",
+        "kickoff_utc": "2026-11-23T22:30:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "126",
+        "fixture_id": "1492463",
+        "forecast_id": "c0039275102010018137e5ce2bf569a57e727d1c7e0d6ebeebb73a4f3b21f0c6",
+        "home_team_id": "120",
+        "input_digest": "afffeee95812149844417c5eb55f6ba22f31f882c786e50515f1ede5ca070a96",
+        "kickoff_utc": "2026-11-23T23:00:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-22T20:04:08.517468+00:00",
+      "2026-11-22T20:04:09.593493+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-24",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-24",
+  "target_70_percent_proven": false
+}

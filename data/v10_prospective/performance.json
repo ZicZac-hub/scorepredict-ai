@@ -1,14 +1,14 @@
 {
   "comparison_diagnostics": {
-    "excluded_mismatched_evidence_pairs": 46,
+    "excluded_mismatched_evidence_pairs": 50,
     "matched_market_time_controls": 88,
     "policy": "Only compare v8 versus v9/v10 when input_digest and original evidence match; use preserved v8_control for a later market snapshot."
   },
   "evidence": "genuinely_frozen_pre_kickoff_only",
   "five_doubles": {
     "average_estimated_coverage": 0.06997625168612016,
-    "awaiting_both_results": 0,
-    "frozen_pairs": 6,
+    "awaiting_both_results": 1,
+    "frozen_pairs": 7,
     "hit_rate": 0.0,
     "rows": [
       {
@@ -76,6 +76,10 @@
         "same_pair_challengers": {},
         "status": "verified",
         "sydney_date": "2026-11-23"
+      },
+      {
+        "status": "awaiting_verified_results",
+        "sydney_date": "2026-11-24"
       }
     ],
     "same_pair_challengers": {
@@ -141,7 +145,6 @@
   },
   "freeze_diagnostics": {
     "abstained": {
-      "2026-11-24": "waiting_for_near_matchday_fixture_research",
       "2026-11-25": "waiting_for_near_matchday_fixture_research",
       "2026-11-26": "waiting_for_near_matchday_fixture_research",
       "2026-11-27": "waiting_for_near_matchday_fixture_research",
@@ -157,85 +160,87 @@
       "2026-12-07": "waiting_for_near_matchday_fixture_research"
     },
     "days_evaluated": 14,
-    "days_saved": [],
-    "near_research_available": 0,
+    "days_saved": [
+      "2026-11-24"
+    ],
+    "near_research_available": 8,
     "v14_robust_days_saved": []
   },
   "limitations": "Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
   "models": {
     "v10": {
-      "exact_score_hits": 9,
-      "exact_score_rate": 0.13432835820895522,
-      "frozen_fixtures": 74,
-      "mean_expected_exact_hits": 9.968512964422567,
-      "mean_outcome_brier": 0.5855983823538581,
-      "mean_score_log_loss": 2.876904134974678,
-      "pending_fixtures": 7,
-      "top3_hit_rate": 0.373134328358209,
-      "verified_fixtures": 67
+      "exact_score_hits": 10,
+      "exact_score_rate": 0.14492753623188406,
+      "frozen_fixtures": 78,
+      "mean_expected_exact_hits": 10.273163858427324,
+      "mean_outcome_brier": 0.5776546072962069,
+      "mean_score_log_loss": 2.8760650643031567,
+      "pending_fixtures": 9,
+      "top3_hit_rate": 0.37681159420289856,
+      "verified_fixtures": 69
     },
     "v12": {
       "exact_score_hits": 10,
-      "exact_score_rate": 0.136986301369863,
-      "frozen_fixtures": 211,
-      "mean_expected_exact_hits": 8.190207997063938,
-      "mean_outcome_brier": 0.5728098973479523,
-      "mean_score_log_loss": 2.8872424684597084,
-      "pending_fixtures": 138,
-      "top3_hit_rate": 0.273972602739726,
-      "verified_fixtures": 73
+      "exact_score_rate": 0.13333333333333333,
+      "frozen_fixtures": 216,
+      "mean_expected_exact_hits": 8.41717236794651,
+      "mean_outcome_brier": 0.5665783891842885,
+      "mean_score_log_loss": 2.8846232046224203,
+      "pending_fixtures": 141,
+      "top3_hit_rate": 0.28,
+      "verified_fixtures": 75
     },
     "v13": {
-      "exact_score_hits": 9,
-      "exact_score_rate": 0.1232876712328767,
-      "frozen_fixtures": 211,
-      "mean_expected_exact_hits": 8.103479706614774,
-      "mean_outcome_brier": 0.572705892993611,
-      "mean_score_log_loss": 2.888709120672465,
-      "pending_fixtures": 138,
-      "top3_hit_rate": 0.3013698630136986,
-      "verified_fixtures": 73
+      "exact_score_hits": 10,
+      "exact_score_rate": 0.13333333333333333,
+      "frozen_fixtures": 216,
+      "mean_expected_exact_hits": 8.327570570208524,
+      "mean_outcome_brier": 0.5661568603486528,
+      "mean_score_log_loss": 2.888077995312907,
+      "pending_fixtures": 141,
+      "top3_hit_rate": 0.30666666666666664,
+      "verified_fixtures": 75
     },
     "v8": {
       "exact_score_hits": 9,
-      "exact_score_rate": 0.12,
-      "frozen_fixtures": 296,
-      "mean_expected_exact_hits": 8.281668876955953,
-      "mean_outcome_brier": 0.5734707820316683,
-      "mean_score_log_loss": 2.8807887085670627,
-      "pending_fixtures": 221,
-      "top3_hit_rate": 0.29333333333333333,
-      "verified_fixtures": 75
+      "exact_score_rate": 0.11688311688311688,
+      "frozen_fixtures": 299,
+      "mean_expected_exact_hits": 8.502899132030413,
+      "mean_outcome_brier": 0.5670815349512854,
+      "mean_score_log_loss": 2.8802768549597366,
+      "pending_fixtures": 222,
+      "top3_hit_rate": 0.2987012987012987,
+      "verified_fixtures": 77
     },
     "v8_near": {
-      "exact_score_hits": 8,
-      "exact_score_rate": 0.11428571428571428,
-      "frozen_fixtures": 73,
-      "mean_expected_exact_hits": 7.781366840561751,
-      "mean_outcome_brier": 0.5699291562015111,
-      "mean_score_log_loss": 2.879981344244162,
-      "pending_fixtures": 3,
-      "top3_hit_rate": 0.3,
-      "verified_fixtures": 70
+      "exact_score_hits": 9,
+      "exact_score_rate": 0.125,
+      "frozen_fixtures": 81,
+      "mean_expected_exact_hits": 8.002090323828682,
+      "mean_outcome_brier": 0.563212686142002,
+      "mean_score_log_loss": 2.879433935527279,
+      "pending_fixtures": 9,
+      "top3_hit_rate": 0.3055555555555556,
+      "verified_fixtures": 72
     },
     "v9": {
       "exact_score_hits": 10,
-      "exact_score_rate": 0.14492753623188406,
-      "frozen_fixtures": 76,
-      "mean_expected_exact_hits": 7.963932031088619,
-      "mean_outcome_brier": 0.5846472105081159,
-      "mean_score_log_loss": 2.8711194178741404,
-      "pending_fixtures": 7,
-      "top3_hit_rate": 0.2898550724637681,
-      "verified_fixtures": 69
+      "exact_score_rate": 0.14084507042253522,
+      "frozen_fixtures": 80,
+      "mean_expected_exact_hits": 8.186980211268907,
+      "mean_outcome_brier": 0.5769290606051365,
+      "mean_score_log_loss": 2.870395929035159,
+      "pending_fixtures": 9,
+      "top3_hit_rate": 0.29577464788732394,
+      "verified_fixtures": 71
     }
   },
   "paired_original_v8_vs_near_v8": {
-    "fresh_research_only_exact_hits": 0,
+    "fresh_research_only_exact_hits": 1,
     "insufficient_to_claim_improvement": true,
     "original_only_exact_hits": 0,
     "purpose": "Observe the effect of newer verified pre-match information; NOT an equal-information model comparison.",
-    "same_fixture_verified": 70
+    "same_fixture_verified": 72
   },
   "paired_v8_v10": {
     "insufficient_to_claim_improvement": true,

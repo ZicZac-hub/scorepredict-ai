@@ -4,7 +4,7 @@
     "all_original_sets_already_maximize_five_cell_model_coverage": true,
     "model_coverage_range": [
       0.059237574736583476,
-      0.07619753996352728
+      0.07719833091047025
     ],
     "sets_with_target_model_coverage": 0,
     "verified_miss_attribution": {
@@ -12,7 +12,7 @@
       "one_leg_score_outside_selected_options": 3
     }
   },
-  "evaluated_at_utc": "2026-11-22T19:14:23.309833+00:00",
+  "evaluated_at_utc": "2026-11-22T20:07:00.317181+00:00",
   "evidence_policy": "original_archived_v8_source_ids_before_selection_and_both_kickoffs_identity_matched_verified_regulation_results",
   "external_requests_performed": 0,
   "limitations": [
@@ -31,7 +31,7 @@
     "independence_of_repeated_sets_not_established": true,
     "minimum_100_sets_and_lower_interval_at_target": false,
     "misses": 6,
-    "pending_sets": 0,
+    "pending_sets": 1,
     "verified_sets": 6,
     "wilson_95": [
       2.7755575615628914e-17,
@@ -39,7 +39,7 @@
     ]
   },
   "original_forecasts_or_doubles_modified": false,
-  "original_set_files": 6,
+  "original_set_files": 7,
   "prediction_type": "five_exact_score_combinations_on_the_same_two_matches",
   "result_source_rejections": {},
   "schema_version": 1,
@@ -644,10 +644,78 @@
           }
         ]
       }
+    },
+    {
+      "captured_at_utc": "2026-11-22T20:05:48.866795+00:00",
+      "full_grid_diagnosis": {
+        "coverage_cells_examined": 110,
+        "full_joint_support_cells": 57600,
+        "minimum_combinations_for_target_model_coverage": 110,
+        "optimal_five": [
+          {
+            "joint_probability": 0.01672728484481021,
+            "score1": "1-1",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.016000312461198245,
+            "score1": "1-0",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.015854310054181413,
+            "score1": "1-1",
+            "score2": "1-1"
+          },
+          {
+            "joint_probability": 0.015165277394216435,
+            "score1": "1-0",
+            "score2": "1-1"
+          },
+          {
+            "joint_probability": 0.013451146156063944,
+            "score1": "1-1",
+            "score2": "2-0"
+          }
+        ],
+        "optimal_five_model_coverage": 0.07719833091047025,
+        "target_computation_status": "exact",
+        "target_model_coverage": 0.7
+      },
+      "model_coverage_shortfall_to_target": 0.6228016690895297,
+      "selected_five_are_probability_optimal": true,
+      "selected_five_model_coverage": 0.07719833091047025,
+      "source_feature_gaps": [
+        {
+          "fixture_id": "1492463",
+          "market_used": false,
+          "validated_lineup_adjustments_applied": false,
+          "verified_shot_xg_available": false
+        },
+        {
+          "fixture_id": "1492467",
+          "market_used": false,
+          "validated_lineup_adjustments_applied": false,
+          "verified_shot_xg_available": false
+        }
+      ],
+      "source_file": "data/v10_prospective/doubles/2026-11-24.json",
+      "source_forecast_ids": [
+        "c0039275102010018137e5ce2bf569a57e727d1c7e0d6ebeebb73a4f3b21f0c6",
+        "ecac672b5a342595e9d306e43ead4c8eb224a2925490dc3cbc8686095d8e793d"
+      ],
+      "source_model_keys": [
+        "v8_near",
+        "v8_near"
+      ],
+      "status": "pending",
+      "sydney_date": "2026-11-24",
+      "target_model_mass_reached_by_five": false,
+      "verified_result_attribution": null
     }
   ],
   "source_rejections": {},
-  "source_valid_sets": 6,
+  "source_valid_sets": 7,
   "target": 0.7,
   "target_70_percent_proven": false
 }

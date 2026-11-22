@@ -1,0 +1,146 @@
+{
+  "actual_score": null,
+  "away_team": "Millwall",
+  "away_team_id": 58,
+  "changed": false,
+  "comparison_context": null,
+  "competition": "ELC",
+  "excluded_from_original_accuracy": true,
+  "fallback_reason": null,
+  "fixture_id": 1563285,
+  "history_as_of_utc": "2026-11-22T20:04:13.233530+00:00",
+  "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
+  "history_count": 749,
+  "history_warnings": [],
+  "history_window_start_utc": "2024-11-22T20:04:13.233530+00:00",
+  "home_team": "Stoke City",
+  "home_team_id": 75,
+  "input_digest": "66db8ba4bd9685b2295e91345aa42e2197b3c53cd6971f6ad574fa9e8d18315b",
+  "kickoff_utc": "2026-11-25T20:00:00Z",
+  "label": "Upcoming forecast revision",
+  "mode": "upcoming",
+  "model_sources": [
+    "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
+  ],
+  "original_captured_at_utc": "2026-11-13T09:18:14.814239+00:00",
+  "original_kickoff_utc": "2026-11-25T20:00:00Z",
+  "original_model": "reference-informed-v7-v6-retained",
+  "original_provider": "API-Football",
+  "original_score": [
+    1,
+    1
+  ],
+  "original_score_probability": 0.11232150847548035,
+  "original_source": "permanent_snapshot",
+  "policy_version": "two-season-asof-v1",
+  "provenance": {
+    "history_days": 730,
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-22T20:04:13.233530+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.006685733795166016,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-22T20:04:17.066535+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-22T20:04:17.073220+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.006829261779785156,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-22T20:04:17.308926+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-22T20:04:17.315755+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "rescored_at_utc": "2026-11-22T20:04:13.233530+00:00",
+  "revision_id": "20261122T200413233530Z-03fcc819-3cbadd5b234c",
+  "run_id": "20261122T200413233530Z-03fcc819",
+  "source_ref": null,
+  "updated_expected_goals": {
+    "away": 1.1129707087566394,
+    "home": 1.436215326502577
+  },
+  "updated_model": "reference-informed-v7",
+  "updated_outcome_probabilities": {
+    "away": 0.2887956093048996,
+    "draw": 0.27032382584306,
+    "home": 0.4408805648520405
+  },
+  "updated_score": [
+    1,
+    1
+  ],
+  "updated_score_probability": 0.1286817040670312,
+  "updated_top10_scores": [
+    [
+      1,
+      1,
+      0.1286817040670312
+    ],
+    [
+      1,
+      0,
+      0.1084641874851079
+    ],
+    [
+      2,
+      1,
+      0.08970061582497607
+    ],
+    [
+      0,
+      1,
+      0.08320415676470518
+    ],
+    [
+      0,
+      0,
+      0.08191446234016207
+    ],
+    [
+      2,
+      0,
+      0.08059566628098656
+    ],
+    [
+      1,
+      2,
+      0.0695119708631403
+    ],
+    [
+      2,
+      2,
+      0.0499170789861572
+    ],
+    [
+      0,
+      2,
+      0.048399407491552485
+    ],
+    [
+      3,
+      1,
+      0.04294313310012984
+    ]
+  ]
+}
