@@ -52,7 +52,7 @@ def score_grid(item, method):
         candidate = base.copy()
     elif method == "v25_anchored_75_25":
         candidate = np.asarray(_anchored_grid(item), dtype=float)
-    elif method.startswith("temperature_"):
+    elif method in ("temperature_flatten_1_15", "temperature_sharpen_0_85"):
         t = 1.15 if method == "temperature_flatten_1_15" else 0.85
         candidate = np.power(base, 1.0/t)
     elif method in ("high_goal_tilt_0_15", "low_goal_tilt_0_15"):
@@ -195,7 +195,6 @@ def summarize(rows, *, now):
         avg = {m: fsum(v)/len(v) if v else None for m,v in legs.items()}
         lower = wilson(hits, n)[0] if n else None
         exact_p = _paired_exact_sign_test(only_new, only_old) if n >= MIN_REVIEW_DAYS else None
-        base_log = None
         # Values below are descriptive; a true causal promotion needs prospective
         # independent matched wins and score calibration on the same fixtures.
         candidate_ready = (
