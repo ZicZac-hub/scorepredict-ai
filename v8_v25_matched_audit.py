@@ -25,6 +25,9 @@ from five_double_accuracy import (
 
 from professional_analyst_shadow_v25 import MIXTURE_FIVE_POLICY, PROBABILITY_VERSION
 from verified_result_index import index_verified_results
+from v25_score_accuracy_research import (
+    SENSITIVITIES, describe_score, replay_sensitivities, summarize_scores,
+)
 
 ROOT = Path("data/v10_prospective")
 PREMATCH = Path("data/prematch")
@@ -251,6 +254,9 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
     exclusions = Counter()
     rows, leg_metrics = [], []
     matched_v8, matched_v25 = [], []
+    shape_v8, shape_v25, shape_matched_v8 = [], [], []
+    shape_replay = {name: [] for name in SENSITIVITIES}
+    replay_excluded = 0
     probability_coverage = Counter()
     mixture_coverage = Counter()
     files = sorted(Path(sets).glob("*.json"))
@@ -319,6 +325,17 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
                 ],
             })
             leg_metrics.extend(row["v8_score_probability_diagnostics"])
+            for original_grid, actual in zip(grids, actuals):
+                shape_v8.append(describe_score(original_grid, actual))
+                try:
+                    candidate_scores = replay_sensitivities(original_grid, actual)
+                except (ValueError, TypeError, OverflowError):
+                    # Replay is exploratory, and its absence must never remove
+                    # a previously verified five-double result or V8 metric.
+                    replay_excluded += 1
+                else:
+                    for name in SENSITIVITIES:
+                        shape_replay[name].append(candidate_scores[name])
             if mixture_picks is not None:
                 row["v25_mixture_five_hit"] = tuple(actuals) in mixture_picks
             if probability_status == "frozen":
@@ -328,6 +345,14 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
                 ]
                 matched_v8.extend(row["v8_score_probability_diagnostics"])
                 matched_v25.extend(row["v25_score_probability_diagnostics"])
+                shape_matched_v8.extend(
+                    describe_score(grid, actual)
+                    for grid, actual in zip(grids, actuals)
+                )
+                shape_v25.extend(
+                    describe_score(grid, actual)
+                    for grid, actual in zip(v25_grids, actuals)
+                )
         rows.append(row)
     finished = [r for r in rows if r["status"] == "verified"]
     n = len(finished)
@@ -382,6 +407,37 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             "v25_grid_coverage_by_pair": dict(probability_coverage),
             "v8_on_same_legs": _calibration(matched_v8),
         },
+        "v25_score_accuracy_research": {
+            "schema_version": 1,
+            "same_original_v8_verified_legs": summarize_scores(shape_v8),
+            "retrospective_same_source_sensitivity_replays": {
+                name: summarize_scores(shape_replay[name])
+                for name in SENSITIVITIES
+            },
+            "retrospective_replay_excluded_legs": replay_excluded,
+            "prospective_same_leg_probability_comparison": {
+                "verified_leg_slots": len(shape_v25),
+                "v8_on_exact_same_legs": summarize_scores(shape_matched_v8),
+                "v25_frozen_on_exact_same_legs": summarize_scores(shape_v25),
+                "v25_minus_v8_exact_score_log_loss": (
+                    summarize_scores(shape_v25)["mean_exact_score_log_loss"]
+                    - summarize_scores(shape_matched_v8)["mean_exact_score_log_loss"]
+                    if shape_v25 else None
+                ),
+                "v25_minus_v8_multiclass_score_brier": (
+                    summarize_scores(shape_v25)["mean_multiclass_score_brier"]
+                    - summarize_scores(shape_matched_v8)["mean_multiclass_score_brier"]
+                    if shape_v25 else None
+                ),
+                "negative_delta_is_better": True,
+            },
+            "high_score_event_definition": "at least 4 regulation-time total goals",
+            "low_score_event_definition": "0 or 1 regulation-time total goals",
+            "retrospective_replay_is_not_a_frozen_v25_forecast": True,
+            "training_or_weight_optimization_on_verified_results": False,
+            "production_model_promoted": False,
+            "real_accuracy_improvement_established": False,
+        },
         "rows": rows,
         "no_provider_calls": True,
         "archived_picks_modified": False,
@@ -395,6 +451,7 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             "Probability comparison uses only verified pairs with both frozen V25 grids, without reconstructing historical probabilities.",
             "Archived JSON capture timestamps are checked but are not independent Git commit-time notarization.",
             "Small and overlapping samples cannot establish superiority, reliable accuracy or 70% hit rate.",
+            "Sensitivity replays are post-hoc transformations of archived V8 matrices, not frozen V25 predictions.",
         ],
     }
 
