@@ -1,18 +1,70 @@
 {
+  "all_score_calibration_models_frozen_pre_kickoff": true,
   "anchored_only_wins_over_robust": 0,
   "anchored_v25_wilson95": null,
   "capture": {
     "created": [],
-    "skipped": {
-      "not_new_original_v28_decision": 2
-    }
+    "skipped": {}
   },
   "estimated_model_mass_is_not_observed_accuracy": true,
-  "evaluated_at_utc": "2026-11-22T10:34:34.487643+00:00",
+  "evaluated_at_utc": "2026-11-22T11:06:27.266848+00:00",
   "frozen_prospective_same_pair_days": 0,
+  "independent_original_frozen_score_calibration": {
+    "anchored_minus_v8": {
+      "exact_score_log_loss": null,
+      "goal_mae": null,
+      "multiclass_score_brier": null,
+      "over_3_5_brier": null,
+      "under_1_5_brier": null
+    },
+    "equal_v25_sensitivity_minus_v8": {
+      "exact_score_log_loss": null,
+      "goal_mae": null,
+      "multiclass_score_brier": null,
+      "over_3_5_brier": null,
+      "under_1_5_brier": null
+    },
+    "model_score_metrics_are_not_five_double_win_rates": true,
+    "models": {
+      "anchored_v25": {
+        "mean_exact_score_log_loss": null,
+        "mean_goal_mae": null,
+        "mean_multiclass_score_brier": null,
+        "mean_over_3_5_brier": null,
+        "mean_under_1_5_brier": null,
+        "single_match_top_five_hits": 0,
+        "single_match_top_one_hits": 0,
+        "unique_physical_fixtures": 0
+      },
+      "original_v25_sensitivity": {
+        "mean_exact_score_log_loss": null,
+        "mean_goal_mae": null,
+        "mean_multiclass_score_brier": null,
+        "mean_over_3_5_brier": null,
+        "mean_under_1_5_brier": null,
+        "single_match_top_five_hits": 0,
+        "single_match_top_one_hits": 0,
+        "unique_physical_fixtures": 0
+      },
+      "original_v8": {
+        "mean_exact_score_log_loss": null,
+        "mean_goal_mae": null,
+        "mean_multiclass_score_brier": null,
+        "mean_over_3_5_brier": null,
+        "mean_under_1_5_brier": null,
+        "single_match_top_five_hits": 0,
+        "single_match_top_one_hits": 0,
+        "unique_physical_fixtures": 0
+      }
+    },
+    "negative_log_loss_or_brier_delta_is_better": true,
+    "repeated_fixture_slots_excluded": 0,
+    "unique_independently_verified_physical_fixtures": 0
+  },
   "initial_review_verified_pairs_target": 100,
   "invalid_or_tampered_challengers_excluded": {},
   "new_anchored_model_not_promoted_to_live": true,
+  "no_post_result_probability_reconstruction": true,
   "original_robust_only_wins_over_anchor": 0,
   "pending_is_not_a_miss": true,
   "pending_pair_days": 0,
