@@ -237,6 +237,55 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                             "prospective two-match set. It remains research-only. "
                             "Historical replay results cannot justify promotion."
                         )
+                try:
+                    v27 = json.loads(
+                        Path("data/v27_pair_selection/status.json")
+                        .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    v27 = {}
+                if v27.get("version") == "v27-frozen-full-slate-pair-quality-v1-research-only":
+                    st.markdown("#### V27 · Smart full-slate match-pair selection")
+                    day_study = v27.get("prospective_comparison") or {}
+                    same_day_wins = day_study.get("wins_on_same_completed_days") or {}
+                    st.write({
+                        "Original-slate decisions frozen before kickoff":
+                            day_study.get("frozen_decision_days", 0),
+                        "Research abstentions": day_study.get("abstained_days", 0),
+                        "V27 completed pairs": day_study.get(
+                            "v27_verified_pair_results", 0),
+                        "Still pending": day_study.get("v27_pending_pair_results", 0),
+                        "Both policies verified on same days":
+                            day_study.get("both_policies_verified_same_days", 0),
+                        "V27 five-double hits on those days":
+                            same_day_wins.get("v27_selected_robust", 0),
+                        "V25 original hits on those days":
+                            same_day_wins.get("v25_original_robust", 0),
+                        "Same exact fixtures selected by both":
+                            day_study.get("same_fixture_pair_comparisons", 0),
+                    })
+                    if day_study.get("invalid_or_tampered_decisions_excluded"):
+                        st.error(
+                            "Some V27 frozen selections failed provenance "
+                            "verification and are excluded from results."
+                        )
+                    if day_study.get("both_policies_verified_same_days"):
+                        st.caption(
+                            "V27 versus V25 is a SAME-DAY match-pair SELECTION "
+                            "comparison. The models may have selected different "
+                            "fixtures. It is not a same-match probability-calibration "
+                            "comparison or evidence of a 70% win rate."
+                        )
+                    else:
+                        st.info(
+                            "V27 is configured to freeze complete qualifying "
+                            "match slates on genuinely NEW V25 decision days. "
+                            "There are not yet matched verified selection results."
+                        )
+                    st.caption(
+                        "V26 separately evaluates calibration on the original "
+                        "V25 pair when at least 30 earlier verified sources qualify. "
+                        "Do not combine these different denominators."
+                    )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")

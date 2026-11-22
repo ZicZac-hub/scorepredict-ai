@@ -49,5 +49,9 @@ jobs:
         run: |
           python v26_temporal_score.py --verify-only
           python -c 'import json; r=json.load(open("data/v26_temporal_calibration/status.json")); assert r["original_frozen_forecasts_changed"] is False; assert r["production_model_promoted"] is False; print("V26 replay holdout:", r["chronological_research_replay"]["verified_holdout_fixtures"], "frozen verified:", r["prospective_verified"]["verified_pairs"])'
+      - name: Audit original-slate V27 decisions without creating new selections
+        run: |
+          python v27_pair_selection.py --verify-only
+          python -c 'import json; x=json.load(open("data/v27_pair_selection/status.json")); assert not x["production_model_promoted"]; assert x["original_frozen_predictions_modified"] is False; assert x["prospective_comparison"]["no_lookahead_or_retrospective_selection"]; print("V27 frozen decisions:", x["prospective_comparison"]["frozen_decision_days"], "verified same-day comparisons:", x["prospective_comparison"]["both_policies_verified_same_days"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
