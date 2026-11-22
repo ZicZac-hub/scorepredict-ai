@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from professional_analyst_shadow_v25 import propose
+from forecast_ledger import forecast_id
 from v26_temporal_score import (
     VERSION, TRAIN_MIN, calibrate, finished_samples, _compatible_training,
     original_rows, replay, freeze, evaluate,
@@ -19,9 +20,9 @@ MATRIX = np.outer([.22, .32, .24, .14, .08],
 
 
 def forecast(fid, capture, kickoff):
-    return {
+    row = {
         "provider": "API-Football", "fixture_id": str(fid),
-        "forecast_id": f"original-{fid}", "home_team_id": str(fid*2),
+        "home_team_id": str(fid*2),
         "away_team_id": str(fid*2+1),
         "home_team": f"Home {fid}", "away_team": f"Away {fid}",
         "model_key": "v8", "model_version": "archived-v8",
@@ -31,6 +32,8 @@ def forecast(fid, capture, kickoff):
         "evidence_as_of_utc": (capture - timedelta(minutes=1)).isoformat(),
         "kickoff_utc": kickoff.isoformat(), "score_matrix": MATRIX,
     }
+    row["forecast_id"] = forecast_id(row)
+    return row
 
 
 def final(model, score, verified_at):
