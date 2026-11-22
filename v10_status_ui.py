@@ -396,6 +396,57 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                         "same-day sensitivity check, not independent evidence. "
                         "Only independently verified full results count as wins/losses."
                     )
+                try:
+                    v30 = json.loads(
+                        Path("data/v30_full_slate_ranking/status.json")
+                        .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    v30 = {}
+                if v30.get("version") == "v30-verified-full-slate-ranking-audit-v1-research-only":
+                    st.markdown("#### V30 · All pre-frozen match-pair candidates")
+                    st.write({
+                        "Original pre-match V28 research days":
+                            v30.get("original_frozen_days", 0),
+                        "Original frozen five-score pair candidates":
+                            v30.get("frozen_candidate_pair_rows", 0),
+                        "Candidate pairs with BOTH verified final scores":
+                            v30.get("candidate_pair_rows_independently_verified", 0),
+                        "Candidate pairs still awaiting complete verification":
+                            v30.get("candidate_pair_rows_awaiting_verified_finals", 0),
+                        "Fully verified whole-day candidate slates":
+                            v30.get("fully_verified_slate_days", 0),
+                        "Partially verified candidate-slate days":
+                            v30.get("partially_verified_slate_days", 0),
+                        "Full-day research review milestone":
+                            str(v30.get("fully_verified_slate_days", 0)) + "/" +
+                            str(v30.get("initial_full_slate_day_review_target", 30)),
+                    })
+                    if v30.get("invalid_or_tampered_frozen_days_excluded"):
+                        st.error(
+                            "Some frozen V28 candidate catalogs failed their "
+                            "immutable-source checks and were excluded."
+                        )
+                    if not v30.get("fully_verified_slate_days"):
+                        st.info(
+                            "Frozen candidate combinations are recorded, but "
+                            "complete daily match slates still need independently "
+                            "verified final scores. Ranking calibration is not "
+                            "inferred from missing or partial results."
+                        )
+                    else:
+                        st.caption(
+                            "V30 evaluates within-day quality ranks, robustness "
+                            "ranks and original V8-referenced five-score model "
+                            "mass for the FULL frozen candidate slate. Each "
+                            "Sydney date is one research unit. Multiple pairs "
+                            "reuse the same matches; their results are correlated."
+                        )
+                    st.caption(
+                        "Top 1 / 5 / 10 pairs involve different ticket budgets. "
+                        "Top-five-pair results cannot be presented as the hit "
+                        "rate of a single five-double ticket. No 70% accuracy "
+                        "claim and no live model promotion."
+                    )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")
