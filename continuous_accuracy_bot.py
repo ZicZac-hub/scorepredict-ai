@@ -170,7 +170,7 @@ def run(*, root=ROOT, now=None, use_ai=True):
     day = clock.astimezone(timezone.utc).date().isoformat()
     note_path = destination / ("openai_research_" + day + ".json")
     key = os.getenv("OPENAI_API_KEY", "")
-    allowed = os.getenv("AI_RESEARCH_BOT_ENABLED", "false").lower() == "true"
+    allowed = os.getenv("AI_RESEARCH_BOT_ENABLED", "").strip().lower() not in ("false", "0", "off", "no")
     if note_path.is_file():
         existing = load(note_path)
         if existing is None:
@@ -181,7 +181,7 @@ def run(*, root=ROOT, now=None, use_ai=True):
     elif not use_ai:
         data["ai_connection"] = "test_mode_no_ai_call"
     elif not allowed:
-        data["ai_connection"] = "requires_AI_RESEARCH_BOT_ENABLED_true"
+        data["ai_connection"] = "AI_research_disabled_by_GitHub_variable"
     elif not key:
         data["ai_connection"] = "requires_OPENAI_API_KEY_GitHub_secret"
     else:
