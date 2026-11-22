@@ -189,11 +189,13 @@ def replay(root=SOURCE_ROOT, prematch=Path("data/prematch"), *, now=None):
     samples, conflicts = finished_samples(root, prematch, now=clock)
     baseline, challenger = [], []
     tested = []
+    maximum_prior_at_capture = 0
     for row in sorted(samples, key=lambda r: (r["captured"], r["source"]["fixture_id"])):
         training = _compatible_training(
             samples, cutoff=row["captured"],
             excluded_fixtures={(str(row["source"]["provider"]),
                                 str(row["source"]["fixture_id"]))})
+        maximum_prior_at_capture = max(maximum_prior_at_capture, len(training))
         result = calibrate(row["grid"].tolist(), training)
         if result is None:
             continue
@@ -213,6 +215,16 @@ def replay(root=SOURCE_ROOT, prematch=Path("data/prematch"), *, now=None):
         "kind": "retrospective_chronological_replay_from_real_original_pre_match_forecasts",
         "version": VERSION,
         "finished_original_v8_fixtures": len(samples),
+        "training_readiness": {
+            "verified_original_v8_fixtures_known_now": len(samples),
+            "minimum_prior_verified_fixtures_for_correction": TRAIN_MIN,
+            "max_prior_verified_before_any_historical_source_capture":
+                maximum_prior_at_capture,
+            "historical_chronological_test_ready": bool(tested),
+            "future_decision_has_enough_global_prior_sources":
+                len(samples) >= TRAIN_MIN,
+            "future_decision_must_still_check_actual_cutoff": True,
+        },
         "trained_before_each_source_capture": True,
         "minimum_prior_verified_matches": TRAIN_MIN,
         "verified_holdout_fixtures": len(tested),
