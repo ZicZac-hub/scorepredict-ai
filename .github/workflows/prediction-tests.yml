@@ -80,5 +80,10 @@ jobs:
           python -m unittest -q test_v33_early_rank_checkpoints.py
           python v33_early_rank_checkpoints.py
           python -c 'import json; r=json.load(open("data/v33_early_rank_checkpoints/status.json")); assert r["all_checkpoint_arm_memberships_fixed_before_reading_results"] and r["partial_checkpoint_never_scored_as_loss"] and not r["live_model_changed"] and r["seventy_percent_five_double_hit_rate_not_proven"]; print("V33 frozen days:",r["original_frozen_days"])'
+      - name: V34 independently re-evaluate score-failure categories and original-grid quality
+        run: |
+          python -m pytest -q tests/test_v34_score_error_research.py
+          python v34_score_error_research.py
+          python -c 'import json; r=json.load(open("data/v34_score_error_research/status.json")); assert r["candidate_pairs_are_not_independent_trials"]; assert r["score_models_have_identical_verified_fixture_denominator"]; assert r["probability_replays_are_not_real_v25_frozen_forecasts"]; assert r["seventy_percent_five_double_hit_rate_unproven"] and r["no_live_model_changes"]; assert r["original_v8_unique_fixture_score_diagnostics"]["verified_leg_slots"] == r["unique_verified_physical_fixtures"]; print("V34 deduplicated verified fixtures:",r["unique_verified_physical_fixtures"], "overlapping candidate pair rows:",r["verified_overlapping_candidate_pair_rows"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
