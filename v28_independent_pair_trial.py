@@ -392,7 +392,11 @@ def run(*, root=ORIGINAL_ROOT, prematch=PREMATCH, out=OUT,
                "source_ineligibility":{},"no_live_model_change":True}
               if verify_only else freeze(root=root,out=out,now=now,
                                          originals=originals))
-    study = evaluate(root=root,prematch=prematch,out=out,now=clock)
+    # For real scheduled executions the decision can be issued moments
+    # after run() began. Evaluate against the completed issuance time, never
+    # a pre-issuance report cutoff. Synthetic now remains deterministic.
+    report_clock = clock if now is not None else utc(datetime.now(timezone.utc))
+    study = evaluate(root=root,prematch=prematch,out=out,now=report_clock)
     output = {
         "version":VERSION, "generated_at_utc":clock.isoformat(),
         "freeze":frozen,"verified_comparison":study,
