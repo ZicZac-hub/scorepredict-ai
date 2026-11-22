@@ -1,12 +1,13 @@
 """V25 anchored future-only challenger guards and numeric invariants."""
 import unittest
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
 import numpy as np
 
 from v25_anchored_challenger import (
     BASELINE_WEIGHT, _anchored_grid, _frozen_eligible,
     _portfolio, _picks_hit, _joint_mass_at_actual,
-    _verify_frozen,
+    _verify_frozen, _mixture_grid, _score_calibration, _overall_proper_scores,
 )
 
 
@@ -70,6 +71,70 @@ class AnchoredV25Tests(unittest.TestCase):
         self.assertEqual(len({(p["score1"],p["score2"]) for p in packet["five_anchored_v25"]}),5)
         self.assertEqual(len(packet["frozen_anchored_score_grids"]),2)
         self.assertTrue(packet["same_original_pair_for_all_three_policies"])
+
+    def test_freeze_all_models_before_results_for_fair_comparison(self):
+        now=datetime(2026,11,23,12,tzinfo=timezone.utc)
+        packet=_portfolio(original(now), [item(101,1,2),item(102,3,4)],now)
+        for key in ("frozen_original_v8_score_grids",
+                    "frozen_v25_equal_sensitivity_score_grids",
+                    "frozen_anchored_score_grids"):
+            self.assertEqual(len(packet[key]),2)
+            for grid in packet[key]:
+                self.assertAlmostEqual(float(np.asarray(grid).sum()),1.0)
+        self.assertFalse(np.allclose(packet["frozen_original_v8_score_grids"][0],
+                                     packet["frozen_anchored_score_grids"][0]))
+        self.assertFalse(np.allclose(packet["frozen_v25_equal_sensitivity_score_grids"][0],
+                                     packet["frozen_anchored_score_grids"][0]))
+
+    def test_same_event_calibration_reports_proper_scores(self):
+        now=datetime(2026,11,23,12,tzinfo=timezone.utc)
+        packet=_portfolio(original(now), [item(101,1,2),item(102,3,4)],now)
+        good=_score_calibration(packet,["2-1","0-0"])
+        self.assertEqual(set(good),{"original_v8","original_v25_sensitivity","anchored_v25"})
+        for result in good.values():
+            self.assertEqual(len(result["leg_scores"]),2)
+            self.assertGreaterEqual(result["pair_mean_exact_score_log_loss"],0)
+            self.assertGreaterEqual(result["pair_mean_multiclass_score_brier"],0)
+        self.assertEqual(good["anchored_v25"]["leg_scores"][0]["actual_score"],"2-1")
+
+    def test_invalid_or_pending_scores_cannot_be_fabricated(self):
+        now=datetime(2026,11,23,12,tzinfo=timezone.utc)
+        packet=_portfolio(original(now), [item(101,1,2),item(102,3,4)],now)
+        for scores in (["0-0"], ["0-0","pending"], ["0-0","-1-0"]):
+            with self.assertRaises(ValueError):
+                _score_calibration(packet,scores)
+
+    def test_physical_fixture_deduplication_keeps_calibration_comparable(self):
+        now=datetime(2026,11,23,12,tzinfo=timezone.utc)
+        packet=_portfolio(original(now), [item(101,1,2),item(102,3,4)],now)
+        comp=_score_calibration(packet,["2-1","0-0"])
+        row={"sydney_day":"2026-11-24","frozen_at_utc":now.isoformat(),
+             "original_selected_fixture_keys":packet["original_selected_fixture_keys"],
+             "proper_score_comparison":comp}
+        totals=_overall_proper_scores([row,row])
+        self.assertEqual(totals["unique_independently_verified_physical_fixtures"],2)
+        self.assertEqual(totals["repeated_fixture_slots_excluded"],2)
+        self.assertIsNotNone(totals["anchored_minus_v8"]["exact_score_log_loss"])
+        self.assertIsNone(_overall_proper_scores([])["anchored_minus_v8"]["exact_score_log_loss"])
+
+    def test_original_real_frozen_slate_structural_compatibility_only(self):
+        # Read-only ORIGINAL pre-match fixture receipts from repository.
+        # No historical V25 challenger file or falsely prospective pick issued.
+        from v28_independent_pair_trial import verify_decision
+        from v10_prospective import ROOT
+        from five_double_accuracy import utc
+        originals=sorted(Path("data/v28_independent_pair_trial/decisions").glob("*.json"))
+        self.assertGreaterEqual(len(originals),2)
+        for path in originals:
+            decision, rows=verify_decision(path,root=ROOT,clock=datetime.now(timezone.utc))
+            if decision["policy"] != "FROZEN":
+                continue
+            saved=_portfolio(decision,rows,utc(decision["actually_issued_at_utc"]))
+            self.assertEqual(saved["original_selected_fixture_keys"],
+                             decision["quality_selection"]["fixture_keys"])
+            for grid in saved["frozen_anchored_score_grids"]:
+                self.assertAlmostEqual(sum(sum(row) for row in grid),1.0)
+        # This test is not a backdated forecast or an accuracy sample.
 
     def test_ineligible_close_kickoff_abstains(self):
         now=datetime(2026,11,23,12,tzinfo=timezone.utc)

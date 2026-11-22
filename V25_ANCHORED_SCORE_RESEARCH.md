@@ -45,3 +45,32 @@ never issues picks. Artifacts are in
 The new policy stays research-only, with no new paid API calls and no live
 model promotion. Neither this prospective experiment nor passed unit tests
 prove 70% five-double accuracy.
+
+## Probability-calibration audit (additional guard)
+
+The same **original-source V8**, **fixed V25 equal-sensitivity mixture** and
+**75/25 anchored challenger** full probability distributions for BOTH selected
+matches are now stored in the write-once pre-kickoff record. The saved V25
+lower-envelope five-score selections remain a *choice policy*, not a fourth
+normalized probability distribution.
+
+Only after both original physical fixtures have an independently verified
+regulation-time final, the tracker scores all three PRE-FROZEN distributions on
+the identical actual goals using proper multiclass Brier and exact-score
+log loss, plus total-goal 0–1 / 4+ bin Brier and goal MAE. Negative challenger
+minus V8 Brier/log-loss deltas indicate better probabilistic skill but not
+automatically better five-double hit rates. The summary deduplicates physical
+fixtures across repeated days to avoid artificially counting identical games as
+independent samples. The five-double observed hit-rate is separately a per-day
+same-pair binary outcome.
+
+Read-only CI also reconstructs the original pre-match **V28 saved source
+catalogs** to verify the upgraded math can consume real forecasts; that is a
+structural compatibility check, NOT a historical/backdated V25 prediction
+or a retrospectively achieved improvement.
+
+All components require fresh forward-only freezes. Promotion requires a
+substantially larger genuine matched cohort (initial target: 100 scored
+same-pair days), materially better out-of-sample five-double results and
+at least non-worse proper score calibration. Neither four past V25 outcomes
+nor software regression passing establishes a 70% five-double win rate.
