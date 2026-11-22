@@ -100,7 +100,7 @@ Scientific context:
   scoring rather than win-rate alone.
 - `Bayesian state-space models for the modelling and prediction of the results
   of English Premier League football` (2025),
-  https://doi.org/10.1093/jrsssc/qlae069 — benchmark context for log-score
+  https://doi.org/10.1093/jrsssc/qlae075 — benchmark context for log-score
   and Brier-based football forecast evaluation.
 - `Deployability of machine-learning prediction models in elite and
   high-level team sports` (2026),
