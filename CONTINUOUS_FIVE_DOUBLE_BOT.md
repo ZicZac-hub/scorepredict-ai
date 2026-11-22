@@ -42,11 +42,11 @@ is OpenAI's separate paid **API**, using the owner's existing
 `OPENAI_API_KEY` GitHub Actions secret (if installed). Keys stay exclusively
 inside GitHub Secrets, never in Streamlit frontend or commit contents.
 
-When a secret is available the controller sends **at most one small API request
+When a secret is available the controller attempts **at most one small API request
 per UTC day**, using the allowlisted `gpt-4o-mini` model by default (or an
 explicitly allowlisted `AI_RESEARCH_MODEL` variable).
 Its output is a bounded research memo describing **one falsifiable next
-method hypothesis and test**. A successful memo is stored once in
+method hypothesis and test**. Successful memos and failed-attempt receipts are stored once per UTC day in\n\`data/autobot/openai_attempt_YYYY-MM-DD.json\` (safe status only) and
 `data/autobot/openai_research_YYYY-MM-DD.json`. The AI output is **never
 executed** as code, never used to rewrite a forecast and cannot force a GitHub
 merge. OpenAI API billing is separate from ChatGPT subscriptions. Set the

@@ -145,3 +145,28 @@ def test_empty_github_model_variable_uses_allowlisted_default(tmp_path, monkeypa
     assert len(list((tmp_path/"bot").glob("openai_research_*.json"))) == 1
     module.run(root=tmp_path/"bot")
     assert len(seen) == 1
+
+
+def test_http_429_is_logged_and_never_retried_same_utc_day(tmp_path, monkeypatch):
+    import continuous_accuracy_bot as module
+    import requests
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("AI_RESEARCH_MODEL", "")
+    monkeypatch.setenv("AI_RESEARCH_BOT_ENABLED", "")
+    monkeypatch.setenv("OPENAI_API_KEY", "example-key")
+    attempts = []
+    def rate_limited(report, *, key, model):
+        attempts.append(model)
+        response = requests.Response()
+        response.status_code = 429
+        raise requests.HTTPError("Too Many Requests", response=response)
+    monkeypatch.setattr(module, "api_research_memo", rate_limited)
+    first = module.run(root=tmp_path/"bot")
+    second = module.run(root=tmp_path/"bot")
+    assert attempts == [module.DEFAULT_AI_MODEL]
+    assert first["ai_connection"] == "api_http_429"
+    assert second["ai_connection"] == "api_http_429"
+    attempts_file = list((tmp_path/"bot").glob("openai_attempt_*.json"))
+    assert len(attempts_file) == 1
+    import json
+    assert json.loads(attempts_file[0].read_text())["max_attempts_per_day"] == 1

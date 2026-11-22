@@ -169,6 +169,7 @@ def run(*, root=ROOT, now=None, use_ai=True):
     destination.mkdir(parents=True, exist_ok=True)
     day = clock.astimezone(timezone.utc).date().isoformat()
     note_path = destination / ("openai_research_" + day + ".json")
+    attempt_path = destination / ("openai_attempt_" + day + ".json")
     key = os.getenv("OPENAI_API_KEY", "")
     allowed = os.getenv("AI_RESEARCH_BOT_ENABLED", "").strip().lower() not in ("false", "0", "off", "no")
     if note_path.is_file():
@@ -184,9 +185,14 @@ def run(*, root=ROOT, now=None, use_ai=True):
         data["ai_connection"] = "AI_research_disabled_by_GitHub_variable"
     elif not key:
         data["ai_connection"] = "requires_OPENAI_API_KEY_GitHub_secret"
+    elif attempt_path.is_file():
+        previous = load(attempt_path) or {}
+        # Even errors count toward the one-per-day attempt budget. Repeated
+        # runs may inspect reports, but cannot repeatedly charge the API.
+        data["ai_connection"] = previous.get("status", "daily_api_attempt_already_recorded")
     else:
+        model = (os.getenv("AI_RESEARCH_MODEL") or DEFAULT_AI_MODEL).strip()
         try:
-            model = (os.getenv("AI_RESEARCH_MODEL") or DEFAULT_AI_MODEL).strip()
             if model not in ("gpt-4o-mini", "gpt-4.1-mini", "gpt-5-mini"):
                 raise ValueError("model_not_in_explicit_cost_bounded_allowlist")
             note = api_research_memo(data, key=key, model=model)
@@ -194,9 +200,22 @@ def run(*, root=ROOT, now=None, use_ai=True):
             note_path.write_text(json.dumps(note, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             data["ai_connection"] = "daily_research_memo_saved"
             data["ai_memo"] = note["memo"]
+        except requests.HTTPError as exc:
+            response = getattr(exc, "response", None)
+            http_code = getattr(response, "status_code", None)
+            data["ai_connection"] = "api_http_" + str(http_code if type(http_code) is int else "unknown")
         except (requests.RequestException, ValueError, KeyError) as exc:
-            # Data verification must continue even if model API is unavailable.
-            data["ai_connection"] = ("api_request_failed_" + (str(exc)[:100] if isinstance(exc, ValueError) else type(exc).__name__))
+            # Do not publish secret-bearing request details or raw API content.
+            data["ai_connection"] = ("api_request_failed_" +
+                (str(exc)[:100] if isinstance(exc, ValueError) else type(exc).__name__))
+        finally:
+            # Durable attempt receipt prevents repeated paid requests on each
+            # quarter-hour scheduled run, even when the API returns an error.
+            attempt_path.write_text(json.dumps({
+                "date_utc": day, "attempted_at_utc": clock.isoformat(),
+                "status": data.get("ai_connection", "no_api_result"),
+                "model": model, "max_attempts_per_day": MAX_AI_CALLS_PER_UTC_DAY,
+            }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     status = destination / "status.json"
     status.write_text(json.dumps(data, indent=2, sort_keys=True, allow_nan=False) + "\n",
                       encoding="utf-8")
