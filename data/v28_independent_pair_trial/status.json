@@ -1,21 +1,12 @@
 {
   "forecast_production_model_modified": false,
   "freeze": {
-    "created": [
-      {
-        "day": "2026-11-22",
-        "eligible_pairs": 3,
-        "policy": "FROZEN"
-      },
-      {
-        "day": "2026-11-23",
-        "eligible_pairs": 210,
-        "policy": "FROZEN"
-      }
-    ],
+    "created": [],
     "no_live_model_change": true,
     "not_frozen_inspected": [],
-    "skipped": {},
+    "skipped": {
+      "already_frozen_day": 2
+    },
     "source_ineligibility": {
       "invalid_source_time": 113,
       "not_original_v8_model": 544,
@@ -23,7 +14,7 @@
     },
     "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
-  "generated_at_utc": "2026-11-22T07:57:41.224368+00:00",
+  "generated_at_utc": "2026-11-22T08:50:58.289593+00:00",
   "no_additional_provider_or_llm_calls": true,
   "original_v8_v25_v26_v27_forecasts_changed": false,
   "prospective_accuracy_improvement_not_established": true,
@@ -36,7 +27,7 @@
     "control_only_wins": 0,
     "different_pair_days": 0,
     "do_not_treat_pending_as_losses": true,
-    "evaluated_at_utc": "2026-11-22T07:57:45.599537+00:00",
+    "evaluated_at_utc": "2026-11-22T08:50:59.472366+00:00",
     "exact_paired_test_two_sided_p": null,
     "excluded_invalid_or_tampered_files": {},
     "initial_review_ready": false,
