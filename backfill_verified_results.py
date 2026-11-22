@@ -6,6 +6,7 @@ from pathlib import Path
 from api_football import _request, ProviderQuotaError, ProviderAccessError, ProviderRejectedError
 from v10_prospective import ROOT, read_latest, utc
 from v16_pair_research import original_model
+from v31_slate_settlement import enrolled_due
 
 RESULTS = Path("data/prematch/verified_results.json")
 STATUS = Path("data/diagnostics/result_backfill.json")
@@ -46,12 +47,24 @@ def run(request=_request, now=None):
         status["state"]="missing_provider_key"
         return save(status)
     try:
-        originals=read_latest(ROOT)
         existing=json.loads(RESULTS.read_text()) if RESULTS.exists() else {}
         if not isinstance(existing,dict):
             status["state"]="invalid_existing_results"
             return save(status)
-        candidates={}
+        # Original source receipts from ALL frozen V28 candidate slates are
+        # enrollment evidence even after a latest forecast pointer changes.
+        # Refuse tampered slates before issuing ANY API request.
+        priority, enrolled = enrolled_due(ROOT, existing, clock)
+        status["original_slate_settlement"] = enrolled
+        candidates=dict(priority)
+        # Newest forecasts remain eligible for the legacy result pipeline,
+        # but cannot displace original pre-kickoff V28 source identities.
+        try:
+            originals=read_latest(ROOT)
+        except (OSError,ValueError,TypeError,KeyError):
+            originals={}
+            status["latest_forecast_index_unavailable"]=True
+        latest_ids=set()
         for row in originals.values() if isinstance(originals,dict) else originals:
             try:
                 if row.get("provider")!="API-Football" or row.get("model_key") not in ("v8","v8_near"):
@@ -60,7 +73,8 @@ def run(request=_request, now=None):
                 if kickoff+timedelta(hours=3)>clock:
                     continue
                 fid=str(int(row["fixture_id"]))
-                if fid in existing:
+                latest_ids.add(fid)
+                if fid in existing or fid in candidates:
                     continue
                 frozen=original_model(ROOT,row)
                 if not frozen or frozen.get("input_digest")!=row.get("input_digest"):
@@ -73,10 +87,21 @@ def run(request=_request, now=None):
             except (KeyError,ValueError,TypeError,OverflowError):
                 status["skipped_identity"]+=1
         status["eligible_unverified"]=len(candidates)
-        # API-Football supports up to 20 fixture IDs per request. Batch by
-        # original IDs, then independently validate each returned identity.
-        ordered=sorted(candidates.items(),key=lambda x:x[1]["kickoff_utc"])
+        status["original_slate_settlement"]["due_frozen_not_in_latest_forecast_index"] = sum(
+            fid not in latest_ids for fid in priority)
+        # Frozen research fixtures ALWAYS take precedence over legacy rows.
+        # Both arms share the original provider-call budget (max 12*20).
+        priority_order=sorted(priority.items(),key=lambda x:utc(x[1]["kickoff_utc"]))
+        other_order=sorted(
+            ((fid,source) for fid,source in candidates.items() if fid not in priority),
+            key=lambda x:utc(x[1]["kickoff_utc"]))
+        ordered=priority_order+other_order
         selected=ordered[:MAX_CALLS*20]
+        selected_ids={fid for fid,_ in selected}
+        status["original_slate_settlement"]["due_frozen_ids_prioritized"] = sum(
+            fid in selected_ids for fid in priority)
+        status["original_slate_settlement"]["due_frozen_ids_deferred_by_budget"] = sum(
+            fid not in selected_ids for fid in priority)
         status["requested_fixture_ids"]=len(selected)
         for offset in range(0,len(selected),20):
             group=selected[offset:offset+20]
