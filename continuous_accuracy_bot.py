@@ -186,7 +186,7 @@ def run(*, root=ROOT, now=None, use_ai=True):
         data["ai_connection"] = "requires_OPENAI_API_KEY_GitHub_secret"
     else:
         try:
-            model = os.getenv("AI_RESEARCH_MODEL", DEFAULT_AI_MODEL)
+            model = (os.getenv("AI_RESEARCH_MODEL") or DEFAULT_AI_MODEL).strip()
             if model not in ("gpt-4o-mini", "gpt-4.1-mini", "gpt-5-mini"):
                 raise ValueError("model_not_in_explicit_cost_bounded_allowlist")
             note = api_research_memo(data, key=key, model=model)
@@ -196,7 +196,7 @@ def run(*, root=ROOT, now=None, use_ai=True):
             data["ai_memo"] = note["memo"]
         except (requests.RequestException, ValueError, KeyError) as exc:
             # Data verification must continue even if model API is unavailable.
-            data["ai_connection"] = "api_request_failed_" + type(exc).__name__
+            data["ai_connection"] = ("api_request_failed_" + (str(exc)[:100] if isinstance(exc, ValueError) else type(exc).__name__))
     status = destination / "status.json"
     status.write_text(json.dumps(data, indent=2, sort_keys=True, allow_nan=False) + "\n",
                       encoding="utf-8")

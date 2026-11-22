@@ -124,3 +124,24 @@ def test_llm_response_is_text_only(monkeypatch):
     note=api_research_memo(report,key="example")
     assert "frozen games" in note["memo"]
     assert note["authorizes_code_execution"] is False
+
+
+def test_empty_github_model_variable_uses_allowlisted_default(tmp_path, monkeypatch):
+    import continuous_accuracy_bot as module
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("AI_RESEARCH_MODEL", "")
+    monkeypatch.setenv("AI_RESEARCH_BOT_ENABLED", "")
+    monkeypatch.setenv("OPENAI_API_KEY", "example-key")
+    seen = []
+    def fake_memo(report, *, key, model):
+        seen.append((key, model))
+        return {"memo":"Only new frozen verified matches can validate a challenger.",
+                "source":"OpenAI_API_not_the_ChatGPT_website",
+                "authorizes_code_execution":False}
+    monkeypatch.setattr(module, "api_research_memo", fake_memo)
+    result = module.run(root=tmp_path/"bot")
+    assert seen == [("example-key", module.DEFAULT_AI_MODEL)]
+    assert result["ai_connection"] == "daily_research_memo_saved"
+    assert len(list((tmp_path/"bot").glob("openai_research_*.json"))) == 1
+    module.run(root=tmp_path/"bot")
+    assert len(seen) == 1
