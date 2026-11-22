@@ -45,5 +45,9 @@ jobs:
         run: |
           python v25_five_double_frontier.py --output /tmp/v25_five_double_frontier.json
           python -c 'import json; x=json.load(open("/tmp/v25_five_double_frontier.json")); assert x["original_archived_sets"] > 0; assert not x["real_70pct_five_double_hit_rate_proven"]; print("70pct model feasibility:", x["sets_with_70pct_model_mass_in_only_five"], "of", x["original_archived_sets"])'
+      - name: Validate V26 historical chronology and prospective no-hindsight integrity
+        run: |
+          python v26_temporal_score.py --verify-only
+          python -c 'import json; r=json.load(open("data/v26_temporal_calibration/status.json")); assert r["original_frozen_forecasts_changed"] is False; assert r["production_model_promoted"] is False; print("V26 replay holdout:", r["chronological_research_replay"]["verified_holdout_fixtures"], "frozen verified:", r["prospective_verified"]["verified_pairs"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
