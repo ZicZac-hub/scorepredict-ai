@@ -447,6 +447,51 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                         "rate of a single five-double ticket. No 70% accuracy "
                         "claim and no live model promotion."
                     )
+                try:
+                    settle = json.loads(
+                        Path("data/diagnostics/result_backfill.json")
+                        .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    settle = {}
+                v31 = settle.get("original_slate_settlement") or {}
+                if v31:
+                    st.markdown("#### V31 · Frozen match result collection coverage")
+                    st.write({
+                        "Validated original V28 source slates":
+                            v31.get("validated_active_slate_days", 0),
+                        "Unique original fixtures enrolled for verification":
+                            v31.get("unique_original_fixtures_enrolled", 0),
+                        "Original fixtures not yet due for final result collection":
+                            v31.get("original_fixtures_not_yet_due", 0),
+                        "Original fixtures due but not saved as verified":
+                            v31.get("original_fixtures_due_without_saved_result", 0),
+                        "Due original fixtures selected within request budget":
+                            v31.get("due_frozen_ids_prioritized", 0),
+                        "Due original fixtures deferred by provider-call cap":
+                            v31.get("due_frozen_ids_deferred_by_budget", 0),
+                        "Due original fixtures missing from latest forecast pointer":
+                            v31.get("due_frozen_not_in_latest_forecast_index", 0),
+                        "New independently matched results recorded this run":
+                            len(settle.get("new_verified") or []),
+                    })
+                    if v31.get("next_original_fixture_settlement_due_utc"):
+                        st.caption(
+                            "Next original fixture result collection eligibility (UTC): "+
+                            str(v31["next_original_fixture_settlement_due_utc"])
+                        )
+                    if v31.get("invalid_original_slates_excluded") or (
+                        v31.get("conflicting_fixture_identities_excluded")):
+                        st.error(
+                            "Some frozen forecast sources failed independent "
+                            "validation or had conflicting fixture identities. "
+                            "They are excluded rather than treated as losses."
+                        )
+                    st.caption(
+                        "V31 requests official regulation-time final scores only "
+                        "after kickoff plus a three-hour verification buffer. "
+                        "The existing provider limit is unchanged. Forecast "
+                        "source receipts and frozen score predictions are never modified."
+                    )
                 research = matched.get("v25_score_accuracy_research") or {}
                 if research:
                     st.markdown("#### V25 score accuracy · Verified evidence")
