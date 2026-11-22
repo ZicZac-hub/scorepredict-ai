@@ -196,7 +196,13 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                     st.markdown("#### V26 · Chronological goal calibration trial")
                     retrospective = v26.get("chronological_research_replay") or {}
                     future = v26.get("prospective_verified") or {}
+                    readiness = retrospective.get("training_readiness") or {}
                     st.write({
+                        "Verified original V8 fixtures available as past training":
+                            readiness.get("verified_original_v8_fixtures_known_now", 0),
+                        "Most prior results available before a historical forecast":
+                            readiness.get(
+                                "max_prior_verified_before_any_historical_source_capture", 0),
                         "Historical chronological test fixtures":
                             retrospective.get("verified_holdout_fixtures", 0),
                         "Future-frozen V26 verified match pairs":
