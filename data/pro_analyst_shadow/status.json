@@ -38,7 +38,7 @@
             "as_of_utc": "2026-11-22T00:24:14.283727Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 15.66,
-            "evidence_age_hours_at_decision": 1.37,
+            "evidence_age_hours_at_decision": 2.26,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 13.66,
@@ -55,7 +55,7 @@
           "model_version": "ziczac-v8-near-kickoff-research-v1",
           "provider": "API-Football",
           "v25_probability": {
-            "frozen_at_utc": "2026-11-22T01:46:39.674426+00:00",
+            "frozen_at_utc": "2026-11-22T02:39:37.108752+00:00",
             "score_matrix": [
               [
                 0.10123185957013729,
@@ -409,6 +409,34 @@
         ],
         "independence_assumption": true,
         "lower_envelope_not_a_calibrated_probability": true,
+        "mixture_five": [
+          {
+            "joint_probability": 0.014977999173371977,
+            "score1": "1-0",
+            "score2": "1-1"
+          },
+          {
+            "joint_probability": 0.01198180684125868,
+            "score1": "2-0",
+            "score2": "1-1"
+          },
+          {
+            "joint_probability": 0.011759162637418434,
+            "score1": "1-0",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.011155728323030224,
+            "score1": "1-0",
+            "score2": "2-1"
+          },
+          {
+            "joint_probability": 0.01109732806527017,
+            "score1": "1-0",
+            "score2": "0-1"
+          }
+        ],
+        "mixture_five_policy": "v25-mixture-optimal-five-v1",
         "model_disagreement_model_mass_gap": 0.014453375340029807,
         "model_version": "pro-analyst-v25-robust-sensitivity-shadow",
         "no_claim_of_updated_team_news": true,
@@ -429,7 +457,7 @@
             "as_of_utc": "2026-11-22T00:24:17.137244Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 14.88,
-            "evidence_age_hours_at_decision": 1.37,
+            "evidence_age_hours_at_decision": 2.26,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 14.88,
@@ -446,7 +474,7 @@
           "model_version": "ziczac-v8-near-kickoff-research-v1",
           "provider": "API-Football",
           "v25_probability": {
-            "frozen_at_utc": "2026-11-22T01:46:39.674426+00:00",
+            "frozen_at_utc": "2026-11-22T02:39:37.108752+00:00",
             "score_matrix": [
               [
                 0.0637579445763497,
@@ -741,7 +769,7 @@
             "version": "v25-equal-sensitivity-mixture-v1"
           }
         },
-        "selected_at_utc": "2026-11-22T01:46:39.674426+00:00",
+        "selected_at_utc": "2026-11-22T02:39:37.108752+00:00",
         "sensitivity_model_names": [
           "baseline_v8",
           "poisson_marginal",
@@ -749,8 +777,8 @@
           "bivariate_poisson_c012"
         ],
         "source_age_hours": [
-          1.37,
-          1.37
+          2.26,
+          2.26
         ],
         "source_freshness_warning": false,
         "sydney_date": "2026-11-22",
@@ -792,7 +820,7 @@
             "as_of_utc": "2026-11-14T01:57:49.805842Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 14.0,
-            "evidence_age_hours_at_decision": 191.81,
+            "evidence_age_hours_at_decision": 192.7,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 14.1,
@@ -809,7 +837,7 @@
           "model_version": "ziczac-evidence-ensemble-v8-experimental",
           "provider": "API-Football",
           "v25_probability": {
-            "frozen_at_utc": "2026-11-22T01:46:39.674426+00:00",
+            "frozen_at_utc": "2026-11-22T02:39:37.108752+00:00",
             "score_matrix": [
               [
                 0.1138724164581619,
@@ -1128,6 +1156,34 @@
         ],
         "independence_assumption": true,
         "lower_envelope_not_a_calibrated_probability": true,
+        "mixture_five": [
+          {
+            "joint_probability": 0.016746441179131266,
+            "score1": "0-1",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.014976659320605755,
+            "score1": "1-1",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.014628788620070996,
+            "score1": "0-1",
+            "score2": "1-1"
+          },
+          {
+            "joint_probability": 0.01449048581888503,
+            "score1": "0-0",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.013082802554430444,
+            "score1": "1-1",
+            "score2": "1-1"
+          }
+        ],
+        "mixture_five_policy": "v25-mixture-optimal-five-v1",
         "model_disagreement_model_mass_gap": 0.012284569616010696,
         "model_version": "pro-analyst-v25-robust-sensitivity-shadow",
         "no_claim_of_updated_team_news": true,
@@ -1148,7 +1204,7 @@
             "as_of_utc": "2026-11-14T01:57:49.224033Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 15.19,
-            "evidence_age_hours_at_decision": 191.81,
+            "evidence_age_hours_at_decision": 192.7,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 15.0,
@@ -1165,7 +1221,7 @@
           "model_version": "ziczac-evidence-ensemble-v8-experimental",
           "provider": "API-Football",
           "v25_probability": {
-            "frozen_at_utc": "2026-11-22T01:46:39.674426+00:00",
+            "frozen_at_utc": "2026-11-22T02:39:37.108752+00:00",
             "score_matrix": [
               [
                 0.09790635094846324,
@@ -1460,7 +1516,7 @@
             "version": "v25-equal-sensitivity-mixture-v1"
           }
         },
-        "selected_at_utc": "2026-11-22T01:46:39.674426+00:00",
+        "selected_at_utc": "2026-11-22T02:39:37.108752+00:00",
         "sensitivity_model_names": [
           "baseline_v8",
           "poisson_marginal",
@@ -1468,8 +1524,8 @@
           "bivariate_poisson_c012"
         ],
         "source_age_hours": [
-          191.81,
-          191.81
+          192.7,
+          192.7
         ],
         "source_freshness_warning": true,
         "sydney_date": "2026-11-23",
@@ -1490,7 +1546,7 @@
   },
   "conflicting_verified_results_excluded": 0,
   "external_api_requests": 0,
-  "generated_at_utc": "2026-11-22T01:46:39.674426+00:00",
+  "generated_at_utc": "2026-11-22T02:39:37.108752+00:00",
   "model_promotion": false,
   "model_version": "pro-analyst-v25-robust-sensitivity-shadow",
   "never_a_claim_of_70_percent_accuracy": true,
