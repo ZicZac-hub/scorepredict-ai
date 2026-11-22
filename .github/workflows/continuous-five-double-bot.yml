@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install bounded numerical/test dependencies
-        run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3' 'pytest>=8,<10' 'scipy>=1.11,<2'
+        run: python -m pip install -r requirements.txt 'pytest>=8,<10' 'scipy>=1.11,<2'
       - name: Test the bot and candidate score methods without provider or AI calls
         run: python -m pytest -q tests/test_continuous_accuracy_bot.py
       - name: Recheck original V34 frozen score failures and source integrity
