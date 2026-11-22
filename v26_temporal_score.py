@@ -387,8 +387,9 @@ def evaluate(*, root=SOURCE_ROOT, prematch=Path("data/prematch"),
                     raise ValueError("training_receipt_not_originally_verified")
                 seen.add(key)
                 training.append(example)
-            if training != _compatible_training(
-                    training, cutoff=orig_at, excluded_fixtures=pair_ids):
+            ordered = _compatible_training(
+                training, cutoff=orig_at, excluded_fixtures=pair_ids)
+            if [_receipt(r) for r in training] != [_receipt(r) for r in ordered]:
                 raise ValueError("training_receipts_order_or_cutoff_changed")
             for source, grid, side in zip(originals, grids, ("first", "second")):
                 frozen = saved[side]
@@ -474,9 +475,12 @@ def evaluate(*, root=SOURCE_ROOT, prematch=Path("data/prematch"),
 
 
 def run(*, root=SOURCE_ROOT, prematch=Path("data/prematch"),
-        sets=ORIGINAL_V25_SETS, out=OUT, now=None):
+        sets=ORIGINAL_V25_SETS, out=OUT, now=None, verify_only=False):
     clock = utc(now or datetime.now(timezone.utc))
-    saved = freeze(root=root, prematch=prematch, sets=sets, out=out, now=clock)
+    saved = ({"new_frozen_days": [], "abstentions": {},
+              "model": VERSION, "live_model_changed": False}
+             if verify_only else freeze(root=root, prematch=prematch,
+                                        sets=sets, out=out, now=clock))
     report = {
         "version": VERSION,
         "evaluated_at_utc": clock.isoformat(),
@@ -498,7 +502,12 @@ def run(*, root=SOURCE_ROOT, prematch=Path("data/prematch"),
 
 
 if __name__ == "__main__":
-    report = run()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--verify-only", action="store_true",
+                        help="Never generate a new V26 set in result-backfill jobs")
+    args = parser.parse_args()
+    report = run(verify_only=args.verify_only)
     print(json.dumps({
         "new_frozen": report["prospective_freeze"]["new_frozen_days"],
         "replay_holdout": report["chronological_research_replay"]["verified_holdout_fixtures"],
