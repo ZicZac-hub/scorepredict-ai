@@ -216,3 +216,40 @@ def test_failed_serialization_never_leaves_a_partial_immutable_record(tmp_path):
     assert not list(tmp_path.glob('*.tmp'))
     assert _write_once(path, {'complete': True})
     assert json.loads(path.read_text()) == {'complete': True}
+
+
+def test_settle_counts_five_as_one_and_matches_regulation_fixture_identity():
+    conn = sqlite3.connect(':memory:')
+    first, second = fixture(1, 'football-data.org'), fixture(2)
+    options = five_doubles(first, second)
+    assert not save(conn, first, second, options[:4], now=NOW)
+    assert save(conn, first, second, options, now=NOW)
+    result1 = {
+        **first['fixture'], 'utcDate': '2026-11-15T13:00:00+01:00', 'status': 'FINISHED',
+        'score': {'duration': 'EXTRA_TIME', 'fullTime': {'home': 2, 'away': 1},
+                  'regularTime': {'home': 1, 'away': 1}},
+    }
+    result2 = {
+        **second['fixture'], 'utcDate': second['kickoff'], 'status': 'FINISHED',
+        'score': {'duration': 'REGULAR', 'fullTime': {'home': 1, 'away': 1}},
+    }
+    wrong_kickoff = {**result2, 'utcDate': '2026-11-15T15:00:00Z'}
+    wrong_team = {**result2, 'awayTeam': {'id': 22, 'name': 'B2'}}
+    clock = '2026-11-16T00:00:00Z'
+    for finals in ([result1, wrong_kickoff, wrong_team], [result1],
+                   [result1, result2, {**result2, 'score': {
+                       'duration': 'REGULAR', 'fullTime': {'home': 3, 'away': 3}}}]):
+        rows = settle(conn, finals, now=clock)
+        assert len(rows) == 5
+        assert {row['Set status'] for row in rows} == {'Pending'}
+        assert {row['Status'] for row in rows} == {'Pending'}
+
+    rows = settle(conn, [result1, result2], now=clock)
+    assert [row['Status'] for row in rows].count('Won') == 1
+    assert [row['Set status'] for row in rows if row['Double'] == 1] == ['Won']
+    assert rows[0]['Final 1'] == '1-1'
+
+    losing_second = {**result2, 'score': {
+        'duration': 'REGULAR', 'fullTime': {'home': 4, 'away': 4}}}
+    rows = settle(conn, [result1, losing_second], now=clock)
+    assert [row['Set status'] for row in rows if row['Double'] == 1] == ['Lost']

@@ -26,6 +26,7 @@ def benchmark(rows, min_sample=100):
 
     Each row: fixture_id, kickoff, actual=[home,away],
     forecasts={model: {created_at, scores:[[home,away,prob],...]}}.
+    Forecasts with probability_metrics_eligible=False contribute exact hits only.
     This is a per-match benchmark; five-double success is a separate metric.
     """
     by_model={}
@@ -72,9 +73,12 @@ def benchmark(rows, min_sample=100):
             top=sorted(probs,key=lambda score:(-probs[score],score))
             bucket=by_model.setdefault(str(name),{"n":0,"hits":0,"top5_hits":0,
                                                  "top5_probability_sum":0.0,
-                                                 "brier_sum":0.0,"brier_n":0})
+                                                 "probability_n":0,"brier_sum":0.0,"brier_n":0})
             bucket["n"]+=1
             bucket["hits"]+=int(top[0]==actual)
+            if forecast.get("probability_metrics_eligible") is False:
+                continue
+            bucket["probability_n"]+=1
             bucket["top5_hits"]+=int(actual in top[:5])
             bucket["top5_probability_sum"]+=sum(probs[k] for k in top[:5])
             if mass>=.999999:
@@ -83,9 +87,11 @@ def benchmark(rows, min_sample=100):
     models={}
     for name,b in sorted(by_model.items()):
         n=b["n"]
+        probability_n=b["probability_n"]
         models[name]={"fixtures":n,"exact_hit_rate":b["hits"]/n,
-                      "top5_hit_rate":b["top5_hits"]/n,
-                      "mean_top5_coverage":b["top5_probability_sum"]/n,
+                      "top5_hit_rate":b["top5_hits"]/probability_n if probability_n else None,
+                      "mean_top5_coverage":b["top5_probability_sum"]/probability_n if probability_n else None,
+                      "probability_forecast_count":probability_n,
                       "multiclass_brier":b["brier_sum"]/b["brier_n"] if b["brier_n"] else None,
                       "full_distribution_count":b["brier_n"],
                       "sample_status":"sufficient_for_initial_review" if n>=min_sample else "insufficient",

@@ -3,6 +3,8 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import json
 
+import pytest
+
 from five_double_accuracy import joint_geometry
 from v8_v25_matched_audit import _selection_mass, build_report
 
@@ -136,6 +138,25 @@ def test_conflicting_identity_verified_final_is_excluded(tmp_path):
     assert report["verified_matched_pairs"] == 0
 
 
+@pytest.mark.parametrize("changes", [
+    {"evidence_version": 1},
+    {"status": "NS", "home_goals": 3},
+    {"home_goals": "2"},
+    {"verified_at_utc": (NOW + timedelta(days=1)).isoformat(), "home_goals": 4},
+])
+def test_unqualified_rows_cannot_hide_a_verified_final(tmp_path, changes):
+    root, prematch, sets, _, first, _ = setup(tmp_path)
+    questionable = {"100": {**verified(first, (2, 0)), **changes}}
+    (root / "verified_results.json").write_text(json.dumps(questionable))
+
+    report = build_report(root, prematch, sets, now=NOW)
+
+    assert report["result_source_rejections"] == {"invalid_or_unavailable_verified_final": 1}
+    assert report["result_conflicts_excluded"] == 0
+    assert report["verified_matched_pairs"] == 1
+    assert report["v25"]["five_double_hits"] == 1
+
+
 def test_post_kickoff_selection_is_not_reconstructed(tmp_path):
     root, prematch, sets, packet, *_ = setup(tmp_path)
     late = deepcopy(packet)
@@ -201,9 +222,13 @@ def test_frozen_v25_probabilities_use_same_verified_legs_and_preserve_five_doubl
     frozen = propose([first, second], SELECTED, min_envelope=0)["days"][DAY]
     for leg in ("first", "second"):
         packet[leg]["v25_probability"] = frozen[leg]["v25_probability"]
+    packet["mixture_five"] = frozen["mixture_five"]
+    packet["mixture_five_policy"] = frozen["mixture_five_policy"]
     overwrite_set(sets, packet)
 
     pending = build_report(root, prematch, sets, now=SELECTED)
+    assert pending["matched_mixture_five"]["pending_pairs"] == 1
+    assert pending["matched_mixture_five"]["v25_mixture"]["five_double_hit_rate"] is None
     assert pending["matched_probability_calibration"]["pending_pairs"] == 1
     assert pending["v25_probability_calibration"]["evaluated_leg_slots"] == 0
 
@@ -215,6 +240,19 @@ def test_frozen_v25_probabilities_use_same_verified_legs_and_preserve_five_doubl
     assert v25["evaluated_leg_slots"] == 2
     assert v25["exact_score_log_loss"] != comparison["v8_on_same_legs"]["exact_score_log_loss"]
     assert report["v25"]["five_double_hits"] == 1
+    assert report["matched_mixture_five"]["verified_pairs"] == 1
+    assert report["matched_mixture_five"]["v25_robust"]["five_double_hits"] == 1
+    assert report["rows"][0]["v25_mixture_five_model_mass"] >= (
+        report["rows"][0]["v25_robust_five_mass_under_mixture"]
+    )
+
+    malformed = deepcopy(packet)
+    malformed["mixture_five"][0]["joint_probability"] += 0.1
+    overwrite_set(sets, malformed)
+    rejected = build_report(root, prematch, sets, now=NOW)
+    assert rejected["rows"][0]["v25_mixture_five_status"] == "invalid"
+    assert rejected["matched_mixture_five"]["verified_pairs"] == 0
+    assert rejected["matched_probability_calibration"]["verified_pairs"] == 1
 
     packet["first"]["v25_probability"]["frozen_at_utc"] = NOW.isoformat()
     overwrite_set(sets, packet)

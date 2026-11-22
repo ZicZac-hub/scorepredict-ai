@@ -9,6 +9,7 @@ from itertools import combinations
 from zoneinfo import ZoneInfo
 
 SYDNEY = ZoneInfo('Australia/Sydney')
+MIN_LEAD_SECONDS = 300
 
 
 def fixture_identity(row):
@@ -67,7 +68,8 @@ def five_doubles(first, second, limit=5):
 
 def _instant(value):
     try:
-        result = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+        result = value if isinstance(value, datetime) else datetime.fromisoformat(
+            str(value).replace('Z', '+00:00'))
         if result.tzinfo is None:
             result = result.replace(tzinfo=timezone.utc)
         return result.astimezone(timezone.utc)
@@ -81,33 +83,47 @@ def _sydney_day(value):
     return result.astimezone(SYDNEY).date() if result is not None else None
 
 
+def pair_issue(first, second, *, now=None, same_day=True):
+    """Validate a two-fixture opportunity before ranking live picks."""
+    fixtures = [row.get('fixture') or {} for row in (first, second)]
+    if any(fixture.get('id') in (None, '') for fixture in fixtures):
+        return 'Both matches need a fixture ID.'
+    if same_fixture(first, second):
+        return 'Choose two different fixtures.'
+    names = [' '.join(str((fixture.get(side + 'Team') or {}).get('name') or '')
+                      .casefold().split())
+             for fixture in fixtures for side in ('home', 'away')]
+    if not all(names) or len(set(names)) != 4:
+        return 'Choose a pair involving four different teams.'
+    team_ids = [(fixture.get('provider') or 'football-data.org', str(team['id']))
+                for fixture in fixtures for side in ('home', 'away')
+                if (team := fixture.get(side + 'Team') or {}).get('id') not in (None, '')]
+    if len(set(team_ids)) != len(team_ids):
+        return 'Choose a pair involving four different teams.'
+    times = [_instant(row.get('kickoff') or fixture.get('utcDate'))
+             for row, fixture in zip((first, second), fixtures)]
+    if any(kickoff is None for kickoff in times):
+        return 'Both matches need a valid kickoff time.'
+    if now is not None:
+        clock = _instant(now)
+        if clock is None or any((kickoff - clock).total_seconds() <= MIN_LEAD_SECONDS
+                                for kickoff in times):
+            return 'Both matches must be more than five minutes from kickoff.'
+    if same_day and len({kickoff.astimezone(SYDNEY).date() for kickoff in times}) != 1:
+        return 'Choose two matches on the same Sydney calendar date.'
+    return None
+
+
 def rank_pairs(rows, limit=5, *, now=None):
     """Compare distinct-team same-Sydney-day pairs by modeled coverage.
 
     Live callers supply ``now`` so cached fixtures that have started cannot
     become new predictions. Omitting it supports dated historical replays.
     """
-    clock = _instant(now) if now is not None else None
-    if now is not None and clock is None:
-        return []
     eligible = [r for r in rows if _scores(r)]
     candidates = []
     for first, second in combinations(eligible, 2):
-        if same_fixture(first, second):
-            continue
-        names = [' '.join(str(((row.get('fixture') or {}).get(side+'Team') or {})
-                                  .get('name') or '').casefold().split())
-                 for row in (first, second) for side in ('home', 'away')]
-        if not all(names) or len(set(names)) != 4:
-            continue
-        if clock is not None and any(
-                (kick := _instant(row.get('kickoff') or
-                                  (row.get('fixture') or {}).get('utcDate'))) is None
-                or (kick-clock).total_seconds() <= 300
-                for row in (first, second)):
-            continue
-        day = _sydney_day(first.get('kickoff') or (first.get('fixture') or {}).get('utcDate'))
-        if day is None or day != _sydney_day(second.get('kickoff') or (second.get('fixture') or {}).get('utcDate')):
+        if pair_issue(first, second, now=now):
             continue
         picks = five_doubles(first, second)
         if len(picks) < 5:

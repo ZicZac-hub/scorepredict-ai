@@ -4,29 +4,10 @@ Uses no odds endpoint unless user presses Run. Existing v8 Auto Select,
 v6 forecasts and the frozen pre-kickoff prediction ledger are not changed.
 """
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
 import pandas as pd
 from market_score_v9 import select_market_response, predict
-from smart_double_ai import five_doubles
+from smart_double_ai import five_doubles, pair_issue
 from smart_double_v8 import _kick
-
-SYDNEY = ZoneInfo("Australia/Sydney")
-
-
-def eligible_pair(left,right):
-    if str((left.get("fixture") or {}).get("id")) == str((right.get("fixture") or {}).get("id")) and (
-        str((left.get("fixture") or {}).get("provider")) == str((right.get("fixture") or {}).get("provider"))):
-        return False
-    a,b=_kick(left),_kick(right)
-    if a is None or b is None or a<=datetime.now(timezone.utc) or b<=datetime.now(timezone.utc):
-        return False
-    if a.astimezone(SYDNEY).date()!=b.astimezone(SYDNEY).date():
-        return False
-    f1,f2=left["fixture"],right["fixture"]
-    names=lambda fixture:{str((fixture.get(side+"Team") or {}).get("name") or "").strip().casefold() for side in ("home","away")}
-    first,second=names(f1),names(f2)
-    return "" not in first|second and not first&second
-
 
 def _retrieve(key,fixture):
     """One current, provider-documented /odds request per selected fixture."""
@@ -54,14 +35,19 @@ def render(st,rows,histories,labeler,api_key):
         choices=[x for x in entries if x!=first]
         second=st.selectbox("Market double · Match 2",choices,key="v9_market_second")
         sig=(first,second)
-        if not eligible_pair(entries[first],entries[second]):
-            st.warning("Choose matches on the same Sydney calendar day involving four different teams.")
+        selected = (entries[first], entries[second])
+        issue = pair_issue(*selected, now=datetime.now(timezone.utc))
+        if issue:
+            st.warning(issue)
             return
         if st.button("🔬 Calculate market-informed five doubles",key="run_v9_manual_double",type="primary",use_container_width=True):
-            now=datetime.now(timezone.utc)
             forecast=[]
             evidence=[]
             for label in (first,second):
+                issue = pair_issue(*selected, now=datetime.now(timezone.utc))
+                if issue:
+                    st.session_state["v9_market_double"]={"signature":sig,"error":issue}
+                    break
                 row=entries[label]
                 fixture=row["fixture"]
                 past=row.get("past") or histories.get(row.get("league"),[])
@@ -71,7 +57,19 @@ def render(st,rows,histories,labeler,api_key):
                     market,warning=_retrieve(api_key,fixture)
                 except (ValueError,TypeError,RuntimeError) as exc:
                     warning="Odds provider was unavailable: "+type(exc).__name__
-                result=predict(fixture,past,league_history=league,market=market,as_of=now)
+                observed = datetime.now(timezone.utc)
+                issue = pair_issue(*selected, now=observed)
+                if issue:
+                    st.session_state["v9_market_double"]={"signature":sig,"error":issue}
+                    break
+                try:
+                    result=predict(fixture,past,league_history=league,market=market,as_of=observed)
+                except ValueError:
+                    if market is None:
+                        raise
+                    market=None
+                    warning="The odds failed pre-match verification."
+                    result=predict(fixture,past,league_history=league,as_of=observed)
                 if not result:
                     st.session_state["v9_market_double"]={"signature":sig,
                         "error":"Insufficient verified history for "+label}
@@ -82,13 +80,18 @@ def render(st,rows,histories,labeler,api_key):
                                  "market_used":bool(market),
                                  "note":warning or "Valid pre-match prices used."})
             if len(forecast)==2:
-                doubles=five_doubles(*forecast)
+                issue = pair_issue(*forecast, now=datetime.now(timezone.utc))
+                doubles = [] if issue else five_doubles(*forecast)
                 if len(doubles)==5:
                     st.session_state["v9_market_double"]={"signature":sig,"doubles":doubles,
                                                           "evidence":evidence}
                 else:
                     st.session_state["v9_market_double"]={"signature":sig,
-                        "error":"Not enough distinct valid score pairs."}
+                        "error":issue or "Not enough distinct valid score pairs."}
+        issue = pair_issue(*selected, now=datetime.now(timezone.utc))
+        if issue:
+            st.info(issue)
+            return
         output=st.session_state.get("v9_market_double") or {}
         if output.get("signature")!=sig:
             st.caption("Press Calculate to run the v9 check for your selected pair.")

@@ -37,7 +37,7 @@ from advanced import backtest, summarize_backtest, ranked_double_chance, five_tw
 from history_store import connect, save_predictions, reconcile, load
 from double_tracker import save as save_double_snapshot, settle as settle_doubles
 from double_score_selection import select_diversified, score_coverage
-from smart_double_ai import rank_pairs, five_doubles
+from smart_double_ai import rank_pairs, five_doubles, pair_issue
 from dashboard_ui import (header_html, studio_css, sync_location, navigate,
                           open_double_mode, sync_double_mode, fallback_competitions)
 from private_access import require_access
@@ -1949,12 +1949,15 @@ with active_page_slot:
                 first_name=st.selectbox('Match 1',pair_names,key='manual_double_first_'+str(selected_double_league)+'_'+str(selected_double_team),
                                         index=0 if pair_names else None,
                                         placeholder='Choose an upcoming match')
-                second_names=[name for name in pair_names if name!=first_name]
+                pair_clock=datetime.now(timezone.utc)
+                second_names=[name for name in pair_names if first_name is not None
+                              and not pair_issue(pair_options[first_name],pair_options[name],
+                                                 now=pair_clock,same_day=False)]
                 second_name=st.selectbox('Match 2',second_names,key='manual_double_second_'+str(selected_double_league)+'_'+str(selected_double_team),
                                          index=0 if second_names else None,
                                          placeholder='Choose a different match')
                 if first_name is None or second_name is None:
-                    st.caption('Select two available matches to calculate exact-score doubles.')
+                    st.caption('Select two upcoming matches involving four different teams.')
                 else:
                     st.caption('Match 1: '+_double_local_time(pair_options[first_name]).strftime('%a %d %b, %I:%M %p')+' Sydney · Match 2: '+_double_local_time(pair_options[second_name]).strftime('%a %d %b, %I:%M %p')+' Sydney')
                 # Reuse the cached Pro research across navigation and reruns.
@@ -1993,14 +1996,19 @@ with active_page_slot:
                         else:
                             st.warning(f"{selected_name}: {error}")
                 manual_options=[]
-                if first_name is not None and second_name is not None and pair_options[first_name].get('result') and pair_options[second_name].get('result'):
+                if first_name is not None and second_name is not None:
                     first=pair_options[first_name]
                     second=pair_options[second_name]
-                    manual_options=five_doubles(first,second)
-                if first_name is not None and second_name is not None and not manual_options:
-                    st.info('Both matches must have verified history before five exact-score doubles can be calculated. Choose another match or check the Pro research warning above.')
-                if manual_options:
-                    manual_options=manual_options[:5]
+                    issue=pair_issue(first,second,now=datetime.now(timezone.utc),same_day=False)
+                    if issue:
+                        st.info(issue)
+                    elif not first.get('result') or not second.get('result'):
+                        st.info('Both matches need verified history before five exact-score doubles can be calculated.')
+                    else:
+                        manual_options=five_doubles(first,second)
+                        if len(manual_options)!=5:
+                            st.info('The models do not supply enough valid score probabilities for five distinct doubles.')
+                if len(manual_options)==5:
                     _coverage=score_coverage(manual_options)
                     st.markdown('**Five highest-probability exact-score doubles for your two chosen matches**')
                     st.caption(f"Coverage: {_coverage['match_1_scores']} different Match 1 scores · {_coverage['match_2_scores']} different Match 2 scores · {_coverage['distinct_exact_score_pairs']} exact pairs. Only a score pair in the SAME double counts as a win. The five distinct score pairs maximize their combined model probability for these two matches, assuming independence.")
@@ -2057,36 +2065,29 @@ with active_page_slot:
                             st.caption('Double saving is paused until the central archive can be restored, preserving any earlier original selections.')
                     except Exception as _exc:
                         st.caption('Double tracking unavailable: '+str(_exc))
-                    with st.expander('📊 Double prediction accuracy · final scores'):
-                        if conn is None:
-                            st.info('Prediction database unavailable on this server.')
-                        else:
-                            _finished={}
-                            for _games in histories.values():
-                                for _game in _games:
-                                    if _game.get('status')!='FINISHED': continue
-                                    if _game.get('provider','football-data.org')=='football-data.org':
-                                        from result_verification import primary_result
-                                        _game=primary_result(_game)
-                                    _sc=(_game.get('score') or {}).get('fullTime') or {}
-                                    if isinstance(_sc.get('home'),int) and isinstance(_sc.get('away'),int):
-                                        _finished[(str(_game.get('provider') or 'football-data.org'),str(_game.get('id')))]=f"{_sc['home']}-{_sc['away']}"
-                            _records=settle_doubles(conn,_finished)
-                            _done=[x for x in _records if x['Status']!='Pending']
-                            _won=sum(x['Status']=='Won' for x in _done)
-                            st.metric('Winning doubles',f'{_won} / {len(_done)}',
-                                      help='Only doubles with two verified final scores are counted.')
-                            if _records:
-                                st.dataframe(pd.DataFrame(_records),hide_index=True,use_container_width=True)
-                                st.download_button('Download double accuracy history',
-                                    pd.DataFrame(_records).to_csv(index=False).encode(),
-                                    'ziczac_double_accuracy.csv','text/csv',key='double_accuracy_export')
-                            else:
-                                st.info('No saved doubles yet.')
-                            st.caption('Pending means final scores are not yet available in loaded history. Snapshots use local SQLite, which may reset on ephemeral hosting. Historical accuracy cannot guarantee future wins.')
-
             else:
                 st.info('Select at least two fixtures in the match selector above to choose your own double.')
+            with st.expander('📊 Double prediction accuracy · final scores'):
+                if conn is None:
+                    st.info('Prediction database unavailable on this server.')
+                else:
+                    _finished=(_game for _games in histories.values() for _game in _games)
+                    _records=settle_doubles(conn,_finished)
+                    _sets=[x['Set status'] for x in _records if x['Double']==1]
+                    _won=_sets.count('Won')
+                    _settled=_won+_sets.count('Lost')
+                    st.metric('Winning five-double sets',f'{_won} / {_settled}',
+                              help='A set wins when one of its five rows matches both verified regulation-time scores.')
+                    st.caption(f"{_sets.count('Pending')} pending sets · {_sets.count('Incomplete')} incomplete archived sets")
+                    if _records:
+                        st.dataframe(pd.DataFrame(_records),hide_index=True,use_container_width=True)
+                        st.download_button('Download double accuracy history',
+                            pd.DataFrame(_records).to_csv(index=False).encode(),
+                            'ziczac_double_accuracy.csv','text/csv',key='double_accuracy_export')
+                    else:
+                        st.info('No saved doubles yet.')
+                    st.caption('Pending sets are waiting for two matching regulation-time results in loaded history. Snapshots use local SQLite, which may reset on ephemeral hosting. Historical accuracy cannot guarantee future wins.')
+
             st.divider()
             # The five-double generator uses the SAME future date window and
             # league/team filters as the match selector, not the unrelated
@@ -2121,33 +2122,42 @@ with active_page_slot:
                 st.info('At least two researched fixtures are required. Choose Today + next 7 days, All leagues and All teams, or select two API-Football fixtures for Pro research.')
             else:
                 options=[]
+                pair_clock=datetime.now(timezone.utc)
                 for a,b in combinations(chosen_rows,2):
-                    for option in five_doubles(a,b):
+                    if pair_issue(a,b,now=pair_clock):
+                        continue
+                    picks=five_doubles(a,b)
+                    if len(picks)!=5:
+                        continue
+                    for option in picks:
                         options.append({'Match 1':fixture_label(a),'Score 1':option['Score 1'],
                                         'Match 2':fixture_label(b),'Score 2':option['Score 2'],
                                         'Match 1 probability':option['P1'],'Match 2 probability':option['P2'],
                                         'Joint probability':option['Joint']})
-                options.sort(key=lambda x:x['Joint probability'],reverse=True)
-                best=options[:5]
-                st.caption('These are the five highest-probability distinct selections from the eligible fixture pairs. Each row requires both exact scores. Rows reusing matches are correlated; their probabilities must not be added across different fixture pairs.')
-                display=pd.DataFrame([{'Rank':i+1,'Match 1':o['Match 1'],'Exact score 1':o['Score 1'],
-                    'Match 2':o['Match 2'],'Exact score 2':o['Score 2'],
-                    'Score 1 probability':f"{o['Match 1 probability']:.2%}",
-                    'Score 2 probability':f"{o['Match 2 probability']:.2%}",
-                    'Combined probability':f"{o['Joint probability']:.3%}"} for i,o in enumerate(best)])
-                st.markdown('##### 📱 Five ranked doubles · no sideways scrolling')
-                for _rank,_o in enumerate(best,1):
-                    with st.container(border=True):
-                        st.markdown(f'**Double {_rank}**')
-                        st.markdown('**Match 1:** '+_o['Match 1'])
-                        st.markdown(f"**Predicted score:** {_o['Score 1']} · **Score probability:** {_o['Match 1 probability']:.2%}")
-                        st.markdown('**Match 2:** '+_o['Match 2'])
-                        st.markdown(f"**Predicted score:** {_o['Score 2']} · **Score probability:** {_o['Match 2 probability']:.2%}")
-                        st.metric('Combined probability',f"{_o['Joint probability']:.3%}")
-                with st.expander('Full doubles table · swipe to inspect'):
-                    st.dataframe(display,hide_index=True,use_container_width=True)
-                st.download_button('Download my five score doubles',display.to_csv(index=False).encode(),'exact_score_doubles.csv','text/csv')
-                st.caption('Joint probabilities multiply two modelled score probabilities assuming independence. Matches may be correlated, and the model may be miscalibrated.')
+                if not options:
+                    st.info('No two researched fixtures are eligible for five doubles on the same Sydney date.')
+                else:
+                    options.sort(key=lambda x:x['Joint probability'],reverse=True)
+                    best=options[:5]
+                    st.caption('These are the five highest-probability distinct selections from the eligible fixture pairs. Each row requires both exact scores. Rows reusing matches are correlated; their probabilities must not be added across different fixture pairs.')
+                    display=pd.DataFrame([{'Rank':i+1,'Match 1':o['Match 1'],'Exact score 1':o['Score 1'],
+                        'Match 2':o['Match 2'],'Exact score 2':o['Score 2'],
+                        'Score 1 probability':f"{o['Match 1 probability']:.2%}",
+                        'Score 2 probability':f"{o['Match 2 probability']:.2%}",
+                        'Combined probability':f"{o['Joint probability']:.3%}"} for i,o in enumerate(best)])
+                    st.markdown('##### 📱 Five ranked doubles · no sideways scrolling')
+                    for _rank,_o in enumerate(best,1):
+                        with st.container(border=True):
+                            st.markdown(f'**Double {_rank}**')
+                            st.markdown('**Match 1:** '+_o['Match 1'])
+                            st.markdown(f"**Predicted score:** {_o['Score 1']} · **Score probability:** {_o['Match 1 probability']:.2%}")
+                            st.markdown('**Match 2:** '+_o['Match 2'])
+                            st.markdown(f"**Predicted score:** {_o['Score 2']} · **Score probability:** {_o['Match 2 probability']:.2%}")
+                            st.metric('Combined probability',f"{_o['Joint probability']:.3%}")
+                    with st.expander('Full doubles table · swipe to inspect'):
+                        st.dataframe(display,hide_index=True,use_container_width=True)
+                    st.download_button('Download my five score doubles',display.to_csv(index=False).encode(),'exact_score_doubles.csv','text/csv')
+                    st.caption('Joint probabilities multiply two modelled score probabilities assuming independence. Matches may be correlated, and the model may be miscalibrated.')
             st.subheader('Detailed home/away form and head-to-head')
             for r in chosen_rows:
                 m,p=r['fixture'],r['result']

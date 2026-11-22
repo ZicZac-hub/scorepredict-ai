@@ -4,6 +4,7 @@ import json
 import math
 import re
 from datetime import datetime, timezone
+from result_verification import primary_result
 from smart_double_ai import same_fixture
 
 KNOWN_PROVIDERS = {'football-data.org', 'API-Football'}
@@ -59,8 +60,8 @@ def save(conn, first, second, options, now=None):
     identity = [now.date().isoformat(), provider1, str(a['id']), provider2, str(b['id']), model1, model2]
     key = 'v2-' + hashlib.sha256(json.dumps(identity).encode()).hexdigest()
     entries = [{'score1': o['Score 1'], 'score2': o['Score 2'],
-                'probability': float(o['Joint'])} for o in options[:5]]
-    if (not entries or len({(x['score1'],x['score2']) for x in entries}) != len(entries)
+                'probability': float(o['Joint'])} for o in options]
+    if (len(entries) != 5 or len({(x['score1'],x['score2']) for x in entries}) != 5
             or any(not re.fullmatch(r'\d+-\d+', str(x[side])) for x in entries for side in ('score1','score2'))
             or any(not math.isfinite(x['probability']) or not 0 <= x['probability'] <= 1 for x in entries)
             or sum(x['probability'] for x in entries) > 1.0+1e-8):
@@ -97,20 +98,65 @@ def saved_pairs(conn):
     return output
 
 
-def settle(conn, finished):
-    """Settle only provider-qualified outcomes; ambiguous old sources stay pending."""
+def _final_scores(matches, clock):
+    scores = {}
+    conflicts = set()
+    for match in matches:
+        if not isinstance(match, dict) or match.get('status') != 'FINISHED':
+            continue
+        provider = match.get('provider') or 'football-data.org'
+        if provider not in KNOWN_PROVIDERS:
+            continue
+        kickoff = _date(match.get('utcDate'))
+        ids = (match.get('id'), (match.get('homeTeam') or {}).get('id'),
+               (match.get('awayTeam') or {}).get('id'))
+        if (clock is None or kickoff is None or kickoff >= clock or
+                any(value is None for value in ids)):
+            continue
+        if provider == 'football-data.org':
+            match = primary_result(match)
+        score = match.get('score') or {}
+        full = score.get('fullTime') or {}
+        goals = tuple(full.get(side) for side in ('home', 'away'))
+        if (score.get('duration') not in (None, 'REGULAR') or
+                any(type(value) is not int or value < 0 for value in goals)):
+            continue
+        key = (provider, *(str(value) for value in ids), kickoff)
+        value = f'{goals[0]}-{goals[1]}'
+        if key in scores and scores[key] != value:
+            conflicts.add(key)
+        scores[key] = value
+    return {key: score for key, score in scores.items() if key not in conflicts}
+
+
+def settle(conn, finished, *, now=None):
+    """Grade each original row and set using identity-matched regulation finals."""
+    clock = _date(now) if now is not None else datetime.now(timezone.utc)
+    matches = finished.values() if isinstance(finished, dict) else finished
+    scores = _final_scores(matches, clock)
     output = []
     for row in saved_pairs(conn):
-        score1 = finished.get((row['first_provider'], row['first_id']))
-        score2 = finished.get((row['second_provider'], row['second_id']))
-        if row['first_provider'] not in KNOWN_PROVIDERS or row['second_provider'] not in KNOWN_PROVIDERS:
-            score1 = score2 = None
-        for rank, option in enumerate(json.loads(row['predictions_json']), 1):
-            status = ('Pending' if score1 is None or score2 is None else
-                      'Won' if option['score1'] == score1 and option['score2'] == score2 else 'Lost')
+        def final(leg):
+            return scores.get((row[f'{leg}_provider'], row[f'{leg}_id'],
+                               row[f'{leg}_home_id'], row[f'{leg}_away_id'],
+                               _date(row[f'{leg}_kickoff'])))
+
+        score1, score2 = final('first'), final('second')
+        options = json.loads(row['predictions_json'])
+        pending = score1 is None or score2 is None
+        distinct = {(option['score1'], option['score2']) for option in options}
+        set_status = (
+            'Incomplete' if len(options) != 5 or len(distinct) != 5 else
+            'Pending' if pending else
+            'Won' if (score1, score2) in distinct else 'Lost'
+        )
+        for rank, option in enumerate(options, 1):
+            pick = (option['score1'], option['score2'])
+            status = ('Pending' if pending else 'Won' if pick == (score1, score2) else 'Lost')
             output.append({'Saved UTC': row['saved_at'][:16], 'Double': rank,
                            'Match 1': row['first_name'], 'Prediction 1': option['score1'],
                            'Final 1': score1 or '—', 'Match 2': row['second_name'],
                            'Prediction 2': option['score2'], 'Final 2': score2 or '—',
-                           'Status': status, 'Estimated probability': option['probability']})
+                           'Status': status, 'Set status': set_status,
+                           'Estimated probability': option['probability']})
     return output

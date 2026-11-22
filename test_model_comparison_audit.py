@@ -33,6 +33,19 @@ class BenchmarkTests(unittest.TestCase):
     def test_truncated_distribution_not_brier(self):
         r=row();r["forecasts"]["baseline"]["scores"]=[[1,0,.3],[0,0,.2]]
         self.assertIsNone(benchmark([r])["models"]["baseline"]["multiclass_brier"])
+    def test_probability_metrics_use_only_eligible_forecasts_in_same_model(self):
+        distribution, point = row(), row()
+        point["fixture_id"] = "api:13"
+        point["actual"] = [1, 1]
+        point["forecasts"]["baseline"].update(
+            scores=[[1, 0, 1.0]], probability_metrics_eligible=False,
+        )
+        x = benchmark([distribution, point])["models"]["baseline"]
+        self.assertEqual(x["fixtures"], 2)
+        self.assertEqual(x["exact_hit_rate"], .5)
+        self.assertEqual(x["probability_forecast_count"], 1)
+        self.assertEqual(x["top5_hit_rate"], 1)
+        self.assertAlmostEqual(x["mean_top5_coverage"], 1)
     def test_paired_cohort_excludes_duplicate_fixtures(self):
         r=row()
         r["forecasts"]["challenger"]=dict(r["forecasts"]["baseline"])

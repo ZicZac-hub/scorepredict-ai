@@ -5,7 +5,7 @@ smart-double output. The stored result is session-only and not a verified pick.
 """
 from datetime import datetime, timezone
 import pandas as pd
-from smart_double_ai import five_doubles
+from smart_double_ai import five_doubles, pair_issue
 from smart_double_v8 import research_fixture_rows, rank_research_pairs, manually_selected, select_auto_research_pool
 
 
@@ -69,7 +69,7 @@ def render(st, rows, histories, labeler):
             with st.spinner("Comparing verified match history and score distributions..."):
                 pool=select_auto_research_pool(eligible,max_fixtures=18,max_days=3)
                 researched = research_fixture_rows(pool,histories,max_fixtures=18)
-                best = rank_research_pairs(researched,limit=1)
+                best = rank_research_pairs(researched,limit=1,now=datetime.now(timezone.utc))
             if best:
                 st.session_state["v8_double_report"] = {"identity":identity,"candidate":best[0]}
             else:
@@ -99,4 +99,10 @@ def render(st, rows, histories, labeler):
     if saved.get("reason"):
         st.warning(saved["reason"])
         return
-    _show(st,saved["candidate"],labeler)
+    candidate = saved["candidate"]
+    issue = pair_issue(candidate["first"], candidate["second"], now=datetime.now(timezone.utc),
+                       same_day=mode.startswith("AI"))
+    if issue:
+        st.info(issue)
+        return
+    _show(st,candidate,labeler)

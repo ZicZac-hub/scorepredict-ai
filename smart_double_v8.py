@@ -8,18 +8,14 @@ from datetime import datetime, timezone
 from itertools import combinations
 from zoneinfo import ZoneInfo
 from research_ensemble_v8 import predict as predict_v8
-from smart_double_ai import five_doubles, same_fixture
+from smart_double_ai import MIN_LEAD_SECONDS, _instant, five_doubles, pair_issue
 
 SYDNEY = ZoneInfo("Australia/Sydney")
 VERSION = "evidence-v8-five-doubles-challenger"
 
 
 def _kick(row):
-    try:
-        dt=datetime.fromisoformat(str(row.get("kickoff", "")).replace("Z","+00:00"))
-        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
-    except (ValueError,TypeError):
-        return None
+    return _instant(row.get("kickoff") or (row.get("fixture") or {}).get("utcDate"))
 
 
 def _team_key(row,side):
@@ -42,7 +38,8 @@ def select_auto_research_pool(rows,max_fixtures=18,max_days=3,as_of=None):
     groups={}
     for row in rows:
         kickoff=_kick(row)
-        if not kickoff or kickoff<=instant or not row.get("result"):
+        if (not kickoff or (kickoff - instant).total_seconds() <= MIN_LEAD_SECONDS
+                or not row.get("result")):
             continue
         day=kickoff.astimezone(SYDNEY).date().isoformat()
         groups.setdefault(day,[]).append(row)
@@ -91,7 +88,8 @@ def research_fixture_rows(rows, histories, max_fixtures=18, as_of=None):
     """Calculate at most 18 time-bounded challenger forecasts on demand."""
     as_of=as_of or datetime.now(timezone.utc)
     available = sorted((row for row in rows if row.get("result") and
-                        _kick(row) and _kick(row)>as_of),key=_kick)
+                        _kick(row) and (_kick(row) - as_of).total_seconds()
+                        > MIN_LEAD_SECONDS),key=_kick)
     evaluated=[]
     seen=set()
     attempts=0
@@ -114,18 +112,11 @@ def research_fixture_rows(rows, histories, max_fixtures=18, as_of=None):
     return evaluated
 
 
-def rank_research_pairs(rows,limit=5):
+def rank_research_pairs(rows,limit=5,*,now=None):
     """Same Sydney date, four distinct teams, highest five-double model mass."""
     candidates=[]
     for first,second in combinations(rows,2):
-        if same_fixture(first,second):
-            continue
-        a,b=_kick(first),_kick(second)
-        if a is None or b is None or a.astimezone(SYDNEY).date()!=b.astimezone(SYDNEY).date():
-            continue
-        names1={_team_key(first,"home"),_team_key(first,"away")}
-        names2={_team_key(second,"home"),_team_key(second,"away")}
-        if "" in names1|names2 or names1&names2:
+        if pair_issue(first, second, now=now):
             continue
         picks=five_doubles(first,second)
         if len(picks)!=5:
@@ -140,7 +131,11 @@ def rank_research_pairs(rows,limit=5):
 
 def manually_selected(first,second,histories,as_of=None):
     """Return both original and challenger doubles for the exact user pair."""
-    researched=research_fixture_rows([first,second],histories,max_fixtures=2,as_of=as_of)
+    cutoff = as_of if as_of is not None else datetime.now(timezone.utc)
+    issue = pair_issue(first, second, now=cutoff, same_day=False)
+    if issue:
+        return {"available": False, "reason": issue}
+    researched=research_fixture_rows([first,second],histories,max_fixtures=2,as_of=cutoff)
     if len(researched)!=2:
         return {"available":False,"reason":"One or both matches lack sufficient v8 verified league research."}
     lookup={(str(r["fixture"].get("provider")),str(r["fixture"].get("id"))):r for r in researched}
@@ -148,6 +143,8 @@ def manually_selected(first,second,histories,as_of=None):
     b=lookup.get((str(second["fixture"].get("provider")),str(second["fixture"].get("id"))))
     if a is None or b is None:
         return {"available":False,"reason":"A requested match could not be matched to verified research."}
+    if as_of is None and (issue := pair_issue(a, b, now=datetime.now(timezone.utc), same_day=False)):
+        return {"available": False, "reason": issue}
     doubles=five_doubles(a,b)
     if len(doubles)!=5:
         return {"available":False,"reason":"Insufficient valid score probabilities to form five distinct doubles."}

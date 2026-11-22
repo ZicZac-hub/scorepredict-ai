@@ -14,7 +14,8 @@ import heapq
 from pathlib import Path
 import re
 
-from five_double_accuracy import _final, _result_index, _validated_grid, utc
+from five_double_accuracy import _final, _validated_grid, utc
+from verified_result_index import index_verified_results
 
 ROOT = Path("data/v10_prospective")
 PREMATCH = Path("data/prematch")
@@ -117,7 +118,7 @@ def _frozen_pair_reproduction(chosen, family):
 
 def build_report(root=ROOT, prematch=PREMATCH, *, now=None):
     clock = utc(now or datetime.now(timezone.utc))
-    finals, conflicts, rejected = _result_index(root, prematch)
+    finals, conflicts, rejected = index_verified_results(root, prematch, clock)
     chosen = {}
     source_rejections = Counter()
     for (provider, fixture_id), result in sorted(finals.items()):
