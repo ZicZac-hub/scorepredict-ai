@@ -1,15 +1,15 @@
 {
-  "at_utc": "2026-11-22T14:35:54.025480+00:00",
+  "at_utc": "2026-11-22T15:30:33.313757+00:00",
   "attempted_legs": 0,
   "calls": 0,
   "capture_window_minutes": [
     8,
     2880
   ],
-  "completed_at_utc": "2026-11-22T14:35:54.756127+00:00",
+  "completed_at_utc": "2026-11-22T15:30:34.391245+00:00",
   "daily_attempts_limit": 6,
   "daily_attempts_used": 6,
-  "eligible_legs": 19,
+  "eligible_legs": 18,
   "enabled": true,
   "maximum_near_refresh_attempts_per_original": 1,
   "near_refresh_window_minutes": [
@@ -19,7 +19,6 @@
   "new_packets": [],
   "reason": "daily_attempt_budget_exhausted",
   "skipped": [
-    "1570459:daily_attempt_budget_exhausted",
     "1552227:daily_attempt_budget_exhausted",
     "1552821:daily_attempt_budget_exhausted",
     "1557473:daily_attempt_budget_exhausted",
@@ -71,11 +70,12 @@
       ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
+        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
         "both_identity_matched_starting_XIs_unavailable"
       ],
       "source_captured_at_utc": "2026-11-22T12:20:28.350305+00:00",
-      "source_observed_within_3_hours": true,
+      "source_observed_within_3_hours": false,
       "xg_fixtures_by_team": {
         "120": 0,
         "126": 0
@@ -133,11 +133,12 @@
       ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
+        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
         "both_identity_matched_starting_XIs_unavailable"
       ],
       "source_captured_at_utc": "2026-11-22T12:20:28.120205+00:00",
-      "source_observed_within_3_hours": true,
+      "source_observed_within_3_hours": false,
       "xg_fixtures_by_team": {
         "119": 0,
         "136": 0
@@ -379,24 +380,6 @@
       "xg_fixtures_by_team": {
         "535": 0,
         "727": 0
-      }
-    },
-    "1570459": {
-      "confirmed_xi_team_ids": [],
-      "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
-      "lineups_have_zero_numerical_weight": true,
-      "refresh_reasons": [
-        "source_not_observed_within_3_hours",
-        "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
-      ],
-      "source_captured_at_utc": "2026-11-22T05:42:49.977961+00:00",
-      "source_observed_within_3_hours": false,
-      "xg_fixtures_by_team": {
-        "4665": 0,
-        "548": 0
       }
     },
     "1575227": {
