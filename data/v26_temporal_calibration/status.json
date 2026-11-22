@@ -24,7 +24,7 @@
       "total_goals_bias_actual_minus_expected": null,
       "verified_leg_slots": 0
     },
-    "finished_original_v8_fixtures": 77,
+    "finished_original_v8_fixtures": 79,
     "holdout_source_receipts": [],
     "kind": "retrospective_chronological_replay_from_real_original_pre_match_forecasts",
     "limitations": [
@@ -48,7 +48,7 @@
       "historical_chronological_test_ready": false,
       "max_prior_verified_before_any_historical_source_capture": 0,
       "minimum_prior_verified_fixtures_for_correction": 30,
-      "verified_original_v8_fixtures_known_now": 77
+      "verified_original_v8_fixtures_known_now": 79
     },
     "v26_minus_v8_log_loss": null,
     "v26_minus_v8_multiclass_brier": null,
@@ -79,12 +79,14 @@
     "verified_holdout_fixtures": 0,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
-  "evaluated_at_utc": "2026-11-22T21:06:17.694300+00:00",
+  "evaluated_at_utc": "2026-11-22T21:44:29.669756+00:00",
   "no_provider_calls": true,
   "original_frozen_forecasts_changed": false,
   "production_model_promoted": false,
   "prospective_freeze": {
-    "abstentions": {},
+    "abstentions": {
+      "v25_set_not_new_in_same_freeze_window": 6
+    },
     "live_model_changed": false,
     "model": "v26-temporal-tail-calibration-v1-research-only",
     "new_frozen_days": []
