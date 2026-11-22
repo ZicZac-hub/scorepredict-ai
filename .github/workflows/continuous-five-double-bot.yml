@@ -2,6 +2,12 @@ name: 24/7 Five-Double Research Bot
 
 on:
   workflow_dispatch:
+    inputs:
+      retry_openai_after_key_rotation:
+        description: 'One extra OpenAI API attempt after updating a failed 401 secret'
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [main]
     paths:
@@ -48,9 +54,17 @@ jobs:
         # catalog against original receipts and record all six methods.
         run: python v35_continuous_double_trials.py
       - name: Generate watchdog report and optional bounded OpenAI research memo
-        # Exactly one successful AI memo at most per UTC day.
+        # A manual owner dispatch can request one extra attempt ONLY for a
+        # saved API 401 after key rotation, and never for a 429.
         # AI cannot mutate forecasts, push code, execute shell or merge PRs.
-        run: python continuous_accuracy_bot.py
+        env:
+          OWNER_OPENAI_RETRY: ${{ github.event_name == 'workflow_dispatch' && inputs.retry_openai_after_key_rotation && 'true' || 'false' }}
+        run: |
+          if [ "$OWNER_OPENAI_RETRY" = "true" ]; then
+            python continuous_accuracy_bot.py --retry-after-key-rotation
+          else
+            python continuous_accuracy_bot.py
+          fi
       - name: Assert no retroactive model promotion and segregated denominators
         run: |
           python - <<'PY'
@@ -92,6 +106,7 @@ jobs:
             data/autobot/status.json
             data/autobot/openai_research_*.json
             data/autobot/openai_attempt_*.json
+            data/autobot/openai_retry_*.json
             data/v34_score_error_research/status.json
             data/v35_continuous_challengers/status.json
             data/v35_continuous_challengers/sets/*.json
