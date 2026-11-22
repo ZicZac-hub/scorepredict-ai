@@ -122,6 +122,9 @@ def test_all_pairs_ranked_provenance_frozen_and_same_day_verified(tmp_path):
     assert done["v27_verified_pair_results"] == 1
     assert done["both_policies_verified_same_days"] == 1
     assert done["wins_on_same_completed_days"]["v27_selected_robust"] == 1
+    assert done["same_fixture_pair_comparisons"] == 0
+    assert done["different_fixture_pairs_same_day"] == 1
+    assert done["rows"][0]["same_two_fixtures_as_v25"] is False
     assert done["rows"][0]["model_mass_is_not_measured_accuracy"] is True
     assert done["70_percent_five_double_accuracy_proven"] is False
     assert saved.read_bytes() == first
@@ -221,3 +224,28 @@ def test_candidate_threshold_is_research_only_not_win_probability(tmp_path):
     assert selected["rank_quality"] < 1
     assert selected["rank_quality"] > 0
     assert selected["v25_lower_envelope_is_uncalibrated"] is True
+
+
+def test_issuance_lead_guard_records_abstention_not_backdated_selection():
+    from v27_pair_selection import _apply_issuance_guard
+    slate = {
+        "decision": "V27_SELECTED",
+        "selected_pair": {
+            "fixture_keys": [["API-Football", "9"], ["API-Football", "10"]]
+        },
+        "candidate_catalog": [{"fixture_keys": [["API-Football", "9"],
+                                               ["API-Football", "10"]]}],
+    }
+    source = [
+        {"key": ("API-Football", "9"),
+         "kickoff": SELECT + timedelta(minutes=50)},
+        {"key": ("API-Football", "10"),
+         "kickoff": SELECT + timedelta(minutes=120)},
+    ]
+    issued = SELECT + timedelta(minutes=10)
+    result = _apply_issuance_guard(slate, source, issued)
+    assert result["decision"] == "V27_ABSTAIN"
+    assert result["reason"] == "chosen_pair_not_45_minutes_early_at_issue"
+    assert result["candidate_catalog"] == slate["candidate_catalog"]
+    assert "selected_pair" not in result
+    assert slate["decision"] == "V27_SELECTED"  # don't mutate original slate
