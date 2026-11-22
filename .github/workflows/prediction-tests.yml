@@ -85,5 +85,11 @@ jobs:
           python -m pytest -q tests/test_v34_score_error_research.py
           python v34_score_error_research.py
           python -c 'import json; r=json.load(open("data/v34_score_error_research/status.json")); assert r["candidate_pairs_are_not_independent_trials"]; assert r["score_models_have_identical_verified_fixture_denominator"]; assert r["probability_replays_are_not_real_v25_frozen_forecasts"]; assert r["seventy_percent_five_double_hit_rate_unproven"] and r["no_live_model_changes"]; assert r["original_v8_unique_fixture_score_diagnostics"]["verified_leg_slots"] == r["unique_verified_physical_fixtures"]; print("V34 deduplicated verified fixtures:",r["unique_verified_physical_fixtures"], "overlapping candidate pair rows:",r["verified_overlapping_candidate_pair_rows"])'
+      - name: Audit V35 continuous future-only challengers with no AI or provider calls
+        run: |
+          python -m pytest -q tests/test_continuous_accuracy_bot.py
+          python v35_continuous_double_trials.py --verify-only
+          python continuous_accuracy_bot.py --no-ai
+          python -c 'import json; a=json.load(open("data/autobot/status.json")); b=json.load(open("data/v35_continuous_challengers/status.json")); assert a["priority"]=="five_exact_score_doubles"; assert not a["production_model_changed_by_bot"]; assert b["research_only_methods_not_live_promoted"] and b["independent_same_fixture_comparisons_only"]; assert not b["invalid_or_altered_v35_sets_excluded"]; print("Future frozen pairs:",b["frozen_prospective_days"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
