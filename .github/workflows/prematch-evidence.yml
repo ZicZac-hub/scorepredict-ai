@@ -238,6 +238,10 @@ jobs:
       - name: Diagnose original five-double misses and target feasibility (no API calls)
         if: always()
         run: python five_double_accuracy.py
+      - name: Independently measure V25 five-double 70 percent feasibility frontier
+        # No new sports-data calls, no retroactive recalibration, no new picks.
+        if: always()
+        run: python v25_five_double_frontier.py
       - name: Produce unified immutable hit/miss/pending evidence report
         # Run even after a provider quota failure; no new external requests.
         # The published GitHub status contains ONLY already-public scheduled

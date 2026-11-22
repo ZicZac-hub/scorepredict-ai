@@ -41,5 +41,9 @@ jobs:
         run: |
           python v25_prospective_monitor.py --audit /tmp/v8_v25_matched.json --output /tmp/v25_freeze_monitor.json --require-provenance
           python -c 'import json; d=json.load(open("/tmp/v25_freeze_monitor.json")); assert d["check_passed"]; print("Prospective V25 frozen:", d["new_sets_with_both_valid_grids_and_mixture"], "verified:", d["new_verified_pairs"], "pending:", d["new_pending_pairs"])'
+      - name: Independently reproduce V25 70-percent model feasibility
+        run: |
+          python v25_five_double_frontier.py --output /tmp/v25_five_double_frontier.json
+          python -c 'import json; x=json.load(open("/tmp/v25_five_double_frontier.json")); assert x["original_archived_sets"] > 0; assert not x["real_70pct_five_double_hit_rate_proven"]; print("70pct model feasibility:", x["sets_with_70pct_model_mass_in_only_five"], "of", x["original_archived_sets"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
