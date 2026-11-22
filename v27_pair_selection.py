@@ -136,7 +136,7 @@ def build_slate(original_forecasts, cutoff, day, *, max_pairs=MAX_EVALUATED_PAIR
     sources = [receipt(item) for item in items]
     evidence = {
         "candidate_fixtures": len(items),
-        "qualified_four-team_pairs": len(pairs),
+        "qualified_four_team_pairs": len(pairs),
         "excluded_original_sources": dict(excluded),
         "eligible_original_source_receipts": sources,
         "source_receipts_sha256": digest(sources),
