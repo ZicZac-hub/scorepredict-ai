@@ -20,6 +20,7 @@ from professional_analyst_shadow_v25 import _pair, MAX_EARLY_SOURCE_AGE
 from v10_prospective import utc
 from v21_goal_model_comparison import variants
 from v25_evidence_audit import trace_pair
+from v25_five_double_frontier import frontier
 
 VERSION = "v25-on-demand-robust-sensitivity-experimental"
 # Separate prospective on-demand research from the V25 scheduled shadow cohort.
@@ -160,6 +161,13 @@ def generate(first,second,now):
     if len(selection)!=5 or len({(p["score1"],p["score2"]) for p in selection})!=5:
         return {"status":"insufficient_model_support"}
     source_audit=trace_pair(first,second,clock)
+    # Pure mathematical feasibility under the same frozen V8 score grids.
+    # This does not alter or inflate any of the five displayed V25 picks.
+    feasibility = frontier(
+        first["alternatives"]["baseline_v8"],
+        second["alternatives"]["baseline_v8"],
+        checkpoints=(5,),
+    )
     return {
         "status":"ready",
         "source_evidence_audit":source_audit,
@@ -176,6 +184,16 @@ def generate(first,second,now):
         "v8_optimal_five_estimated_mass":metrics["v8_optimal_five_model_mass"],
         "v25_five_original_v8_mass":metrics["robust_five_v8_model_mass"],
         "v25_lower_envelope_criterion":metrics["robust_lower_envelope_model_mass"],
+        "five_double_seventy_percent_model_feasibility": {
+            "max_five_model_mass_from_original_v8": feasibility[
+                "model_max_five_probability_mass"],
+            "minimum_distinct_combinations_for_70pct_model_mass": feasibility[
+                "minimum_joint_combinations_for_target_model_mass"],
+            "five_original_v8_choices_reach_70pct_mass": feasibility[
+                "target_met_by_five_model_choices"],
+            "model_estimate_not_empirical_accuracy": True,
+            "five_v25_selections_remain_unchanged": True,
+        },
         "source_times_utc":[first["captured_at_utc"],second["captured_at_utc"]],
         "early_frozen_source":[first["early_source"],second["early_source"]],
         "source_note":"An early source is NOT fresh team news or new bookmaker odds",
