@@ -3,39 +3,39 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2076128934106066,
-          "expected_events": 19.866632750984547,
+          "brier": 0.207063489021574,
+          "expected_events": 20.285199393775972,
           "observed_events": 17,
-          "observed_rate": 0.29310344827586204,
-          "predicted_rate": 0.3425281508790439,
-          "rate_gap_observed_minus_predicted": -0.04942470260318184
+          "observed_rate": 0.288135593220339,
+          "predicted_rate": 0.3438169388775589,
+          "rate_gap_observed_minus_predicted": -0.05568134565721987
         },
         "exact_0_3": {
-          "brier": 0.0006742005313675026,
-          "expected_events": 1.2530841664554793,
+          "brier": 0.0007306550092957593,
+          "expected_events": 1.3163693521558835,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021604899421646194,
-          "rate_gap_observed_minus_predicted": -0.021604899421646194
+          "predicted_rate": 0.022311344951794636,
+          "rate_gap_observed_minus_predicted": -0.022311344951794636
         },
         "exact_3_0": {
-          "brier": 0.016995424632072424,
-          "expected_events": 2.418403829936266,
+          "brier": 0.01670884599562112,
+          "expected_events": 2.4277464784603997,
           "observed_events": 1,
-          "observed_rate": 0.017241379310344827,
-          "predicted_rate": 0.04169661775752183,
-          "rate_gap_observed_minus_predicted": -0.024455238447177
+          "observed_rate": 0.01694915254237288,
+          "predicted_rate": 0.04114824539763389,
+          "rate_gap_observed_minus_predicted": -0.024199092855261013
         },
         "winning_margin_at_least_three": {
-          "brier": 0.12222744014117826,
-          "expected_events": 9.834825077409716,
+          "brier": 0.1210095284638913,
+          "expected_events": 10.05925914608301,
           "observed_events": 8,
-          "observed_rate": 0.13793103448275862,
-          "predicted_rate": 0.16956594961051236,
-          "rate_gap_observed_minus_predicted": -0.03163491512775373
+          "observed_rate": 0.13559322033898305,
+          "predicted_rate": 0.1704959177302205,
+          "rate_gap_observed_minus_predicted": -0.03490269739123745
         }
       },
-      "verified_fixtures": 58
+      "verified_fixtures": 59
     },
     "v8_near": {
       "events": {
@@ -640,6 +640,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.1776432848040583
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-2",
+        "captured_at_utc": "2026-11-21T22:59:18.104327+00:00",
+        "fixture_id": "1492465",
+        "fixture_name": "Chapecoense-sc vs Cruzeiro",
+        "forecast_id": "2ab86159c59ced679db09f32d92585200f2f02a00b3f4e9f81d9ba1b3ec86472",
+        "kickoff_utc": "2026-11-22T00:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.09672834345038349,
+          "actual_exact_score_rank_min": 1,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.41856664279142486
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.06328518570040421
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.009342648524133898
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.22443406867329357
           }
         },
         "provider": "API-Football"
@@ -3550,7 +3579,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-21T23:02:18.132434+00:00",
+  "result_cutoff_utc": "2026-11-22T03:12:46.747194+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},

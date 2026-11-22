@@ -1,9 +1,9 @@
 {
   "archived_picks_modified": false,
   "archived_sets_found": 5,
-  "evaluated_at_utc": "2026-11-22T01:37:35.725191+00:00",
+  "evaluated_at_utc": "2026-11-22T03:12:47.024778+00:00",
   "limitations": [
-    "The comparison grades two SAVED policies on identical pairs, not automatically selected V8 daily pairs.",
+    "All saved policies are graded on the original V25 fixture pairs.",
     "V25 lower-envelope scores are not probabilities and cannot be used for log-loss or Brier.",
     "V25 draws its sensitivity models from the same V8 underlying goal rates; evidence is not independent.",
     "V8 mass assigned to V25 selections is a reference only, not calibrated V25 hit probability.",
@@ -11,6 +11,29 @@
     "Archived JSON capture timestamps are checked but are not independent Git commit-time notarization.",
     "Small and overlapping samples cannot establish superiority, reliable accuracy or 70% hit rate."
   ],
+  "matched_mixture_five": {
+    "pending_pairs": 0,
+    "policy": "v25-mixture-optimal-five-v1",
+    "selection_coverage_by_pair": {
+      "unavailable": 5
+    },
+    "v25_mixture": {
+      "five_double_hit_rate": null,
+      "five_double_hits": 0,
+      "wilson_95": null
+    },
+    "v25_robust": {
+      "five_double_hit_rate": null,
+      "five_double_hits": 0,
+      "wilson_95": null
+    },
+    "v8": {
+      "five_double_hit_rate": null,
+      "five_double_hits": 0,
+      "wilson_95": null
+    },
+    "verified_pairs": 0
+  },
   "matched_probability_calibration": {
     "pending_pairs": 0,
     "v25_grid_coverage_by_pair": {
@@ -51,6 +74,7 @@
       "sydney_date": "2026-11-19",
       "v25_five_hit": true,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_mixture_five_status": "unavailable",
       "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.052898207062901395,
       "v8_five_hit": false,
@@ -96,6 +120,7 @@
       "sydney_date": "2026-11-20",
       "v25_five_hit": false,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_mixture_five_status": "unavailable",
       "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.05831467893493922,
       "v8_five_hit": false,
@@ -141,6 +166,7 @@
       "sydney_date": "2026-11-21",
       "v25_five_hit": false,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_mixture_five_status": "unavailable",
       "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.0666280493404989,
       "v8_five_hit": false,
@@ -186,6 +212,7 @@
       "sydney_date": "2026-11-22",
       "v25_five_hit": false,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_mixture_five_status": "unavailable",
       "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.07134417385436498,
       "v8_five_hit": false,
@@ -226,6 +253,7 @@
       "status": "pending",
       "sydney_date": "2026-11-23",
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_mixture_five_status": "unavailable",
       "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.06327268746484016,
       "v8_five_model_mass": 0.06544467166796027
@@ -236,7 +264,7 @@
     "v25_only_hits": 1,
     "v8_only_hits": 0
   },
-  "schema_version": 2,
+  "schema_version": 3,
   "seventy_percent_accuracy_proven": false,
   "source_exclusions": {},
   "source_valid_sets": 5,
