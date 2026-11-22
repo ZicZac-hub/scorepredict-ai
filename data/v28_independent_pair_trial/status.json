@@ -1,0 +1,125 @@
+{
+  "forecast_production_model_modified": false,
+  "freeze": {
+    "created": [
+      {
+        "day": "2026-11-22",
+        "eligible_pairs": 3,
+        "policy": "FROZEN"
+      },
+      {
+        "day": "2026-11-23",
+        "eligible_pairs": 210,
+        "policy": "FROZEN"
+      }
+    ],
+    "no_live_model_change": true,
+    "not_frozen_inspected": [],
+    "skipped": {},
+    "source_ineligibility": {
+      "invalid_source_time": 113,
+      "not_original_v8_model": 544,
+      "outside_research_freeze_window": 192
+    },
+    "version": "v28-independent-paired-pair-policy-v1-research-only"
+  },
+  "generated_at_utc": "2026-11-22T07:57:41.224368+00:00",
+  "no_additional_provider_or_llm_calls": true,
+  "original_v8_v25_v26_v27_forecasts_changed": false,
+  "prospective_accuracy_improvement_not_established": true,
+  "verified_comparison": {
+    "abstained_days": 0,
+    "both_policies_same_pair_days": 0,
+    "caution": "Same-day DIFFERENT-fixture pair-policy selection test, not same-fixture model calibration",
+    "control_hit_rate": null,
+    "control_hit_wilson_95": null,
+    "control_only_wins": 0,
+    "different_pair_days": 0,
+    "do_not_treat_pending_as_losses": true,
+    "evaluated_at_utc": "2026-11-22T07:57:45.599537+00:00",
+    "exact_paired_test_two_sided_p": null,
+    "excluded_invalid_or_tampered_files": {},
+    "initial_review_ready": false,
+    "initial_verified_day_review_target": 100,
+    "invalid_verified_final_evidence": {},
+    "no_promotion_to_live_model": true,
+    "original_frozen_decisions": 2,
+    "pending_days": 2,
+    "quality_hit_rate": null,
+    "quality_hit_wilson_95": null,
+    "quality_only_wins": 0,
+    "quality_wins": 0,
+    "robustness_control_wins": 0,
+    "rows": [
+      {
+        "all_qualified_four_team_pairs": 3,
+        "control_pair": [
+          [
+            "API-Football",
+            "1550201"
+          ],
+          [
+            "API-Football",
+            "1563264"
+          ]
+        ],
+        "eligible_fixtures": 3,
+        "policy": "FROZEN",
+        "quality_pair": [
+          [
+            "API-Football",
+            "1550201"
+          ],
+          [
+            "API-Football",
+            "1563264"
+          ]
+        ],
+        "same_fixture_pair": true,
+        "same_pre_match_cutoff_for_both_arms": true,
+        "status": "pending",
+        "sydney_day": "2026-11-22",
+        "verified_control": false,
+        "verified_quality": false
+      },
+      {
+        "all_qualified_four_team_pairs": 210,
+        "control_pair": [
+          [
+            "API-Football",
+            "1570456"
+          ],
+          [
+            "API-Football",
+            "1570458"
+          ]
+        ],
+        "eligible_fixtures": 21,
+        "policy": "FROZEN",
+        "quality_pair": [
+          [
+            "API-Football",
+            "1570456"
+          ],
+          [
+            "API-Football",
+            "1570458"
+          ]
+        ],
+        "same_fixture_pair": true,
+        "same_pre_match_cutoff_for_both_arms": true,
+        "status": "pending",
+        "sydney_day": "2026-11-23",
+        "verified_control": false,
+        "verified_quality": false
+      }
+    ],
+    "schema_version": 1,
+    "seventy_percent_accuracy_demonstrated": false,
+    "study": "standalone_genuinely_prospective_two_pair_selection_policies_same_slate",
+    "verified_final_conflicts_excluded": 0,
+    "verified_paired_days": 0,
+    "version": "v28-independent-paired-pair-policy-v1-research-only"
+  },
+  "version": "v28-independent-paired-pair-policy-v1-research-only"
+}
