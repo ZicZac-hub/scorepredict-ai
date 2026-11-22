@@ -6,10 +6,10 @@
     },
     "live_forecast_changed": false
   },
-  "generated_at_utc": "2026-11-22T13:35:57.815958+00:00",
+  "generated_at_utc": "2026-11-22T14:35:35.611321+00:00",
   "no_new_provider_or_llm_requests": true,
   "research": {
-    "evaluated_at_utc": "2026-11-22T13:35:57.815958+00:00",
+    "evaluated_at_utc": "2026-11-22T14:35:35.611321+00:00",
     "invalid_final_result_sources_excluded": {},
     "live_predictions_unchanged": true,
     "no_source_or_forecast_changes": true,
@@ -31,21 +31,24 @@
               ]
             },
             {
-              "final_status": "awaiting_independently_verified_result",
+              "final_status": "verified_final",
               "fixture_id": "1563264",
               "kickoff_utc": "2026-11-22T12:00:00+00:00",
               "provider": "API-Football",
-              "verified_goals": null
+              "verified_goals": [
+                2,
+                2
+              ]
             }
           ],
           "policy": "FROZEN",
           "quality_and_robustness_identical_pair": true,
-          "status": "pending",
+          "status": "verified",
           "sydney_day": "2026-11-22",
           "unique_fixture_count": 2,
           "unique_fixtures_awaiting_kickoff": 0,
-          "unique_fixtures_awaiting_verified_final": 1,
-          "verified_unique_fixtures": 1
+          "unique_fixtures_awaiting_verified_final": 0,
+          "verified_unique_fixtures": 2
         },
         {
           "eligible_pairs": 210,
@@ -79,12 +82,12 @@
       "next_saved_fixture_kickoff_utc": "2026-11-22T17:30:00+00:00",
       "v28_distinct_policy_pair_days": 0,
       "v28_fixtures_before_kickoff": 2,
-      "v28_fixtures_past_kickoff_awaiting_verified_result": 1,
+      "v28_fixtures_past_kickoff_awaiting_verified_result": 0,
       "v28_frozen_active_days": 2,
       "v28_identical_policy_pair_days": 2,
       "v28_total_distinct_fixture_count": 4,
-      "v28_verified_day_count": 0,
-      "v28_verified_distinct_fixture_count": 1,
+      "v28_verified_day_count": 1,
+      "v28_verified_distinct_fixture_count": 2,
       "verified_fixture_count_is_not_five_double_win_rate": true
     },
     "v29_distinct_pair_experiment": {
