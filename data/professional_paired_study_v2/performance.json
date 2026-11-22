@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-22T12:20:38.792309+00:00",
+  "evaluated_at_utc": "2026-11-22T13:36:33.394091+00:00",
   "external_requests": 0,
   "invalid_opportunities": 0,
   "limitations": [
@@ -21,10 +21,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 1,
-      "opportunities": 1,
+      "issued": 2,
+      "opportunities": 2,
       "outcome_brier": 0.3808447609298471,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.005806065096493337,
       "single_fixtures_evaluated": 2,
       "single_score_log_loss": 2.667550696729834,
@@ -35,12 +35,12 @@
       ]
     },
     "market_only": {
-      "abstained": 1,
+      "abstained": 2,
       "hit_rate": null,
       "hits": 0,
       "invalid_opportunities": 0,
       "issued": 0,
-      "opportunities": 1,
+      "opportunities": 2,
       "outcome_brier": null,
       "pending": 0,
       "set_brier_descriptive": null,
@@ -50,12 +50,12 @@
       "wilson_95": null
     },
     "xg_market": {
-      "abstained": 1,
+      "abstained": 2,
       "hit_rate": null,
       "hits": 0,
       "invalid_opportunities": 0,
       "issued": 0,
-      "opportunities": 1,
+      "opportunities": 2,
       "outcome_brier": null,
       "pending": 0,
       "set_brier_descriptive": null,
@@ -65,12 +65,12 @@
       "wilson_95": null
     },
     "xg_only": {
-      "abstained": 1,
+      "abstained": 2,
       "hit_rate": null,
       "hits": 0,
       "invalid_opportunities": 0,
       "issued": 0,
-      "opportunities": 1,
+      "opportunities": 2,
       "outcome_brier": null,
       "pending": 0,
       "set_brier_descriptive": null,
@@ -81,7 +81,7 @@
     }
   },
   "model_promoted": false,
-  "opportunities": 1,
+  "opportunities": 2,
   "paired_comparisons": {
     "market_only": {
       "baseline_only_set_wins": 0,
@@ -186,7 +186,7 @@
       "verified_common_pairs": 0
     }
   },
-  "pending_opportunities": 0,
+  "pending_opportunities": 1,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -243,11 +243,53 @@
       },
       "status": "verified",
       "sydney_date": "2026-11-22"
+    },
+    {
+      "actual_scores": [
+        null,
+        null
+      ],
+      "lineup_context": [
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        },
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        }
+      ],
+      "methods": {
+        "baseline_v8": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "market_only": {
+          "metrics": null,
+          "status": "abstained"
+        },
+        "xg_market": {
+          "metrics": null,
+          "status": "abstained"
+        },
+        "xg_only": {
+          "metrics": null,
+          "status": "abstained"
+        }
+      },
+      "status": "pending",
+      "sydney_date": "2026-11-23"
     }
   ],
   "source_rejections": {},
   "target_70_percent_proven": false,
-  "valid_opportunities": 1,
+  "valid_opportunities": 2,
   "verified_opportunities": 1,
   "version": "professional-fixed-pair-ablation-v2"
 }

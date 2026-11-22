@@ -2,20 +2,20 @@
   "protocol": "verified-xg-prospective-paired-v1",
   "collection_health": {
     "api_football": {
-      "at_utc": "2026-11-22T12:20:28.600240+00:00",
+      "at_utc": "2026-11-22T13:36:19.732709+00:00",
       "enabled": true,
       "reason": "daily_attempt_budget_exhausted",
-      "eligible_legs": 27,
+      "eligible_legs": 24,
       "attempted_legs": 0,
       "daily_attempts_limit": 6,
       "daily_attempts_used": 6,
       "new_packets": []
     },
     "sportmonks_independent_not_pooled": {
-      "at_utc": "2026-11-22T12:20:30.162784+00:00",
+      "at_utc": "2026-11-22T13:36:27.454011+00:00",
       "enabled": true,
       "reason": "daily_request_budget_exhausted",
-      "eligible_frozen_forecasts": 26,
+      "eligible_frozen_forecasts": 20,
       "daily_request_limit": 4,
       "daily_requests_used": 4,
       "captured": 0,
@@ -24,26 +24,24 @@
     "sportmonks_last_provider_reason": "provider_access_or_subscription"
   },
   "evidence_shortfall": {
-    "training_cases_needed": 29,
+    "training_cases_needed": 27,
     "holdout_cases_needed": 50,
     "paired_days_needed": 20
   },
   "lineup_comparison_is_observational": true,
   "holdout_start": "2026-12-15",
   "authenticated_archive": {
-    "packets_seen": 261,
-    "authenticated_packets": 261,
+    "packets_seen": 263,
+    "authenticated_packets": 263,
     "packets_with_3_xg_rows_each_side": 28,
     "packets_with_6_xg_rows_each_side": 28,
     "packets_with_both_provider_XIs": 1,
-    "unique_fixtures_with_authenticated_packets": 85
+    "unique_fixtures_with_authenticated_packets": 86
   },
   "frozen_history_records": 4,
   "comparison_uses_original_pre_kickoff_probabilities": true,
-  "independently_settled_candidate_cases": 1,
-  "case_exclusions": {
-    "missing_verified_final": 3
-  },
+  "independently_settled_candidate_cases": 3,
+  "case_exclusions": {},
   "minimum_evidence": {
     "training_cases": 30,
     "holdout_cases": 50,
@@ -53,9 +51,9 @@
   "status": "insufficient_matched_authenticated_evidence",
   "comparison": {
     "cutoff": "2026-12-15",
-    "received_cases": 1,
-    "verified_cases": 1,
-    "training_cases": 1,
+    "received_cases": 3,
+    "verified_cases": 3,
+    "training_cases": 3,
     "holdout_cases": 0,
     "factors_from_training_only": [
       1.0,

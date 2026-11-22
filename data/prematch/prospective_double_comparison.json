@@ -2,31 +2,31 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 35
+    "awaiting_both_verified_results": 36
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.05278092877084664,
-      "win_rate": 0.07407407407407407,
+      "mean_estimated_probability_coverage": 0.05215990357205271,
+      "win_rate": 0.07142857142857142,
       "wins": 2
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.04045005122338785,
+      "mean_estimated_probability_coverage": 0.04007588860927462,
       "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.05341808569047926,
-      "win_rate": 0.07407407407407407,
+      "mean_estimated_probability_coverage": 0.052837262528805835,
+      "win_rate": 0.07142857142857142,
       "wins": 2
     }
   },
   "note": "Consecutive same-league pairs from a single snapshot batch. New pairs record the decision time before both kickoffs and require identity-matched verified finals. Both scores must match within one saved row. No automatic promotion.",
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 2,
-  "pairs_frozen": 62,
-  "pairs_verified": 27,
+  "pairs_frozen": 64,
+  "pairs_verified": 28,
   "rows": [
     {
       "actual_scores": [
@@ -399,6 +399,37 @@
       "original_probability_coverage": 0.029308359008577797,
       "pair_key": "DED_1552228_1552233",
       "second_match": "Groningen vs Heerenveen"
+    },
+    {
+      "actual_scores": [
+        "1-3",
+        "2-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.03539222320461663,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.029973498028217554,
+      "first_match": "Telstar vs PEC Zwolle",
+      "league": "DED",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.037155037163623394,
+      "pair_key": "DED_1552231_1552232",
+      "second_match": "Twente vs Willem II"
     },
     {
       "actual_scores": [

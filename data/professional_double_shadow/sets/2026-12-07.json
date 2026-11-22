@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-22T13:36:12.651645+00:00",
+  "prospective": true,
+  "record_sha256": "0d662cb1dd7499f4c1df50f8492e6e717d15ec8dd99eda30a8e36ad8517d0bf7",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.1272422997059326,
+        "joint_probability": 0.011619242119759525,
+        "score1": "1-1",
+        "score2": "2-1",
+        "second_probability": 0.0913158764547053
+      },
+      {
+        "first_probability": 0.1272422997059326,
+        "joint_probability": 0.009944299078219521,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.07815246267319605
+      },
+      {
+        "first_probability": 0.1272422997059326,
+        "joint_probability": 0.009302803345522184,
+        "score1": "1-1",
+        "score2": "3-1",
+        "second_probability": 0.07311093376197794
+      },
+      {
+        "first_probability": 0.1272422997059326,
+        "joint_probability": 0.009103125962355501,
+        "score1": "1-1",
+        "score2": "2-0",
+        "second_probability": 0.07154166486611428
+      },
+      {
+        "first_probability": 0.09662888081730589,
+        "joint_probability": 0.008823750942669548,
+        "score1": "0-1",
+        "score2": "2-1",
+        "second_probability": 0.0913158764547053
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.04879322144852628,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "797",
+        "name": "Elche"
+      },
+      "competition": {
+        "code": "PD",
+        "name": "PD"
+      },
+      "homeTeam": {
+        "id": "727",
+        "name": "Osasuna"
+      },
+      "id": "1570478",
+      "provider": "API-Football",
+      "utcDate": "2026-12-06T13:00:00+00:00"
+    },
+    "generated_at_utc": "2026-11-22T13:36:12.651619+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "207",
+        "name": "Utrecht"
+      },
+      "competition": {
+        "code": "DED",
+        "name": "DED"
+      },
+      "homeTeam": {
+        "id": "194",
+        "name": "Ajax"
+      },
+      "id": "1552243",
+      "provider": "API-Football",
+      "utcDate": "2026-12-06T13:30:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "797",
+        "fixture_id": "1570478",
+        "forecast_id": "9c35115149581fc6530106eded1f117b2cc4208c1508f641b9d87a21d7386b44",
+        "home_team_id": "727",
+        "input_digest": "06216d8567cb54e8ca4ca1ed91945feeb0337156e261810cfeb208b90c5a4d35",
+        "kickoff_utc": "2026-12-06T13:00:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "207",
+        "fixture_id": "1552243",
+        "forecast_id": "996082daa1eca9647dc40da8b29e47564796b32179e34bac8c22f19ee540e55f",
+        "home_team_id": "194",
+        "input_digest": "a13169245493b9f21cb9bcf6c3a2d3a25e50a8a7ad1325573243043ed528a6fa",
+        "kickoff_utc": "2026-12-06T13:30:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-22T13:34:24.489227+00:00",
+      "2026-11-22T13:34:24.879808+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-07",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-07",
+  "target_70_percent_proven": false
+}
