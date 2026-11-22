@@ -240,6 +240,8 @@
       "checkpoints": {
         "quality": {
           "1": {
+            "bottom_any_hit": false,
+            "bottom_hit_pairs_correlated": 0,
             "original_bottom_pairs": [
               [
                 [
@@ -265,11 +267,14 @@
               ]
             ],
             "pending_bottom_pair_results": 0,
-            "pending_top_pair_results": 1,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 1,
             "requested_pairs_per_arm": 1,
-            "status": "pending",
-            "tickets_per_arm": 5
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 5,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": 0.0
           },
           "10": {
             "original_bottom_pairs": [
@@ -477,7 +482,7 @@
               ]
             ],
             "pending_bottom_pair_results": 0,
-            "pending_top_pair_results": 8,
+            "pending_top_pair_results": 4,
             "predeclared_pairs_per_arm": 10,
             "requested_pairs_per_arm": 10,
             "status": "pending",
@@ -589,7 +594,7 @@
               ]
             ],
             "pending_bottom_pair_results": 0,
-            "pending_top_pair_results": 3,
+            "pending_top_pair_results": 1,
             "predeclared_pairs_per_arm": 5,
             "requested_pairs_per_arm": 5,
             "status": "pending",
@@ -598,6 +603,8 @@
         },
         "robustness": {
           "1": {
+            "bottom_any_hit": false,
+            "bottom_hit_pairs_correlated": 0,
             "original_bottom_pairs": [
               [
                 [
@@ -623,11 +630,14 @@
               ]
             ],
             "pending_bottom_pair_results": 0,
-            "pending_top_pair_results": 1,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 1,
             "requested_pairs_per_arm": 1,
-            "status": "pending",
-            "tickets_per_arm": 5
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 5,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": 0.0
           },
           "10": {
             "original_bottom_pairs": [
@@ -835,7 +845,7 @@
               ]
             ],
             "pending_bottom_pair_results": 0,
-            "pending_top_pair_results": 8,
+            "pending_top_pair_results": 4,
             "predeclared_pairs_per_arm": 10,
             "requested_pairs_per_arm": 10,
             "status": "pending",
@@ -947,7 +957,7 @@
               ]
             ],
             "pending_bottom_pair_results": 0,
-            "pending_top_pair_results": 5,
+            "pending_top_pair_results": 2,
             "predeclared_pairs_per_arm": 5,
             "requested_pairs_per_arm": 5,
             "status": "pending",
@@ -959,7 +969,7 @@
       "original_candidate_catalog_sha256": "d6a3ee24cb68fe27aeb90f9a135ab2fc4f7e4b7edf747c74cf893c131c09280b",
       "original_candidate_pairs": 210,
       "sydney_day": "2026-11-23",
-      "verified_candidate_pair_results_correlated": 153
+      "verified_candidate_pair_results_correlated": 171
     },
     {
       "checkpoints": {
@@ -1167,7 +1177,7 @@
       "verified_candidate_pair_results_correlated": 0
     }
   ],
-  "evaluated_at_utc": "2026-11-22T22:04:58.248205+00:00",
+  "evaluated_at_utc": "2026-11-22T22:30:33.602702+00:00",
   "fully_verified_daily_slates_v32_basis": 1,
   "initial_review_verified_day_target": 30,
   "live_model_changed": false,
@@ -1176,14 +1186,14 @@
   "original_rank_checkpoint_results": {
     "quality_top_bottom_1": {
       "days_bottom_outperformed_top": 0,
-      "days_tied": 1,
+      "days_tied": 2,
       "days_top_outperformed_bottom": 0,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
       "unweighted_mean_day_level_pair_fraction_difference": 0.0,
-      "verified_day_units": 1
+      "verified_day_units": 2
     },
     "quality_top_bottom_10": {
       "days_bottom_outperformed_top": 0,
@@ -1209,14 +1219,14 @@
     },
     "robustness_top_bottom_1": {
       "days_bottom_outperformed_top": 0,
-      "days_tied": 1,
+      "days_tied": 2,
       "days_top_outperformed_bottom": 0,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
       "unweighted_mean_day_level_pair_fraction_difference": 0.0,
-      "verified_day_units": 1
+      "verified_day_units": 2
     },
     "robustness_top_bottom_10": {
       "days_bottom_outperformed_top": 0,
