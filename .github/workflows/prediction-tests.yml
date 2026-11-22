@@ -70,5 +70,10 @@ jobs:
           python -m unittest -q test_v32_rank_discrimination.py
           python v32_rank_discrimination.py
           python -c 'import json; r=json.load(open("data/v32_rank_discrimination/status.json")); assert r["no_hindsight_selections_or_new_predictions"] and r["live_model_unchanged"] and r["seventy_percent_five_double_accuracy_not_proven"]; print("V32 fully verified slate days:", r["completed_independently_verified_days"], "target:",r["initial_review_complete_day_target"])'
+      - name: V33 source-frozen early-settlement checkpoint integrity tests
+        run: |
+          python -m unittest -q test_v33_early_rank_checkpoints.py
+          python v33_early_rank_checkpoints.py
+          python -c 'import json; r=json.load(open("data/v33_early_rank_checkpoints/status.json")); assert r["all_checkpoint_arm_memberships_fixed_before_reading_results"] and r["partial_checkpoint_never_scored_as_loss"] and not r["live_model_changed"] and r["seventy_percent_five_double_hit_rate_not_proven"]; print("V33 frozen days:",r["original_frozen_days"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
