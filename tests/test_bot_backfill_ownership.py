@@ -13,3 +13,18 @@ def test_backfill_keeps_newly_verified_scores_but_not_bot_owned_status_files():
     assert "data/v30_full_slate_ranking/" in stage
     assert "data/v34_score_error_research/" not in stage
     assert "data/v35_continuous_challengers/" not in stage
+
+
+def test_capture_commits_v35_immutable_sets_not_bot_owned_status_json():
+    text=Path(".github/workflows/prematch-evidence.yml").read_text(encoding="utf-8")
+    lines=[line.strip() for line in text.splitlines()
+           if line.strip().startswith("git add data/prematch/")]
+    assert len(lines)==1
+    stage=lines[0]
+    assert "data/v28_independent_pair_trial/" in stage
+    assert "data/v35_continuous_challengers/" not in stage
+    assert "data/v34_score_error_research/" not in stage
+    assert "if [ -d data/v35_continuous_challengers/sets ]; then" in text
+    assert "git add data/v35_continuous_challengers/sets/" in text
+    assert "run: python v35_continuous_double_trials.py" in text
+    assert "data/v35_continuous_challengers/" in text  # remains archived as evidence
