@@ -58,6 +58,15 @@ def receipt(item):
             "captured_at_utc", "evidence_as_of_utc", "history_matches",
             "score_matrix")
     }
+    # The ledger normalizes timestamps to microsecond Z strings on read.
+    # Raw immutable files may instead use +00:00. Hash their UTC instants,
+    # not their incidental timestamp serialization.
+    for key in ("kickoff_utc", "captured_at_utc", "evidence_as_of_utc"):
+        original_fields[key] = utc(original_fields[key]).isoformat()
+    for key in ("provider", "fixture_id", "forecast_id", "model_key",
+                "model_version", "home_team_id", "away_team_id", "input_digest"):
+        original_fields[key] = str(original_fields[key])
+    original_fields["history_matches"] = int(original_fields["history_matches"])
     return {
         **{key: str(original_fields[key]) for key in (
             "provider", "fixture_id", "forecast_id", "model_key", "model_version",
