@@ -72,6 +72,24 @@ def _show_report(st,report):
                "the V25 robustness criterion is not. None is a verified hit "
                "rate or a real winning probability. The robustness criterion "
                "is an uncalibrated model-ranking score, not a probability bound.")
+    frontier = report.get("five_double_seventy_percent_model_feasibility") or {}
+    if frontier:
+        needed = frontier.get("minimum_distinct_combinations_for_70pct_model_mass")
+        st.markdown("#### 70% five-double feasibility check")
+        st.write({
+            "Maximum model-estimated coverage using five V8-score combinations":
+                f"{frontier['max_five_model_mass_from_original_v8']:.2%}",
+            "Combinations estimated for 70% model coverage":
+                needed if needed is not None else "Not established",
+            "Five combinations meet 70% model coverage":
+                frontier["five_original_v8_choices_reach_70pct_mass"],
+        })
+        st.caption(
+            "This is a mathematical comparison within the original frozen "
+            "V8 distribution, not the observed V25 win rate. Increasing "
+            "the number of combinations changes the five-double format. "
+            "The five proposed V25 predictions are unchanged."
+        )
     screening=automatic_quality(report)
     if not screening["passed"]:
         st.warning("Cautious auto-selection would abstain on this pair: "+
