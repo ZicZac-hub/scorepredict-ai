@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.21847740778391894,
-          "expected_events": 21.466563332899234,
-          "observed_events": 19,
-          "observed_rate": 0.3064516129032258,
-          "predicted_rate": 0.34623489246611666,
-          "rate_gap_observed_minus_predicted": -0.03978327956289088
+          "brier": 0.21948059943433004,
+          "expected_events": 22.84279021104387,
+          "observed_events": 21,
+          "observed_rate": 0.3230769230769231,
+          "predicted_rate": 0.3514275417083672,
+          "rate_gap_observed_minus_predicted": -0.028350618631444145
         },
         "exact_0_3": {
-          "brier": 0.0007065766174531911,
-          "expected_events": 1.3516726312669651,
+          "brier": 0.0007046834453110421,
+          "expected_events": 1.410260037241004,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021801171472047826,
-          "rate_gap_observed_minus_predicted": -0.021801171472047826
+          "predicted_rate": 0.021696308265246215,
+          "rate_gap_observed_minus_predicted": -0.021696308265246215
         },
         "exact_3_0": {
-          "brier": 0.016119699756190185,
-          "expected_events": 2.616884260097229,
-          "observed_events": 1,
-          "observed_rate": 0.016129032258064516,
-          "predicted_rate": 0.042207810646729495,
-          "rate_gap_observed_minus_predicted": -0.026078778388664983
+          "brier": 0.02890538864337882,
+          "expected_events": 2.768851639982698,
+          "observed_events": 2,
+          "observed_rate": 0.03076923076923077,
+          "predicted_rate": 0.04259771753819536,
+          "rate_gap_observed_minus_predicted": -0.011828486768964586
         },
         "winning_margin_at_least_three": {
-          "brier": 0.12987264979493657,
-          "expected_events": 10.819943695289922,
-          "observed_events": 9,
-          "observed_rate": 0.14516129032258066,
-          "predicted_rate": 0.17451522089177293,
-          "rate_gap_observed_minus_predicted": -0.02935393056919229
+          "brier": 0.144769592075573,
+          "expected_events": 11.551502145664264,
+          "observed_events": 11,
+          "observed_rate": 0.16923076923076924,
+          "predicted_rate": 0.17771541762560406,
+          "rate_gap_observed_minus_predicted": -0.008484648394834829
         }
       },
-      "verified_fixtures": 62
+      "verified_fixtures": 65
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22444694701052592,
-          "expected_events": 19.367199115116595,
-          "observed_events": 17,
-          "observed_rate": 0.2982456140350877,
-          "predicted_rate": 0.339775423072221,
-          "rate_gap_observed_minus_predicted": -0.04152980903713324
+          "brier": 0.22523526100380759,
+          "expected_events": 20.74342599326123,
+          "observed_events": 19,
+          "observed_rate": 0.31666666666666665,
+          "predicted_rate": 0.34572376655435383,
+          "rate_gap_observed_minus_predicted": -0.029057099887687166
         },
         "exact_0_3": {
-          "brier": 0.0006829599323531427,
-          "expected_events": 1.2411779908962022,
+          "brier": 0.0006820898301208169,
+          "expected_events": 1.2997653968702412,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021775052471863197,
-          "rate_gap_observed_minus_predicted": -0.021775052471863197
+          "predicted_rate": 0.02166275661450402,
+          "rate_gap_observed_minus_predicted": -0.02166275661450402
         },
         "exact_3_0": {
-          "brier": 0.017228749488819556,
-          "expected_events": 2.3645000478936646,
-          "observed_events": 1,
-          "observed_rate": 0.017543859649122806,
-          "predicted_rate": 0.04148245698059061,
-          "rate_gap_observed_minus_predicted": -0.0239385973314678
+          "brier": 0.031024459963309107,
+          "expected_events": 2.516467427779134,
+          "observed_events": 2,
+          "observed_rate": 0.03333333333333333,
+          "predicted_rate": 0.0419411237963189,
+          "rate_gap_observed_minus_predicted": -0.008607790462985565
         },
         "winning_margin_at_least_three": {
-          "brier": 0.13670472043523935,
-          "expected_events": 9.690773338153045,
-          "observed_events": 9,
-          "observed_rate": 0.15789473684210525,
-          "predicted_rate": 0.17001356733601833,
-          "rate_gap_observed_minus_predicted": -0.012118830493913074
+          "brier": 0.15250147104058034,
+          "expected_events": 10.422331788527389,
+          "observed_events": 11,
+          "observed_rate": 0.18333333333333332,
+          "predicted_rate": 0.1737055298087898,
+          "rate_gap_observed_minus_predicted": 0.009627803524543517
         }
       },
-      "verified_fixtures": 57
+      "verified_fixtures": 60
     }
   },
   "focus": {
@@ -848,6 +848,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-0",
+        "captured_at_utc": "2026-11-22T12:19:21.378644+00:00",
+        "fixture_id": "1552225",
+        "fixture_name": "Ajax vs ADO Den Haag",
+        "forecast_id": "fe55be39d52dd1b033e86a4e50f17e9256c06cbc2476d2d0d5400796269d6d28",
+        "kickoff_utc": "2026-11-22T13:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.06501802658595593,
+          "actual_exact_score_rank_min": 6,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.4183626706090883
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0091547946818954
+          },
+          "exact_3_0": {
+            "observed": 1,
+            "predicted_probability": 0.06501802658595593
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.22917017009382165
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "2-3",
         "captured_at_utc": "2026-11-20T17:56:22.408186+00:00",
         "fixture_id": "1552226",
@@ -930,6 +959,35 @@
           "winning_margin_at_least_three": {
             "observed": 1,
             "predicted_probability": 0.24852475310282998
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-5",
+        "captured_at_utc": "2026-11-22T12:19:22.324689+00:00",
+        "fixture_id": "1552230",
+        "fixture_name": "Sparta Rotterdam vs AZ Alkmaar",
+        "forecast_id": "ecf01c32dce56dd7dacdf8825049a0a3a0245b578fcab514cf97c52a8cec2aab",
+        "kickoff_utc": "2026-11-22T13:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.011950544050431654,
+          "actual_exact_score_rank_min": 20,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4429539749840628
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.04330490252523594
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.016479387180946364
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.18553883027748733
           }
         },
         "provider": "API-Football"
@@ -1805,6 +1863,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-2",
+        "captured_at_utc": "2026-11-22T12:19:19.927164+00:00",
+        "fixture_id": "1570455",
+        "fixture_name": "Barcelona vs Villarreal",
+        "forecast_id": "130bab79be5799bb406940ace6d3f088467a993265935a68d8d7d7286d7a43c6",
+        "kickoff_utc": "2026-11-22T13:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.04168250599429088,
+          "actual_exact_score_rank_min": 10,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.514910232551486
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.006127708766907532
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.07046996611856671
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.3168494500030344
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-1",
         "captured_at_utc": "2026-11-21T14:34:12.327416+00:00",
         "fixture_id": "1570460",
@@ -2590,6 +2677,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-0",
+        "captured_at_utc": "2026-11-22T00:24:22.469044+00:00",
+        "fixture_id": "1552225",
+        "fixture_name": "Ajax vs ADO Den Haag",
+        "forecast_id": "1fd80956315e002a0ffa5cb35d1dbeb8462d2ca85b44d84c125680f811e30912",
+        "kickoff_utc": "2026-11-22T13:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.06501802658595593,
+          "actual_exact_score_rank_min": 6,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.4183626706090883
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0091547946818954
+          },
+          "exact_3_0": {
+            "observed": 1,
+            "predicted_probability": 0.06501802658595593
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.22917017009382165
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-3",
         "captured_at_utc": "2026-11-21T18:14:25.524178+00:00",
         "fixture_id": "1552228",
@@ -2643,6 +2759,35 @@
           "winning_margin_at_least_three": {
             "observed": 1,
             "predicted_probability": 0.24852475310282998
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-5",
+        "captured_at_utc": "2026-11-22T00:24:23.599396+00:00",
+        "fixture_id": "1552230",
+        "fixture_name": "Sparta Rotterdam vs AZ Alkmaar",
+        "forecast_id": "bdbf7768861f26017c5d587231bf9cc81ecb345c32be7c95134c7a7513e7b001",
+        "kickoff_utc": "2026-11-22T13:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.011950544050431654,
+          "actual_exact_score_rank_min": 20,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4429539749840628
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.04330490252523594
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.016479387180946364
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.18553883027748733
           }
         },
         "provider": "API-Football"
@@ -3489,6 +3634,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-2",
+        "captured_at_utc": "2026-11-22T00:24:19.889620+00:00",
+        "fixture_id": "1570455",
+        "fixture_name": "Barcelona vs Villarreal",
+        "forecast_id": "166359cb69d65b0060d615c0fd2800ed5e47e72c5705af73d38ecb48d61b96c0",
+        "kickoff_utc": "2026-11-22T13:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.04168250599429088,
+          "actual_exact_score_rank_min": 10,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.514910232551486
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.006127708766907532
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.07046996611856671
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.3168494500030344
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-1",
         "captured_at_utc": "2026-11-21T04:55:08.768391+00:00",
         "fixture_id": "1570460",
@@ -3753,7 +3927,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-22T15:08:39.017401+00:00",
+  "result_cutoff_utc": "2026-11-22T16:06:31.038133+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
