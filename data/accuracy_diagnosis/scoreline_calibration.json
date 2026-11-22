@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2208235904113688,
-          "expected_events": 27.451569748029783,
-          "observed_events": 27,
-          "observed_rate": 0.35064935064935066,
-          "predicted_rate": 0.3565138928315556,
-          "rate_gap_observed_minus_predicted": -0.005864542182204975
+          "brier": 0.22606020106921165,
+          "expected_events": 28.656306082471122,
+          "observed_events": 30,
+          "observed_rate": 0.375,
+          "predicted_rate": 0.358203826030889,
+          "rate_gap_observed_minus_predicted": 0.016796173969110973
         },
         "exact_0_3": {
-          "brier": 0.0006782949156970658,
-          "expected_events": 1.6654767167079498,
+          "brier": 0.0006893098482994838,
+          "expected_events": 1.7385059851599072,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021629567749453894,
-          "rate_gap_observed_minus_predicted": -0.021629567749453894
+          "predicted_rate": 0.02173132481449884,
+          "rate_gap_observed_minus_predicted": -0.02173132481449884
         },
         "exact_3_0": {
-          "brier": 0.024679645977453285,
-          "expected_events": 3.2317565174193583,
+          "brier": 0.023848059064794747,
+          "expected_events": 3.3654679838910653,
           "observed_events": 2,
-          "observed_rate": 0.025974025974025976,
-          "predicted_rate": 0.04197086386258907,
-          "rate_gap_observed_minus_predicted": -0.015996837888563094
+          "observed_rate": 0.025,
+          "predicted_rate": 0.04206834979863831,
+          "rate_gap_observed_minus_predicted": -0.017068349798638315
         },
         "winning_margin_at_least_three": {
-          "brier": 0.15931440339771136,
-          "expected_events": 13.560065051101038,
+          "brier": 0.15496823063697346,
+          "expected_events": 14.178035822533635,
           "observed_events": 15,
-          "observed_rate": 0.19480519480519481,
-          "predicted_rate": 0.1761047409233901,
-          "rate_gap_observed_minus_predicted": 0.018700453881804704
+          "observed_rate": 0.1875,
+          "predicted_rate": 0.17722544778167043,
+          "rate_gap_observed_minus_predicted": 0.010274552218329559
         }
       },
-      "verified_fixtures": 77
+      "verified_fixtures": 80
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22566442426243155,
-          "expected_events": 25.34942259522333,
-          "observed_events": 25,
-          "observed_rate": 0.3472222222222222,
-          "predicted_rate": 0.35207531382254625,
-          "rate_gap_observed_minus_predicted": -0.004853091600324038
+          "brier": 0.22864207273079454,
+          "expected_events": 25.683815532120082,
+          "observed_events": 26,
+          "observed_rate": 0.3561643835616438,
+          "predicted_rate": 0.35183308948109704,
+          "rate_gap_observed_minus_predicted": 0.004331294080546818
         },
         "exact_0_3": {
-          "brier": 0.0006578552555120296,
-          "expected_events": 1.5552596743605545,
+          "brier": 0.0006511972343131947,
+          "expected_events": 1.5683676760388074,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021600828810563258,
-          "rate_gap_observed_minus_predicted": -0.021600828810563258
+          "predicted_rate": 0.021484488712860374,
+          "rate_gap_observed_minus_predicted": -0.021484488712860374
         },
         "exact_3_0": {
-          "brier": 0.02615101942287963,
-          "expected_events": 2.9786785920487264,
+          "brier": 0.025833501694153497,
+          "expected_events": 3.0331967103753157,
           "observed_events": 2,
-          "observed_rate": 0.027777777777777776,
-          "predicted_rate": 0.04137053600067676,
-          "rate_gap_observed_minus_predicted": -0.013592758222898979
+          "observed_rate": 0.0273972602739726,
+          "predicted_rate": 0.04155063986815501,
+          "rate_gap_observed_minus_predicted": -0.014153379594182407
         },
         "winning_margin_at_least_three": {
-          "brier": 0.16678350379819676,
-          "expected_events": 12.429126596428674,
+          "brier": 0.16490737226389904,
+          "expected_events": 12.60182836768323,
           "observed_events": 15,
-          "observed_rate": 0.20833333333333334,
-          "predicted_rate": 0.17262675828373159,
-          "rate_gap_observed_minus_predicted": 0.03570657504960176
+          "observed_rate": 0.2054794520547945,
+          "predicted_rate": 0.1726277858586744,
+          "rate_gap_observed_minus_predicted": 0.03285166619612013
         }
       },
-      "verified_fixtures": 72
+      "verified_fixtures": 73
     }
   },
   "focus": {
@@ -616,6 +616,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "4-2",
+        "captured_at_utc": "2026-11-22T18:14:05.513583+00:00",
+        "fixture_id": "1492460",
+        "fixture_name": "Atletico Paranaense vs Remo",
+        "forecast_id": "1dcfe33d3d590bc1843a35b7d3e924f563ed767226495845a01a7ed2466a9420",
+        "kickoff_utc": "2026-11-22T19:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.014411210129360003,
+          "actual_exact_score_rank_min": 17,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.3343929368967517
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.013108001678252986
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05451811832658921
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.17270177125455816
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-1",
         "captured_at_utc": "2026-11-21T19:59:26.524039+00:00",
         "fixture_id": "1492462",
@@ -727,6 +756,35 @@
           "winning_margin_at_least_three": {
             "observed": 1,
             "predicted_probability": 0.1766897520059907
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "4-4",
+        "captured_at_utc": "2026-11-22T19:13:22.686685+00:00",
+        "fixture_id": "1550198",
+        "fixture_name": "Atalanta vs Inter",
+        "forecast_id": "c32adb806ac1b2decc8e65bf88a901aeaa348afcfc5a365281674e4ef06c9cae",
+        "kickoff_utc": "2026-11-22T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0028073707495426506,
+          "actual_exact_score_rank_min": 32,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4228258153884326
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.05174343097353552
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.013101707582790435
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1972253847968172
           }
         },
         "provider": "API-Football"
@@ -1278,6 +1336,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.15677492182345149
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-3",
+        "captured_at_utc": "2026-11-22T19:13:24.192959+00:00",
+        "fixture_id": "1552822",
+        "fixture_name": "Marseille vs Le Mans",
+        "forecast_id": "0ec71e22b0e0bc815d38402027e61c9da572a87f2265f137f05759b1856d394a",
+        "kickoff_utc": "2026-11-22T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.020248366407513683,
+          "actual_exact_score_rank_min": 16,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4475175821561569
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.008177835800168776
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.06609164056232734
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.24804361538122185
           }
         },
         "provider": "API-Football"
@@ -2846,6 +2933,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.10307967072938339
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "4-2",
+        "captured_at_utc": "2026-11-22T13:34:33.885243+00:00",
+        "fixture_id": "1492460",
+        "fixture_name": "Atletico Paranaense vs Remo",
+        "forecast_id": "b10ca05a433c179c9ac127abfa8d175ac6d490cfc110c5eb3028d84a895bba56",
+        "kickoff_utc": "2026-11-22T19:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.014411210129360003,
+          "actual_exact_score_rank_min": 17,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.3343929368967517
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.013108001678252986
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05451811832658921
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.17270177125455816
           }
         },
         "provider": "API-Football"
@@ -4623,7 +4739,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-22T20:08:33.810390+00:00",
+  "result_cutoff_utc": "2026-11-22T22:04:32.904554+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
