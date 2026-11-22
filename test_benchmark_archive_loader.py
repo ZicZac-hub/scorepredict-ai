@@ -74,6 +74,30 @@ class ArchiveAdapterTests(unittest.TestCase):
         self.assertEqual(diagnostics["conflicting_result_fixtures"], 1)
         self.assertEqual(diagnostics["awaiting_verified_results"], 1)
 
+    def test_point_only_baselines_excluded_from_probability_metrics(self):
+        self.write("data/v10_prospective/verified_results.json", {
+            "123": self.result(score=(1, 1)),
+        })
+        self.archive("v10_prospective", "v8", self.forecast())
+        for name in ("fixed-always-1-1-v1", "marked-point-model"):
+            row = self.forecast(model=name, matrix=[[0, 0], [0, 1]])
+            if name == "marked-point-model":
+                row["probability_metrics_eligible"] = False
+            self.archive("prospective_ledger", name, row)
+
+        report = write_summary(self.root)
+        for cohort in (report["models"], report["paired"]["models"]):
+            for name in ("fixed-always-1-1-v1", "marked-point-model"):
+                stats = cohort[name]
+                self.assertEqual(stats["exact_hit_rate"], 1)
+                self.assertEqual(stats["probability_forecast_count"], 0)
+                self.assertEqual(stats["full_distribution_count"], 0)
+                self.assertIsNone(stats["top5_hit_rate"])
+                self.assertIsNone(stats["mean_top5_coverage"])
+                self.assertIsNone(stats["multiclass_brier"])
+            self.assertEqual(cohort["v8"]["probability_forecast_count"], 1)
+            self.assertEqual(cohort["v8"]["full_distribution_count"], 1)
+
     def test_requires_original_evidence_and_strict_identity(self):
         self.write("data/v10_prospective/verified_results.json", {"123": self.result()})
         original = self.forecast()

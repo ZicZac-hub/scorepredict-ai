@@ -49,6 +49,17 @@ can still count toward five-double performance once verified. Historical V25
 matrices are never reconstructed. V8 mass on V25's robust five remains a
 reference diagnostic, and the lower envelope still determines the five picks.
 
+## Five-double policy comparison
+
+New packets also save the five highest joint probabilities from the normalized
+V25 mixture as a third research policy. All three policies use the same
+fixtures, selection time and eventual regulation scores. The auditor validates
+the saved mixture choices against their frozen matrices and reports wins on
+the common cohort. Prior sets without mixture choices still contribute to the
+original V8-versus-robust comparison. The mixture's estimated coverage assumes
+independent matches. Its future hit rate is measured through the same
+verified-results workflow.
+
 ## Automation and tests
 
 `tests/test_v8_v25_matched_audit.py` rejects post-match selections,

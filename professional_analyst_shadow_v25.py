@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 
+from five_double_accuracy import joint_geometry
 from v10_prospective import ROOT as ORIGINAL_ROOT, read_latest, utc
 from v21_goal_model_comparison import variants
 
@@ -35,6 +36,7 @@ MAX_EARLY_SOURCE_AGE = timedelta(days=14)  # early frozen shadow ONLY; never liv
 MIN_ENVELOPE_MASS = 0.035  # research-only operating threshold, NOT validated
 VERSION = "pro-analyst-v25-robust-sensitivity-shadow"
 PROBABILITY_VERSION = "v25-equal-sensitivity-mixture-v1"
+MIXTURE_FIVE_POLICY = "v25-mixture-optimal-five-v1"
 
 
 def _grid(record):
@@ -254,10 +256,15 @@ def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
             data["v25_probability"] = _freeze_probability(item, clock)
             data["human_research_note"]=human_research_note(r,clock)
             return data
+        frozen_first, frozen_second = source(first), source(second)
+        mixture_five = joint_geometry(frozen_first["v25_probability"]["score_matrix"],
+                                      frozen_second["v25_probability"]["score_matrix"])["optimal_five"]
         output[day] = {
             "decision":"FROZEN_RESEARCH_ONLY", "model_version":VERSION,
             "sydney_date":day, "selected_at_utc":clock.isoformat(),
-            "first":source(first), "second":source(second),
+            "first": frozen_first, "second": frozen_second,
+            "mixture_five_policy": MIXTURE_FIVE_POLICY,
+            "mixture_five": mixture_five,
             "qualified_fixtures":len(candidates),
             "source_freshness_warning":(
                 first["source_freshness"]!="recent_source" or

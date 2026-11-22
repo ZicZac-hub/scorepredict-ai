@@ -11,7 +11,7 @@ import math
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from five_double_accuracy import _final,_result_index,_sources,wilson
+from five_double_accuracy import _final,_sources,wilson
 from persist_prematch import load_json,write_json
 from v10_prospective import ROOT as ORIGINAL_ROOT,read_latest,utc
 from v21_capture_sources import qualified_packet,source_packet_path
@@ -20,6 +20,7 @@ from v22_calibration import fitted_temperature,scale
 from v22_prospective import _fixture,_options
 from v22_shadow import shadow as xg_market_shadow
 from v23_market_form import shadow as market_shadow
+from verified_result_index import index_verified_results
 
 PROVIDER_ROOT=Path("data/v21_sources")
 SYDNEY=ZoneInfo("Australia/Sydney")
@@ -131,7 +132,7 @@ def evaluate(*,root=Path("data/v22_prospective"),source_root=ORIGINAL_ROOT,
         raise ValueError("unsupported_research_method")
     clock=utc(now or datetime.now(timezone.utc))
     if verified is None:
-        finals,conflicts,result_rejections=_result_index(source_root,prematch_root)
+        finals,conflicts,result_rejections=index_verified_results(source_root,prematch_root,clock)
         calibration_finals=load_json(Path(source_root)/"verified_results.json",{})
     else:
         finals={(str(row.get("provider")),str(row.get("fixture_id"))):row

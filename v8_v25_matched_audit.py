@@ -17,10 +17,11 @@ import re
 from zoneinfo import ZoneInfo
 
 from five_double_accuracy import (
-    _final, _result_index, _validated_grid, joint_geometry, utc, wilson,
+    _final, _validated_grid, joint_geometry, utc, wilson,
 )
 
-from professional_analyst_shadow_v25 import PROBABILITY_VERSION
+from professional_analyst_shadow_v25 import MIXTURE_FIVE_POLICY, PROBABILITY_VERSION
+from verified_result_index import index_verified_results
 
 ROOT = Path("data/v10_prospective")
 PREMATCH = Path("data/prematch")
@@ -171,6 +172,30 @@ def _v25_probability(frozen, source, selected):
     return grid
 
 
+def _mixture_selection(packet, grids):
+    if packet.get("mixture_five_policy") != MIXTURE_FIVE_POLICY:
+        raise ValueError("unknown_v25_mixture_five_policy")
+    saved = _selection(packet, "mixture_five")
+    optimal = joint_geometry(*grids)["optimal_five"]
+    expected = [(_score(item["score1"]), _score(item["score2"])) for item in optimal]
+    if saved != expected:
+        raise ValueError("saved_mixture_five_not_source_optimal")
+    for saved_item, optimal_item in zip(packet["mixture_five"], optimal):
+        if not math.isclose(saved_item["joint_probability"], optimal_item["joint_probability"],
+                            rel_tol=0, abs_tol=1e-12):
+            raise ValueError("saved_mixture_five_mass_mismatch")
+    return saved
+
+
+def _set_performance(rows, hit_field):
+    wins = sum(row[hit_field] for row in rows)
+    return {
+        "five_double_hits": wins,
+        "five_double_hit_rate": wins / len(rows) if rows else None,
+        "wilson_95": wilson(wins, len(rows)),
+    }
+
+
 def _single_metrics(grid, actual):
     p = _matrix_probability(grid, actual)
     high = max(value for row in grid for value in row)
@@ -207,11 +232,12 @@ def _calibration(metrics):
 
 def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
     clock = utc(now or datetime.now(timezone.utc))
-    finals, conflicts, result_rejections = _result_index(root, prematch)
+    finals, conflicts, result_rejections = index_verified_results(root, prematch, clock)
     exclusions = Counter()
     rows, leg_metrics = [], []
     matched_v8, matched_v25 = [], []
     probability_coverage = Counter()
+    mixture_coverage = Counter()
     files = sorted(Path(sets).glob("*.json"))
     for path in files:
         try:
@@ -251,6 +277,21 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             probability_status = "invalid"
         row["v25_probability_status"] = probability_status
         probability_coverage[probability_status] += 1
+        mixture_picks = None
+        mixture_status = "unavailable"
+        if "mixture_five" in packet or "mixture_five_policy" in packet:
+            mixture_status = "invalid"
+            if probability_status == "frozen":
+                try:
+                    mixture_picks = _mixture_selection(packet, v25_grids)
+                except (ValueError, TypeError, KeyError, OverflowError):
+                    pass
+                else:
+                    mixture_status = "frozen"
+                    row["v25_mixture_five_model_mass"] = _selection_mass(mixture_picks, *v25_grids)
+                    row["v25_robust_five_mass_under_mixture"] = _selection_mass(challenger, *v25_grids)
+        row["v25_mixture_five_status"] = mixture_status
+        mixture_coverage[mixture_status] += 1
         if row["status"] == "verified":
             v8_hit = any(pick == tuple(actuals) for pick in baseline)
             v25_hit = any(pick == tuple(actuals) for pick in challenger)
@@ -263,6 +304,8 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
                 ],
             })
             leg_metrics.extend(row["v8_score_probability_diagnostics"])
+            if mixture_picks is not None:
+                row["v25_mixture_five_hit"] = tuple(actuals) in mixture_picks
             if probability_status == "frozen":
                 row["v25_score_probability_diagnostics"] = [
                     _single_metrics(grid, actual)
@@ -273,8 +316,7 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
         rows.append(row)
     finished = [r for r in rows if r["status"] == "verified"]
     n = len(finished)
-    b_wins = sum(r["v8_five_hit"] for r in finished)
-    c_wins = sum(r["v25_five_hit"] for r in finished)
+    mixture_finished = [r for r in finished if "v25_mixture_five_hit" in r]
     challenger_only = sum(r["v25_five_hit"] and not r["v8_five_hit"] for r in finished)
     baseline_only = sum(r["v8_five_hit"] and not r["v25_five_hit"] for r in finished)
     discordant = challenger_only + baseline_only
@@ -284,7 +326,7 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
     fixture_keys = [(r["fixture_ids"][0], r["fixture_ids"][1]) for r in finished]
     all_ids = [fixture for pair in fixture_keys for fixture in pair]
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "study": "original_v25_robust_selection_vs_original_v8_baseline_same_pairs",
         "evaluated_at_utc": clock.isoformat(),
         "archived_sets_found": len(files),
@@ -295,10 +337,17 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
         "verified_matched_pairs": n,
         "pending_matched_pairs": len(rows) - n,
         "repeated_verified_fixture_ids": len(all_ids) - len(set(all_ids)),
-        "v8": {"five_double_hits": b_wins, "five_double_hit_rate": b_wins / n if n else None,
-               "wilson_95": wilson(b_wins, n)},
-        "v25": {"five_double_hits": c_wins, "five_double_hit_rate": c_wins / n if n else None,
-                "wilson_95": wilson(c_wins, n)},
+        "v8": _set_performance(finished, "v8_five_hit"),
+        "v25": _set_performance(finished, "v25_five_hit"),
+        "matched_mixture_five": {
+            "policy": MIXTURE_FIVE_POLICY,
+            "verified_pairs": len(mixture_finished),
+            "pending_pairs": mixture_coverage["frozen"] - len(mixture_finished),
+            "selection_coverage_by_pair": dict(mixture_coverage),
+            "v8": _set_performance(mixture_finished, "v8_five_hit"),
+            "v25_robust": _set_performance(mixture_finished, "v25_five_hit"),
+            "v25_mixture": _set_performance(mixture_finished, "v25_mixture_five_hit"),
+        },
         "same_pair_discordance": {
             "v25_only_hits": challenger_only, "v8_only_hits": baseline_only,
             "exact_two_sided_mcnemar_p": pvalue,
@@ -324,7 +373,7 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
         "production_model_promoted": False,
         "seventy_percent_accuracy_proven": False,
         "limitations": [
-            "The comparison grades two SAVED policies on identical pairs, not automatically selected V8 daily pairs.",
+            "All saved policies are graded on the original V25 fixture pairs.",
             "V25 lower-envelope scores are not probabilities and cannot be used for log-loss or Brier.",
             "V25 draws its sensitivity models from the same V8 underlying goal rates; evidence is not independent.",
             "V8 mass assigned to V25 selections is a reference only, not calibrated V25 hit probability.",

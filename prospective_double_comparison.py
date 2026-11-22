@@ -5,9 +5,12 @@ Older snapshots without top-ten score probabilities are not backfilled.
 """
 import json
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from persist_prematch import parse_time,load_json,write_json,RESULTS
 from double_score_selection import select_diversified,select_balanced,score_coverage
+from five_double_accuracy import _final, utc
 
 PAIR_DIR=Path("data/prematch/double_pairs")
 REPORT=Path("data/prematch/prospective_double_comparison.json")
@@ -27,8 +30,37 @@ def candidate_pairs(records):
             if parse_time(b["captured_at_utc"])>=min(parse_time(a["kickoff_utc"]),parse_time(b["kickoff_utc"])):continue
             yield league,a,b
 
-def freeze():
+def _source(row):
+    keys = ("provider", "fixture_id", "home_team_id", "away_team_id",
+            "captured_at_utc", "kickoff_utc")
+    source = {key: row.get(key) for key in keys}
+    if any(value in (None, "") for value in source.values()):
+        raise ValueError("Missing original fixture identity or capture time")
+    return source
+
+
+def _publish(path, packet, earliest_kickoff, now):
+    """Write the full packet, then publish it without replacing archived picks."""
+    contents = json.dumps(packet, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    with NamedTemporaryFile(dir=path.parent, mode="w", encoding="utf-8",
+                            delete=False) as handle:
+        staged = Path(handle.name)
+        try:
+            handle.write(contents)
+            handle.close()
+            if (now if now is not None else datetime.now(timezone.utc)) >= earliest_kickoff:
+                return False
+            path.hardlink_to(staged)
+            return True
+        except FileExistsError:
+            return False
+        finally:
+            staged.unlink()
+
+
+def freeze(*, now=None):
     PAIR_DIR.mkdir(parents=True,exist_ok=True)
+    now = utc(now) if now is not None else None
     created=0
     for path in sorted(Path("prematch_snapshots").glob("prematch_*.json")):
         payload=load_json(path,{})
@@ -37,6 +69,12 @@ def freeze():
             key=f"{league}_{ids[0]}_{ids[1]}"
             destination=PAIR_DIR/(key+".json")
             if destination.exists():continue
+            try:
+                sources = [_source(row) for row in (a, b)]
+                earliest_kickoff = min(utc(row["kickoff_utc"]) for row in sources)
+                latest_capture = max(utc(row["captured_at_utc"]) for row in sources)
+            except (ValueError, TypeError):
+                continue
             options=[{"Score 1":f"{int(h)}-{int(v)}","Score 2":f"{int(x)}-{int(y)}",
                       "Joint":float(pa)*float(pb)}
                      for h,v,pa in a["double_top10_scores"][:10]
@@ -44,30 +82,46 @@ def freeze():
             original=sorted(options,key=lambda x:-x["Joint"])[:5]
             diverse=select_diversified(options,5)
             balanced=select_balanced(options,5,diversity_weight=BALANCED_WEIGHT)
-            write_json(destination,{"pair_key":key,"league":league,
-                "captured_at_utc":a["captured_at_utc"],
+            frozen_at = now if now is not None else datetime.now(timezone.utc)
+            if not latest_capture <= frozen_at < earliest_kickoff:
+                continue
+            packet = {"pair_key":key,"league":league,
+                "captured_at_utc":frozen_at.isoformat(),
+                "first_source":sources[0], "second_source":sources[1],
                 "first_fixture_id":int(a["fixture_id"]),
                 "second_fixture_id":int(b["fixture_id"]),
+                "first_provider":sources[0]["provider"],
+                "second_provider":sources[1]["provider"],
                 "first_match":a["home_team"]+" vs "+a["away_team"],
                 "second_match":b["home_team"]+" vs "+b["away_team"],
                 "first_kickoff_utc":a["kickoff_utc"],"second_kickoff_utc":b["kickoff_utc"],
                 "balanced_weight":BALANCED_WEIGHT,
-                "original":original,"diversified":diverse,"balanced":balanced})
-            created+=1
+                "original":original,"diversified":diverse,"balanced":balanced}
+            created += _publish(destination, packet, earliest_kickoff, now)
     return created
 
-def evaluate():
+def evaluate(*, now=None):
+    clock = utc(now or datetime.now(timezone.utc))
     results=load_json(RESULTS,{})
     rows=[];excluded=Counter()
     for path in sorted(PAIR_DIR.glob("*.json")):
         pair=load_json(path,{})
         first=results.get(str(pair["first_fixture_id"]))
         second=results.get(str(pair["second_fixture_id"]))
-        if not first or not second:
+        if "first_source" in pair or "second_source" in pair:
+            # New packets bind both sides to the original source identities.
+            actuals = [_final(pair.get(field) or {}, result, clock)
+                       for field, result in (("first_source", first), ("second_source", second))]
+            if any(score is None for score in actuals):
+                excluded["awaiting_both_verified_results"] += 1
+                continue
+            actual = tuple(f"{home}-{away}" for home, away in actuals)
+        elif first and second:
+            actual=(f"{first['home_goals']}-{first['away_goals']}",
+                    f"{second['home_goals']}-{second['away_goals']}")
+        else:
             excluded["awaiting_both_verified_results"]+=1
             continue
-        actual=(f"{first['home_goals']}-{first['away_goals']}",
-                f"{second['home_goals']}-{second['away_goals']}")
         row={"pair_key":pair["pair_key"],"league":pair["league"],
              "first_match":pair["first_match"],"second_match":pair["second_match"],
              "actual_scores":list(actual)}
@@ -92,7 +146,7 @@ def evaluate():
             "diversified_only_vs_original":sum(r["diversified_hit"] and not r["original_hit"] for r in rows),
             "original_only_vs_diversified":sum(r["original_hit"] and not r["diversified_hit"] for r in rows),
             "exclusions":dict(excluded),"rows":rows,
-            "note":"Only genuine frozen pre-kickoff five-combination sets are evaluated. Both actual scores must match within one same row. Old snapshots never backfilled. No automatic promotion."}
+            "note":"Consecutive same-league pairs from a single snapshot batch. New pairs record the decision time before both kickoffs and require identity-matched verified finals. Both scores must match within one saved row. No automatic promotion."}
 
 if __name__=="__main__":
     created=freeze()

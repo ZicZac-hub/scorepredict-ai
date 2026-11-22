@@ -92,6 +92,8 @@ def test_same_sydney_day_four_team_double_ranking():
     assert ranked[0]["second"]["fixture"]["id"]==2
     assert len(ranked[0]["doubles"])==5
     assert 0<ranked[0]["coverage"]<1
+    assert rank_research_pairs([a,b], now=start-timedelta(minutes=6))
+    assert rank_research_pairs([a,b], now=start-timedelta(minutes=5)) == []
 
 
 def test_forecast_router_exposes_v8_only_when_opted_in(monkeypatch):

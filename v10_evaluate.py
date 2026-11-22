@@ -24,6 +24,8 @@ PAIRS = ROOT / "doubles"
 MIN_COVERAGE = 0.04  # conservative untuned guardrail, NOT a calibrated hit rate
 FREEZE_MAX_LEAD_HOURS = 24  # do not freeze a week early before full fixture discovery
 FREEZE_MIN_LEAD_MINUTES = 45  # avoid selecting a pair as kickoff starts
+SAME_PAIR_CHALLENGERS = ("v9", "v10", "v12", "v13", "v13_balanced", "v13_diversified",
+                         "v7_diversified_same_pair", "v14_robust_same_pair")
 
 
 def _qualified(row, result):
@@ -77,6 +79,17 @@ def _match(row):
                        "awayTeam":{"name":row.get("away_team"),"id":row.get("away_team_id")}},
             "kickoff":row["kickoff_utc"],
             "result":{"scores":[(int(h),int(a),float(p)) for h,a,p in row["top10_scores"]]}}
+
+
+def _same_pair_source(candidate, original, cutoff):
+    return (
+        utc(candidate["captured_at_utc"]) <= cutoff
+        and bool(original.get("input_digest"))
+        and candidate.get("input_digest") == original["input_digest"]
+        and utc(candidate["kickoff_utc"]) == utc(original["kickoff_utc"])
+        and all(str(candidate[key]) == str(original[key]) for key in
+                ("provider", "fixture_id", "home_team_id", "away_team_id"))
+    )
 
 
 def _v14_match(row):
@@ -180,33 +193,19 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
             continue
         picks=[{"score1":p["Score 1"],"score2":p["Score 2"],
                 "joint_probability":float(p["Joint"])} for p in best["doubles"]]
-        # Score combinations for challengers are only a FAIR same-history
-        # comparison if each match has an immutable v8 or v8_control with
-        # the same input_digest. Never mix historical-v8 and updated-v9.
+        # The challenger must match the exact source used for each saved V8
+        # leg. An unrelated V8 control cannot qualify the selected baseline.
         challenger_picks={}
         ignored_challengers={}
-        for challenger in ("v9","v10"):
+        for challenger in ("v9", "v10", "v12"):
             candidates=[options.get((provider,fixture_id,challenger))
                         for provider,fixture_id in ids]
             if not all(candidates):
-                ignored_challengers[challenger]="missing_both_market_forecasts"
+                ignored_challengers[challenger]="missing_one_or_both_challenger_forecasts"
                 continue
-            if not all(utc(c["captured_at_utc"])<=instant for c in candidates):
-                ignored_challengers[challenger]="forecast_not_frozen_at_selection_time"
-                continue
-            fair=True
-            for candidate in candidates:
-                match_key=(candidate["provider"],str(candidate["fixture_id"]))
-                digest=candidate.get("input_digest")
-                if not any(other and other.get("input_digest")==digest
-                           and utc(other["captured_at_utc"])<=utc(candidate["captured_at_utc"])
-                           for other in (
-                               options.get((*match_key,"v8_near")),
-                               options.get((*match_key,"v8_control")),
-                               options.get((*match_key,"v8")))):
-                    fair=False
-            if not fair:
-                ignored_challengers[challenger]="no_matching_v8_evidence"
+            if not all(_same_pair_source(candidate, original, instant)
+                       for candidate, original in zip(candidates, (first, second))):
+                ignored_challengers[challenger]="ineligible_or_different_selected_v8_evidence"
                 continue
             alternatives=five_doubles(_match(candidates[0]),_match(candidates[1]))
             if len(alternatives)==5:
@@ -220,8 +219,7 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
         v13_rows=[options.get((provider,fixture_id,"v13"))
                   for provider,fixture_id in ids]
         if all(v13_rows) and all(
-            utc(candidate["captured_at_utc"])<=instant and
-            candidate.get("input_digest")==original.get("input_digest")
+            _same_pair_source(candidate, original, instant)
             for candidate,original in zip(v13_rows,(first,second))):
             left,right=(_match(candidate) for candidate in v13_rows)
             primary=five_doubles(left,right)
@@ -307,8 +305,7 @@ def freeze_doubles(forecasts=None, root=ROOT, now=None):
                 key=(original["provider"],str(original["fixture_id"]))
                 archived=options.get((*key,"v13"))
                 if (archived is None or
-                    archived.get("input_digest")!=original.get("input_digest") or
-                    utc(archived["captured_at_utc"])>instant or
+                    not _same_pair_source(archived, original, instant) or
                     not archived.get("v14_component_grids")):
                     continue
                 robust_pool.append(_v14_match(archived))
@@ -472,8 +469,7 @@ def evaluate(root=ROOT,results=None):
                     for p in packet["five_doubles"])
             additional={}
             for challenger,choices in (packet.get("same_pair_challengers") or {}).items():
-                if challenger not in ("v9","v10","v13","v13_balanced","v13_diversified",
-                                      "v7_diversified_same_pair","v14_robust_same_pair") or len(choices)!=5:
+                if challenger not in SAME_PAIR_CHALLENGERS or len(choices)!=5:
                     continue
                 additional[challenger]={
                     "hit":any(p["score1"]==score1 and p["score2"]==score2 for p in choices),
@@ -487,8 +483,7 @@ def evaluate(root=ROOT,results=None):
             continue
     completed=[p for p in pairs if p["status"]=="verified"]
     comparison={}
-    for challenger in ("v9","v10","v13","v13_balanced","v13_diversified",
-                       "v7_diversified_same_pair","v14_robust_same_pair"):
+    for challenger in SAME_PAIR_CHALLENGERS:
         cohort=[p for p in completed if challenger in p.get("same_pair_challengers",{})]
         comparison[challenger]={
             "same_pair_verified_days":len(cohort),

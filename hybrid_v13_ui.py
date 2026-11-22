@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import pandas as pd
 from history_pipeline import build_evidence
 from hybrid_five_v13 import predict, pair, best_pairs, VERSION
+from smart_double_ai import pair_issue
 from smart_double_v8 import select_auto_research_pool
 from robust_double_v14 import rank_robust_pairs
 
@@ -203,10 +204,11 @@ def render(st,rows,histories,labeler):
                     if scores and version:
                         candidates_pool.append({**row,"result":{
                             **original,"scores":scores,"model_version":version}})
+            completed = datetime.now(timezone.utc)
             if mode=="v14_robust":
-                candidates=rank_robust_pairs(candidates_pool,now=now,limit=1)
+                candidates=rank_robust_pairs(candidates_pool,now=completed,limit=1)
             else:
-                candidates=best_pairs(candidates_pool,mode=mode,now=now,limit=1)
+                candidates=best_pairs(candidates_pool,mode=mode,now=completed,limit=1)
             if candidates:
                 candidates[0]["model_choice"]=model_choice
             st.session_state["v13_hybrid_result"]={
@@ -225,4 +227,9 @@ def render(st,rows,histories,labeler):
                    " / "+str(saved.get("searched",0))+". "+
                    "No automatic fallback or invented scorelines.")
         return
-    _display(st,saved["candidate"],labeler)
+    candidate = saved["candidate"]
+    issue = pair_issue(candidate["first"], candidate["second"], now=datetime.now(timezone.utc))
+    if issue:
+        st.info(issue)
+        return
+    _display(st,candidate,labeler)

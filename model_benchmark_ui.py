@@ -101,6 +101,7 @@ def render(st):
             "directly comparable."
         )
     st.caption("All-model shared finished fixtures: " + str(paired["shared_fixtures"]))
+    st.caption("Point forecasts such as Always 1–1 contribute only to exact-score hit rates.")
 
     st.subheader("Individual model diagnostic (unpaired)")
     st.dataframe(

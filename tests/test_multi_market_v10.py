@@ -92,6 +92,8 @@ def test_a_frozen_double_compares_v10_on_the_same_pair(tmp_path):
                 "winner":(.44,.29,.27),"totals":(.48,.52),
                 "settlement":"regulation_90_minutes"}
         append_file_record(shadow._record(game,evidence(now),v10,"v10",now,market=source),root=tmp_path)
+        v12 = {**v8, "model_version": "calibrated-v12"}
+        append_file_record(shadow._record(game,evidence(now),v12,"v12",now),root=tmp_path)
     result=grader.freeze_doubles(root=tmp_path,now=now)
     assert len(result["days_saved"])==1
     path=tmp_path/"doubles"/(result["days_saved"][0]+".json")
@@ -99,6 +101,7 @@ def test_a_frozen_double_compares_v10_on_the_same_pair(tmp_path):
     saved=json.loads(path.read_text())
     assert "v10" in saved["same_pair_challengers"]
     assert len(saved["same_pair_challengers"]["v10"])==5
+    assert len(saved["same_pair_challengers"]["v12"])==5
     rows=read_file_records(root=tmp_path,kind="forecasts")
     originals={str(x["fixture_id"]):x for x in rows if x["model_key"]=="v8"}
     final={key:verified(row,1,0) for key,row in originals.items()}
@@ -106,6 +109,30 @@ def test_a_frozen_double_compares_v10_on_the_same_pair(tmp_path):
     assert report["models"]["v10"]["verified_fixtures"]==2
     assert report["five_doubles"]["same_pair_challengers"]["v10"]["same_pair_verified_days"]==1
     assert report["paired_v8_v10"]["verified_same_fixture_count"]==2
+    assert report["five_doubles"]["same_pair_challengers"]["v12"]["same_pair_verified_days"]==1
+
+
+def test_older_control_cannot_qualify_market_on_newer_v8_pair(tmp_path):
+    import json
+
+    now = datetime(2027, 1, 11, 8, 0, tzinfo=ZoneInfo("Australia/Sydney")).astimezone(timezone.utc)
+    games = [fixture(9261, now, "A", "B", 12), fixture(9262, now, "C", "D", 13)]
+    old, new = evidence(now), {**evidence(now), "input_digest": "updated-history"}
+    forecasts = {}
+    for game in games:
+        for key, inputs in (("v8", old), ("v8_control", old), ("v10", old),
+                            ("v8_near", new), ("v12", new)):
+            row = shadow._record(game, inputs, candidate(), key, now)
+            row["forecast_id"] = f"{key}-{game['id']}"
+            forecasts[(row["provider"], str(row["fixture_id"]), key)] = row
+
+    result = grader.freeze_doubles(forecasts=forecasts, root=tmp_path, now=now)
+    (day,) = result["days_saved"]
+    packet = json.loads((tmp_path / "doubles" / f"{day}.json").read_text())
+    assert packet["first"]["model_key"] == packet["second"]["model_key"] == "v8_near"
+    assert "v10" not in packet["same_pair_challengers"]
+    assert packet["challenger_exclusions"]["v10"] == "ineligible_or_different_selected_v8_evidence"
+    assert len(packet["same_pair_challengers"]["v12"]) == 5
 
 
 def test_multibook_does_not_blend_stale_and_fresh_snapshot_populations():

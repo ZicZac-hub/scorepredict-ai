@@ -109,7 +109,16 @@ def _valid_forecast(forecast, provider, fixture_id, result):
     model = forecast.get("model_version") or forecast.get("model_key")
     if not isinstance(model, str) or not model:
         return None
-    return model, captured, {"created_at": forecast["captured_at_utc"], "scores": scores}
+    probability_metrics_eligible = (
+        forecast.get("probability_metrics_eligible") is not False
+        and forecast.get("model_key") != "always_1_1"
+        and model not in ("always_1_1", "fixed-always-1-1-v1")
+    )
+    return model, captured, {
+        "created_at": forecast["captured_at_utc"],
+        "scores": scores,
+        "probability_metrics_eligible": probability_metrics_eligible,
+    }
 
 
 def _load_results(base, diagnostics):

@@ -106,6 +106,23 @@ def render(st,path="data/v10_prospective/performance.json",compact=False):
                             "robust_lower_envelope_model_mass"),
                         "not_a_proven_hit_rate": True,
                     })
+                try:
+                    matched = json.loads(Path("data/accuracy_diagnosis/v8_v25_matched.json")
+                                         .read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    matched = {}
+                mixture = matched.get("matched_mixture_five") or {}
+                if mixture:
+                    verified = mixture["verified_pairs"]
+                    pending = mixture["pending_pairs"]
+                    st.caption(f"Normalized V25 five-double trial · {verified} verified pairs · {pending} pending")
+                    if verified:
+                        st.dataframe([
+                            {"Policy": label, "Wins": mixture[key]["five_double_hits"],
+                             "Verified pairs": verified}
+                            for key, label in (("v8", "V8"), ("v25_robust", "V25 robust"),
+                                               ("v25_mixture", "V25 probability mixture"))
+                        ], use_container_width=True, hide_index=True)
                 examples = (professional.get("outcomes") or [])[-8:]
                 if examples:
                     st.dataframe(examples, use_container_width=True,
