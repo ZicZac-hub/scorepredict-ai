@@ -57,6 +57,11 @@ jobs:
         run: |
           python v28_independent_pair_trial.py --verify-only
           python -c 'import json; r=json.load(open("data/v28_independent_pair_trial/status.json")); assert not r["forecast_production_model_modified"]; assert r["original_v8_v25_v26_v27_forecasts_changed"] is False; print("V28 verified matched policy days:",r["verified_comparison"]["verified_paired_days"], "new future-only decisions:",r["verified_comparison"]["original_frozen_decisions"])'
+      - name: Verify source-frozen V25 anchored probability challenger without issuing predictions
+        run: |
+          python -m unittest -q test_v25_anchored_challenger.py
+          python v25_anchored_challenger.py --verify-only
+          python -c 'import json; r=json.load(open("data/v25_anchored_challenger/status.json")); assert r["pending_is_not_a_miss"] and r["same_fixture_pairs_are_required_for_every_comparison"] and r["new_anchored_model_not_promoted_to_live"] and r["seventy_percent_five_double_hit_rate_unproven"]; assert not r["invalid_or_tampered_challengers_excluded"]; print("V25 anchored prospective:",r["frozen_prospective_same_pair_days"],"verified:",r["verified_matched_pair_days"])'
       - name: Independently validate new V29 pair-sensitivity and V28 readiness
         run: |
           python v29_pair_sensitivity.py --verify-only
