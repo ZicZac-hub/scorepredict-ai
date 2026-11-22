@@ -22,6 +22,27 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python backfill_verified_results.py
+      - name: Validate V31 complete frozen-slate settlement coverage and provider quota
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path("data/diagnostics/result_backfill.json").read_text())
+          if s.get("state") == "missing_provider_key":
+              print("V31 provider key not configured; no verified results were collected")
+          else:
+              audit=s.get("original_slate_settlement")
+              assert isinstance(audit,dict), "V31 original frozen-slate enrollment audit missing"
+              assert not audit["new_five_score_predictions_issued"]
+              assert not audit["original_forecasts_modified"]
+              assert s.get("requests",0)<=12
+              assert (
+                  audit["due_frozen_ids_prioritized"]+
+                  audit["due_frozen_ids_deferred_by_budget"]==
+                  audit["original_fixtures_due_without_saved_result"]
+              ), "V31 due-original fixture accounting does not balance"
+              print("V31 independent frozen-slate result collection:",audit)
+          PY
       - name: Recompute matched original and prospective evaluations
         run: |
           python evaluate_prospective_ledger.py --files-only
