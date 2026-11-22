@@ -112,6 +112,12 @@ def test_same_pair_results_independently_reproduced(tmp_path):
     assert report["same_pair_discordance"]["v25_only_hits"] == 1
     assert report["same_pair_discordance"]["exact_two_sided_mcnemar_p"] == 1
     assert report["v8_exact_score_probability_calibration"]["evaluated_leg_slots"] == 2
+    score_research = report["v25_score_accuracy_research"]
+    assert score_research["same_original_v8_verified_legs"]["verified_leg_slots"] == 2
+    assert score_research["retrospective_same_source_sensitivity_replays"]["baseline_v8"]["verified_leg_slots"] == 2
+    assert score_research["prospective_same_leg_probability_comparison"]["verified_leg_slots"] == 0
+    assert score_research["retrospective_replay_is_not_a_frozen_v25_forecast"] is True
+    assert score_research["real_accuracy_improvement_established"] is False
     assert report["v25_probability_calibration"]["exact_score_log_loss"] is None
     assert report["production_model_promoted"] is False
     assert report["seventy_percent_accuracy_proven"] is False
@@ -125,6 +131,7 @@ def test_missing_final_is_pending_and_never_counted_as_loss(tmp_path):
     assert report["pending_matched_pairs"] == 1
     assert report["verified_matched_pairs"] == 0
     assert report["v25"]["five_double_hit_rate"] is None
+    assert report["v25_score_accuracy_research"]["same_original_v8_verified_legs"]["verified_leg_slots"] == 0
 
 
 def test_conflicting_identity_verified_final_is_excluded(tmp_path):
@@ -238,6 +245,11 @@ def test_frozen_v25_probabilities_use_same_verified_legs_and_preserve_five_doubl
     assert comparison["v8_on_same_legs"]["evaluated_leg_slots"] == 2
     v25 = report["v25_probability_calibration"]
     assert v25["evaluated_leg_slots"] == 2
+    comparison_shape = report["v25_score_accuracy_research"]["prospective_same_leg_probability_comparison"]
+    assert comparison_shape["verified_leg_slots"] == 2
+    assert comparison_shape["v8_on_exact_same_legs"]["verified_leg_slots"] == 2
+    assert comparison_shape["v25_frozen_on_exact_same_legs"]["verified_leg_slots"] == 2
+    assert comparison_shape["v25_minus_v8_exact_score_log_loss"] is not None
     assert v25["exact_score_log_loss"] != comparison["v8_on_same_legs"]["exact_score_log_loss"]
     assert report["v25"]["five_double_hits"] == 1
     assert report["matched_mixture_five"]["verified_pairs"] == 1
