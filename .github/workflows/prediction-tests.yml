@@ -37,5 +37,9 @@ jobs:
         run: |
           python v8_v25_matched_audit.py --output /tmp/v8_v25_matched.json
           python -c 'import json; r=json.load(open("/tmp/v8_v25_matched.json")); assert r["source_valid_sets"] > 0, "No original frozen pairs passed independent provenance checks"; print("V8/V25 matched archive:", r["verified_matched_pairs"], "verified,", r["pending_matched_pairs"], "pending; v8 hits:", r["v8"]["five_double_hits"], "v25 hits:", r["v25"]["five_double_hits"])'
+      - name: Audit prospective V25 probability freeze coverage
+        run: |
+          python v25_prospective_monitor.py --audit /tmp/v8_v25_matched.json --output /tmp/v25_freeze_monitor.json --require-provenance
+          python -c 'import json; d=json.load(open("/tmp/v25_freeze_monitor.json")); assert d["check_passed"]; print("Prospective V25 frozen:", d["new_sets_with_both_valid_grids_and_mixture"], "verified:", d["new_verified_pairs"], "pending:", d["new_pending_pairs"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
