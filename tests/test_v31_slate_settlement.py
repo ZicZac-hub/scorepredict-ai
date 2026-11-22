@@ -166,7 +166,8 @@ def test_corrupted_original_frozen_slate_is_rejected_before_api_query(tmp_path,m
 
 def test_due_v28_fixtures_precede_legacy_fixtures_under_existing_budget(tmp_path,monkeypatch):
     root,v28,results,diagnostic,records=prepare(tmp_path)
-    legacy=[original(fid) for fid in range(101,126)]
+    legacy=[original(fid,kickoff=SELECT+timedelta(
+        hours=6,minutes=fid%5)) for fid in range(101,126)]
     for r in legacy:
         # The source must exist for the original_model() identity validator.
         file=root/"forecasts"/r["provider"]/r["fixture_id"]/(
