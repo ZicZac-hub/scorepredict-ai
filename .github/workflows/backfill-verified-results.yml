@@ -46,11 +46,14 @@ jobs:
       - name: Verify V28 independent quality versus robustness paired trials
         # Read-only: never issue a new prediction during result settlement.
         run: python v28_independent_pair_trial.py --verify-only
+      - name: Independently verify V28 result-readiness and V29 distinct-pair studies
+        # Audit saved future predictions ONLY, and label unverified games pending.
+        run: python v29_pair_sensitivity.py --verify-only
       - name: Commit newly verified scores and sanitized diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/
+          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v29_pair_sensitivity/
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
           git pull --rebase
