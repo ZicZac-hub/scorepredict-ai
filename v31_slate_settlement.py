@@ -31,6 +31,7 @@ def enrolled_due(root, existing, now, *, v28_out=V28_OUT):
     clock = utc(now)
     due = {}
     all_sources = {}
+    conflicted_ids = set()
     counters = Counter()
     invalid = Counter()
     next_due = []
@@ -50,6 +51,8 @@ def enrolled_due(root, existing, now, *, v28_out=V28_OUT):
                 # A fixture can appear in multiple ORIGINAL slates. One
                 # physical fixture receives at most one source identity.
                 frozen = item["record"]
+                if fid in conflicted_ids:
+                    continue
                 old = all_sources.get(fid)
                 if old is not None:
                     fields = ("home_team_id", "away_team_id", "kickoff_utc")
@@ -59,6 +62,7 @@ def enrolled_due(root, existing, now, *, v28_out=V28_OUT):
                         for f in fields
                     ):
                         invalid["same_fixture_conflicting_archived_identity"] += 1
+                        conflicted_ids.add(fid)
                         all_sources.pop(fid, None)
                         due.pop(fid, None)
                         continue
@@ -90,6 +94,7 @@ def enrolled_due(root, existing, now, *, v28_out=V28_OUT):
             min(next_due) if next_due else None,
         "excluded_non_api_football": counters["excluded_non_api_football"],
         "invalid_original_slates_excluded": dict(invalid),
+        "conflicting_fixture_identities_excluded": len(conflicted_ids),
         "source_validation_precedes_any_provider_request": True,
         "new_five_score_predictions_issued": False,
         "original_forecasts_modified": False,
