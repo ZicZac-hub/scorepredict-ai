@@ -53,5 +53,9 @@ jobs:
         run: |
           python v27_pair_selection.py --verify-only
           python -c 'import json; x=json.load(open("data/v27_pair_selection/status.json")); assert not x["production_model_promoted"]; assert x["original_frozen_predictions_modified"] is False; assert x["prospective_comparison"]["no_lookahead_or_retrospective_selection"]; print("V27 frozen decisions:", x["prospective_comparison"]["frozen_decision_days"], "verified same-day comparisons:", x["prospective_comparison"]["both_policies_verified_same_days"])'
+      - name: Regrade V28 write-once prospective pair trial read-only
+        run: |
+          python v28_independent_pair_trial.py --verify-only
+          python -c 'import json; r=json.load(open("data/v28_independent_pair_trial/status.json")); assert not r["forecast_production_model_modified"]; assert r["original_v8_v25_v26_v27_forecasts_changed"] is False; print("V28 verified matched policy days:",r["verified_comparison"]["verified_paired_days"], "new future-only decisions:",r["verified_comparison"]["original_frozen_decisions"])'
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
