@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.21690756541025688,
-          "expected_events": 24.11420903411112,
-          "observed_events": 22,
-          "observed_rate": 0.3188405797101449,
-          "predicted_rate": 0.34948129034943654,
-          "rate_gap_observed_minus_predicted": -0.030640710639291593
+          "brier": 0.21707471929797617,
+          "expected_events": 25.17141965237628,
+          "observed_events": 24,
+          "observed_rate": 0.3380281690140845,
+          "predicted_rate": 0.35452703735741237,
+          "rate_gap_observed_minus_predicted": -0.01649886834332788
         },
         "exact_0_3": {
-          "brier": 0.0007047365763936618,
-          "expected_events": 1.5026766698531526,
+          "brier": 0.000706341171211103,
+          "expected_events": 1.5574568365553951,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021777922751494965,
-          "rate_gap_observed_minus_predicted": -0.021777922751494965
+          "predicted_rate": 0.021936011782470354,
+          "rate_gap_observed_minus_predicted": -0.021936011782470354
         },
         "exact_3_0": {
-          "brier": 0.027372102749676226,
-          "expected_events": 2.9388406057398617,
+          "brier": 0.026618580518314037,
+          "expected_events": 2.987570936383576,
           "observed_events": 2,
-          "observed_rate": 0.028985507246376812,
-          "predicted_rate": 0.04259189283680959,
-          "rate_gap_observed_minus_predicted": -0.01360638559043278
+          "observed_rate": 0.028169014084507043,
+          "predicted_rate": 0.04207846389272642,
+          "rate_gap_observed_minus_predicted": -0.013909449808219378
         },
         "winning_margin_at_least_three": {
-          "brier": 0.14542937519205928,
-          "expected_events": 12.199805489087383,
+          "brier": 0.1424210708452062,
+          "expected_events": 12.592660651088101,
           "observed_events": 12,
-          "observed_rate": 0.17391304347826086,
-          "predicted_rate": 0.176808775204165,
-          "rate_gap_observed_minus_predicted": -0.0028957317259041084
+          "observed_rate": 0.16901408450704225,
+          "predicted_rate": 0.17736141762095917,
+          "rate_gap_observed_minus_predicted": -0.008347333113916918
         }
       },
-      "verified_fixtures": 69
+      "verified_fixtures": 71
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2220804503909852,
-          "expected_events": 22.01135592503403,
-          "observed_events": 20,
-          "observed_rate": 0.3125,
-          "predicted_rate": 0.34392743632865674,
-          "rate_gap_observed_minus_predicted": -0.031427436328656744
+          "brier": 0.22210351336169143,
+          "expected_events": 23.068566543299195,
+          "observed_events": 22,
+          "observed_rate": 0.3333333333333333,
+          "predicted_rate": 0.34952373550453325,
+          "rate_gap_observed_minus_predicted": -0.01619040217119992
         },
         "exact_0_3": {
-          "brier": 0.0006837202641059525,
-          "expected_events": 1.3923439919941338,
+          "brier": 0.0006860832770849486,
+          "expected_events": 1.4471241586963763,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.02175537487490834,
-          "rate_gap_observed_minus_predicted": -0.02175537487490834
+          "predicted_rate": 0.021926123616611764,
+          "rate_gap_observed_minus_predicted": -0.021926123616611764
         },
         "exact_3_0": {
-          "brier": 0.029237780610345196,
-          "expected_events": 2.6858670234068907,
+          "brier": 0.02837063766870802,
+          "expected_events": 2.7345973540506052,
           "observed_events": 2,
-          "observed_rate": 0.03125,
-          "predicted_rate": 0.041966672240732666,
-          "rate_gap_observed_minus_predicted": -0.010716672240732666
+          "observed_rate": 0.030303030303030304,
+          "predicted_rate": 0.04143329324319099,
+          "rate_gap_observed_minus_predicted": -0.011130262940160686
         },
         "winning_margin_at_least_three": {
-          "brier": 0.1527502566542989,
-          "expected_events": 11.068647072596542,
+          "brier": 0.14929220557019207,
+          "expected_events": 11.46150223459726,
           "observed_events": 12,
-          "observed_rate": 0.1875,
-          "predicted_rate": 0.17294761050932098,
-          "rate_gap_observed_minus_predicted": 0.014552389490679024
+          "observed_rate": 0.18181818181818182,
+          "predicted_rate": 0.17365912476662515,
+          "rate_gap_observed_minus_predicted": 0.008159057051556664
         }
       },
-      "verified_fixtures": 64
+      "verified_fixtures": 66
     }
   },
   "focus": {
@@ -2008,6 +2008,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-2",
+        "captured_at_utc": "2026-11-22T14:35:04.916650+00:00",
+        "fixture_id": "1570459",
+        "fixture_name": "Racing Santander vs Real Sociedad",
+        "forecast_id": "cc5a32aa40597aeea6cfd7b29edd29ffc89283a20b302c847e7358d0cf009664",
+        "kickoff_utc": "2026-11-22T15:15:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.042527867604101766,
+          "actual_exact_score_rank_min": 8,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.5536766841706758
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.03077874480241056
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.01903578870192962
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.20355333016249083
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-1",
         "captured_at_utc": "2026-11-21T14:34:12.327416+00:00",
         "fixture_id": "1570460",
@@ -2177,6 +2206,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.18929297679672008
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "3-1",
+        "captured_at_utc": "2026-11-22T13:34:22.935385+00:00",
+        "fixture_id": "1575224",
+        "fixture_name": "FC Augsburg vs FSV Mainz 05",
+        "forecast_id": "96a9926cabf2b89fff2ec3b712976c1587ffbe92df9162b974f580d7fbe74136",
+        "kickoff_utc": "2026-11-22T14:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.05166054973396623,
+          "actual_exact_score_rank_min": 5,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.5035339340944857
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.024001421899831926
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.02969454194178455
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.18930183183822646
           }
         },
         "provider": "API-Football"
@@ -3895,6 +3953,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-2",
+        "captured_at_utc": "2026-11-22T06:42:43.179324+00:00",
+        "fixture_id": "1570459",
+        "fixture_name": "Racing Santander vs Real Sociedad",
+        "forecast_id": "6f49fc7e043ac2fc8e42fb40fa98ae23a152880d2362c2f9da4503ac5646a3ac",
+        "kickoff_utc": "2026-11-22T15:15:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.042527867604101766,
+          "actual_exact_score_rank_min": 8,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.5536766841706758
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.03077874480241056
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.01903578870192962
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.20355333016249083
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-1",
         "captured_at_utc": "2026-11-21T04:55:08.768391+00:00",
         "fixture_id": "1570460",
@@ -4040,6 +4127,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-1",
+        "captured_at_utc": "2026-11-22T06:42:41.579308+00:00",
+        "fixture_id": "1575224",
+        "fixture_name": "FC Augsburg vs FSV Mainz 05",
+        "forecast_id": "fdb9b6f00321f2fbbc637087e8c46f7584c312762749fbc456026c7a324b048c",
+        "kickoff_utc": "2026-11-22T14:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.05166054973396623,
+          "actual_exact_score_rank_min": 5,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.5035339340944855
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.024001421899831923
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.029694541941784555
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.18930183183822644
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-5",
         "captured_at_utc": "2026-11-20T02:51:16.465927+00:00",
         "fixture_id": "1575225",
@@ -4159,7 +4275,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-22T17:08:10.280733+00:00",
+  "result_cutoff_utc": "2026-11-22T18:01:11.393664+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
