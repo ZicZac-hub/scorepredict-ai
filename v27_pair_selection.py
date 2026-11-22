@@ -48,12 +48,22 @@ def digest(value):
 
 def receipt(item):
     source = item["record"]
+    # Use identical raw fields for normalized read_latest records and the
+    # original immutable source-file read by the independent audit. The
+    # ledger reader may add derived matrix_shape/horizon fields.
+    original_fields = {
+        key: source[key] for key in (
+            "provider", "fixture_id", "forecast_id", "model_key", "model_version",
+            "home_team_id", "away_team_id", "input_digest", "kickoff_utc",
+            "captured_at_utc", "evidence_as_of_utc", "history_matches",
+            "score_matrix")
+    }
     return {
-        **{key: str(source[key]) for key in (
+        **{key: str(original_fields[key]) for key in (
             "provider", "fixture_id", "forecast_id", "model_key", "model_version",
             "home_team_id", "away_team_id", "input_digest",
             "kickoff_utc", "captured_at_utc")},
-        "source_sha256": digest(source),
+        "source_sha256": digest(original_fields),
     }
 
 
@@ -151,6 +161,19 @@ def build_slate(original_forecasts, cutoff, day, *, max_pairs=MAX_EVALUATED_PAIR
     }
 
 
+def _apply_issuance_guard(slate, sources, issued_at):
+    if slate["decision"] != "V27_SELECTED":
+        return slate
+    identifiers = {tuple(x["key"]): x for x in sources}
+    for key in slate["selected_pair"]["fixture_keys"]:
+        if (tuple(key) not in identifiers or
+                issued_at > identifiers[tuple(key)]["kickoff"] - MIN_LEAD):
+            return {**{k: v for k, v in slate.items() if k != "selected_pair"},
+                    "decision": "V27_ABSTAIN",
+                    "reason": "chosen_pair_not_45_minutes_early_at_issue"}
+    return slate
+
+
 def _original_v25(path, root, clock):
     packet, sources, _, _, _, _ = _frozen_set(path, root, clock)
     return packet, sources
@@ -184,8 +207,8 @@ def freeze(*, root=SOURCE_ROOT, sets=V25_SETS, out=OUT,
             if any(clock > utc(row["kickoff_utc"]) - MIN_LEAD for row in sources):
                 skipped["v25_pair_too_close_to_kickoff"] += 1
                 continue
-            slate = build_slate(
-                read_latest(root) if originals is None else originals, selected, day)
+            universe = read_latest(root) if originals is None else originals
+            slate = build_slate(universe, selected, day)
             # A future archive update cannot create a new policy decision for
             # an old day. The reference original V25 pair must be present in
             # this exact eligible cutoff universe.
@@ -195,19 +218,14 @@ def freeze(*, root=SOURCE_ROOT, sets=V25_SETS, out=OUT,
             if reference not in present and slate["decision"] != "V27_ABSTAIN":
                 skipped["v25_reference_not_in_original_candidate_slate"] += 1
                 continue
-            if slate["decision"] == "V27_SELECTED":
-                first, second = slate["selected_pair"]["fixture_keys"]
-                lookup = {tuple(row["key"]): row for row in [
-                    _eligible(x, selected)[0]
-                    for x in (read_latest(root) if originals is None else originals).values()
-                ] if row is not None}
-                # A candidate fixture may start too soon to be frozen now, but
-                # the saved original V25 source is always at least 45m early.
-                if any(clock > lookup[tuple(key)]["kickoff"] - MIN_LEAD
-                       for key in (first, second)):
-                    slate = {**slate, "decision": "V27_ABSTAIN",
-                             "reason": "chosen_pair_too_close_to_kickoff"}
-                    slate.pop("selected_pair", None)
+            rows = (universe.values() if isinstance(universe, dict) else universe)
+            eligible_sources = [
+                item for item in (_eligible(x, selected)[0] for x in rows)
+                if item is not None and item["day"] == day
+            ]
+            # Existing V25 may use a match less than 45 minutes from issuance.
+            # V27 must explicitly abstain, not backdate a new prediction.
+            slate = _apply_issuance_guard(slate, eligible_sources, clock)
             saved = {
                 "schema_version": 1, "version": VERSION,
                 "sydney_date": day,
@@ -265,6 +283,8 @@ def _verify_decision(packet, path, root, sets, clock):
         seen.add(item["key"])
         eligible.append(source)
     recreated = build_slate(eligible, first_time, day)
+    eligible_items = [_eligible(x, first_time)[0] for x in eligible]
+    recreated = _apply_issuance_guard(recreated, eligible_items, decision_at)
     # Unqualified evidence counters may include other days and change if an
     # archive grows. The enrolled eligible source set, all pairs, their
     # rankings and the selected policy MUST remain reproducible.
@@ -277,8 +297,6 @@ def _verify_decision(packet, path, root, sets, clock):
             raise ValueError("candidate_catalog_or_rank_changed_" + field)
     # A selected V27 fixture must have been selected early enough when frozen.
     if packet["decision"] == "V27_SELECTED":
-        lookup = {tuple(rec["fixture_keys"][0]): None
-                  for rec in packet["candidate_catalog"][:0]}
         # Use independently rechecked source timestamps.
         source_map = {(str(x["provider"]), str(x["fixture_id"])): x for x in eligible}
         for key in packet["selected_pair"]["fixture_keys"]:
