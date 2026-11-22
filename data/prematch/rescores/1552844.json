@@ -8,14 +8,14 @@
   "excluded_from_original_accuracy": true,
   "fallback_reason": null,
   "fixture_id": 1552844,
-  "history_as_of_utc": "2026-11-21T18:14:32.426132+00:00",
+  "history_as_of_utc": "2026-11-22T00:24:27.622680+00:00",
   "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
-  "history_count": 398,
+  "history_count": 403,
   "history_warnings": [],
-  "history_window_start_utc": "2024-11-21T18:14:32.426132+00:00",
+  "history_window_start_utc": "2024-11-22T00:24:27.622680+00:00",
   "home_team": "Toulouse",
   "home_team_id": 96,
-  "input_digest": "e8c9f2800b8746a8712e91bf9e199eeb5791983f03a388fd63bb1e00fa6a06db",
+  "input_digest": "36db4fa7343304d87439d011afb47f5780aed7f8c3c7f5ed7101d8f2a8192415",
   "kickoff_utc": "2026-12-04T19:45:00Z",
   "label": "Upcoming forecast revision",
   "mode": "upcoming",
@@ -36,7 +36,7 @@
   "provenance": {
     "history_days": 730,
     "provider": "API-Football",
-    "requested_as_of_utc": "2026-11-21T18:14:32.426132+00:00",
+    "requested_as_of_utc": "2026-11-22T00:24:27.622680+00:00",
     "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
     "seasons": [
       2026,
@@ -44,26 +44,26 @@
     ],
     "sources": [
       {
-        "age_seconds": 18.744585275650024,
-        "cache_status": "fresh_cache",
+        "age_seconds": 0.003884553909301758,
+        "cache_status": "network",
         "endpoint": "/fixtures",
-        "fetched_at_utc": "2026-11-21T18:14:15.561802+00:00",
+        "fetched_at_utc": "2026-11-22T00:24:29.592303+00:00",
         "freshness_known": true,
         "provider": "API-Football",
-        "retrieved_at_utc": "2026-11-21T18:14:34.306387+00:00",
+        "retrieved_at_utc": "2026-11-22T00:24:29.596187+00:00",
         "season": 2026,
         "source_season_mismatches": 0,
         "stale": false,
         "ttl_seconds": 900
       },
       {
-        "age_seconds": 18.52891445159912,
-        "cache_status": "fresh_cache",
+        "age_seconds": 0.004585981369018555,
+        "cache_status": "network",
         "endpoint": "/fixtures",
-        "fetched_at_utc": "2026-11-21T18:14:15.782384+00:00",
+        "fetched_at_utc": "2026-11-22T00:24:29.729502+00:00",
         "freshness_known": true,
         "provider": "API-Football",
-        "retrieved_at_utc": "2026-11-21T18:14:34.311299+00:00",
+        "retrieved_at_utc": "2026-11-22T00:24:29.734088+00:00",
         "season": 2025,
         "source_season_mismatches": 0,
         "stale": false,
@@ -72,75 +72,75 @@
     ]
   },
   "provider": "API-Football",
-  "rescored_at_utc": "2026-11-21T18:14:32.426132+00:00",
-  "revision_id": "20261121T181432426132Z-7c3df441-55182864a03b",
-  "run_id": "20261121T181432426132Z-7c3df441",
+  "rescored_at_utc": "2026-11-22T00:24:27.622680+00:00",
+  "revision_id": "20261122T002427622680Z-727b36cb-563b9f15de20",
+  "run_id": "20261122T002427622680Z-727b36cb",
   "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.8222748100630792,
-    "home": 1.0641546575583651
+    "away": 1.8478206123237788,
+    "home": 1.1168236761691583
   },
   "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.5457994772639195,
-    "draw": 0.2399623776782882,
-    "home": 0.21423814505779232
+    "away": 0.5403595600826352,
+    "draw": 0.23581151721687696,
+    "home": 0.223828922700488
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.11356579117484326,
+  "updated_score_probability": 0.11070037791833752,
   "updated_top10_scores": [
     [
       1,
       1,
-      0.11356579117484326
+      0.11070037791833752
     ],
     [
       1,
       2,
-      0.09854670503163881
+      0.09834348083557548
     ],
     [
       0,
       1,
-      0.09622948992578349
+      0.09105068726305235
     ],
     [
       0,
       2,
-      0.09260562300008492
-    ],
-    [
-      0,
-      0,
-      0.061182898769369165
+      0.08805640759058464
     ],
     [
       1,
       3,
-      0.05985972607146203
+      0.06057370366697628
     ],
     [
       2,
       1,
-      0.05754836458000738
+      0.05943884760580967
+    ],
+    [
+      0,
+      0,
+      0.055836519990327516
+    ],
+    [
+      2,
+      2,
+      0.054916163897034305
     ],
     [
       0,
       3,
-      0.05625096469417677
+      0.05423748167190183
     ],
     [
       1,
       0,
-      0.05394533541249863
-    ],
-    [
-      2,
-      2,
-      0.052434467573226735
+      0.05334673286861821
     ]
   ]
 }

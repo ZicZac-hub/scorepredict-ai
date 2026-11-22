@@ -2,22 +2,24 @@
   "protocol": "verified-xg-prospective-paired-v1",
   "collection_health": {
     "api_football": {
-      "at_utc": "2026-11-21T23:40:41.898205+00:00",
+      "at_utc": "2026-11-22T00:25:51.759820+00:00",
       "enabled": true,
-      "reason": "daily_attempt_budget_exhausted",
+      "reason": "partial_or_complete_source_packets",
       "eligible_legs": 30,
-      "attempted_legs": 0,
+      "attempted_legs": 2,
       "daily_attempts_limit": 6,
-      "daily_attempts_used": 6,
-      "new_packets": []
+      "daily_attempts_used": 2,
+      "new_packets": [
+        "1552232"
+      ]
     },
     "sportmonks_independent_not_pooled": {
-      "at_utc": "2026-11-21T23:40:43.139495+00:00",
+      "at_utc": "2026-11-22T00:26:02.883133+00:00",
       "enabled": true,
-      "reason": "daily_request_budget_exhausted",
-      "eligible_frozen_forecasts": 29,
+      "reason": "provider_access_or_subscription",
+      "eligible_frozen_forecasts": 30,
       "daily_request_limit": 4,
-      "daily_requests_used": 4,
+      "daily_requests_used": 1,
       "captured": 0,
       "matched_historical_xg_fixtures": 0
     },
@@ -31,17 +33,19 @@
   "lineup_comparison_is_observational": true,
   "holdout_start": "2026-12-15",
   "authenticated_archive": {
-    "packets_seen": 210,
-    "authenticated_packets": 210,
-    "packets_with_3_xg_rows_each_side": 25,
-    "packets_with_6_xg_rows_each_side": 25,
+    "packets_seen": 216,
+    "authenticated_packets": 216,
+    "packets_with_3_xg_rows_each_side": 26,
+    "packets_with_6_xg_rows_each_side": 26,
     "packets_with_both_provider_XIs": 1,
-    "unique_fixtures_with_authenticated_packets": 79
+    "unique_fixtures_with_authenticated_packets": 81
   },
-  "frozen_history_records": 1,
+  "frozen_history_records": 2,
   "comparison_uses_original_pre_kickoff_probabilities": true,
   "independently_settled_candidate_cases": 1,
-  "case_exclusions": {},
+  "case_exclusions": {
+    "missing_verified_final": 1
+  },
   "minimum_evidence": {
     "training_cases": 30,
     "holdout_cases": 50,

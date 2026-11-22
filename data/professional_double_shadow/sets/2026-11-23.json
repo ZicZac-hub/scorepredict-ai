@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-22T00:25:41.616178+00:00",
+  "prospective": true,
+  "record_sha256": "3100548a686ffa90c413b31b44d333c4a7ee7f57558bd8c9eb810d7df916e0dd",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.10926279963684168,
+        "joint_probability": 0.012481498632729694,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.11423374354505493
+      },
+      {
+        "first_probability": 0.09314983151965062,
+        "joint_probability": 0.010640853965080842,
+        "score1": "2-1",
+        "score2": "1-1",
+        "second_probability": 0.11423374354505493
+      },
+      {
+        "first_probability": 0.09262400526937611,
+        "joint_probability": 0.010580786864057728,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.11423374354505493
+      },
+      {
+        "first_probability": 0.10926279963684168,
+        "joint_probability": 0.009275517758339307,
+        "score1": "1-1",
+        "score2": "1-2",
+        "second_probability": 0.08489181852532131
+      },
+      {
+        "first_probability": 0.10926279963684168,
+        "joint_probability": 0.009111602918618898,
+        "score1": "1-1",
+        "score2": "0-1",
+        "second_probability": 0.08339162962054113
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.05209026013882647,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "494",
+        "name": "Udinese"
+      },
+      "competition": {
+        "code": "SA",
+        "name": "SA"
+      },
+      "homeTeam": {
+        "id": "500",
+        "name": "Bologna"
+      },
+      "id": "1550199",
+      "provider": "API-Football",
+      "utcDate": "2026-11-22T14:00:00+00:00"
+    },
+    "generated_at_utc": "2026-11-22T00:25:41.616081+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "495",
+        "name": "Genoa"
+      },
+      "competition": {
+        "code": "SA",
+        "name": "SA"
+      },
+      "homeTeam": {
+        "id": "488",
+        "name": "Sassuolo"
+      },
+      "id": "1550206",
+      "provider": "API-Football",
+      "utcDate": "2026-11-22T14:00:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "494",
+        "fixture_id": "1550199",
+        "forecast_id": "f05c66521ed169fbdf5a9152ea3239341d134eab2da1f36dc3450e5a1cbabd40",
+        "home_team_id": "500",
+        "input_digest": "fba90c1d1bac65146b1e2e4244e1b56aa3b34d5dd084037e45addbcb0021f1ed",
+        "kickoff_utc": "2026-11-22T14:00:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "495",
+        "fixture_id": "1550206",
+        "forecast_id": "1ef5f34931e90b83a701715d6fcb9e46329ea45a635d52f2d314934ed346d111",
+        "home_team_id": "488",
+        "input_digest": "5f0a65f6c522646d27a6fc2e858273377ef7d902cf9350045fd33fbea8ba0ce0",
+        "kickoff_utc": "2026-11-22T14:00:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-22T00:24:24.779068+00:00",
+      "2026-11-22T00:24:25.981907+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-23",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-23",
+  "target_70_percent_proven": false
+}

@@ -2,31 +2,31 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 44
+    "awaiting_both_verified_results": 36
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.05425095903505396,
-      "win_rate": 0.05555555555555555,
-      "wins": 1
+      "mean_estimated_probability_coverage": 0.05294782851761784,
+      "win_rate": 0.07692307692307693,
+      "wins": 2
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.041558677919582954,
+      "mean_estimated_probability_coverage": 0.040573285813697055,
       "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.054919608534664634,
-      "win_rate": 0.05555555555555555,
-      "wins": 1
+      "mean_estimated_probability_coverage": 0.05356124338587135,
+      "win_rate": 0.07692307692307693,
+      "wins": 2
     }
   },
   "note": "Only genuine frozen pre-kickoff five-combination sets are evaluated. Both actual scores must match within one same row. Old snapshots never backfilled. No automatic promotion.",
   "original_only_vs_balanced": 0,
-  "original_only_vs_diversified": 1,
+  "original_only_vs_diversified": 2,
   "pairs_frozen": 62,
-  "pairs_verified": 18,
+  "pairs_verified": 26,
   "rows": [
     {
       "actual_scores": [
@@ -247,6 +247,37 @@
     },
     {
       "actual_scores": [
+        "0-1",
+        "1-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": true,
+      "balanced_probability_coverage": 0.06225912945436381,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.0465682825851528,
+      "first_match": "Sao Paulo vs Fluminense",
+      "league": "BSA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": true,
+      "original_probability_coverage": 0.06225912945436381,
+      "pair_key": "BSA_1492457_1492468",
+      "second_match": "Palmeiras vs Flamengo"
+    },
+    {
+      "actual_scores": [
         "2-1",
         "2-1"
       ],
@@ -275,6 +306,68 @@
       "original_probability_coverage": 0.062027809090210835,
       "pair_key": "BSA_1492458_1492459",
       "second_match": "Vitoria vs RB Bragantino"
+    },
+    {
+      "actual_scores": [
+        "1-4",
+        "2-3"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.03519098167113482,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.02777583787819301,
+      "first_match": "NEC Nijmegen vs PSV Eindhoven",
+      "league": "DED",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.03627063355618052,
+      "pair_key": "DED_1552226_1552229",
+      "second_match": "Feyenoord vs Excelsior"
+    },
+    {
+      "actual_scores": [
+        "2-3",
+        "1-3"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.028756833006257622,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.02476022767622524,
+      "first_match": "Utrecht vs Cambuur",
+      "league": "DED",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.029308359008577797,
+      "pair_key": "DED_1552228_1552233",
+      "second_match": "Groningen vs Heerenveen"
     },
     {
       "actual_scores": [
@@ -433,6 +526,99 @@
     },
     {
       "actual_scores": [
+        "1-1",
+        "0-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.06264660058639059,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04844635691058737,
+      "first_match": "Lens vs Toulouse",
+      "league": "FL1",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.06466887389173129,
+      "pair_key": "FL1_1552819_1552820",
+      "second_match": "Lille vs Lyon"
+    },
+    {
+      "actual_scores": [
+        "1-1",
+        "0-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.0442706390645157,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.03403188625575114,
+      "first_match": "Monaco vs Auxerre",
+      "league": "FL1",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.044530283453408245,
+      "pair_key": "FL1_1552823_1552826",
+      "second_match": "Strasbourg vs Stade Brestois 29"
+    },
+    {
+      "actual_scores": [
+        "3-1",
+        "2-3"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.04974725746471198,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.03765142735475994,
+      "first_match": "Estac Troyes vs Le Havre",
+      "league": "FL1",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.04974725746471198,
+      "pair_key": "FL1_1552824_1552827",
+      "second_match": "Nice vs Paris Saint Germain"
+    },
+    {
+      "actual_scores": [
         "0-1",
         "3-1"
       ],
@@ -461,6 +647,37 @@
       "original_probability_coverage": 0.06857745637796421,
       "pair_key": "PD_1570453_1570454",
       "second_match": "Alaves vs Deportivo La Coruna"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "1-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.059852715975657715,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04469811790673671,
+      "first_match": "Rayo Vallecano vs Valencia",
+      "league": "PD",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.059852715975657715,
+      "pair_key": "PD_1570460_1570462",
+      "second_match": "Sevilla vs Real Betis"
     },
     {
       "actual_scores": [
@@ -585,6 +802,37 @@
       "original_probability_coverage": 0.05881617446406666,
       "pair_key": "SA_1550200_1550202",
       "second_match": "Lazio vs Lecce"
+    },
+    {
+      "actual_scores": [
+        "1-5",
+        "1-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.057402121604060455,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.0429170920362241,
+      "first_match": "Parma vs AS Roma",
+      "league": "SA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.057402121604060455,
+      "pair_key": "SA_1550204_1550205",
+      "second_match": "Napoli vs Torino"
     }
   ]
 }
