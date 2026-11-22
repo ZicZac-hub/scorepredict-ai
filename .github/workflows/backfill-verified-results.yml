@@ -80,11 +80,13 @@ jobs:
         run: python v33_early_rank_checkpoints.py
       - name: V34 diagnose originally frozen score-selection failures and unique fixtures
         run: python v34_score_error_research.py
+      - name: Grade V35 new score challengers using independently verified finals
+        run: python v35_continuous_double_trials.py --verify-only
       - name: Commit newly verified scores and sanitized diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/ data/v34_score_error_research/
+          git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/ data/v34_score_error_research/ data/v35_continuous_challengers/
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
           git pull --rebase
