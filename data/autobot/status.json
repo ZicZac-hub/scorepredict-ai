@@ -1,0 +1,87 @@
+{
+  "ai_connection": "api_request_failed_ValueError",
+  "ai_research_memo_is_non_executable": true,
+  "goal_verified": false,
+  "integrity": "SOURCE_AUDITS_RECORDED",
+  "last_run_utc": "2026-11-22T22:27:20.544694+00:00",
+  "next_priority": "Investigate why original score distributions miss one or both final leg scores; prioritize independent high-goal calibration trials.",
+  "no_claimed_70_percent_without_independent_evidence": true,
+  "original_v8_daily_five_doubles": {
+    "hit_rate": 0.0,
+    "hits": 0,
+    "pending_sets": 1,
+    "verified_sets": 6
+  },
+  "priority": "five_exact_score_doubles",
+  "production_model_changed_by_bot": false,
+  "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
+  "target_five_double_hit_rate": 0.7,
+  "v30_frozen_candidate_pair_rows": {
+    "completed_independent_sydney_days": 1,
+    "correlated_verified": 156,
+    "pending": 60
+  },
+  "v34_diagnosis": {
+    "both_actual_leg_scores_missing": 106,
+    "unique_verified_fixtures": 21
+  },
+  "v35_challengers": {
+    "frozen_days": 0,
+    "method_names": [
+      "high_goal_tilt_0_15",
+      "low_goal_tilt_0_15",
+      "temperature_flatten_1_15",
+      "temperature_sharpen_0_85",
+      "v25_anchored_75_25",
+      "v8_original"
+    ],
+    "methods": {
+      "high_goal_tilt_0_15": {
+        "hits": 0,
+        "observed_hit_rate": null,
+        "review_gate_passed": false,
+        "verified_days": 0
+      },
+      "low_goal_tilt_0_15": {
+        "hits": 0,
+        "observed_hit_rate": null,
+        "review_gate_passed": false,
+        "verified_days": 0
+      },
+      "temperature_flatten_1_15": {
+        "hits": 0,
+        "observed_hit_rate": null,
+        "review_gate_passed": false,
+        "verified_days": 0
+      },
+      "temperature_sharpen_0_85": {
+        "hits": 0,
+        "observed_hit_rate": null,
+        "review_gate_passed": false,
+        "verified_days": 0
+      },
+      "v25_anchored_75_25": {
+        "hits": 0,
+        "observed_hit_rate": null,
+        "review_gate_passed": false,
+        "verified_days": 0
+      },
+      "v8_original": {
+        "hits": 0,
+        "observed_hit_rate": null,
+        "review_gate_passed": false,
+        "verified_days": 0
+      }
+    },
+    "pending_days": 0,
+    "ready_for_separate_production_review": [],
+    "verified_same_pair_days": 0
+  },
+  "v8_v25_same_pair": {
+    "pending_pairs": 1,
+    "v25_wins": 1,
+    "v8_wins": 0,
+    "verified_same_pair_sets": 5
+  },
+  "version": "ziczac-five-double-research-bot-v1"
+}

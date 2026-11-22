@@ -1,0 +1,251 @@
+{
+  "POST_HOC_sensitivity_deltas": {
+    "bivariate_poisson_c012": {
+      "NOT_an_independently_frozen_challenger_comparison": true,
+      "retrospective_minus_original_v8_mean_multiclass_brier": 0.0015980094596093064,
+      "retrospective_minus_original_v8_mean_score_log_loss": 0.015203705814692103
+    },
+    "negative_binomial_r3": {
+      "NOT_an_independently_frozen_challenger_comparison": true,
+      "retrospective_minus_original_v8_mean_multiclass_brier": 0.0031225876539014985,
+      "retrospective_minus_original_v8_mean_score_log_loss": 0.06894981846977899
+    },
+    "poisson_marginal": {
+      "NOT_an_independently_frozen_challenger_comparison": true,
+      "retrospective_minus_original_v8_mean_multiclass_brier": -0.0006432975848000844,
+      "retrospective_minus_original_v8_mean_score_log_loss": -0.011492707794328094
+    },
+    "v25_fixed_equal_mixture_replay": {
+      "NOT_an_independently_frozen_challenger_comparison": true,
+      "retrospective_minus_original_v8_mean_multiclass_brier": 0.00023669374262058618,
+      "retrospective_minus_original_v8_mean_score_log_loss": 0.015221894453642193
+    }
+  },
+  "POST_HOC_sensitivity_replays_only": {
+    "bivariate_poisson_c012": {
+      "high_goal_4_plus_observed": 13,
+      "high_goal_probability_gap_observed_minus_predicted": 0.22009068716376012,
+      "low_goal_0_or_1_observed": 2,
+      "mean_actual_total_goals": 3.857142857142857,
+      "mean_exact_score_log_loss": 3.359378270058308,
+      "mean_expected_total_goals": 3.2170257390714916,
+      "mean_goal_mae": 1.1623230462296366,
+      "mean_multiclass_score_brier": 0.9640220953464723,
+      "mean_over_3_5_brier": 0.27866343021809975,
+      "mean_over_3_5_observed": 0.6190476190476191,
+      "mean_over_3_5_probability": 0.39895693188385895,
+      "mean_top_five_hit": 0.19047619047619047,
+      "mean_top_one_hit": 0.14285714285714285,
+      "mean_top_three_hit": 0.14285714285714285,
+      "mean_under_1_5_brier": 0.0928647831400797,
+      "mean_under_1_5_observed": 0.09523809523809523,
+      "mean_under_1_5_probability": 0.1884892781707562,
+      "top_five_exact_hits": 4,
+      "top_one_exact_hits": 3,
+      "top_three_exact_hits": 3,
+      "total_goals_bias_actual_minus_expected": 0.6401171180713656,
+      "verified_leg_slots": 21
+    },
+    "negative_binomial_r3": {
+      "high_goal_4_plus_observed": 13,
+      "high_goal_probability_gap_observed_minus_predicted": 0.23445750862088222,
+      "low_goal_0_or_1_observed": 2,
+      "mean_actual_total_goals": 3.857142857142857,
+      "mean_exact_score_log_loss": 3.413124382713395,
+      "mean_expected_total_goals": 3.2170147375811755,
+      "mean_goal_mae": 1.1623229863098836,
+      "mean_multiclass_score_brier": 0.9655466735407645,
+      "mean_over_3_5_brier": 0.2838978606684915,
+      "mean_over_3_5_observed": 0.6190476190476191,
+      "mean_over_3_5_probability": 0.38459011042673685,
+      "mean_top_five_hit": 0.2857142857142857,
+      "mean_top_one_hit": 0.09523809523809523,
+      "mean_top_three_hit": 0.19047619047619047,
+      "mean_under_1_5_brier": 0.10699259323395248,
+      "mean_under_1_5_observed": 0.09523809523809523,
+      "mean_under_1_5_probability": 0.24545622357042923,
+      "top_five_exact_hits": 6,
+      "top_one_exact_hits": 2,
+      "top_three_exact_hits": 4,
+      "total_goals_bias_actual_minus_expected": 0.6401281195616817,
+      "verified_leg_slots": 21
+    },
+    "poisson_marginal": {
+      "high_goal_4_plus_observed": 13,
+      "high_goal_probability_gap_observed_minus_predicted": 0.2191980350283373,
+      "low_goal_0_or_1_observed": 2,
+      "mean_actual_total_goals": 3.857142857142857,
+      "mean_exact_score_log_loss": 3.332681856449288,
+      "mean_expected_total_goals": 3.217025739200612,
+      "mean_goal_mae": 1.1623230462337308,
+      "mean_multiclass_score_brier": 0.9617807883020629,
+      "mean_over_3_5_brier": 0.2782734654474684,
+      "mean_over_3_5_observed": 0.6190476190476191,
+      "mean_over_3_5_probability": 0.3998495840192818,
+      "mean_top_five_hit": 0.23809523809523808,
+      "mean_top_one_hit": 0.14285714285714285,
+      "mean_top_three_hit": 0.14285714285714285,
+      "mean_under_1_5_brier": 0.09087597836952603,
+      "mean_under_1_5_observed": 0.09523809523809523,
+      "mean_under_1_5_probability": 0.17776618494035507,
+      "top_five_exact_hits": 5,
+      "top_one_exact_hits": 3,
+      "top_three_exact_hits": 3,
+      "total_goals_bias_actual_minus_expected": 0.6401171179422454,
+      "verified_leg_slots": 21
+    },
+    "v25_fixed_equal_mixture_replay": {
+      "high_goal_4_plus_observed": 13,
+      "high_goal_probability_gap_observed_minus_predicted": 0.2245820769376598,
+      "low_goal_0_or_1_observed": 2,
+      "mean_actual_total_goals": 3.857142857142857,
+      "mean_exact_score_log_loss": 3.3593964586972582,
+      "mean_expected_total_goals": 3.217022071951093,
+      "mean_goal_mae": 1.1623230262577504,
+      "mean_multiclass_score_brier": 0.9626607796294836,
+      "mean_over_3_5_brier": 0.2801418243288521,
+      "mean_over_3_5_observed": 0.6190476190476191,
+      "mean_over_3_5_probability": 0.39446554210995927,
+      "mean_top_five_hit": 0.19047619047619047,
+      "mean_top_one_hit": 0.14285714285714285,
+      "mean_top_three_hit": 0.14285714285714285,
+      "mean_under_1_5_brier": 0.09601681901206728,
+      "mean_under_1_5_observed": 0.09523809523809523,
+      "mean_under_1_5_probability": 0.2039038955605135,
+      "top_five_exact_hits": 4,
+      "top_one_exact_hits": 3,
+      "top_three_exact_hits": 3,
+      "total_goals_bias_actual_minus_expected": 0.6401207851917641,
+      "verified_leg_slots": 21
+    }
+  },
+  "candidate_pairs_are_not_independent_trials": true,
+  "days": [
+    {
+      "complete_original_slate": true,
+      "distinct_verified_physical_fixtures": 3,
+      "original_candidate_pairs": 3,
+      "pair_failure_categories": {
+        "v25_robust_original": {
+          "both_leg_scores_absent": 2,
+          "hit": 0,
+          "one_leg_score_absent": 1,
+          "scores_present_but_wrong_joint_ticket": 0
+        },
+        "v8_optimal_original": {
+          "both_leg_scores_absent": 1,
+          "hit": 0,
+          "one_leg_score_absent": 2,
+          "scores_present_but_wrong_joint_ticket": 0
+        }
+      },
+      "pending_pair_rows": 0,
+      "sydney_day": "2026-11-22",
+      "verified_pair_rows_correlated": 3
+    },
+    {
+      "complete_original_slate": false,
+      "distinct_verified_physical_fixtures": 18,
+      "original_candidate_pairs": 210,
+      "pair_failure_categories": {
+        "v25_robust_original": {
+          "both_leg_scores_absent": 105,
+          "hit": 3,
+          "one_leg_score_absent": 45,
+          "scores_present_but_wrong_joint_ticket": 0
+        },
+        "v8_optimal_original": {
+          "both_leg_scores_absent": 105,
+          "hit": 3,
+          "one_leg_score_absent": 45,
+          "scores_present_but_wrong_joint_ticket": 0
+        }
+      },
+      "pending_pair_rows": 57,
+      "sydney_day": "2026-11-23",
+      "verified_pair_rows_correlated": 153
+    },
+    {
+      "complete_original_slate": false,
+      "distinct_verified_physical_fixtures": 0,
+      "original_candidate_pairs": 3,
+      "pair_failure_categories": {
+        "v25_robust_original": {
+          "both_leg_scores_absent": 0,
+          "hit": 0,
+          "one_leg_score_absent": 0,
+          "scores_present_but_wrong_joint_ticket": 0
+        },
+        "v8_optimal_original": {
+          "both_leg_scores_absent": 0,
+          "hit": 0,
+          "one_leg_score_absent": 0,
+          "scores_present_but_wrong_joint_ticket": 0
+        }
+      },
+      "pending_pair_rows": 3,
+      "sydney_day": "2026-11-24",
+      "verified_pair_rows_correlated": 0
+    }
+  ],
+  "evaluated_at_utc": "2026-11-22T22:27:07.744887+00:00",
+  "frozen_ticket_failure_attribution": {
+    "v25_robust_original": {
+      "both_leg_scores_absent": 107,
+      "hit": 3,
+      "one_leg_score_absent": 46,
+      "scores_present_but_wrong_joint_ticket": 0
+    },
+    "v8_optimal_original": {
+      "both_leg_scores_absent": 106,
+      "hit": 3,
+      "one_leg_score_absent": 47,
+      "scores_present_but_wrong_joint_ticket": 0
+    }
+  },
+  "fully_verified_slate_days": 1,
+  "initial_complete_day_review_target": 30,
+  "initial_review_ready": false,
+  "no_historical_five_ticket_reselection": true,
+  "no_live_model_changes": true,
+  "original_frozen_slate_days": 3,
+  "original_source_exclusions": {},
+  "original_v8_unique_fixture_score_diagnostics": {
+    "high_goal_4_plus_observed": 13,
+    "high_goal_probability_gap_observed_minus_predicted": 0.21976772108175419,
+    "low_goal_0_or_1_observed": 2,
+    "mean_actual_total_goals": 3.857142857142857,
+    "mean_exact_score_log_loss": 3.344174564243616,
+    "mean_expected_total_goals": 3.2170257392140202,
+    "mean_goal_mae": 1.1623230462338126,
+    "mean_multiclass_score_brier": 0.962424085886863,
+    "mean_over_3_5_brier": 0.2783810413313568,
+    "mean_over_3_5_observed": 0.6190476190476191,
+    "mean_over_3_5_probability": 0.3992798979658649,
+    "mean_top_five_hit": 0.23809523809523808,
+    "mean_top_one_hit": 0.09523809523809523,
+    "mean_top_three_hit": 0.14285714285714285,
+    "mean_under_1_5_brier": 0.09167067865628617,
+    "mean_under_1_5_observed": 0.09523809523809523,
+    "mean_under_1_5_probability": 0.17898643928876345,
+    "top_five_exact_hits": 5,
+    "top_one_exact_hits": 2,
+    "top_three_exact_hits": 3,
+    "total_goals_bias_actual_minus_expected": 0.640117117928837,
+    "verified_leg_slots": 21
+  },
+  "original_v8_verified_goal_bands": {
+    "high_4_plus": 13,
+    "low_0_to_1": 2,
+    "middle_2_to_3": 6
+  },
+  "probability_replays_are_not_real_v25_frozen_forecasts": true,
+  "repeated_physical_fixture_slots_excluded": 0,
+  "score_models_have_identical_verified_fixture_denominator": true,
+  "seventy_percent_five_double_hit_rate_unproven": true,
+  "source": "V30 independently checked V28 catalog, original immutable V8 score grids and verified finals",
+  "unique_verified_physical_fixtures": 21,
+  "verified_overlapping_candidate_pair_rows": 156,
+  "verified_result_conflicts_excluded": 0,
+  "version": "v34-deduplicated-score-error-research-v1"
+}
