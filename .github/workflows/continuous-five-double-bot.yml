@@ -2,6 +2,13 @@ name: 24/7 Five-Double Research Bot
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'continuous_accuracy_bot.py'
+      - 'v35_continuous_double_trials.py'
+      - 'continuous_bot_ui.py'
+      - '.github/workflows/continuous-five-double-bot.yml'
   schedule:
     # Four independent checks each hour, across every day and time zone.
     # GitHub schedules may be delayed and are not an always-on server.
