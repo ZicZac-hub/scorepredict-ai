@@ -5,8 +5,7 @@ and independently identity-matched regulation-time finals. The same pair and
 the same result grade both policies; post-match reconstructed selections never
 enter the denominator. No provider requests, model training or live promotion.
 
-V25's robustness lower envelope is not a normalized probability distribution;
-therefore no invented "V25 calibration score" is reported.
+Compare probabilities only where a separate V25 distribution was frozen.
 """
 import argparse
 from collections import Counter
@@ -20,6 +19,8 @@ from zoneinfo import ZoneInfo
 from five_double_accuracy import (
     _final, _result_index, _validated_grid, joint_geometry, utc, wilson,
 )
+
+from professional_analyst_shadow_v25 import PROBABILITY_VERSION
 
 ROOT = Path("data/v10_prospective")
 PREMATCH = Path("data/prematch")
@@ -155,6 +156,21 @@ def _frozen_set(path, root, clock):
     )
 
 
+def _v25_probability(frozen, source, selected):
+    if "v25_probability" not in frozen:
+        return None
+    record = frozen["v25_probability"]
+    if not isinstance(record, dict) or record.get("version") != PROBABILITY_VERSION:
+        raise ValueError("unknown_v25_probability_version")
+    if (utc(record["frozen_at_utc"]) != selected or
+            utc(record["source_evidence_as_of_utc"]) != utc(source["evidence_as_of_utc"])):
+        raise ValueError("v25_probability_timestamp_mismatch")
+    grid = _validated_grid(record["score_matrix"])
+    if (len(grid), len(grid[0])) != (len(source["score_matrix"]), len(source["score_matrix"][0])):
+        raise ValueError("v25_probability_support_mismatch")
+    return grid
+
+
 def _single_metrics(grid, actual):
     p = _matrix_probability(grid, actual)
     high = max(value for row in grid for value in row)
@@ -175,11 +191,27 @@ def _single_metrics(grid, actual):
     }
 
 
+def _calibration(metrics):
+    def mean(key):
+        return math.fsum(row[key] for row in metrics) / len(metrics) if metrics else None
+
+    return {
+        "evaluated_leg_slots": len(metrics),
+        "top_one_expected_hits": math.fsum(row["top_one_probability"] for row in metrics),
+        "top_one_observed_hits": sum(row["top_one_hit"] for row in metrics),
+        "top_one_brier": mean("top_one_event_brier"),
+        "multiclass_score_brier": mean("full_score_multiclass_brier"),
+        "exact_score_log_loss": mean("exact_score_log_loss"),
+    }
+
+
 def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
     clock = utc(now or datetime.now(timezone.utc))
     finals, conflicts, result_rejections = _result_index(root, prematch)
     exclusions = Counter()
     rows, leg_metrics = [], []
+    matched_v8, matched_v25 = [], []
+    probability_coverage = Counter()
     files = sorted(Path(sets).glob("*.json"))
     for path in files:
         try:
@@ -204,6 +236,21 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             "v25_selected_five_mass_under_v8_model": masses[1],
             "v25_lower_envelope_is_not_calibrated_probability": True,
         }
+        try:
+            v25_grids = [
+                _v25_probability(packet[leg], source, utc(packet["selected_at_utc"]))
+                for leg, source in zip(("first", "second"), models)
+            ]
+            if all(grid is not None for grid in v25_grids):
+                probability_status = "frozen"
+            elif all(grid is None for grid in v25_grids):
+                probability_status = "unavailable"
+            else:
+                probability_status = "incomplete"
+        except (ValueError, TypeError, KeyError, OverflowError):
+            probability_status = "invalid"
+        row["v25_probability_status"] = probability_status
+        probability_coverage[probability_status] += 1
         if row["status"] == "verified":
             v8_hit = any(pick == tuple(actuals) for pick in baseline)
             v25_hit = any(pick == tuple(actuals) for pick in challenger)
@@ -216,6 +263,13 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
                 ],
             })
             leg_metrics.extend(row["v8_score_probability_diagnostics"])
+            if probability_status == "frozen":
+                row["v25_score_probability_diagnostics"] = [
+                    _single_metrics(grid, actual)
+                    for grid, actual in zip(v25_grids, actuals)
+                ]
+                matched_v8.extend(row["v8_score_probability_diagnostics"])
+                matched_v25.extend(row["v25_score_probability_diagnostics"])
         rows.append(row)
     finished = [r for r in rows if r["status"] == "verified"]
     n = len(finished)
@@ -229,10 +283,8 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
                    / (2 ** discordant)) if discordant else None
     fixture_keys = [(r["fixture_ids"][0], r["fixture_ids"][1]) for r in finished]
     all_ids = [fixture for pair in fixture_keys for fixture in pair]
-    mean = lambda key: (math.fsum(x[key] for x in leg_metrics) /
-                        len(leg_metrics)) if leg_metrics else None
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "study": "original_v25_robust_selection_vs_original_v8_baseline_same_pairs",
         "evaluated_at_utc": clock.isoformat(),
         "archived_sets_found": len(files),
@@ -253,18 +305,18 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
         },
         "v8_exact_score_probability_calibration": {
             "verified_unique_legs": len(set(all_ids)),
-            "evaluated_leg_slots": len(leg_metrics),
-            "top_one_expected_hits": math.fsum(x["top_one_probability"]
-                                               for x in leg_metrics),
-            "top_one_observed_hits": sum(x["top_one_hit"] for x in leg_metrics),
-            "top_one_brier": mean("top_one_event_brier"),
-            "multiclass_score_brier": mean("full_score_multiclass_brier"),
-            "exact_score_log_loss": mean("exact_score_log_loss"),
+            **_calibration(leg_metrics),
         },
         "v25_probability_calibration": {
-            "status": "not_measurable_no_separately_frozen_normalized_v25_grid",
-            "top_one_brier": None, "multiclass_score_brier": None,
-            "exact_score_log_loss": None,
+            "status": "evaluated" if matched_v25 else "no_verified_pairs_with_frozen_v25_grids",
+            "version": PROBABILITY_VERSION,
+            **_calibration(matched_v25),
+        },
+        "matched_probability_calibration": {
+            "verified_pairs": len(matched_v25) // 2,
+            "pending_pairs": probability_coverage["frozen"] - len(matched_v25) // 2,
+            "v25_grid_coverage_by_pair": dict(probability_coverage),
+            "v8_on_same_legs": _calibration(matched_v8),
         },
         "rows": rows,
         "no_provider_calls": True,
@@ -276,7 +328,7 @@ def build_report(root=ROOT, prematch=PREMATCH, sets=SETS, *, now=None):
             "V25 lower-envelope scores are not probabilities and cannot be used for log-loss or Brier.",
             "V25 draws its sensitivity models from the same V8 underlying goal rates; evidence is not independent.",
             "V8 mass assigned to V25 selections is a reference only, not calibrated V25 hit probability.",
-            "Future full V25 probability calibration requires separately timestamped normalized score matrices.",
+            "Probability comparison uses only verified pairs with both frozen V25 grids, without reconstructing historical probabilities.",
             "Archived JSON capture timestamps are checked but are not independent Git commit-time notarization.",
             "Small and overlapping samples cannot establish superiority, reliable accuracy or 70% hit rate.",
         ],

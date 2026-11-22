@@ -15,6 +15,7 @@ from itertools import combinations
 import json
 import math
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -33,6 +34,7 @@ MAX_SOURCE_AGE = timedelta(hours=72)  # label the source as fresh if within this
 MAX_EARLY_SOURCE_AGE = timedelta(days=14)  # early frozen shadow ONLY; never live
 MIN_ENVELOPE_MASS = 0.035  # research-only operating threshold, NOT validated
 VERSION = "pro-analyst-v25-robust-sensitivity-shadow"
+PROBABILITY_VERSION = "v25-equal-sensitivity-mixture-v1"
 
 
 def _grid(record):
@@ -137,6 +139,18 @@ def _pad(grid, shape):
     return output
 
 
+def _freeze_probability(item, clock):
+    shape = item["grid"].shape
+    grid = np.mean([_pad(item["alternatives"][name], shape)
+                    for name in VARIANTS[1:]], axis=0)
+    return {
+        "version": PROBABILITY_VERSION,
+        "frozen_at_utc": clock.isoformat(),
+        "source_evidence_as_of_utc": item["record"]["evidence_as_of_utc"],
+        "score_matrix": (grid / grid.sum()).tolist(),
+    }
+
+
 def _pair(first, second):
     """Select full-support top five by lower joint model agreement.
 
@@ -237,6 +251,7 @@ def propose(forecasts, now, *, min_envelope=MIN_ENVELOPE_MASS):
                 "provider", "fixture_id", "home_team_id","away_team_id",
                 "home_team","away_team","kickoff_utc","captured_at_utc",
                 "forecast_id","model_key","model_version","input_digest")}
+            data["v25_probability"] = _freeze_probability(item, clock)
             data["human_research_note"]=human_research_note(r,clock)
             return data
         output[day] = {
@@ -348,12 +363,21 @@ def run(*, root=ORIGINAL_ROOT, out=OUT, prematch_root=Path("data/prematch"),
         if packet["decision"] != "FROZEN_RESEARCH_ONLY":
             continue
         file = folder/(day+".json")
-        try:
-            with file.open("x",encoding="utf-8") as f:
-                f.write(json.dumps(packet,indent=2,sort_keys=True,allow_nan=False)+"\n")
-            created.append(day)
-        except FileExistsError:
-            pass
+        if file.exists():
+            continue
+        contents = json.dumps(packet, indent=2, sort_keys=True, allow_nan=False) + "\n"
+        with NamedTemporaryFile(dir=folder, mode="w", encoding="utf-8",
+                                delete=False) as staged:
+            staged_path = Path(staged.name)
+            try:
+                staged.write(contents)
+                staged.close()
+                file.hardlink_to(staged_path)
+                created.append(day)
+            except FileExistsError:
+                pass
+            finally:
+                staged_path.unlink()
     results,conflicts = _results(root,prematch_root,clock)
     outcomes=[]
     for path in sorted(folder.glob("*.json")):

@@ -190,3 +190,35 @@ def test_v25_lower_envelope_not_misreported_as_calibration(tmp_path):
     report = build_report(root, prematch, sets, now=NOW)
     assert report["source_valid_sets"] == 0
     assert report["source_exclusions"]["not_original_v25_frozen_set"] == 1
+
+
+def test_frozen_v25_probabilities_use_same_verified_legs_and_preserve_five_double_grade(tmp_path):
+    from professional_analyst_shadow_v25 import propose
+
+    root, prematch, sets, packet, first, second = setup(tmp_path)
+    for model in (first, second):
+        model.update(home_team="Home", away_team="Away")
+    frozen = propose([first, second], SELECTED, min_envelope=0)["days"][DAY]
+    for leg in ("first", "second"):
+        packet[leg]["v25_probability"] = frozen[leg]["v25_probability"]
+    overwrite_set(sets, packet)
+
+    pending = build_report(root, prematch, sets, now=SELECTED)
+    assert pending["matched_probability_calibration"]["pending_pairs"] == 1
+    assert pending["v25_probability_calibration"]["evaluated_leg_slots"] == 0
+
+    report = build_report(root, prematch, sets, now=NOW)
+    comparison = report["matched_probability_calibration"]
+    assert comparison["verified_pairs"] == 1
+    assert comparison["v8_on_same_legs"]["evaluated_leg_slots"] == 2
+    v25 = report["v25_probability_calibration"]
+    assert v25["evaluated_leg_slots"] == 2
+    assert v25["exact_score_log_loss"] != comparison["v8_on_same_legs"]["exact_score_log_loss"]
+    assert report["v25"]["five_double_hits"] == 1
+
+    packet["first"]["v25_probability"]["frozen_at_utc"] = NOW.isoformat()
+    overwrite_set(sets, packet)
+    invalid = build_report(root, prematch, sets, now=NOW)
+    assert invalid["rows"][0]["v25_probability_status"] == "invalid"
+    assert invalid["v25_probability_calibration"]["evaluated_leg_slots"] == 0
+    assert invalid["v25"]["five_double_hits"] == 1
