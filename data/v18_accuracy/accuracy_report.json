@@ -20,15 +20,15 @@
         "wilson_95": null
       },
       {
-        "absolute_gap": 0.027315370652910675,
+        "absolute_gap": 0.017588683282031004,
         "estimated_band": "70%\u201380%",
-        "hits": 38,
-        "mean_estimated": 0.7580846014221414,
-        "observed_rate": 0.7307692307692307,
-        "verified": 52,
+        "hits": 40,
+        "mean_estimated": 0.7583294240227717,
+        "observed_rate": 0.7407407407407407,
+        "verified": 54,
         "wilson_95": [
-          0.5974778016637287,
-          0.8323103970483349
+          0.6106910949571831,
+          0.8388134737397926
         ]
       },
       {
@@ -56,22 +56,22 @@
         ]
       }
     ],
-    "brier": 0.16279571716214222,
-    "expected_calibration_error": 0.03802101445848828,
-    "hits": 57,
-    "mean_model_estimate": 0.7817159519511379,
-    "observed_win_rate": 0.7808219178082192,
+    "brier": 0.15993883657451863,
+    "expected_calibration_error": 0.03073231571663951,
+    "hits": 59,
+    "mean_model_estimate": 0.7812620548761519,
+    "observed_win_rate": 0.7866666666666666,
     "sample_too_small_for_reliable_calibration": true,
-    "verified": 73,
+    "verified": 75,
     "wilson_95": [
-      0.6732273388775208,
-      0.8603387936404931
+      0.6812003421070318,
+      0.8641979882028261
     ]
   },
   "evaluated_forecasts_captured_pre_kickoff": true,
   "evaluation_type": "original_prospective_v8_only",
   "evidence": {
-    "awaiting_or_unverified": 223,
+    "awaiting_or_unverified": 221,
     "frozen_source_matches_valid": 296,
     "missing_feature_counts": {
       "independent_market_snapshot_unavailable": 296,
@@ -81,7 +81,7 @@
     },
     "no_extra_paid_calls": true,
     "source_rejections": {},
-    "verified_results": 73
+    "verified_results": 75
   },
   "note": "No new football observations are fabricated. Reliable calibration needs hundreds of verified pre-match predictions. Original five exact-score double results are tracked separately.",
   "per_league": {
@@ -122,16 +122,16 @@
       "verified": 7
     },
     "PL": {
-      "brier": 0.12437684814359724,
+      "brier": 0.11763877890663525,
+      "observed_win_rate": 0.8888888888888888,
+      "sample_too_small": true,
+      "verified": 9
+    },
+    "SA": {
+      "brier": 0.10784933008706497,
       "observed_win_rate": 0.875,
       "sample_too_small": true,
       "verified": 8
-    },
-    "SA": {
-      "brier": 0.11645763935070622,
-      "observed_win_rate": 0.8571428571428571,
-      "sample_too_small": true,
-      "verified": 7
     }
   },
   "target_70_percent_actual_claim": false,

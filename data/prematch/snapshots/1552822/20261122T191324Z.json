@@ -1,0 +1,230 @@
+{
+  "away_team": "Le Mans",
+  "away_team_id": 1298,
+  "captured_at_utc": "2026-11-22T19:13:24.941137+00:00",
+  "competition": "FL1",
+  "double_top10_scores": [
+    [
+      2,
+      1,
+      0.09733124869329111
+    ],
+    [
+      1,
+      1,
+      0.09510826395199402
+    ],
+    [
+      2,
+      0,
+      0.07938883010140763
+    ],
+    [
+      1,
+      0,
+      0.07757563895967083
+    ],
+    [
+      3,
+      1,
+      0.06640412780517842
+    ],
+    [
+      2,
+      2,
+      0.05966438830308014
+    ],
+    [
+      1,
+      2,
+      0.058301691054486085
+    ],
+    [
+      3,
+      0,
+      0.05416293421827681
+    ],
+    [
+      0,
+      1,
+      0.04646802539473464
+    ],
+    [
+      3,
+      2,
+      0.0407059574338803
+    ]
+  ],
+  "evidence_as_of_utc": "2026-11-22T19:13:23.468502+00:00",
+  "expected_goals": {
+    "away": 1.2260068396141457,
+    "home": 2.046746405599815
+  },
+  "five_model_consensus": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "fixture_id": 1552822,
+  "forecast_model": "reference-informed-v7-v6-retained",
+  "home_team": "Marseille",
+  "home_team_id": 81,
+  "injuries": [
+    {
+      "player": "D. Cornelius",
+      "reason": "Hip Injury",
+      "team": "Marseille"
+    },
+    {
+      "player": "Emerson",
+      "reason": "Knee Injury",
+      "team": "Marseille"
+    },
+    {
+      "player": "P. Hojbjerg",
+      "reason": "Illness",
+      "team": "Marseille"
+    },
+    {
+      "player": "A. Bourabaa",
+      "reason": "Ankle Injury",
+      "team": "Le Mans"
+    },
+    {
+      "player": "D. Sidibe",
+      "reason": "Foot Injury",
+      "team": "Le Mans"
+    }
+  ],
+  "input_digest": "0b2c315df289391de00bcd069ae95b16cf5d3acbebf3e647f03ac3618500afa7",
+  "kickoff_utc": "2026-11-22T19:45:00Z",
+  "lineups": [],
+  "model_sources": [
+    "Preserved v6 venue-form statistical baseline"
+  ],
+  "news_provenance": [
+    {
+      "age_seconds": 0.00021195411682128906,
+      "cache_status": "network",
+      "endpoint": "/fixtures/lineups",
+      "fetched_at_utc": "2026-11-22T19:13:24.685942+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-22T19:13:24.686154+00:00",
+      "stale": false,
+      "ttl_seconds": 900
+    },
+    {
+      "age_seconds": 0.0002238750457763672,
+      "cache_status": "network",
+      "endpoint": "/injuries",
+      "fetched_at_utc": "2026-11-22T19:13:24.891434+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-22T19:13:24.891658+00:00",
+      "stale": false,
+      "ttl_seconds": 14400
+    }
+  ],
+  "policy_version": "two-season-asof-v1",
+  "predicted_outcome_probabilities": {
+    "away": 0.22457845099936605,
+    "draw": 0.21219989216354823,
+    "home": 0.5632216568370857
+  },
+  "predicted_score": [
+    2,
+    1
+  ],
+  "predicted_score_probability": 0.09733124869329111,
+  "prospective_challenger": {
+    "available": false,
+    "reason": "Use the versioned prospective v6/v7 ledger for this capture."
+  },
+  "provenance": {
+    "fixture_source": {
+      "age_seconds": 0.00020432472229003906,
+      "cache_status": "network",
+      "fetched_at_utc": "2026-11-22T19:13:23.677741+00:00",
+      "freshness_known": true,
+      "retrieved_at_utc": "2026-11-22T19:13:23.677945+00:00",
+      "stale": false,
+      "ttl_seconds": 60
+    },
+    "history_days": 730,
+    "news_sources": [
+      {
+        "age_seconds": 0.00021195411682128906,
+        "cache_status": "network",
+        "endpoint": "/fixtures/lineups",
+        "fetched_at_utc": "2026-11-22T19:13:24.685942+00:00",
+        "freshness_known": true,
+        "retrieved_at_utc": "2026-11-22T19:13:24.686154+00:00",
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.0002238750457763672,
+        "cache_status": "network",
+        "endpoint": "/injuries",
+        "fetched_at_utc": "2026-11-22T19:13:24.891434+00:00",
+        "freshness_known": true,
+        "retrieved_at_utc": "2026-11-22T19:13:24.891658+00:00",
+        "stale": false,
+        "ttl_seconds": 14400
+      }
+    ],
+    "provider": "API-Football",
+    "requested_as_of_utc": "2026-11-22T19:13:23.468502+00:00",
+    "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
+    "seasons": [
+      2026,
+      2025
+    ],
+    "sources": [
+      {
+        "age_seconds": 0.003084897994995117,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-22T19:13:23.905640+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-22T19:13:23.908725+00:00",
+        "season": 2026,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      },
+      {
+        "age_seconds": 0.0036423206329345703,
+        "cache_status": "network",
+        "endpoint": "/fixtures",
+        "fetched_at_utc": "2026-11-22T19:13:24.163709+00:00",
+        "freshness_known": true,
+        "provider": "API-Football",
+        "retrieved_at_utc": "2026-11-22T19:13:24.167351+00:00",
+        "season": 2025,
+        "source_season_mismatches": 0,
+        "stale": false,
+        "ttl_seconds": 900
+      }
+    ]
+  },
+  "provider": "API-Football",
+  "provider_warnings": [],
+  "reference_model_comparison": {
+    "expected_goals": {
+      "away": 1.037233487821727,
+      "home": 2.577139352825149
+    },
+    "model_version": "reference-informed-v7",
+    "outcome_probabilities": {
+      "away": 0.12791269645247588,
+      "draw": 0.16975662005930178,
+      "home": 0.7023306834882224
+    },
+    "predicted_score": [
+      2,
+      1
+    ],
+    "score_probability": 0.09277269208710326
+  },
+  "score_basis": "regulation"
+}
