@@ -1,16 +1,31 @@
 {
   "archived_picks_modified": false,
   "archived_sets_found": 5,
-  "evaluated_at_utc": "2026-11-21T23:02:18.319857+00:00",
+  "evaluated_at_utc": "2026-11-22T01:37:35.725191+00:00",
   "limitations": [
     "The comparison grades two SAVED policies on identical pairs, not automatically selected V8 daily pairs.",
     "V25 lower-envelope scores are not probabilities and cannot be used for log-loss or Brier.",
     "V25 draws its sensitivity models from the same V8 underlying goal rates; evidence is not independent.",
     "V8 mass assigned to V25 selections is a reference only, not calibrated V25 hit probability.",
-    "Future full V25 probability calibration requires separately timestamped normalized score matrices.",
+    "Probability comparison uses only verified pairs with both frozen V25 grids, without reconstructing historical probabilities.",
     "Archived JSON capture timestamps are checked but are not independent Git commit-time notarization.",
     "Small and overlapping samples cannot establish superiority, reliable accuracy or 70% hit rate."
   ],
+  "matched_probability_calibration": {
+    "pending_pairs": 0,
+    "v25_grid_coverage_by_pair": {
+      "unavailable": 5
+    },
+    "v8_on_same_legs": {
+      "evaluated_leg_slots": 0,
+      "exact_score_log_loss": null,
+      "multiclass_score_brier": null,
+      "top_one_brier": null,
+      "top_one_expected_hits": 0.0,
+      "top_one_observed_hits": 0
+    },
+    "verified_pairs": 0
+  },
   "no_provider_calls": true,
   "pending_matched_pairs": 1,
   "production_model_promoted": false,
@@ -36,6 +51,7 @@
       "sydney_date": "2026-11-19",
       "v25_five_hit": true,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.052898207062901395,
       "v8_five_hit": false,
       "v8_five_model_mass": 0.059225282828107406,
@@ -80,6 +96,7 @@
       "sydney_date": "2026-11-20",
       "v25_five_hit": false,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.05831467893493922,
       "v8_five_hit": false,
       "v8_five_model_mass": 0.06695245127816893,
@@ -124,6 +141,7 @@
       "sydney_date": "2026-11-21",
       "v25_five_hit": false,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.0666280493404989,
       "v8_five_hit": false,
       "v8_five_model_mass": 0.0705631294939516,
@@ -168,6 +186,7 @@
       "sydney_date": "2026-11-22",
       "v25_five_hit": false,
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.07134417385436498,
       "v8_five_hit": false,
       "v8_five_model_mass": 0.07619753996352728,
@@ -207,6 +226,7 @@
       "status": "pending",
       "sydney_date": "2026-11-23",
       "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_probability_status": "unavailable",
       "v25_selected_five_mass_under_v8_model": 0.06327268746484016,
       "v8_five_model_mass": 0.06544467166796027
     }
@@ -216,7 +236,7 @@
     "v25_only_hits": 1,
     "v8_only_hits": 0
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "seventy_percent_accuracy_proven": false,
   "source_exclusions": {},
   "source_valid_sets": 5,
@@ -230,10 +250,14 @@
     ]
   },
   "v25_probability_calibration": {
+    "evaluated_leg_slots": 0,
     "exact_score_log_loss": null,
     "multiclass_score_brier": null,
-    "status": "not_measurable_no_separately_frozen_normalized_v25_grid",
-    "top_one_brier": null
+    "status": "no_verified_pairs_with_frozen_v25_grids",
+    "top_one_brier": null,
+    "top_one_expected_hits": 0.0,
+    "top_one_observed_hits": 0,
+    "version": "v25-equal-sensitivity-mixture-v1"
   },
   "v8": {
     "five_double_hit_rate": 0.0,
