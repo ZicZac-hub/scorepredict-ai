@@ -329,7 +329,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                             diagnostics['v10_shadow_v12_saved'] += int(result.get('v12_recorded',False))
                             diagnostics['v10_shadow_v13_saved'] += int(result.get('v13_recorded',False))
                             diagnostics['v10_market_calls'] += int(result.get('market_calls',0))
-                            reason = result.get('reason') or 'unspecified'
+                            reason = (result.get('readiness_reason') or
+                                      result.get('reason') or 'unspecified')
                             if not result.get('v8_recorded'):
                                 skipped=diagnostics['v10_shadow_skipped']
                                 skipped[reason]=skipped.get(reason,0)+1
