@@ -90,10 +90,9 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No new authenticated original receipts or coverage'
           else
-            # Capture can also modify derived reports not yet ready to publish.
-          # Rebase temporarily stashes those uncommitted tracked changes,
-          # restoring them afterward for the existing full audit.
-          git commit -m "data: checkpoint genuine pre-match originals [skip ci]"
+            # Rebase temporarily stashes other uncommitted tracked reports,
+            # restoring them afterward for the existing full audit.
+            git commit -m "data: checkpoint genuine pre-match originals [skip ci]"
             published=false
             for attempt in 1 2 3 4; do
               git fetch origin main
