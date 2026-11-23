@@ -109,6 +109,12 @@ jobs:
                   GIT_EDITOR=true git -c core.editor=true rebase --continue
                 fi
               fi
+              # An autostash may conflict while restoring other generated
+              # reports. Never continue with unresolved index entries.
+              if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+                echo 'SAFE STOP: autostash could not restore all local reports'
+                exit 1
+              fi
               if git push origin HEAD:main; then
                 echo 'Authenticated originals checkpointed on main'
                 published=true
