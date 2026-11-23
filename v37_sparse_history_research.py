@@ -114,3 +114,47 @@ def frozen_arm_digest(row):
     return hashlib.sha256(json.dumps(
         source,sort_keys=True,separators=(",",":"),allow_nan=False
     ).encode("utf-8")).hexdigest()
+
+
+def freeze(fixture, evidence, captured_at, *, root=None):
+    """Write one independent V37 source per future fixture, at most once.
+
+    This shadow NEVER replaces V8 or writes a V28-eligible model key. If the
+    source is insufficient, return a documented abstention and no file.
+    """
+    from pathlib import Path
+    from forecast_ledger import append_file_record, read_file_records
+    from v10_prospective import ROOT, _record, utc
+
+    root = ROOT if root is None else Path(root)
+    when = utc(captured_at)
+    as_of = utc(evidence["as_of_utc"])
+    kickoff = utc(fixture["utcDate"])
+    if not evidence.get("input_digest") or not (as_of <= when < kickoff):
+        raise ValueError("missing_authentic_pre_kickoff_evidence")
+    forecast = predict(
+        fixture, evidence.get("history") or [],
+        evidence.get("league_history") or evidence.get("history") or [],
+        as_of=as_of)
+    if forecast is None:
+        return {"v37_recorded": False, "v37_reason": "sparse_evidence_not_eligible"}
+    provider = str(fixture["provider"])
+    identifier = str(fixture["id"])
+    existing = read_file_records(root, kind="forecasts",provider=provider,fixture_id=identifier)
+    if any(row.get("model_key") == "v37_sparse" for row in existing):
+        return {"v37_recorded": False, "v37_reason": "original_v37_already_issued"}
+    completed = max(when, utc(datetime.now(timezone.utc)))
+    if completed >= kickoff:
+        return {"v37_recorded": False, "v37_reason": "calculation_after_kickoff"}
+    row = _record(fixture,evidence,forecast,"v37_sparse",completed)
+    row["v37_control_grid"] = forecast["v37_control_grid"]
+    row["v37_research_only"] = True
+    row["v37_no_live_model_change"] = True
+    row["v37_not_eligible_for_v28"] = True
+    row["v37_arm_digest_sha256"] = frozen_arm_digest(row)
+    written = append_file_record(row,root=root,kind="forecasts")
+    return {
+        "v37_recorded": bool(written),
+        "v37_reason": "new_pre_kickoff_sparse_model_issued"
+            if written else "immutable_source_already_recorded",
+    }
