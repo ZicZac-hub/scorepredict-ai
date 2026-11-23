@@ -34,6 +34,7 @@ def render(st):
     v35 = status.get("v35_challengers") or {}
     v36 = status.get("v36_challengers") or {}
     v28 = status.get("v28_upstream_capture") or {}
+    source = status.get("source_capture_health") or {}
     cols = st.columns(3)
     cols[0].metric("V8 verified five-double", f"{baseline.get('hits',0)}/{baseline.get('verified_sets',0)}", _pct(baseline.get("hit_rate")))
     cols[1].metric("V25 same-pair wins", f"{v25.get('v25_wins',0)}/{v25.get('verified_same_pair_sets',0)}")
@@ -55,6 +56,31 @@ def render(st):
         st.dataframe(rows, hide_index=True, use_container_width=True)
     else:
         st.caption("No qualified V35 pairs have been frozen and verified yet. Missing results are not failures.")
+    st.markdown("#### Pre-match V8 source capture readiness")
+    st.caption("Source capture is separate from the research bot. Missing/old reports cannot prove the collector ran or that forecasts improved.")
+    freshness=source.get("collector_freshness") or "unknown_missing_capture_timestamp"
+    if freshness == "stale":
+        st.warning("Pre-match source-capture report is over three hours old; check the separate capture workflow before trusting source coverage.")
+    elif freshness != "recent":
+        st.warning("Latest source-capture time is unavailable or invalid. Capture freshness is unverified.")
+    else:
+        st.caption("Verified timestamp for latest source report: " +
+                   str(source.get("collector_started_at_utc")))
+    st.write("Processed fixtures: " + str(source.get("processed_fixtures",0)) +
+             " · V8 forecasts saved: " + str(source.get("v8_saved",0)) +
+             " · Explicit V8 abstentions: " + str(source.get("v8_abstentions",0)) +
+             " · V8 capture errors: " + str(source.get("v8_source_errors",0)))
+    reasons = source.get("v8_abstention_reasons") or {}
+    if reasons:
+        st.write("Source-evidence abstentions (not lost tickets): " +
+                 ", ".join(str(k) + ": " + str(v)
+                           for k,v in sorted(reasons.items())))
+    leagues=source.get("v8_abstention_reasons_by_league") or {}
+    league_rows=[{"League": league,"Source gap": reason,"Abstentions":count}
+                 for league, groups in sorted(leagues.items())
+                 for reason,count in sorted(groups.items()) if count]
+    if league_rows:
+        st.dataframe(league_rows, hide_index=True, use_container_width=True)
     st.markdown("#### New V28 decision capture")
     st.caption("V28 source decisions must be issued and stored before the V35/V36 future-only 20-minute window expires. No retrospective tickets.")
     st.write(
