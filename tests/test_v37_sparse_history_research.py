@@ -97,7 +97,7 @@ def test_v37_atomic_single_record_and_duplicate_ignored(tmp_path):
     assert item["model_key"]=="v37_sparse"
     assert item["v37_not_eligible_for_v28"] is True
     assert item["v37_arm_digest_sha256"]==sparse.frozen_arm_digest(item)
-    assert item["evidence_as_of_utc"]==NOW.isoformat()
+    assert v10.utc(item["evidence_as_of_utc"])==NOW
     assert np.isclose(np.asarray(item["v37_control_grid"]).sum(),1)
     retry=sparse.freeze(game,evidence(records),NOW,root=tmp_path)
     assert retry=={"v37_recorded":False,
