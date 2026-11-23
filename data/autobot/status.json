@@ -3,8 +3,8 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-23T05:51:31.696805+00:00",
-  "next_priority": "Verify the pre-match source collector's freshness, then diagnose authenticated V8 historical-evidence gaps. Do not issue or backdate V36 scores without fresh originals.",
+  "last_run_utc": "2026-11-23T06:57:50.927471+00:00",
+  "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
     "hit_rate": 0.0,
@@ -16,18 +16,25 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": null,
-    "collector_freshness": "unknown_missing_capture_timestamp",
-    "collector_started_at_utc": null,
+    "age_minutes": 15.6,
+    "collector_freshness": "recent",
+    "collector_started_at_utc": "2026-11-23T06:42:17.851407+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 23,
+    "processed_fixtures": 22,
     "producer_api_budget_unchanged": true,
     "v8_abstention_reasons": {
-      "insufficient_verified_research_evidence": 22
+      "team_history_below_five": 22
     },
-    "v8_abstention_reasons_by_league": {},
+    "v8_abstention_reasons_by_league": {
+      "CL": {
+        "team_history_below_five": 10
+      },
+      "EL": {
+        "team_history_below_five": 12
+      }
+    },
     "v8_abstentions": 22,
-    "v8_saved": 1,
+    "v8_saved": 0,
     "v8_saved_by_league": {},
     "v8_source_errors": 0
   },
@@ -39,8 +46,8 @@
     "pending_days": 1,
     "source_ineligibility": {
       "invalid_source_time": 158,
-      "not_original_v8_model": 644,
-      "outside_research_freeze_window": 211
+      "not_original_v8_model": 656,
+      "outside_research_freeze_window": 217
     },
     "verified_paired_days": 2
   },
