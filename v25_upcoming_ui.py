@@ -115,6 +115,11 @@ def _show_report(st,report):
                 "Both provider-reported starting XIs":leg.get("confirmed_starting_xi_both_teams") is True,
                 "Evidence status":str(leg.get("reason") or "not checked").replace("_"," "),
             })
+        spot=report.get("live_market_evidence") or {}
+        if spot:
+            st.write({"Separately checked live API odds":spot.get("both_verified") is True,
+                      "Exact fixture-ID / kickoff matching results":spot.get("legs") or [],
+                      "Not applied to score probabilities":True})
         st.caption("None of these external signals is numerically weighted in V25 "
                    "until a separate pre-kickoff-trained challenger shows independent "
                    "improvement. V25 scores still come from the V8 goal grid.")
@@ -223,12 +228,17 @@ def render(st,rows,histories=None):
                "filter. Tap below to look up the actual fixtures for the "
                "selected date; the provider's available matches may differ "
                "from the already-modelled forecast archive.")
+    batch_size=st.select_slider(
+        "New fixture model attempts per search (uses provider API allowance)",
+        options=[4,8,12],value=4,key="zz_v25_discovery_batch",
+        help="Four remains the default. Larger batches can use much more API-Football quota; "
+             "a fixture without sufficient real history stays unmodelled.")
     requested=st.button(
         "🔎 Find & model matches · "+date.fromisoformat(day).strftime("%d %b"),
         key="zz_v25_discover_day",type="primary",use_container_width=True,
         help="Makes one date-scoped API-Football fixture request and up to "
-             "four model attempts. History and team-context calls may use "
-             "your API-Football quota; it never makes paid AI requests.")
+             "the selected number of bounded model attempts. History and "
+             "team-context calls may use API quota; no paid AI calls.")
     if requested:
         try:
             key=str(st.secrets.get("API_FOOTBALL_KEY") or
@@ -247,10 +257,11 @@ def render(st,rows,histories=None):
                            "this session to avoid repeated API costs.")
             else:
                 with st.spinner("Checking real upcoming fixtures and modelling "
-                                "up to four previously unchecked matches..."):
+                                f"up to {batch_size} previously unchecked matches..."):
                     outcome=research_day(
                         key,date.fromisoformat(day),
-                        known_ids=previous.get("checked_ids") or [],now=clock)
+                        known_ids=previous.get("checked_ids") or [],
+                        limit=batch_size,now=clock)
                 new_rows=merge_modelled(previous.get("rows") or [],
                                        outcome.get("modeled") or [])
                 checked=list(dict.fromkeys(
@@ -292,9 +303,9 @@ def render(st,rows,histories=None):
         for message in (last.get("errors") or [])[:3]:
             st.caption("Provider/model limitation: "+str(message)[:190])
         if last.get("remaining",0):
-            st.caption("Tap Find & model again to process another four "
-                       "previously unchecked fixtures. Historical evidence "
-                       "and API quota determine which become V25-ready.")
+            st.caption("Tap Find & model again to process another selected "
+                       "batch of previously unchecked fixtures. Historical "
+                       "evidence and API quota determine which become V25-ready.")
 
     chosen=available_by_day.get(day,[])
     all_fixtures=fixture_table(day,chosen,saved.get("fixtures") or [])
@@ -392,6 +403,58 @@ def render(st,rows,histories=None):
                     st.caption("Highest V8 top-five mass checked: "+
                                f'{outcome["highest_v8_estimated_mass"]:.2%}' +
                                ". Model estimate only, not observed hit rate.")
+                alternative=outcome.get("research_alternative")
+                if alternative:
+                    with st.expander("Strongest rejected pair · optional live market check",
+                                     expanded=False):
+                        st.warning("This pair failed the cautious checks: "+
+                                   ", ".join(alternative["failed_checks"])+
+                                   ". The five scorelines are research-only until "
+                                   "the original checks genuinely pass.")
+                        st.caption("Optional check: up to TWO API-Football odds "
+                                   "requests to verify source fixture IDs, kickoffs, "
+                                   "quote types and timestamps. These prices do not "
+                                   "change V25 scores or prove higher accuracy.")
+                        if st.button("🔎 Check current odds for both legs",
+                                     key="zz_v25_check_live_odds"):
+                            try:
+                                api_key=str(st.secrets.get("API_FOOTBALL_KEY") or
+                                            os.environ.get("API_FOOTBALL_KEY") or "").strip()
+                            except (AttributeError,OSError,KeyError,RuntimeError):
+                                api_key=str(os.environ.get("API_FOOTBALL_KEY") or "").strip()
+                            if not api_key:
+                                st.error("API_FOOTBALL_KEY is missing; cannot "
+                                         "verify live bookmaker markets.")
+                            else:
+                                from v25_live_market_check import inspect_pair
+                                now_check=datetime.now(timezone.utc)
+                                live=inspect_pair(api_key,alternative["report"],
+                                                  now=now_check)
+                                checked=dict(alternative["report"])
+                                checked["live_market_evidence"]=live
+                                quality=automatic_quality(checked)
+                                cache[key]["live_market_check"]={
+                                    "report":checked,"quality":quality}
+                                if quality["passed"]:
+                                    _save_explicit_selection(st,checked)
+                        checked=(cache.get(key) or {}).get("live_market_check")
+                        if checked:
+                            audit=checked["report"]["live_market_evidence"]
+                            if checked["quality"]["passed"]:
+                                st.success("Both genuine markets passed the source "
+                                           "and model checks. This remains an "
+                                           "experimental five-double research set, "
+                                           "not a demonstrated winning rate.")
+                            else:
+                                st.warning("Source checks still prevent cautious "
+                                           "selection: "+", ".join(
+                                               checked["quality"]["reasons"]))
+                            st.write({"Live market spot-check":audit.get("legs") or [],
+                                      "Provider requests attempted":audit.get(
+                                          "provider_requests_attempted"),
+                                      "Odds NOT used to change score estimates":True})
+                        _show_report(st,checked["report"] if checked
+                                     else alternative["report"])
     else:
         pages=math.ceil(len(catalog)/MAX_PAGE_PAIRS)
         page=st.selectbox("Page of eligible match pairs",

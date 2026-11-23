@@ -59,3 +59,24 @@ def test_invalid_replay_never_claims_accuracy(tmp_path):
     target=tmp_path/"fake.json"
     target.write_text(json.dumps({"kind":"live_prospective","foo":"bar"}))
     assert historical_reality_check(target)["status"]=="unavailable"
+
+
+def test_abstained_auto_reports_only_unissued_research_candidate(monkeypatch):
+    import numpy as np
+    import v25_upcoming as mod
+    from datetime import datetime,timezone
+    matrix=np.full((5,5),1/25)
+    item=lambda fid:{"key":("API-Football",str(fid)),"alternatives":{"baseline_v8":matrix}}
+    report={"status":"ready","v8_optimal_five_estimated_mass":.1,
+            "v25_lower_envelope_criterion":.04,
+            "early_frozen_source":[False,False],
+            "source_evidence_audit":[{"verified_pre_match_market":False}]*2}
+    monkeypatch.setattr(mod,"generate",lambda *args:dict(report))
+    result=mod.best_pair([(item(1),item(2))],datetime.now(timezone.utc),cautious=True)
+    assert result["status"]=="abstained_low_evidence"
+    alt=result["research_alternative"]
+    assert alt["auto_issued"] is False
+    assert alt["verified_success_probability"] is None
+    assert "no_source_matched_fresh_market_on_both_legs" in alt["failed_checks"]
+    assert mod.best_pair([(item(1),item(2))],datetime.now(timezone.utc),
+                         cautious=False)["status"]=="ready"

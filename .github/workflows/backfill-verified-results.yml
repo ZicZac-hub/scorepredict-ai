@@ -94,5 +94,11 @@ jobs:
           git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
-          git pull --rebase
-          git push
+          # Other research steps update reports we intentionally did not stage.
+          # Preserve those files without blocking a clean commit rebase.
+          git pull --rebase --autostash origin main
+          if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+            echo "SAFE STOP: unstaged research report conflicts require review"
+            exit 1
+          fi
+          git push origin HEAD:main

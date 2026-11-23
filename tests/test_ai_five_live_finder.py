@@ -42,7 +42,7 @@ def test_date_scoped_search_only_models_upcoming_fixtures_four_at_a_time():
         calls.append(event["fixture"]["id"])
         assert model_variant=="research_v8"
         return modeled(event),None
-    result=research_day("test-key",DAY,limit=20,discover=discover,
+    result=research_day("test-key",DAY,limit=4,discover=discover,
                         model=model,now=NOW)
     assert result["discovered"]==6
     assert len(result["fixtures"])==6
@@ -131,3 +131,24 @@ def test_quota_error_stops_other_fixture_model_calls_in_same_search():
     assert result["checked"] == 1
     assert result["remaining"] == 4
     assert attempts == [10]
+
+
+def test_user_selected_twelve_fixture_batch_is_bounded_and_default_remains_four():
+    events=[fixture(i,"2026-11-15T08:00:00Z") for i in range(100,120)]
+    calls=[]
+    def model(key,event,model_variant=None):
+        calls.append(event["fixture"]["id"])
+        return modeled(event),None
+    first=research_day("key",DAY,discover=lambda *a:(events,[]),
+                       model=model,now=NOW)
+    assert first["checked"]==4
+    second=research_day("key",DAY,known_ids=first["checked_ids"],limit=12,
+                        discover=lambda *a:(events,[]),model=model,now=NOW)
+    assert second["checked"]==12
+    assert second["remaining"]==4
+    assert len(set(first["checked_ids"]+second["checked_ids"]))==16
+    assert len(calls)==16
+    # Oversized caller requests are still hard-capped by policy.
+    third=research_day("key",DAY,limit=1000,discover=lambda *a:(events,[]),
+                       model=model,now=NOW)
+    assert third["checked"]==12

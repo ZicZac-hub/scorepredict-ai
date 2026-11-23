@@ -434,7 +434,7 @@ jobs:
             # Immutable captures NEVER accept silent overwrites.
             for attempt in 1 2 3 4; do
               git fetch origin main
-              if ! git rebase origin/main; then
+              if ! git rebase --autostash origin/main; then
                 if ! python reconcile_capture_conflicts.py; then
                   git rebase --abort || true
                   echo "An immutable conflict needs review. All originals remain unchanged."
@@ -445,6 +445,10 @@ jobs:
                 else
                   GIT_EDITOR=true git -c core.editor=true rebase --continue
                 fi
+              fi
+              if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+                echo "SAFE STOP: unmerged research artifacts after autostash"
+                exit 1
               fi
               if git push origin HEAD:main; then
                 echo "Permanent research history committed successfully."

@@ -221,8 +221,21 @@ def automatic_quality(report, *, min_model_mass=CAUTIOUS_MIN_V8_FIVE_MASS,
     if any(report.get("early_frozen_source") or []):
         reasons.append("original_source_over_72_hours_old")
     audited=report.get("source_evidence_audit") or []
-    if require_fresh_market and (len(audited)!=2 or not all(
-            item.get("verified_pre_match_market") is True for item in audited)):
+    archived_verified=(len(audited)==2 and all(
+        item.get("verified_pre_match_market") is True for item in audited))
+    # An explicitly requested live API-Football /odds spot check is allowed
+    # as a DIFFERENT source from the immutable V21 source-packet audit. It
+    # must verify both exact source fixture IDs, not just arbitrary odds.
+    live=report.get("live_market_evidence") or {}
+    expected=[str((report.get(side+"_fixture") or {}).get("id") or "")
+              for side in ("first","second")]
+    legs=live.get("legs") or []
+    live_verified=(live.get("both_verified") is True and len(legs)==2
+                   and all(str(leg.get("fixture_id"))==fid and
+                           leg.get("verified_pre_match_market") is True
+                           for leg,fid in zip(legs,expected))
+                   and all(expected))
+    if require_fresh_market and not (archived_verified or live_verified):
         reasons.append("no_source_matched_fresh_market_on_both_legs")
     return {"passed":not reasons,"reasons":reasons,
             "minimum_model_mass_research_only":min_model_mass,
@@ -248,6 +261,7 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
         pair[0]["key"],pair[1]["key"]))
     selected=ranked[:max(1,limit)]
     best=None
+    best_research=None
     quality_exclusions=Counter()
     scored=0
     highest_v8_mass=None
@@ -260,10 +274,14 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
         highest_v8_mass=mass if highest_v8_mass is None else max(highest_v8_mass,mass)
         quality=automatic_quality(report,min_model_mass=min_model_mass,
                                   require_fresh_market=require_fresh_market)
+        # Keep the strongest rejected candidate as an explicitly unverified
+        # preview. It is never auto-issued or described as a validated pick.
+        grade=report["v25_lower_envelope_criterion"]
+        if best_research is None or grade>best_research[0]:
+            best_research=(grade,report,quality)
         if cautious and not quality["passed"]:
             quality_exclusions.update(quality["reasons"])
             continue
-        grade=report["v25_lower_envelope_criterion"]
         if best is None or grade>best[0]:
             best=(grade,first,second,report)
     if best is None:
@@ -275,6 +293,11 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
                 "quality_exclusions":dict(quality_exclusions),
                 "highest_v8_estimated_mass":highest_v8_mass,
                 "cautious_filter":bool(cautious),
+                "research_alternative":(
+                    {"report":best_research[1],
+                     "failed_checks":best_research[2]["reasons"],
+                     "verified_success_probability":None,
+                     "auto_issued":False} if cautious and best_research else None),
                 "screened":len(selected),"total_pairs":len(catalog)}
     return {"status":"ready","first":best[1],"second":best[2],
             "report":best[3],"screened":len(selected),
