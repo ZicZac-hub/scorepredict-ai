@@ -56,6 +56,10 @@ jobs:
           V10_RESULT_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '20' || '2' }}
         run: python v10_settlement.py
       - name: Capture verified pre-kickoff snapshots
+        id: capture
+        # A temporary result-settlement failure must not disable collection
+        # of independent, genuine future forecasts.
+        if: ${{ !cancelled() }}
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -63,6 +67,8 @@ jobs:
           V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}
         run: python capture_prematch.py
       - name: Persist newly captured originals
+        id: persist_originals
+        if: ${{ !cancelled() && steps.capture.outcome == 'success' }}
         run: python persist_prematch.py --snapshots-only
       - name: Back up newly captured authenticated originals before long research stages
         # Even if a later validation job times out, the original pre-match
@@ -85,7 +91,7 @@ jobs:
         # the entire pipeline. No new football or AI API calls.
         # On concurrent bot commits, preserve upstream reports and NEVER
         # auto-merge conflicting immutable forecast files.
-        if: success()
+        if: ${{ !cancelled() && steps.capture.outcome == 'success' && steps.persist_originals.outcome == 'success' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
