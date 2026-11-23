@@ -29,4 +29,5 @@ def test_v36_rejects_invalid_and_does_not_clip():
         transform_score_grid(np.full((5, 5), 1 / 25), "unregistered")
     report = evaluate_fixture(np.full((5, 5), 1 / 25), (5, 1))
     assert all(report["methods"][m]["outside_grid"] for m in METHODS)
-    assert all(report["methods"][m]["exact_log_loss"] is None for m in METHODS)
+    assert all(report["methods"][m]["exact_log_loss"] > 30 for m in METHODS)
+    assert all(report["methods"][m]["multiclass_brier"] > 1 for m in METHODS)
