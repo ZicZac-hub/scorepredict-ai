@@ -141,7 +141,7 @@ def summarize(rows, *, now):
             "wilson95": wilson(hits,n),
             "unique_verified_physical_fixtures": len(unique),
             "out_of_score_grid_finals": sum(
-                int(x["exact_score_probability"] == 0) for x in measured),
+                int(x["outside_score_grid"]) for x in measured),
             "mean_proper_scores": means,
             "research_only_not_live_promoted": True,
         }
@@ -159,6 +159,13 @@ def summarize(rows, *, now):
         "not_validated_at_seventy_percent": True,
         "no_live_model_change": True,
     }
+
+
+def _describe(grid, actual):
+    report = describe_score(grid, actual)
+    report["outside_score_grid"] = (
+        actual[0] >= len(grid) or actual[1] >= len(grid[0]))
+    return report
 
 
 def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
@@ -194,7 +201,7 @@ def evaluate(*, root=ORIGINAL_ROOT, prematch=Path("data/prematch"),
                     "hits": {method: _hit(packet["policies"][method]["five_joint_scores"],
                                           actual) for method in METHODS},
                     "proper_scores": {method: [
-                        describe_score(grid, result) for grid, result in zip(
+                        _describe(grid, result) for grid, result in zip(
                             packet["policies"][method]["score_grids"], goals)
                     ] for method in METHODS},
                 })
