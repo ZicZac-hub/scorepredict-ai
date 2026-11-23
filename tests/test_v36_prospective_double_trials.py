@@ -90,3 +90,22 @@ def test_v36_out_of_grid_final_is_counted_not_dropped():
     assert proper["exact_score_log_loss"] > 30
     assert proper["multiclass_score_brier"] > 1
     assert proper["over_3_5_brier"] >= 0
+
+def test_v36_does_not_count_same_fixture_on_two_days():
+    from v36_tail_calibration_research import METHODS
+    fixture_metrics = {
+        "exact_score_log_loss":2.0, "multiclass_score_brier":0.7,
+        "over_3_5_brier":0.2, "under_1_5_brier":0.1,
+        "exact_score_probability":0.1, "outside_score_grid":False,
+    }
+    def row(day):
+        return {
+            "sydney_day":day, "status":"verified",
+            "original_selected_fixture_keys":[["p","1"],["p","2"]],
+            "actual_scores":["1-1","2-0"],
+            "hits":{method:False for method in METHODS},
+            "proper_scores":{method:[fixture_metrics,fixture_metrics] for method in METHODS},
+        }
+    with pytest.raises(ValueError,match="same_physical_fixture_repeated"):
+        trial.summarize([row("2035-01-01"),row("2035-01-02")],
+                        now=datetime(2035,1,3,tzinfo=timezone.utc))
