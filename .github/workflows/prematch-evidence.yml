@@ -101,6 +101,14 @@ jobs:
             # restoring them afterward for the existing full audit.
             git commit -m "data: checkpoint genuine pre-match originals [skip ci]"
             published=false
+            # Research scripts also modify unstaged diagnostics. Preserve those
+            # files in a local stash so Git can rebase the committed evidence.
+            # Never use reset --hard or overwrite an immutable receipt.
+            dirty_stashed=false
+            if [ -n "$(git status --porcelain)" ]; then
+              git stash push --include-untracked -m "capture-unpublished-diagnostics-${GITHUB_RUN_ID}" || exit 1
+              dirty_stashed=true
+            fi
             for attempt in 1 2 3 4; do
               git fetch origin main
               if ! git rebase --autostash origin/main; then
