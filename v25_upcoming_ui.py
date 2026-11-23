@@ -223,12 +223,17 @@ def render(st,rows,histories=None):
                "filter. Tap below to look up the actual fixtures for the "
                "selected date; the provider's available matches may differ "
                "from the already-modelled forecast archive.")
+    batch_size=st.select_slider(
+        "New fixture model attempts per search (uses provider API allowance)",
+        options=[4,8,12],value=4,key="zz_v25_discovery_batch",
+        help="Four remains the default. Larger batches can use much more API-Football quota; "
+             "a fixture without sufficient real history stays unmodelled.")
     requested=st.button(
         "🔎 Find & model matches · "+date.fromisoformat(day).strftime("%d %b"),
         key="zz_v25_discover_day",type="primary",use_container_width=True,
         help="Makes one date-scoped API-Football fixture request and up to "
-             "four model attempts. History and team-context calls may use "
-             "your API-Football quota; it never makes paid AI requests.")
+             "the selected number of bounded model attempts. History and "
+             "team-context calls may use API quota; no paid AI calls.")
     if requested:
         try:
             key=str(st.secrets.get("API_FOOTBALL_KEY") or
@@ -247,10 +252,11 @@ def render(st,rows,histories=None):
                            "this session to avoid repeated API costs.")
             else:
                 with st.spinner("Checking real upcoming fixtures and modelling "
-                                "up to four previously unchecked matches..."):
+                                f"up to {batch_size} previously unchecked matches..."):
                     outcome=research_day(
                         key,date.fromisoformat(day),
-                        known_ids=previous.get("checked_ids") or [],now=clock)
+                        known_ids=previous.get("checked_ids") or [],
+                        limit=batch_size,now=clock)
                 new_rows=merge_modelled(previous.get("rows") or [],
                                        outcome.get("modeled") or [])
                 checked=list(dict.fromkeys(
@@ -292,9 +298,9 @@ def render(st,rows,histories=None):
         for message in (last.get("errors") or [])[:3]:
             st.caption("Provider/model limitation: "+str(message)[:190])
         if last.get("remaining",0):
-            st.caption("Tap Find & model again to process another four "
-                       "previously unchecked fixtures. Historical evidence "
-                       "and API quota determine which become V25-ready.")
+            st.caption("Tap Find & model again to process another selected "
+                       "batch of previously unchecked fixtures. Historical "
+                       "evidence and API quota determine which become V25-ready.")
 
     chosen=available_by_day.get(day,[])
     all_fixtures=fixture_table(day,chosen,saved.get("fixtures") or [])
@@ -392,6 +398,15 @@ def render(st,rows,histories=None):
                     st.caption("Highest V8 top-five mass checked: "+
                                f'{outcome["highest_v8_estimated_mass"]:.2%}' +
                                ". Model estimate only, not observed hit rate.")
+                alternative=outcome.get("research_alternative")
+                if alternative:
+                    with st.expander("View strongest rejected pair · RESEARCH ONLY",
+                                     expanded=False):
+                        st.warning("This pair FAILED the cautious checks: "+
+                                   ", ".join(alternative["failed_checks"])+
+                                   ". The following are hypothetical model scores, "
+                                   "not verified predictions or an issued live pick.")
+                        _show_report(st,alternative["report"])
     else:
         pages=math.ceil(len(catalog)/MAX_PAGE_PAIRS)
         page=st.selectbox("Page of eligible match pairs",
