@@ -1,0 +1,87 @@
+name: Verify OpenAI API after billing update (one-time)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      # Triggers once when this dedicated probe is first merged.
+      - '.github/workflows/verify-openai-api-billing-20261123.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-ziczac-openai-billing
+  cancel-in-progress: false
+
+jobs:
+  low-cost-billing-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Send a single small OpenAI Responses API request
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          from urllib import request, error
+
+          key = os.environ.get("OPENAI_API_KEY", "").strip()
+          if not key:
+              print("OPENAI_TEST_RESULT=missing_github_secret")
+              sys.exit(1)
+
+          payload = json.dumps({
+              "model": "gpt-4o-mini",
+              "input": "Reply with the word OK.",
+              "max_output_tokens": 16,
+              "store": False,
+          }).encode("utf-8")
+          req = request.Request(
+              "https://api.openai.com/v1/responses",
+              data=payload,
+              headers={
+                  "Authorization": "Bearer " + key,
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+          status = None
+          code = "none"
+          try:
+              with request.urlopen(req, timeout=40) as response:
+                  status = response.status
+                  # A 2xx status is sufficient proof that project API calls work.
+                  response.read(4096)
+          except error.HTTPError as exc:
+              status = exc.code
+              try:
+                  body = json.loads(exc.read(6000).decode("utf-8"))
+                  parsed = (body.get("error") or {}).get("code")
+                  permitted = ("insufficient_quota", "rate_limit_exceeded",
+                               "invalid_api_key", "model_not_found",
+                               "billing_hard_limit_reached",
+                               "organization_deactivated")
+                  if parsed in permitted:
+                      code = parsed
+              except (ValueError, UnicodeError, AttributeError, TypeError):
+                  pass
+          except (error.URLError, TimeoutError) as exc:
+              print("OPENAI_TEST_RESULT=network_or_timeout")
+              sys.exit(1)
+
+          summary = "HTTP " + str(status) + (" / " + code if code != "none" else "")
+          print("OPENAI_TEST_RESULT=" + summary)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("## ZicZac OpenAI API billing smoke test\n")
+              f.write("One request made with `gpt-4o-mini` and a 16-token cap.\n\n")
+              f.write("**Result:** " + summary + "\n")
+              f.write("\nNo API key, response body, or private project data recorded.\n")
+          if status is None or not 200 <= status < 300:
+              sys.exit(1)
+          PY
