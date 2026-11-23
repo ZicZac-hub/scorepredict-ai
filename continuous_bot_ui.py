@@ -81,6 +81,17 @@ def render(st):
                  for reason,count in sorted(groups.items()) if count]
     if league_rows:
         st.dataframe(league_rows, hide_index=True, use_container_width=True)
+    bins_by_league=source.get("v8_min_team_history_bins_by_league") or {}
+    bins_rows=[
+        {"Competition":league,
+         "Minimum qualified games for either team":history_bin,
+         "Fixtures abstaining":count}
+        for league,bins in sorted(bins_by_league.items())
+        for history_bin,count in sorted(bins.items()) if count
+    ]
+    if bins_rows:
+        st.caption("Historical matches available to the weaker-evidence team in each fixture. Based only on original competition, provider and pre-kickoff result cutoffs; these are not model wins.")
+        st.dataframe(bins_rows, hide_index=True, use_container_width=True)
     st.markdown("#### New V28 decision capture")
     st.caption("V28 source decisions must be issued and stored before the V35/V36 future-only 20-minute window expires. No retrospective tickets.")
     st.write(

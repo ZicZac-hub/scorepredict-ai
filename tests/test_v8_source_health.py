@@ -91,3 +91,38 @@ def test_research_priority_tracks_source_readiness_not_model_hit_rate():
         coverage=coverage((NOW-timedelta(minutes=20)).isoformat()))
     assert "league-specific" in fresh["next_priority"]
     assert not fresh["goal_verified"]
+
+
+def test_source_health_reports_verified_team_history_readiness_without_hits():
+    payload=coverage((NOW-timedelta(minutes=10)).isoformat())
+    payload["v8_min_team_history_bins_by_league"]={
+        "CL":{"0":4,"1-2":3,"3-4":3},
+        "EL":{"0":2,"1-2":8,"3-4":2},
+    }
+    payload["v8_qualified_home_history_bins_by_league"]={
+        "CL":{"3-4":10},"EL":{"5+":12},
+    }
+    payload["v8_qualified_away_history_bins_by_league"]={
+        "CL":{"0":4,"1-2":6},"EL":{"0":2,"3-4":10},
+    }
+    summary=source_capture_health(payload,now=NOW)
+    assert summary["collector_freshness"]=="recent"
+    assert summary["v8_min_team_history_bins_by_league"]["CL"]["3-4"]==3
+    assert sum(sum(x.values()) for x in
+        summary["v8_min_team_history_bins_by_league"].values())==22
+    assert summary["v8_home_history_bins_by_league"]["EL"]["5+"]==12
+    assert summary["v8_away_history_bins_by_league"]["CL"]["0"]==4
+    bot=assemble(None,None,None,None,None,now=NOW,coverage=payload)
+    assert bot["source_capture_health"]["v8_abstentions"]==22
+    assert bot["original_v8_daily_five_doubles"]["verified_sets"]==0
+    assert bot["goal_verified"] is False
+
+
+def test_source_readiness_bins_do_not_change_provider_request_budget():
+    from pathlib import Path
+    collector=Path("capture_prematch.py").read_text(encoding="utf-8")
+    assert "team_history_band(readiness.get(field))" in collector
+    assert "'v8_min_team_history_bins_by_league':{}" in collector
+    assert "max_api_calls=_positive_limit" in collector
+    assert "result.get('team_history_readiness')" in collector
+    assert "provider_adapter_calls" in collector

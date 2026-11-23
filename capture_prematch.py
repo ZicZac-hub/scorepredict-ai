@@ -15,6 +15,7 @@ from uuid import uuid4
 from api_football import LEAGUES, _convert, _request, ProviderQuotaError, ProviderAccessError
 from forecast_model import predict
 from history_pipeline import load_evidence
+from v10_source_readiness import team_history_band
 
 CODES = ("PL", "PD", "BL1", "SA", "FL1", "CL", "EL", "DED", "PPL", "BSA", "ELC")
 LOOKAHEAD_DAYS = 14
@@ -218,7 +219,11 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         'v10_shadow_v8_saved':0,'v10_shadow_v9_saved':0,'v10_shadow_v10_saved':0,
         'v10_shadow_v12_saved':0,'v10_shadow_v13_saved':0,'v10_market_calls':0,
         'v10_shadow_skipped':{},'v10_shadow_v8_saved_by_league':{},
-        'v10_shadow_skipped_by_league':{},'v10_shadow_errors':[]}
+        'v10_shadow_skipped_by_league':{},
+        'v8_min_team_history_bins_by_league':{},
+        'v8_qualified_home_history_bins_by_league':{},
+        'v8_qualified_away_history_bins_by_league':{},
+        'v10_shadow_errors':[]}
     # Recover the immutable outbox before deciding that every horizon is done.
     # A database outage must not strand old files simply because no new pair is due.
     store = None
@@ -341,6 +346,23 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                                 per_league=diagnostics['v10_shadow_skipped_by_league']
                                 league_reasons=per_league.setdefault(code,{})
                                 league_reasons[reason]=league_reasons.get(reason,0)+1
+                                # Observation only: each count is derived from the
+                                # same pre-kickoff league evidence passed to V8.
+                                # We never generate or promote missing forecasts.
+                                readiness=result.get('team_history_readiness')
+                                if isinstance(readiness,dict):
+                                    for scope,field in (
+                                        ('v8_min_team_history_bins_by_league',
+                                         'minimum_team_qualified_matches'),
+                                        ('v8_qualified_home_history_bins_by_league',
+                                         'home_qualified_matches'),
+                                        ('v8_qualified_away_history_bins_by_league',
+                                         'away_qualified_matches'),
+                                    ):
+                                        band=team_history_band(readiness.get(field))
+                                        if band is not None:
+                                            bins=diagnostics[scope].setdefault(code,{})
+                                            bins[band]=bins.get(band,0)+1
                         except Exception as exc:
                             diagnostics['v10_shadow_errors'].append({
                                 'fixture_id':fixture['id'],'error_type':type(exc).__name__})
