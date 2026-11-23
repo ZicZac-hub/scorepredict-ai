@@ -115,6 +115,11 @@ def _show_report(st,report):
                 "Both provider-reported starting XIs":leg.get("confirmed_starting_xi_both_teams") is True,
                 "Evidence status":str(leg.get("reason") or "not checked").replace("_"," "),
             })
+        spot=report.get("live_market_evidence") or {}
+        if spot:
+            st.write({"Separately checked live API odds":spot.get("both_verified") is True,
+                      "Exact fixture-ID / kickoff matching results":spot.get("legs") or [],
+                      "Not applied to score probabilities":True})
         st.caption("None of these external signals is numerically weighted in V25 "
                    "until a separate pre-kickoff-trained challenger shows independent "
                    "improvement. V25 scores still come from the V8 goal grid.")
@@ -400,13 +405,56 @@ def render(st,rows,histories=None):
                                ". Model estimate only, not observed hit rate.")
                 alternative=outcome.get("research_alternative")
                 if alternative:
-                    with st.expander("View strongest rejected pair · RESEARCH ONLY",
+                    with st.expander("Strongest rejected pair · optional live market check",
                                      expanded=False):
-                        st.warning("This pair FAILED the cautious checks: "+
+                        st.warning("This pair failed the cautious checks: "+
                                    ", ".join(alternative["failed_checks"])+
-                                   ". The following are hypothetical model scores, "
-                                   "not verified predictions or an issued live pick.")
-                        _show_report(st,alternative["report"])
+                                   ". The five scorelines are research-only until "
+                                   "the original checks genuinely pass.")
+                        st.caption("Optional check: up to TWO API-Football odds "
+                                   "requests to verify source fixture IDs, kickoffs, "
+                                   "quote types and timestamps. These prices do not "
+                                   "change V25 scores or prove higher accuracy.")
+                        if st.button("🔎 Check current odds for both legs",
+                                     key="zz_v25_check_live_odds"):
+                            try:
+                                api_key=str(st.secrets.get("API_FOOTBALL_KEY") or
+                                            os.environ.get("API_FOOTBALL_KEY") or "").strip()
+                            except (AttributeError,OSError,KeyError,RuntimeError):
+                                api_key=str(os.environ.get("API_FOOTBALL_KEY") or "").strip()
+                            if not api_key:
+                                st.error("API_FOOTBALL_KEY is missing; cannot "
+                                         "verify live bookmaker markets.")
+                            else:
+                                from v25_live_market_check import inspect_pair
+                                now_check=datetime.now(timezone.utc)
+                                live=inspect_pair(api_key,alternative["report"],
+                                                  now=now_check)
+                                checked=dict(alternative["report"])
+                                checked["live_market_evidence"]=live
+                                quality=automatic_quality(checked)
+                                cache[key]["live_market_check"]={
+                                    "report":checked,"quality":quality}
+                                if quality["passed"]:
+                                    _save_explicit_selection(st,checked)
+                        checked=(cache.get(key) or {}).get("live_market_check")
+                        if checked:
+                            audit=checked["report"]["live_market_evidence"]
+                            if checked["quality"]["passed"]:
+                                st.success("Both genuine markets passed the source "
+                                           "and model checks. This remains an "
+                                           "experimental five-double research set, "
+                                           "not a demonstrated winning rate.")
+                            else:
+                                st.warning("Source checks still prevent cautious "
+                                           "selection: "+", ".join(
+                                               checked["quality"]["reasons"]))
+                            st.write({"Live market spot-check":audit.get("legs") or [],
+                                      "Provider requests attempted":audit.get(
+                                          "provider_requests_attempted"),
+                                      "Odds NOT used to change score estimates":True})
+                        _show_report(st,checked["report"] if checked
+                                     else alternative["report"])
     else:
         pages=math.ceil(len(catalog)/MAX_PAGE_PAIRS)
         page=st.selectbox("Page of eligible match pairs",
