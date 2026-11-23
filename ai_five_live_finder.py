@@ -12,7 +12,8 @@ from worldwide_model import model_worldwide
 from on_demand_ai import utc
 
 
-MAX_NEW_MODELS_PER_CLICK = 4
+MAX_NEW_MODELS_PER_CLICK = 12
+DEFAULT_NEW_MODELS_PER_CLICK = 4
 
 
 def _quota_limited(message):
@@ -21,7 +22,7 @@ def _quota_limited(message):
                                          "http 429", "providerquotaerror"))
 
 
-def research_day(api_key, local_day, *, known_ids=None, limit=MAX_NEW_MODELS_PER_CLICK,
+def research_day(api_key, local_day, *, known_ids=None, limit=DEFAULT_NEW_MODELS_PER_CLICK,
                  discover=global_fixtures, model=model_worldwide, now=None):
     clock = utc(now or datetime.now(timezone.utc))
     report = {"day": local_day.isoformat(), "discovered": 0, "checked": 0,
@@ -66,7 +67,10 @@ def research_day(api_key, local_day, *, known_ids=None, limit=MAX_NEW_MODELS_PER
     previously=set(known_ids or [])
     queued=[event for event in future
             if str((event.get("fixture") or {}).get("id")) not in previously]
-    for event in queued[:max(0,min(int(limit),MAX_NEW_MODELS_PER_CLICK))]:
+    # A user-selected larger batch does not alter the default four-call
+    # policy; the hard cap protects the provider allowance.
+    max_attempts=max(0,min(int(limit),MAX_NEW_MODELS_PER_CLICK))
+    for event in queued[:max_attempts]:
         report["checked"]+=1
         try:
             row,err=model(api_key,event,model_variant="research_v8")
