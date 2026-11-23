@@ -75,7 +75,8 @@ def test_v37_does_not_use_future_matches_or_unverified_competitions():
     future=[{**r,"utcDate":(NOW+timedelta(hours=2)).isoformat()}
             for r in rows if 1 in (r["homeTeam"]["id"],r["awayTeam"]["id"]) or
                              2 in (r["homeTeam"]["id"],r["awayTeam"]["id"])]
-    kept=[r for r in rows if r not in future]
+    kept=[r for r in rows if 1 not in (r["homeTeam"]["id"],r["awayTeam"]["id"])
+          and 2 not in (r["homeTeam"]["id"],r["awayTeam"]["id"])]
     assert sparse.predict(game,kept+future,kept+future,as_of=NOW) is None
     no_league={**game,"competition":{"id":39,"code":"PL"}}
     assert sparse.predict(no_league,rows,rows,as_of=NOW) is None
@@ -150,3 +151,20 @@ def test_v37_tampered_arm_fails_closed(tmp_path):
     assert report["invalid_or_tampered_excluded"]==1
     assert report["verified_matched_physical_fixtures"]==0
     assert report["pending"]==0
+
+
+def test_v37_production_workflow_only_uses_original_future_source():
+    from pathlib import Path
+    workflow=Path(".github/workflows/prematch-evidence.yml").read_text()
+    assert "run: python capture_prematch.py" in workflow
+    assert "run: python v37_sparse_evaluation.py" in workflow
+    assert workflow.index("run: python capture_prematch.py") < (
+        workflow.index("run: python v37_sparse_evaluation.py"))
+    assert "data/v37_sparse_prospective/" in workflow
+    assert "run: python v28_independent_pair_trial.py" in workflow
+    assert "run: python v36_prospective_double_trials.py" in workflow
+    from pathlib import Path
+    src=Path("v37_sparse_history_research.py").read_text()
+    assert "requests.get" not in src
+    assert "requests.post" not in src
+    assert "append_file_record(row,root=root,kind=\"forecasts\")" in src
