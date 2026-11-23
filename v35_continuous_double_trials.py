@@ -148,8 +148,27 @@ def verify_packet(file, *, root, v28_root, clock):
     issued = utc(packet["frozen_at_utc"])
     if issued > clock or not _frozen_eligible(original, issued):
         raise ValueError("late_or_future_frozen_challenger")
-    if original_portfolio(original, items, issued) != packet:
-        raise ValueError("modified_original_forecast_or_challenger_tickets")
+    reproduced = original_portfolio(original, items, issued)
+    if reproduced != packet:
+        # Report only field names, not full original sensitive/large grids.
+        # Keep strict original-source integrity protection untouched.
+        different = sorted(k for k in set(reproduced) | set(packet)
+                           if reproduced.get(k) != packet.get(k))
+        if "policies" in different:
+            policies = [
+                str(method) + ":" + ",".join(
+                    sorted(k for k in
+                           set((reproduced["policies"].get(method) or {})) |
+                           set((packet.get("policies",{}).get(method) or {}))
+                           if (reproduced["policies"].get(method) or {}).get(k) !=
+                              (packet.get("policies",{}).get(method) or {}).get(k)))
+                for method in METHODS
+                if reproduced["policies"].get(method) !=
+                   (packet.get("policies",{}).get(method))
+            ]
+            different += ["policy_fields=" + ";".join(policies)]
+        raise ValueError("modified_original_forecast_or_challenger_tickets:"
+                         + ",".join(different)[:360])
     return packet
 
 
