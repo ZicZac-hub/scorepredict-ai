@@ -31,7 +31,7 @@ def test_capture_is_not_suppressed_by_an_independent_settlement_failure():
     assert "id: capture" in capture
     assert "if: ${{ !cancelled() }}" in capture
     saved = section("Persist newly captured originals",
-                    "Back up newly captured authenticated originals before long research stages")
+                    "Commit write-once source receipts early before long research stages")
     assert "steps.capture.outcome == 'success'" in saved
     assert "id: persist_originals" in saved
 
@@ -40,7 +40,7 @@ def test_early_checkpoint_never_stages_results_or_rewrites_old_forecasts():
     s = workflow()
     publish = section(
         "Commit write-once source receipts early before long research stages",
-        "Persist evidence and verify completed matches")
+        "Back up uncommitted source files only if early checkpoint fails")
     allowed = {
         "data/v10_prospective/forecasts",
         "data/prospective_ledger/forecasts",
@@ -56,6 +56,7 @@ def test_early_checkpoint_never_stages_results_or_rewrites_old_forecasts():
     assert "python reconcile_capture_conflicts.py" in publish
     assert "if ! git push origin HEAD:main" not in publish
     assert 'if git push origin HEAD:main; then' in publish
+    assert "id: early_checkpoint" in publish
     assert "steps.capture.outcome == 'success'" in publish
     assert "steps.persist_originals.outcome == 'success'" in publish
     assert "SAFE STOP: conflicting immutable source receipts" in publish
@@ -64,9 +65,9 @@ def test_early_checkpoint_never_stages_results_or_rewrites_old_forecasts():
 def test_pre_publish_artifact_is_early_and_separate_from_final_audit_archive():
     s = workflow()
     backup = section(
-        "Back up newly captured authenticated originals before long research stages",
-        "Commit write-once source receipts early before long research stages")
-    assert "if: always()" in backup
+        "Back up uncommitted source files only if early checkpoint fails",
+        "Persist evidence and verify completed matches")
+    assert "if: always() && steps.early_checkpoint.outcome != 'success'" in backup
     assert "uses: actions/upload-artifact@v4" in backup
     assert "name: early-prematch-authenticated-source-checkpoint" in backup
     assert "data/v10_prospective/forecasts/" in backup
