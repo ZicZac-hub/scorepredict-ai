@@ -254,3 +254,47 @@ def test_workflow_uses_manual_owner_dispatch_only():
     assert "github.event_name == 'workflow_dispatch'" in source
     assert "python continuous_accuracy_bot.py --retry-after-key-rotation" in source
     assert "data/autobot/openai_retry_*.json" in source
+
+
+def test_openai_http_error_diagnostic_is_allowlisted_and_secret_free():
+    import requests
+    from continuous_accuracy_bot import classify_openai_http_error
+    response = requests.Response()
+    response.status_code = 429
+    response._content = b'{"error":{"code":"insufficient_quota","type":"insufficient_quota","message":"sensitive details","param":"private"}}'
+    assert classify_openai_http_error(response) == {
+        "http_status":429, "error_code":"insufficient_quota",
+        "error_type":"insufficient_quota"}
+    response._content = b'{"error":{"code":"unknown_secret","type":"custom","message":"token"}}'
+    diagnostic = classify_openai_http_error(response)
+    assert diagnostic["error_code"] == "unavailable"
+    assert diagnostic["error_type"] == "unavailable"
+    response._content = b'not-json'
+    assert classify_openai_http_error(response)["error_code"] == "unavailable"
+
+
+def test_openai_429_diagnostic_persisted_without_retry_or_raw_message(tmp_path, monkeypatch):
+    import json
+    import requests
+    import continuous_accuracy_bot as module
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("OPENAI_API_KEY", "example-secret")
+    monkeypatch.setenv("AI_RESEARCH_BOT_ENABLED", "")
+    now = datetime(2035, 1, 1, tzinfo=timezone.utc)
+    calls = []
+    def rejected(report, *, key, model):
+        calls.append(1)
+        response = requests.Response()
+        response.status_code = 429
+        response._content = b'{"error":{"code":"rate_limit_exceeded","type":"rate_limit_exceeded","message":"private-key-example-secret"}}'
+        raise requests.HTTPError("secret", response=response)
+    monkeypatch.setattr(module, "api_research_memo", rejected)
+    first = module.run(root=tmp_path/"bot", now=now)
+    second = module.run(root=tmp_path/"bot", now=now)
+    assert calls == [1]
+    assert first["ai_http_error_diagnostic"]["error_code"] == "rate_limit_exceeded"
+    assert second["ai_http_error_diagnostic"] == first["ai_http_error_diagnostic"]
+    receipt = (tmp_path/"bot"/"openai_attempt_2035-01-01.json").read_text()
+    assert "private-key" not in receipt
+    assert "example-secret" not in receipt
+    assert json.loads(receipt)["http_error_diagnostic"]["http_status"] == 429
