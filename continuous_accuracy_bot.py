@@ -37,7 +37,7 @@ def as_rate(hits, verified):
     return hits / verified if verified else None
 
 
-def assemble(v8, v25, v30, v34, v35, *, now, v36=None):
+def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None):
     """Only preexisting independently validated archived report totals."""
     baseline = (v8 or {}).get("observed") or {}
     matched_v8 = (v25 or {}).get("v8") or {}
@@ -46,6 +46,9 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None):
     stats = v35.get("methods") or {}
     v36 = v36 or {}
     v36stats = v36.get("methods") or {}
+    v28 = v28 or {}
+    v28freeze = v28.get("freeze") or {}
+    v28grade = v28.get("verified_comparison") or {}
     v8n, v8hits = baseline.get("verified_sets", 0), baseline.get("hits", 0)
     matched_n = (v25 or {}).get("verified_matched_pairs", 0)
     original = {
@@ -87,6 +90,14 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None):
         "integrity": integrity,
         "original_v8_daily_five_doubles": original,
         "v8_v25_same_pair": matched,
+        "v28_upstream_capture": {
+            "new_original_decisions_last_run": len(v28freeze.get("created") or []),
+            "original_frozen_decisions": v28grade.get("original_frozen_decisions", 0),
+            "verified_paired_days": v28grade.get("verified_paired_days", 0),
+            "pending_days": v28grade.get("pending_days", 0),
+            "source_ineligibility": v28freeze.get("source_ineligibility") or {},
+            "new_source_capture_required_for_future_v36": True,
+        },
         "v30_frozen_candidate_pair_rows": {
             "correlated_verified": (v30 or {}).get("candidate_pair_rows_independently_verified", 0),
             "pending": (v30 or {}).get("candidate_pair_rows_awaiting_verified_finals", 0),
@@ -159,7 +170,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     """One bounded optional API request: recommendations are TEXT ONLY."""
     snapshot = {key: report[key] for key in (
         "target_five_double_hit_rate", "integrity", "original_v8_daily_five_doubles",
-        "v8_v25_same_pair", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
+        "v8_v25_same_pair", "v28_upstream_capture", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
         "v35_challengers", "v36_challengers", "next_priority",
     )}
     payload = {
@@ -205,6 +216,7 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         load("data/v34_score_error_research/status.json"),
         load("data/v35_continuous_challengers/status.json"),
         now=clock, v36=load("data/v36_prospective_challengers/status.json"),
+        v28=load("data/v28_independent_pair_trial/status.json"),
     )
     destination = Path(root)
     destination.mkdir(parents=True, exist_ok=True)
