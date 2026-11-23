@@ -94,5 +94,23 @@ jobs:
           git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
-          git pull --rebase
-          git push
+          # Verification also writes non-staged diagnostics; retain them in a
+          # local stash rather than allowing an unsafe rebase or force push.
+          if [ -n "$(git status --porcelain)" ]; then
+            git stash push --include-untracked -m "backfill-unpublished-diagnostics-${GITHUB_RUN_ID}"
+          fi
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::error::Concurrent immutable-data conflict; manual review required"
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              echo "Verified results published"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::Unable to publish after four guarded attempts"
+          exit 1
