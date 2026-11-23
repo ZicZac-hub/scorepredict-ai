@@ -248,6 +248,7 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
         pair[0]["key"],pair[1]["key"]))
     selected=ranked[:max(1,limit)]
     best=None
+    best_research=None
     quality_exclusions=Counter()
     scored=0
     highest_v8_mass=None
@@ -260,10 +261,14 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
         highest_v8_mass=mass if highest_v8_mass is None else max(highest_v8_mass,mass)
         quality=automatic_quality(report,min_model_mass=min_model_mass,
                                   require_fresh_market=require_fresh_market)
+        # Keep the strongest rejected candidate as an explicitly unverified
+        # preview. It is never auto-issued or described as a validated pick.
+        grade=report["v25_lower_envelope_criterion"]
+        if best_research is None or grade>best_research[0]:
+            best_research=(grade,report,quality)
         if cautious and not quality["passed"]:
             quality_exclusions.update(quality["reasons"])
             continue
-        grade=report["v25_lower_envelope_criterion"]
         if best is None or grade>best[0]:
             best=(grade,first,second,report)
     if best is None:
@@ -275,6 +280,11 @@ def best_pair(catalog, now, *, limit=MAX_AUTO_EVALUATION,
                 "quality_exclusions":dict(quality_exclusions),
                 "highest_v8_estimated_mass":highest_v8_mass,
                 "cautious_filter":bool(cautious),
+                "research_alternative":(
+                    {"report":best_research[1],
+                     "failed_checks":best_research[2]["reasons"],
+                     "verified_success_probability":None,
+                     "auto_issued":False} if cautious and best_research else None),
                 "screened":len(selected),"total_pairs":len(catalog)}
     return {"status":"ready","first":best[1],"second":best[2],
             "report":best[3],"screened":len(selected),
