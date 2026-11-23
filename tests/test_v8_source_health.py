@@ -81,3 +81,13 @@ def test_capture_instrumentation_is_separate_from_provider_budget():
     assert "league_reasons[reason]=league_reasons.get(reason,0)+1" in src
     assert "max_api_calls=_positive_limit" in src
     assert "v10_shadow_v8_saved_by_league" in src
+
+
+def test_research_priority_tracks_source_readiness_not_model_hit_rate():
+    unknown=assemble(None,None,None,None,None,now=NOW,coverage=coverage())
+    assert "collector" in unknown["next_priority"]
+    fresh=assemble(
+        None,None,None,None,None,now=NOW,
+        coverage=coverage((NOW-timedelta(minutes=20)).isoformat()))
+    assert "league-specific" in fresh["next_priority"]
+    assert not fresh["goal_verified"]
