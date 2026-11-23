@@ -10,7 +10,8 @@ from datetime import datetime, timezone
 from math import fsum
 from pathlib import Path
 
-from v10_prospective import ROOT, read_latest, utc
+from v10_prospective import ROOT, utc
+from forecast_ledger import read_file_records
 from v10_evaluate import _qualified
 from verified_result_index import index_verified_results
 from v25_score_accuracy_research import describe_score, summarize_scores
@@ -25,23 +26,33 @@ METHODS = ("league_only", "sparse_shrunk")
 def evaluate(*, root=ROOT, prematch=PREMATCH, now=None, rows=None,
              finals=None):
     clock = utc(now or datetime.now(timezone.utc))
-    sources = read_latest(root) if rows is None else rows
+    # read_latest() intentionally excludes experimental V37 from all V8/V28
+    # source selection. The V37-only grader must inspect original immutable
+    # ledger records directly; NEVER change read_latest's V8 selection gates.
+    sources = (read_file_records(root,kind="forecasts")
+               if rows is None else
+               (list(rows.values()) if isinstance(rows,dict) else list(rows)))
     if finals is None:
         finals, conflicts, rejected = index_verified_results(root,prematch,clock)
     else:
         conflicts, rejected = set(), {}
     grouped = {method: [] for method in METHODS}
     pending, invalid, frozen = 0, 0, 0
-    used = set()
-    for key, row in sorted(sources.items()):
-        if row.get("model_key") != "v37_sparse":
+    # A physical fixture cannot be counted twice even if two different
+    # immutable V37 forecast IDs exist. Reject the whole duplicate group,
+    # never select one ex post to flatter score accuracy.
+    fixtures = {}
+    for row in sources:
+        if not isinstance(row,dict) or row.get("model_key") != "v37_sparse":
             continue
         fixture_key = (str(row.get("provider")),str(row.get("fixture_id")))
-        if fixture_key in used:
+        fixtures.setdefault(fixture_key,[]).append(row)
+    frozen = len(fixtures)
+    for fixture_key, group in sorted(fixtures.items()):
+        if len(group) != 1:
             invalid += 1
             continue
-        used.add(fixture_key)
-        frozen += 1
+        row = group[0]
         try:
             if (row.get("v37_research_only") is not True or
                     row.get("v37_no_live_model_change") is not True or
@@ -71,6 +82,8 @@ def evaluate(*, root=ROOT, prematch=PREMATCH, now=None, rows=None,
     n = len(grouped[METHODS[0]])
     if n != len(grouped[METHODS[1]]):
         raise ValueError("methods_must_use_the_exact_same_verified_fixtures")
+    if frozen != n + pending + invalid:
+        raise ValueError("missing_or_double_counted_original_v37_fixtures")
     return {
         "version": VERSION,
         "evaluated_at_utc":clock.isoformat(),
