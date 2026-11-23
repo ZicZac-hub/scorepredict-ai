@@ -102,11 +102,13 @@ def predict(fixture, history, league_history=None, *, as_of):
 
 def frozen_arm_digest(row):
     """Bind both research arms and original evidence identity together."""
+    from forecast_ledger import _utc
     source = {
         "version": VERSION,
         "provider": row["provider"], "fixture_id": row["fixture_id"],
-        "kickoff_utc": row["kickoff_utc"],
-        "evidence_as_of_utc": row["evidence_as_of_utc"],
+        "kickoff_utc": _utc(row["kickoff_utc"], "kickoff_utc"),
+        "evidence_as_of_utc": _utc(row["evidence_as_of_utc"],
+                                   "evidence_as_of_utc"),
         "input_digest": row["input_digest"],
         "score_matrix": row["score_matrix"],
         "v37_control_grid": row["v37_control_grid"],
