@@ -54,6 +54,7 @@ def test_early_checkpoint_never_stages_results_or_rewrites_old_forecasts():
     assert "data/v10_prospective/verified_results.json" not in publish
     assert "data/prematch/verified_results.json" not in publish
     assert "git rebase --autostash origin/main" in publish
+    assert "git diff --name-only --diff-filter=U" in publish
     assert "python reconcile_capture_conflicts.py" in publish
     assert "if ! git push origin HEAD:main" not in publish
     assert 'if git push origin HEAD:main; then' in publish
