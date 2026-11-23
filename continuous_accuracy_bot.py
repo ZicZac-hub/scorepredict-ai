@@ -57,6 +57,11 @@ def source_capture_health(coverage, *, now):
     if isinstance(raw,dict):
         leagues={str(code):counts(reasons)
                  for code,reasons in raw.items() if isinstance(code,str)}
+    def per_league_bands(raw):
+        if not isinstance(raw,dict):
+            return {}
+        return {str(code):counts(bins) for code,bins in raw.items()
+                if isinstance(code,str) and isinstance(bins,dict)}
     stamp=coverage.get("collector_started_at_utc")
     age=None
     freshness="unknown_missing_capture_timestamp"
@@ -87,6 +92,12 @@ def source_capture_health(coverage, *, now):
         "v8_abstention_reasons":skipped,
         "v8_abstention_reasons_by_league":leagues,
         "v8_saved_by_league":counts(coverage.get("v10_shadow_v8_saved_by_league")),
+        "v8_min_team_history_bins_by_league":per_league_bands(
+            coverage.get("v8_min_team_history_bins_by_league")),
+        "v8_home_history_bins_by_league":per_league_bands(
+            coverage.get("v8_qualified_home_history_bins_by_league")),
+        "v8_away_history_bins_by_league":per_league_bands(
+            coverage.get("v8_qualified_away_history_bins_by_league")),
         "producer_api_budget_unchanged":True,
         "not_a_prediction_accuracy_measure":True,
     }
