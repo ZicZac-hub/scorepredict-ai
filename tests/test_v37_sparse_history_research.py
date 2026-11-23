@@ -168,3 +168,45 @@ def test_v37_production_workflow_only_uses_original_future_source():
     assert "requests.get" not in src
     assert "requests.post" not in src
     assert "append_file_record(row,root=root,kind=\"forecasts\")" in src
+
+
+def test_v37_evaluator_reads_original_ledger_not_v8_only_reader(tmp_path):
+    """Regression: 22 real V37 files previously looked like zero to the bot."""
+    game=fixture()
+    assert sparse.freeze(game,evidence(sources()),NOW,root=tmp_path)["v37_recorded"]
+    # Production code path: no synthetic rows passed to evaluator.
+    report=audit.evaluate(root=tmp_path,prematch=tmp_path,
+                          now=NOW+timedelta(hours=1),finals={})
+    assert report["frozen_unique_physical_fixtures"]==1
+    assert report["verified_matched_physical_fixtures"]==0
+    assert report["pending"]==1
+    assert report["invalid_or_tampered_excluded"]==0
+    assert not report["ready_for_model_promotion"]
+    # v8/v28 source reader must continue deliberately EXCLUDING v37_sparse.
+    assert all(x["model_key"]!="v37_sparse" for x in
+               v10.read_latest(tmp_path).values())
+
+
+def test_v37_duplicate_source_fixtures_fail_closed_without_selection(tmp_path):
+    assert sparse.freeze(fixture(),evidence(sources()),NOW,root=tmp_path)["v37_recorded"]
+    original=read_file_records(tmp_path,kind="forecasts")[0]
+    duplicate=dict(original)
+    duplicate["forecast_id"]="other-authentic-forecast-id"
+    duplicate["captured_at_utc"]=(NOW+timedelta(minutes=2)).isoformat()
+    # Even if both were apparently valid, don't cherry-pick one with
+    # favourable calibration after a result.
+    report=audit.evaluate(rows=[original,duplicate],finals={},
+                          now=NOW+timedelta(days=3))
+    assert report["frozen_unique_physical_fixtures"]==1
+    assert report["verified_matched_physical_fixtures"]==0
+    assert report["pending"]==0
+    assert report["invalid_or_tampered_excluded"]==1
+
+
+def test_v37_verification_does_not_read_v8_or_exclude_archived_v37(tmp_path):
+    from pathlib import Path
+    audit_source=Path("v37_sparse_evaluation.py").read_text(encoding="utf-8")
+    assert 'read_file_records(root,kind="forecasts")' in audit_source
+    assert "read_latest(root)" not in audit_source
+    assert 'row.get("model_key") != "v37_sparse"' in audit_source
+    assert '"missing_or_double_counted_original_v37_fixtures"' in audit_source
