@@ -101,6 +101,11 @@ jobs:
             # restoring them afterward for the existing full audit.
             git commit -m "data: checkpoint genuine pre-match originals [skip ci]"
             published=false
+            # Preserve generated unstaged reports before rebasing committed
+            # evidence; never reset or overwrite original frozen receipts.
+            if [ -n "$(git status --porcelain)" ]; then
+              git stash push --include-untracked -m "capture-unpublished-diagnostics-${GITHUB_RUN_ID}" || exit 1
+            fi
             for attempt in 1 2 3 4; do
               git fetch origin main
               if ! git rebase --autostash origin/main; then
