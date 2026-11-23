@@ -42,7 +42,7 @@ def test_date_scoped_search_only_models_upcoming_fixtures_four_at_a_time():
         calls.append(event["fixture"]["id"])
         assert model_variant=="research_v8"
         return modeled(event),None
-    result=research_day("test-key",DAY,limit=20,discover=discover,
+    result=research_day("test-key",DAY,limit=4,discover=discover,
                         model=model,now=NOW)
     assert result["discovered"]==6
     assert len(result["fixtures"])==6
