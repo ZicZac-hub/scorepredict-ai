@@ -33,6 +33,7 @@ def render(st):
     v25 = status.get("v8_v25_same_pair") or {}
     v35 = status.get("v35_challengers") or {}
     v36 = status.get("v36_challengers") or {}
+    v28 = status.get("v28_upstream_capture") or {}
     cols = st.columns(3)
     cols[0].metric("V8 verified five-double", f"{baseline.get('hits',0)}/{baseline.get('verified_sets',0)}", _pct(baseline.get("hit_rate")))
     cols[1].metric("V25 same-pair wins", f"{v25.get('v25_wins',0)}/{v25.get('verified_same_pair_sets',0)}")
@@ -54,6 +55,17 @@ def render(st):
         st.dataframe(rows, hide_index=True, use_container_width=True)
     else:
         st.caption("No qualified V35 pairs have been frozen and verified yet. Missing results are not failures.")
+    st.markdown("#### New V28 decision capture")
+    st.caption("V28 source decisions must be issued and stored before the V35/V36 future-only 20-minute window expires. No retrospective tickets.")
+    st.write(
+        "New original decisions in latest bot run: " +
+        str(v28.get("new_original_decisions_last_run", 0)) +
+        " · V28 independently verified days: " +
+        str(v28.get("verified_paired_days", 0)) +
+        " · V28 pending days: " + str(v28.get("pending_days", 0))
+    )
+    if not v28.get("new_original_decisions_last_run") and not v36.get("frozen_days"):
+        st.caption("No new eligible original decision was recorded in the latest run. Fresh authenticated V8 source receipts are required before V36 can issue new prospective forecasts.")
     st.markdown("#### V36 prospective score-tail research")
     st.caption("Research only. New tickets are frozen before kickoff from the same original V28 pair; missing finals are pending, never losses.")
     st.write(
