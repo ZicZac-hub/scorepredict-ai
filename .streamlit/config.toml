@@ -1,5 +1,7 @@
 [server]
 enableStaticServing = true
+# Avoid Streamlit Cloud watchdog MultiPathWatcher scheduling failures.
+fileWatcherType = "none"
 
 [theme]
 base = "dark"
