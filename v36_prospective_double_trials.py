@@ -118,9 +118,15 @@ def summarize(rows, *, now):
     # never inserted here and cannot inflate the ticket denominator.
     n = len(verified)
     unique = {}
+    fixture_day = {}
+    if len({r["sydney_day"] for r in verified}) != n:
+        raise ValueError("duplicate_verified_sydney_day")
     for row in verified:
         for i, key in enumerate(row["original_selected_fixture_keys"]):
             k = tuple(key)
+            if k in fixture_day and fixture_day[k] != row["sydney_day"]:
+                raise ValueError("same_physical_fixture_repeated_across_independent_days")
+            fixture_day[k] = row["sydney_day"]
             observation = row["actual_scores"][i]
             if k in unique and unique[k]["score"] != observation:
                 raise ValueError("conflicting_physical_fixture_final")
