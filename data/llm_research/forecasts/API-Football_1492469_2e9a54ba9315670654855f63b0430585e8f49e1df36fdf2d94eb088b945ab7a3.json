@@ -1,0 +1,377 @@
+{
+  "ai_numeric_weight": 0.0,
+  "away_team": "Gremio",
+  "away_team_id": "130",
+  "baseline_predicted_score": [
+    1,
+    0
+  ],
+  "baseline_probabilities": {
+    "away": 0.23208164876537615,
+    "draw": 0.25820311879730495,
+    "home": 0.5097152324373189
+  },
+  "captured_at_utc": "2026-11-23T23:13:14.605612+00:00",
+  "configured_provider_count": 6,
+  "consensus": {
+    "complete_five_provider_panel": false,
+    "complete_ten_provider_panel": false,
+    "note": "Independent AI interpretation of the same supplied evidence; not measured exact-score accuracy or a substitute for the baseline.",
+    "outcome": "home",
+    "outcome_probabilities": {
+      "away": 0.23208164876537615,
+      "draw": 0.25820311879730495,
+      "home": 0.5097152324373189
+    },
+    "provider_count": 3,
+    "suggested_score": [
+      1,
+      0
+    ]
+  },
+  "disclaimer": "No independent browsing by LLMs. All provider facts were supplied in the same time-checked packet; AI-only exact scores are not validated as superior.",
+  "fixture_id": "1492469",
+  "home_team": "Santos",
+  "home_team_id": "128",
+  "input_digest": "2e9a54ba9315670654855f63b0430585e8f49e1df36fdf2d94eb088b945ab7a3",
+  "kickoff_utc": "2026-11-24T00:00:00.000000Z",
+  "models": {
+    "gemini": "gemini-3.5-flash-lite",
+    "groqcloud": "openai/gpt-oss-20b",
+    "openai": "gpt-4o-mini"
+  },
+  "provider": "API-Football",
+  "provider_count": 3,
+  "research_as_of_utc": "2026-11-23T23:13:04.236212+00:00",
+  "research_history": [],
+  "research_history_digest": "ae09fe6f3241b1b56faf1e3af24191cc54dfb75f9351cf1509a6dfc5a139f1bb",
+  "research_history_external_requests": 0,
+  "research_history_matches": 0,
+  "research_history_sources": [],
+  "research_history_warnings": [
+    "Provider fetch freshness is unknown for at least one history source.",
+    "API-Football season 2026 history unavailable (FileNotFoundError).",
+    "API-Football season 2025 history unavailable (FileNotFoundError)."
+  ],
+  "research_league_evidence_digest": "1a5be38f0ba8a5145edfe1865632f2f407ded853419ec049939a63edbcd7ff6c",
+  "research_only": true,
+  "schema_version": 1,
+  "score_basis": "regulation",
+  "shared_evidence": {
+    "available_schedule_and_form_context": {
+      "as_of_utc": "2026-11-22T20:04:09.606203+00:00",
+      "away": {
+        "finished_matches": 73,
+        "last10_observed": 10,
+        "last_match_utc": "2026-11-19T00:30:00+00:00",
+        "rest_days_since_last_kickoff": 4.98
+      },
+      "home": {
+        "finished_matches": 73,
+        "last10_observed": 10,
+        "last_match_utc": "2026-11-18T22:30:00+00:00",
+        "rest_days_since_last_kickoff": 5.06
+      },
+      "league_completed_matches": 733,
+      "market_context": {
+        "available": null,
+        "note": "See separate source-stamped market snapshot on v9 forecasts."
+      },
+      "numeric_adjustments_applied": [],
+      "research_status": "descriptive_verified_schedule_context_only",
+      "rest_days_differential": 0.08,
+      "verified_lineup_adjustments": {
+        "applied": false,
+        "reason": "Unvalidated player and formation coefficients are not applied to model goal rates."
+      },
+      "verified_xg_xga": {
+        "available": false,
+        "reason": "No licensed timestamped true xG feed configured; shots or scoring averages are not labelled xG."
+      }
+    },
+    "away_team": "Gremio",
+    "expected_goals_model_estimate_not_true_xG": {
+      "away": 0.9607399518845176,
+      "home": 1.5591306715086277
+    },
+    "historical_matches": 733,
+    "home_team": "Santos",
+    "kickoff_utc": "2026-11-24T00:00:00.000000Z",
+    "league": "BSA",
+    "probabilities_from_frozen_statistical_model": {
+      "away": 0.23208164876537615,
+      "draw": 0.25820311879730495,
+      "home": 0.5097152324373189
+    },
+    "professional_match_evidence": {
+      "ai_numeric_weight": 0.0,
+      "as_of_utc": "2026-11-23T23:13:04.236212+00:00",
+      "dossier_sha256": "085869b6c787fa107a34a7a00669653ac90afade865bc46a223df3d518174d70",
+      "external_calls_made": 0,
+      "features": {
+        "formations": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Source-reported formation only; no tactical-strength coefficient.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "goal_form": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Windows report actual counts; short samples are not padded.",
+          "source": "API-Football archived regulation results",
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "goalkeeper": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Starting XI names do not establish goalkeeper identity, fitness, availability or shot-stopping quality.",
+          "source": null,
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "head_to_head": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Descriptive context; no fitted H2H adjustment.",
+          "source": "API-Football archived regulation results",
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "injuries_absences": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Reported absences only; no reports does not confirm a fully fit squad.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "markets_1x2": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Dated complete bookmaker market; estimate includes quoted source timestamps.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "markets_totals_btts": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Only actually captured timestamped totals/BTTS prices.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "player_impact": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "No independently validated player-absence or formation coefficients; no numeric adjustment applied.",
+          "source": null,
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "rest_schedule": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Gap from latest known kickoff; incomplete competition history cannot prove actual team rest.",
+          "source": "API-Football archived regulation results",
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "shot_xg_xga": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Genuine provider-reported historical Expected Goals only; not a future score or observed future-match xG.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "shots": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Actual historical source statistics from existing fixture-statistics responses; not estimated from xG.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "shots_on_target": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Actual historical source statistics from existing fixture-statistics responses; not estimated from xG.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "starting_lineups": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Provider-reported XI; absence of a response does not establish the expected lineup.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "suspensions": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Only explicitly reported suspensions; absence is unknown.",
+          "source": "API-Football verified pre-match packet",
+          "source_observed_at_utc": "2026-11-22T21:45:08.443178+00:00",
+          "status": "missing",
+          "value": null
+        },
+        "travel": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "No verified origin, destination or trip schedule; team names cannot establish travel distance.",
+          "source": null,
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "venue_form": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "Home team at home; away team away. Available competition history only.",
+          "source": "API-Football archived regulation results",
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        },
+        "weather": {
+          "available": false,
+          "numerical_weight_applied": false,
+          "reason": "No venue-matched forecast observed before this evidence cutoff.",
+          "source": null,
+          "source_observed_at_utc": null,
+          "status": "missing",
+          "value": null
+        }
+      },
+      "fixture": {
+        "away_team_id": "130",
+        "fixture_id": "1492469",
+        "home_team_id": "128",
+        "kickoff_utc": "2026-11-24T00:00:00+00:00",
+        "provider": "API-Football"
+      },
+      "historical_results": [],
+      "history_exclusions": {},
+      "limitations": [
+        "Missing features are unknown, never zero.",
+        "Source observation timestamps remain null where not archived.",
+        "Historical availability estimates are distinct from actual fetch times.",
+        "Descriptive features do not prove a prediction accuracy gain."
+      ],
+      "model_expected_goals_not_observed_shot_xg": {
+        "away": 0.9607399518845176,
+        "home": 1.5591306715086277
+      },
+      "original_forecasts_changed": false,
+      "provider_snapshot_sha256": "62f058824539d791b7fec106f62172500879cc918aac199a6ac0167e85842423",
+      "unvalidated_context_not_used": false,
+      "version": "professional-match-evidence-v1"
+    },
+    "top_exact_score_options": [
+      [
+        1,
+        0,
+        0.12265253799583119
+      ],
+      [
+        1,
+        1,
+        0.12237175952635683
+      ],
+      [
+        2,
+        0,
+        0.09761014405061927
+      ],
+      [
+        2,
+        1,
+        0.0931440544307059
+      ],
+      [
+        0,
+        0,
+        0.08307455489034901
+      ]
+    ],
+    "unavailable_features": [
+      "verified_xg",
+      "player_strength",
+      "confirmed_starting_xi_adjustment",
+      "independent_llm_votes"
+    ]
+  },
+  "shared_evidence_sha256": "03e103caca3028af96669648f11294d5bcefb2a2f56a4a12caa6fb243e2704c8",
+  "shared_prompt_sha256": "d9ebd263912e06c01970086be8ee9707fe784b6614f158c3ef1e693d07f95cbd",
+  "source_captured_at_utc": "2026-11-22T20:04:10.621547Z",
+  "source_forecast_id": "0427d4414921a4e2ebd204fb603d28a30fa00d818e13e27ced686d8bc0b6cae9",
+  "source_model": "v8_near",
+  "verified_source_packet_sha256": "62f058824539d791b7fec106f62172500879cc918aac199a6ac0167e85842423",
+  "votes": {
+    "gemini": {
+      "away": 0.23208164876537615,
+      "draw": 0.25820311879730495,
+      "factors": [
+        "Frozen statistical model favors home team Santos with 51.0% win probability.",
+        "Model expected goals estimate higher for Santos (1.56) compared to Gremio (0.96).",
+        "Missing live market odds, confirmed lineups, and player-level impact coefficients leave contextual uncertainty."
+      ],
+      "home": 0.5097152324373189,
+      "score": [
+        1,
+        0
+      ],
+      "uncertainty": "High uncertainty due to unavailable real-time market lines, confirmed lineups, and unverified player absences."
+    },
+    "groqcloud": {
+      "away": 0.23208164876537615,
+      "draw": 0.25820311879730495,
+      "factors": [
+        "home expected goals higher (1.56 vs 0.96)",
+        "rest days similar (5.0 days each)",
+        "missing key data (xG, formations, injuries)"
+      ],
+      "home": 0.5097152324373189,
+      "score": [
+        1,
+        0
+      ],
+      "uncertainty": "high"
+    },
+    "openai": {
+      "away": 0.23208164876537615,
+      "draw": 0.25820311879730495,
+      "factors": [
+        "Home team has a higher expected goals estimate.",
+        "Recent match form is similar for both teams.",
+        "Historical match data indicates a competitive fixture."
+      ],
+      "home": 0.5097152324373189,
+      "score": [
+        2,
+        1
+      ],
+      "uncertainty": "High due to missing player and tactical data."
+    }
+  }
+}

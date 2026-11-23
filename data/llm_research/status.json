@@ -1,8 +1,8 @@
 {
-  "actual_successful_ai_votes": 1,
+  "actual_successful_ai_votes": 3,
   "attempted": 1,
   "captured": 1,
-  "checked_at_utc": "2026-11-22T20:06:36.770248+00:00",
+  "checked_at_utc": "2026-11-23T23:13:02.870975+00:00",
   "configured_providers": [
     "openai",
     "claude",
@@ -11,9 +11,9 @@
     "groqcloud",
     "cohere"
   ],
-  "eligible_fixture_count": 8,
+  "eligible_fixture_count": 14,
   "enabled": true,
-  "last_attempt_at_utc": "2026-11-22T20:06:37.788784+00:00",
+  "last_attempt_at_utc": "2026-11-23T23:13:04.236212+00:00",
   "last_attempt_errors": {
     "claude": {
       "http_status": 400,
@@ -27,16 +27,6 @@
     "grok": {
       "http_status": 400,
       "reason": "invalid_request_or_model",
-      "type": "HTTPError"
-    },
-    "groqcloud": {
-      "http_status": 413,
-      "reason": "provider_http_error",
-      "type": "HTTPError"
-    },
-    "openai": {
-      "http_status": 429,
-      "reason": "quota_or_rate_limit",
       "type": "HTTPError"
     }
   },
@@ -58,34 +48,22 @@
       "http_status": 400,
       "reason": "invalid_request_or_model",
       "type": "HTTPError"
-    },
-    "groqcloud": {
-      "http_status": 413,
-      "reason": "provider_http_error",
-      "type": "HTTPError"
-    },
-    "openai": {
-      "http_status": 429,
-      "reason": "quota_or_rate_limit",
-      "type": "HTTPError"
     }
   },
   "provider_error_types": {
     "claude": "HTTPError",
     "cohere": "ValueError",
-    "grok": "HTTPError",
-    "groqcloud": "HTTPError",
-    "openai": "HTTPError"
+    "grok": "HTTPError"
   },
   "reason": "frozen_pre_match_ai_research_saved",
   "research_context_counts": {
-    "with_cached_history": 1,
-    "with_provider_packet": 0
+    "with_cached_history": 0,
+    "with_provider_packet": 1
   },
   "research_history_external_requests": 0,
   "same_day_pair_selected": false,
   "selected_fixture_ids": [
-    "1492466"
+    "1492469"
   ],
   "selected_original_frozen_pair_day": null,
   "source_quality": "shared_time_checked_research_dossier_missing_inputs_explicit",

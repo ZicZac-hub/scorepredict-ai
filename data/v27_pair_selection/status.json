@@ -1,5 +1,5 @@
 {
-  "evaluated_at_utc": "2026-11-22T22:29:57.070744+00:00",
+  "evaluated_at_utc": "2026-11-23T23:11:45.782310+00:00",
   "no_new_external_requests": true,
   "original_frozen_predictions_modified": false,
   "production_model_promoted": false,
@@ -9,8 +9,8 @@
     "both_policies_verified_same_days": 0,
     "comparability_warning": "The same-day policies may select DIFFERENT match fixtures. Compare day-level selection success, NOT same-match probability calibration or a controlled same-fixture prediction experiment.",
     "different_fixture_pairs_same_day": 0,
-    "evaluated_at_utc": "2026-11-22T22:29:57.070744+00:00",
-    "frozen_decision_days": 1,
+    "evaluated_at_utc": "2026-11-23T23:11:45.782310+00:00",
+    "frozen_decision_days": 2,
     "invalid_or_tampered_decisions_excluded": {},
     "invalid_verified_results_excluded": {},
     "no_live_model_promotion": true,
@@ -48,13 +48,46 @@
         ],
         "v27_model_rank_score_not_hit_probability": 0.057406890142,
         "v27_pair_status": "pending"
+      },
+      {
+        "candidate_fixtures": 13,
+        "decision": "V27_SELECTED",
+        "eligible_pairs": 78,
+        "evaluated_pairs": 78,
+        "model_mass_is_not_measured_accuracy": true,
+        "same_two_fixtures_as_v25": true,
+        "status": "pending",
+        "sydney_date": "2026-11-25",
+        "v25_frozen_pair_ids": [
+          [
+            "API-Football",
+            "1563275"
+          ],
+          [
+            "API-Football",
+            "1563277"
+          ]
+        ],
+        "v25_pair_status": "pending",
+        "v27_frozen_pair_ids": [
+          [
+            "API-Football",
+            "1563275"
+          ],
+          [
+            "API-Football",
+            "1563277"
+          ]
+        ],
+        "v27_model_rank_score_not_hit_probability": 0.074978778847,
+        "v27_pair_status": "pending"
       }
     ],
     "same_fixture_pair_comparisons": 0,
     "schema_version": 1,
     "study": "prospective_same_day_pair_selection_policy_vs_original_v25",
     "v25_wilson_95_same_days": null,
-    "v27_pending_pair_results": 1,
+    "v27_pending_pair_results": 2,
     "v27_verified_pair_results": 0,
     "v27_wilson_95_same_days": null,
     "verified_score_conflicts_excluded": 0,
@@ -67,7 +100,12 @@
   },
   "prospective_freeze": {
     "live_predictions_unchanged": true,
-    "new_decisions": [],
+    "new_decisions": [
+      {
+        "day": "2026-11-25",
+        "decision": "V27_SELECTED"
+      }
+    ],
     "not_created": {
       "not_a_new_v25_freeze": 6
     },

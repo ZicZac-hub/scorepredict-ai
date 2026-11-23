@@ -7,14 +7,14 @@
     "The two games are treated as independent conditional on the saved distributions.",
     "Pending or unmatched final scores are never counted as losses."
   ],
-  "evaluated_at_utc": "2026-11-22T22:31:22.217925+00:00",
-  "five_model_coverage_max": 0.07619753996352728,
-  "five_model_coverage_mean": 0.06631027421364301,
+  "evaluated_at_utc": "2026-11-23T23:13:33.341294+00:00",
+  "five_model_coverage_max": 0.07812121952302488,
+  "five_model_coverage_mean": 0.06799755211498328,
   "five_model_coverage_min": 0.059225282828107406,
   "frontier_missing_sources_excluded": [],
   "max_number_of_combinations_to_70pct_model_mass": 160,
-  "min_number_of_combinations_to_70pct_model_mass": 117,
-  "original_archived_sets": 6,
+  "min_number_of_combinations_to_70pct_model_mass": 105,
+  "original_archived_sets": 7,
   "original_v8_verified": {
     "verified_pairs": 5,
     "wilson_95": [
@@ -23,7 +23,7 @@
     ],
     "wins": 0
   },
-  "pending_original_pairs": 1,
+  "pending_original_pairs": 2,
   "promoted_production_model": false,
   "real_70pct_five_double_hit_rate_proven": false,
   "research_conclusion": "70pct_model_mass_not_reached_with_five_original_v8_combinations",
@@ -255,10 +255,67 @@
         "target_met_by_five_model_choices": false
       },
       "v25_robust_five_double_hit": null
+    },
+    {
+      "never_rewrite_original_five_choices": true,
+      "original_v25_robust_five_mass_under_v8": 0.07026511783239939,
+      "original_v8": {
+        "checkpoints_model_mass": {
+          "1": 0.01728495218577827,
+          "10": 0.14168247633021938,
+          "100": 0.6865197834604512,
+          "1000": 0.9965957915870226,
+          "150": 0.7952212294388732,
+          "20": 0.24914669857601335,
+          "200": 0.8600618241569259,
+          "5": 0.07812121952302488,
+          "50": 0.4803699365500566,
+          "500": 0.9749781165792848
+        },
+        "computed_cells": 1000,
+        "goal": 0.7,
+        "higher_probability_model_does_not_prove_better_accuracy": true,
+        "joint_score_support_cells": 50625,
+        "minimum_joint_combinations_for_target_model_mass": 105,
+        "model_max_five_probability_mass": 0.07812121952302488,
+        "not_a_verified_hit_rate": true,
+        "scores_are_independent_conditional_on_model": true,
+        "target_count_status": "exact",
+        "target_met_by_five_model_choices": false
+      },
+      "original_v8_five_double_hit": null,
+      "status": "pending",
+      "sydney_date": "2026-11-25",
+      "v25_frozen_probability_status": "frozen",
+      "v25_originally_frozen_probability": {
+        "checkpoints_model_mass": {
+          "1": 0.015555900377327726,
+          "10": 0.14249765732547837,
+          "100": 0.6670007514418714,
+          "1000": 0.9908707210173374,
+          "150": 0.7712962962465206,
+          "20": 0.25295045856102966,
+          "200": 0.8347963283241974,
+          "5": 0.07429824018563025,
+          "50": 0.47414014569865076,
+          "500": 0.9592607979087827
+        },
+        "computed_cells": 1000,
+        "goal": 0.7,
+        "higher_probability_model_does_not_prove_better_accuracy": true,
+        "joint_score_support_cells": 50625,
+        "minimum_joint_combinations_for_target_model_mass": 114,
+        "model_max_five_probability_mass": 0.07429824018563025,
+        "not_a_verified_hit_rate": true,
+        "scores_are_independent_conditional_on_model": true,
+        "target_count_status": "exact",
+        "target_met_by_five_model_choices": false
+      },
+      "v25_robust_five_double_hit": null
     }
   ],
   "schema_version": 1,
-  "separately_frozen_v25_probability_pairs": 1,
+  "separately_frozen_v25_probability_pairs": 2,
   "sets_with_70pct_model_mass_in_only_five": 0,
   "source_invalid_excluded_sets": {},
   "study": "pre_match_original_v8_model_five_double_70pct_feasibility_frontier",

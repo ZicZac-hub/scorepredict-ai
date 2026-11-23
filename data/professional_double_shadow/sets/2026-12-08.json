@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-23T23:12:49.307465+00:00",
+  "prospective": true,
+  "record_sha256": "ecef612574a1aaee5f743114f83e895b36f0359ec2ccfde371c9cab7410543b1",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.1355799020695581,
+        "joint_probability": 0.016597300904407596,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.12241711825320904
+      },
+      {
+        "first_probability": 0.1355799020695581,
+        "joint_probability": 0.016048228928975027,
+        "score1": "1-0",
+        "score2": "1-0",
+        "second_probability": 0.11836731465362485
+      },
+      {
+        "first_probability": 0.11643543198339708,
+        "joint_probability": 0.014253690045974998,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.12241711825320904
+      },
+      {
+        "first_probability": 0.11643543198339708,
+        "joint_probability": 0.013782149414409497,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.11836731465362485
+      },
+      {
+        "first_probability": 0.11196188661091337,
+        "joint_probability": 0.013706051513100564,
+        "score1": "2-0",
+        "score2": "1-1",
+        "second_probability": 0.12241711825320904
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.07438742080686768,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "535",
+        "name": "Malaga"
+      },
+      "competition": {
+        "code": "PD",
+        "name": "PD"
+      },
+      "homeTeam": {
+        "id": "536",
+        "name": "Sevilla"
+      },
+      "id": "1570481",
+      "provider": "API-Football",
+      "utcDate": "2026-12-07T20:00:00+00:00"
+    },
+    "generated_at_utc": "2026-11-23T23:12:49.307413+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "215",
+        "name": "Moreirense"
+      },
+      "competition": {
+        "code": "PPL",
+        "name": "PPL"
+      },
+      "homeTeam": {
+        "id": "4724",
+        "name": "Alverca"
+      },
+      "id": "1575554",
+      "provider": "API-Football",
+      "utcDate": "2026-12-07T20:15:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "535",
+        "fixture_id": "1570481",
+        "forecast_id": "67164793969fc8ab241ff2192990ba912763570cbace884f2739202ac4856ac9",
+        "home_team_id": "536",
+        "input_digest": "00b3e341b3423dad972f6b55db3c7d8c5f1052e1d0a3c49707b479bc79809423",
+        "kickoff_utc": "2026-12-07T20:00:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "215",
+        "fixture_id": "1575554",
+        "forecast_id": "19f7b24756e9989def59783f5e54b8c4e4e97e86de366070903560eb231fe582",
+        "home_team_id": "4724",
+        "input_digest": "f8b414bd3affab63ad8a3f453952d3dff4bfdf0d36f68c0e51c3a9b364ddcc52",
+        "kickoff_utc": "2026-12-07T20:15:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-23T20:15:48.389102+00:00",
+      "2026-11-23T20:15:48.910702+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-08",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-08",
+  "target_70_percent_proven": false
+}

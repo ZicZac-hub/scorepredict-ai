@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-23T23:12:49.107269+00:00",
+  "prospective": true,
+  "record_sha256": "91ede41c76ebe35ec9779c7ab4c8d12510398625f024a4028af4077bca6d3071",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.13100290675134285,
+        "joint_probability": 0.01728495218577827,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.1319432722098824
+      },
+      {
+        "first_probability": 0.13100290675134285,
+        "joint_probability": 0.016711716249048863,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.12756752245787523
+      },
+      {
+        "first_probability": 0.11776122961803447,
+        "joint_probability": 0.015537801975262786,
+        "score1": "0-1",
+        "score2": "1-1",
+        "second_probability": 0.1319432722098824
+      },
+      {
+        "first_probability": 0.11776122961803447,
+        "joint_probability": 0.015022508303965613,
+        "score1": "0-1",
+        "score2": "1-0",
+        "second_probability": 0.12756752245787523
+      },
+      {
+        "first_probability": 0.13100290675134285,
+        "joint_probability": 0.013564240808969353,
+        "score1": "1-1",
+        "score2": "0-0",
+        "second_probability": 0.10354152549237472
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.07812121952302489,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "1837",
+        "name": "Wrexham"
+      },
+      "competition": {
+        "code": "ELC",
+        "name": "ELC"
+      },
+      "homeTeam": {
+        "id": "56",
+        "name": "Bristol City"
+      },
+      "id": "1563275",
+      "provider": "API-Football",
+      "utcDate": "2026-11-24T19:45:00+00:00"
+    },
+    "generated_at_utc": "2026-11-23T23:12:49.106661+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "1379",
+        "name": "Lincoln"
+      },
+      "competition": {
+        "code": "ELC",
+        "name": "ELC"
+      },
+      "homeTeam": {
+        "id": "1335",
+        "name": "Charlton"
+      },
+      "id": "1563277",
+      "provider": "API-Football",
+      "utcDate": "2026-11-24T19:45:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "1837",
+        "fixture_id": "1563275",
+        "forecast_id": "bfc21243d9e6a6a6d26ba0a4a8fca23daefd3c0f0f0f7ad20d0f4e9ba451075a",
+        "home_team_id": "56",
+        "input_digest": "da67e988c978f53a900dc721f3ed498330068e09097b7005336dcb71140466a4",
+        "kickoff_utc": "2026-11-24T19:45:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "1379",
+        "fixture_id": "1563277",
+        "forecast_id": "0a305476bb76bb86efa7ab10cd4455a1473242206155387573082ea092da22aa",
+        "home_team_id": "1335",
+        "input_digest": "d1afd1b0f7c0cd1235de27aa1f3c8209045e623237d52acba6bfdd92bd3eb835",
+        "kickoff_utc": "2026-11-24T19:45:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-23T06:42:32.367219+00:00",
+      "2026-11-23T06:42:35.523274+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-25",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-25",
+  "target_70_percent_proven": false
+}

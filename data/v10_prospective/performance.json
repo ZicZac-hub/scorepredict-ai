@@ -7,8 +7,8 @@
   "evidence": "genuinely_frozen_pre_kickoff_only",
   "five_doubles": {
     "average_estimated_coverage": 0.06997625168612016,
-    "awaiting_both_results": 1,
-    "frozen_pairs": 7,
+    "awaiting_both_results": 2,
+    "frozen_pairs": 8,
     "hit_rate": 0.0,
     "rows": [
       {
@@ -80,6 +80,10 @@
       {
         "status": "awaiting_verified_results",
         "sydney_date": "2026-11-24"
+      },
+      {
+        "status": "awaiting_verified_results",
+        "sydney_date": "2026-11-25"
       }
     ],
     "same_pair_challengers": {
@@ -145,7 +149,6 @@
   },
   "freeze_diagnostics": {
     "abstained": {
-      "2026-11-25": "waiting_for_near_matchday_fixture_research",
       "2026-11-26": "waiting_for_near_matchday_fixture_research",
       "2026-11-27": "waiting_for_near_matchday_fixture_research",
       "2026-11-28": "waiting_for_near_matchday_fixture_research",
@@ -157,11 +160,14 @@
       "2026-12-04": "waiting_for_near_matchday_fixture_research",
       "2026-12-05": "waiting_for_near_matchday_fixture_research",
       "2026-12-06": "waiting_for_near_matchday_fixture_research",
-      "2026-12-07": "waiting_for_near_matchday_fixture_research"
+      "2026-12-07": "waiting_for_near_matchday_fixture_research",
+      "2026-12-08": "waiting_for_near_matchday_fixture_research"
     },
-    "days_evaluated": 13,
-    "days_saved": [],
-    "near_research_available": 7,
+    "days_evaluated": 14,
+    "days_saved": [
+      "2026-11-25"
+    ],
+    "near_research_available": 22,
     "v14_robust_days_saved": []
   },
   "limitations": "Exact scores remain low probability. Retrospective replay and a market-disabled v8 fallback are not counted as verified v9/v10 results. Pending matches are not losses.",
@@ -169,66 +175,66 @@
     "v10": {
       "exact_score_hits": 10,
       "exact_score_rate": 0.136986301369863,
-      "frozen_fixtures": 79,
+      "frozen_fixtures": 102,
       "mean_expected_exact_hits": 10.889253361360645,
       "mean_outcome_brier": 0.5840814912036103,
       "mean_score_log_loss": 2.969597926574187,
-      "pending_fixtures": 6,
+      "pending_fixtures": 29,
       "top3_hit_rate": 0.3561643835616438,
       "verified_fixtures": 73
     },
     "v12": {
       "exact_score_hits": 10,
       "exact_score_rate": 0.12658227848101267,
-      "frozen_fixtures": 219,
+      "frozen_fixtures": 226,
       "mean_expected_exact_hits": 8.854529770621516,
       "mean_outcome_brier": 0.574707019442372,
       "mean_score_log_loss": 2.9558762994476537,
-      "pending_fixtures": 140,
+      "pending_fixtures": 147,
       "top3_hit_rate": 0.26582278481012656,
       "verified_fixtures": 79
     },
     "v13": {
       "exact_score_hits": 10,
       "exact_score_rate": 0.12658227848101267,
-      "frozen_fixtures": 219,
+      "frozen_fixtures": 226,
       "mean_expected_exact_hits": 8.763243373153193,
       "mean_outcome_brier": 0.5738944092085517,
       "mean_score_log_loss": 2.9594972557034365,
-      "pending_fixtures": 140,
+      "pending_fixtures": 147,
       "top3_hit_rate": 0.2911392405063291,
       "verified_fixtures": 79
     },
     "v8": {
       "exact_score_hits": 9,
       "exact_score_rate": 0.1111111111111111,
-      "frozen_fixtures": 300,
+      "frozen_fixtures": 304,
       "mean_expected_exact_hits": 8.930423852727406,
       "mean_outcome_brier": 0.5744336868773514,
       "mean_score_log_loss": 2.9496258399396877,
-      "pending_fixtures": 219,
+      "pending_fixtures": 223,
       "top3_hit_rate": 0.2839506172839506,
       "verified_fixtures": 81
     },
     "v8_near": {
       "exact_score_hits": 9,
       "exact_score_rate": 0.1232876712328767,
-      "frozen_fixtures": 81,
+      "frozen_fixtures": 102,
       "mean_expected_exact_hits": 8.111113304635204,
       "mean_outcome_brier": 0.5599171220404232,
       "mean_score_log_loss": 2.898068387013946,
-      "pending_fixtures": 8,
+      "pending_fixtures": 29,
       "top3_hit_rate": 0.3013698630136986,
       "verified_fixtures": 73
     },
     "v9": {
       "exact_score_hits": 10,
       "exact_score_rate": 0.13333333333333333,
-      "frozen_fixtures": 81,
+      "frozen_fixtures": 104,
       "mean_expected_exact_hits": 8.641306917989166,
       "mean_outcome_brier": 0.5830716579734622,
       "mean_score_log_loss": 2.9441147765438505,
-      "pending_fixtures": 6,
+      "pending_fixtures": 29,
       "top3_hit_rate": 0.28,
       "verified_fixtures": 75
     }
