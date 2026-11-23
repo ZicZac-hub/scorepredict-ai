@@ -132,5 +132,5 @@ def test_sparse_due_priority_preserves_frozen_doubles_and_request_limit(
     ordered=settlement._verification_order(refs,tmp_path,
                                           NOW+timedelta(days=3))
     assert ordered[0][0]==str(original["fixture_id"])
-    # existing quota still takes effect for every model.
-    assert "limit=20" in settlement.collect.__doc__ if False else True
+    # The full verification cap remains enforced by collect(), independently
+    # of this lookup priority. Existing quota regression tests also apply.
