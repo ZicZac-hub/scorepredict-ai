@@ -105,7 +105,11 @@ jobs:
           assert v['research_only_methods_not_live_promoted']
           assert v['independent_same_fixture_comparisons_only']
           assert v['late_and_missing_results_remain_pending']
-          assert not v['invalid_or_altered_v35_sets_excluded']
+          # Preserve the safety stop, but identify the rejected immutable receipts.
+          # Never silently discard these from the research denominator.
+          assert not v['invalid_or_altered_v35_sets_excluded'], (
+              'V35 invalid/altered frozen sets require investigation: '
+              + repr(v['invalid_or_altered_v35_sets_excluded']))
           assert not v['original_v28_rejected_or_tampered']
           assert w['same_pair_comparisons_only']
           assert w['no_hindsight_ticket_reselection']
