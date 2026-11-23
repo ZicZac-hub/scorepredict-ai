@@ -1,0 +1,51 @@
+name: One-time OpenAI connectivity verification
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/openai-connectivity-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Send one minimal OpenAI API request and report safe status
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request, urllib.error
+          key = os.getenv("OPENAI_API_KEY", "")
+          if not key:
+              print("RESULT: missing_OPENAI_API_KEY_secret")
+              raise SystemExit(1)
+          body = json.dumps({"model":"gpt-4o-mini","input":"Reply OK.","max_output_tokens":12,"store":False}).encode()
+          request = urllib.request.Request(
+              "https://api.openai.com/v1/responses",
+              data=body,
+              headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},
+              method="POST")
+          try:
+              with urllib.request.urlopen(request,timeout=25) as response:
+                  result=json.load(response)
+                  ok = response.status == 200 and bool(result.get("id"))
+                  print("RESULT: connected_http_200" if ok else "RESULT: unexpected_success_body")
+                  raise SystemExit(0 if ok else 1)
+          except urllib.error.HTTPError as error:
+              code = error.code
+              try:
+                  details=json.loads(error.read(4096)).get("error",{})
+                  reason=details.get("code")
+              except (ValueError,AttributeError):
+                  reason=None
+              allowed={"insufficient_quota","rate_limit_exceeded","invalid_api_key","billing_hard_limit_reached"}
+              print("RESULT: http_"+str(code))
+              print("SAFE_ERROR_CODE:",reason if reason in allowed else "unavailable")
+              raise SystemExit(1)
+          except Exception as error:
+              print("RESULT: transport_error_"+type(error).__name__)
+              raise SystemExit(1)
+          PY
