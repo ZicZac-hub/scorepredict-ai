@@ -33,6 +33,7 @@ def render(st):
     v25 = status.get("v8_v25_same_pair") or {}
     v35 = status.get("v35_challengers") or {}
     v36 = status.get("v36_challengers") or {}
+    v37 = status.get("v37_sparse_uefa_research") or {}
     v28 = status.get("v28_upstream_capture") or {}
     source = status.get("source_capture_health") or {}
     cols = st.columns(3)
@@ -92,6 +93,29 @@ def render(st):
     if bins_rows:
         st.caption("Historical matches available to the weaker-evidence team in each fixture. Based only on original competition, provider and pre-kickoff result cutoffs; these are not model wins.")
         st.dataframe(bins_rows, hide_index=True, use_container_width=True)
+    st.markdown("#### V37 sparse UEFA model — research only")
+    st.caption("For European teams with 2–4 verified same-competition matches. This does NOT turn V8 abstentions into verified five-double predictions.")
+    st.write(
+        "New V37 frozen fixtures in latest source capture: " +
+        str(source.get("v37_sparse_saved",0)) +
+        " · Total V37 frozen fixtures: " +
+        str(v37.get("frozen_unique_physical_fixtures",0)) +
+        " · Verified matched fixtures: " +
+        str(v37.get("verified_matched_physical_fixtures",0)) +
+        " · Pending: " + str(v37.get("pending",0))
+    )
+    if v37.get("invalid_or_tampered_excluded"):
+        st.warning("Some V37 research records failed integrity checks and are excluded.")
+    arm_rows = [
+        {"Research method": name.replace("_"," "),
+         "Verified fixtures": method.get("verified_leg_slots"),
+         "Mean exact-score log loss": method.get("mean_exact_score_log_loss"),
+         "Mean multiclass Brier": method.get("mean_multiclass_score_brier")}
+        for name,method in (v37.get("methods") or {}).items()
+    ]
+    if arm_rows:
+        st.dataframe(arm_rows, hide_index=True, use_container_width=True)
+    st.caption("These are standalone same-fixture probabilities, NOT V28/V35/V36 five-double accuracy or validated model promotion.")
     st.markdown("#### New V28 decision capture")
     st.caption("V28 source decisions must be issued and stored before the V35/V36 future-only 20-minute window expires. No retrospective tickets.")
     st.write(
