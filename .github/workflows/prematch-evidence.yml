@@ -130,6 +130,13 @@ jobs:
         # fixtures and pre-kickoff times. No new paid provider or AI requests.
         if: always()
         run: python v35_continuous_double_trials.py
+      - name: Freeze new V36 score-tail challenger while original V28 decision is local
+        # V28 and V35 have just frozen genuinely NEW source-verified decisions.
+        # Issue V36 in this SAME capture job before 20-minute issue window closes;
+        # a separate scheduled bot may not run or see unpublished decisions in time.
+        # No extra provider, model API, or betting-market requests.
+        if: always()
+        run: python v36_prospective_double_trials.py
       - name: Freeze V25 anchored probability challenger on genuinely new V28 same-match pairs
         # Before results: same two fixtures, fixed 75/25 distribution, write-once.
         # No new sports or AI calls, no retrospective score selection or live changes.
@@ -319,11 +326,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis data/pro_analyst_shadow data/sportmonks_xg data/professional_double_shadow data/professional_paired_study data/professional_paired_study_v2 data/verified_xg_replay
           git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/ data/pro_analyst_shadow/ data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/ data/sportmonks_xg/ data/professional_double_shadow/ data/professional_paired_study/ data/professional_paired_study_v2/ data/verified_xg_replay/
-          # Bot owns changing V34/V35 status files. Only the genuinely NEW
-          # pre-kickoff frozen V35 packets belong to permanent capture.
+          # Bot owns changing V34/V35/V36 status files. Only genuinely NEW
+          # pre-kickoff frozen V35/V36 sets belong to permanent capture.
           # Avoid racing the 15-minute bot on generated status.json files.
           if [ -d data/v35_continuous_challengers/sets ]; then
             git add data/v35_continuous_challengers/sets/
+          fi
+          if [ -d data/v36_prospective_challengers/sets ]; then
+            git add data/v36_prospective_challengers/sets/
           fi
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
@@ -398,7 +408,7 @@ jobs:
             data/v29_pair_sensitivity/
             data/v30_full_slate_ranking/
             data/v32_rank_discrimination/
-            data/v33_early_rank_checkpoints/ data/v35_continuous_challengers/ data/v34_score_error_research/
+            data/v33_early_rank_checkpoints/ data/v35_continuous_challengers/ data/v36_prospective_challengers/ data/v34_score_error_research/
             data/professional_double_shadow/
             data/professional_paired_study/
             data/professional_paired_study_v2/
