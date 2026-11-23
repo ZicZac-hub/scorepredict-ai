@@ -105,10 +105,23 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
     if forecast is None or len(forecast.get("component_weights") or {})<2:
         from v10_source_readiness import history_readiness
         readiness = history_readiness(fixture, history, league, cutoff)
+        # V37 is a separate, explicitly NOT V28-eligible research challenger.
+        # It can learn from 2-4 verified same-competition games while V8
+        # correctly abstains under its unchanged five-match requirement.
+        sparse = {"v37_recorded":False,
+                  "v37_reason":"sparse_history_research_not_attempted"}
+        if readiness["reason"] == "team_history_below_five":
+            try:
+                from v37_sparse_history_research import freeze as freeze_sparse
+                sparse = freeze_sparse(fixture,evidence,when,root=root)
+            except (ValueError,TypeError,KeyError,RuntimeError,OverflowError) as exc:
+                sparse = {"v37_recorded":False,
+                          "v37_reason":"shadow_unavailable_"+type(exc).__name__}
         return {"v8_recorded":False,"v9_recorded":False,"v12_recorded":False,
                 "reason":"insufficient_verified_research_evidence",
                 "readiness_reason":readiness["reason"],
                 "team_history_readiness":readiness,
+                **sparse,
                 "market_calls":0}
     frozen_at=max(when,utc(datetime.now(timezone.utc)))
     if frozen_at>=kickoff:

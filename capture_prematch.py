@@ -220,6 +220,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         'v10_shadow_v12_saved':0,'v10_shadow_v13_saved':0,'v10_market_calls':0,
         'v10_shadow_skipped':{},'v10_shadow_v8_saved_by_league':{},
         'v10_shadow_skipped_by_league':{},
+        'v37_sparse_shadow_saved':0,'v37_sparse_shadow_saved_by_league':{},
+        'v37_sparse_shadow_coverage':{},
         'v8_min_team_history_bins_by_league':{},
         'v8_qualified_home_history_bins_by_league':{},
         'v8_qualified_away_history_bins_by_league':{},
@@ -330,6 +332,14 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                                 fixture, evidence, observed_research, code, request,
                                 max(0, 4-diagnostics['v10_market_calls']))
                             diagnostics['v10_shadow_v8_saved'] += int(result.get('v8_recorded',False))
+                            diagnostics['v37_sparse_shadow_saved'] += int(result.get('v37_recorded',False))
+                            if result.get('v37_recorded'):
+                                group=diagnostics['v37_sparse_shadow_saved_by_league']
+                                group[code]=group.get(code,0)+1
+                            if result.get('v37_reason'):
+                                group=diagnostics['v37_sparse_shadow_coverage'].setdefault(code,{})
+                                reason=result['v37_reason']
+                                group[reason]=group.get(reason,0)+1
                             if result.get('v8_recorded'):
                                 per_league=diagnostics['v10_shadow_v8_saved_by_league']
                                 per_league[code]=per_league.get(code,0)+1
