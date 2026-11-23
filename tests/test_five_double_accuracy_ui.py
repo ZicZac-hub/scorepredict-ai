@@ -101,7 +101,11 @@ def test_workflow_preserves_and_archives_the_scheduled_diagnosis():
     workflow = Path(".github/workflows/prematch-evidence.yml").read_text()
     assert workflow.index("run: python five_double_accuracy.py") < workflow.index(
         "- name: Commit permanent research history")
-    assert "data/accuracy_diagnosis/" in workflow.split("git add", 1)[1].split("\n", 1)[0]
+    # The early write-once source checkpoint has its own restricted git add.
+    # Verify the final accuracy publication step, not the first git add.
+    final_stage = workflow.split("- name: Commit permanent research history", 1)[1]
+    final_stage = final_stage.split("- name: Archive immutable snapshots", 1)[0]
+    assert "data/accuracy_diagnosis/" in final_stage.split("git add", 1)[1].split("\n", 1)[0]
     assert "data/accuracy_diagnosis/" in workflow.split("- name: Archive immutable snapshots", 1)[1]
     assert "data/accuracy_diagnosis/report.json" in REPORT_EXACT
 
