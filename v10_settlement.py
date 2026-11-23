@@ -1,7 +1,7 @@
 """Independent verified full-time settlement for original v10 research forecasts.
 
 Legacy v6/v7 capture may be absent. This fetches only real completed
-API-Football fixtures referenced by frozen v8/v9/v10 forecasts, verifies
+API-Football fixtures referenced by frozen V8-family or V37 research forecasts, verifies
 provider/team/kickoff identity and 90-minute goals, and saves results without
 changing any original predictions. The request budget is deliberately small.
 """
@@ -16,6 +16,8 @@ from persist_prematch import (RESULTS as LEGACY_RESULTS, load_json,
                               matches_snapshot, verified_result, write_json)
 from reconcile_capture_conflicts import merge_verified
 from v10_prospective import ROOT, read_latest, utc
+from forecast_ledger import read_file_records
+from v37_sparse_history_research import frozen_arm_digest
 
 RESULTS=ROOT/"verified_results.json"
 STATUS=ROOT/"settlement_status.json"
@@ -39,6 +41,50 @@ def _reference_rows(forecasts):
             unique[key]=row
     return unique
 
+
+
+def _verified_v37_references(root, known, clock):
+    """Find original pre-kickoff V37 tickets for independent final settlement.
+
+    This is ONLY a result-lookup source: it never qualifies V37 for V8 or
+    five-double selection. Reject duplicate, altered or future-issued tickets.
+    Existing V8/V9/V10 source references always take precedence.
+    """
+    grouped={}
+    for row in read_file_records(root,kind="forecasts"):
+        if not isinstance(row,dict) or row.get("model_key")!="v37_sparse":
+            continue
+        if row.get("provider")!="API-Football":
+            continue
+        grouped.setdefault(str(row.get("fixture_id")),[]).append(row)
+    added, rejected=0,0
+    for fixture_id, rows in sorted(grouped.items()):
+        if fixture_id in known:
+            continue
+        if len(rows)!=1:
+            rejected+=1
+            continue
+        row=rows[0]
+        try:
+            if (row.get("v37_research_only") is not True or
+                    row.get("v37_no_live_model_change") is not True or
+                    row.get("v37_not_eligible_for_v28") is not True or
+                    row.get("competition") not in ("CL","EL") or
+                    row["v37_arm_digest_sha256"] != frozen_arm_digest(row)):
+                rejected+=1
+                continue
+            evidence_time=utc(row["evidence_as_of_utc"])
+            saved=utc(row["captured_at_utc"])
+            kickoff=utc(row["kickoff_utc"])
+            if not evidence_time<=saved<kickoff or saved>clock:
+                rejected+=1
+                continue
+            known[fixture_id]=row
+            added+=1
+        except (TypeError,KeyError,ValueError,OverflowError):
+            rejected+=1
+    return {"v37_only_references_added":added,
+            "v37_invalid_originals_excluded":rejected}
 
 
 def _verification_order(references, root, clock):
@@ -76,13 +122,21 @@ def _verification_order(references, root, clock):
                 prioritized.extend(matching)
         except (ValueError,TypeError,KeyError,OSError):
             continue
-    # Other singles are verified newest first, so early data is not held
-    # hostage by a long backlog of much older unverified fixtures.
+    # Once frozen five-double legs are scheduled, do not starve the
+    # newly collected research-only V37 finals behind an unrelated backlog.
+    # These V37 lookups STILL use the same overall provider-call limit and
+    # the same completed-match lag and 60-minute retry cooldown.
+    sparse_due=sorted(
+        ((fid,row) for fid,row in references.items()
+         if row.get("model_key")=="v37_sparse"
+         and utc(row["kickoff_utc"])+MIN_FINAL_LAG<=clock),
+        key=lambda entry:utc(entry[1]["kickoff_utc"]),reverse=True)
+    # Other singles remain newest-first. V8 doubles keep first priority.
     rest=sorted(references.items(),key=lambda entry:utc(entry[1]["kickoff_utc"]),
                 reverse=True)
     seen=set()
     ordered=[]
-    for fid,row in prioritized+rest:
+    for fid,row in prioritized+sparse_due+rest:
         if fid in seen:
             continue
         seen.add(fid)
@@ -134,12 +188,14 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
     clock=utc(now or datetime.now(timezone.utc))
     forecasts=read_latest(root)
     references=_reference_rows(forecasts)
+    sparse_report=_verified_v37_references(root,references,clock)
     own_file=Path(root)/"verified_results.json"
     own=load_json(own_file,{})
     old=legacy_results if legacy_results is not None else load_json(LEGACY_RESULTS,{})
     attempts_file=Path(root)/"result_attempts.json"
     attempts=load_json(attempts_file,{})
     status={"eligible_frozen_fixtures":len(references),
+            **sparse_report,
             "already_verified":0,"checked":0,"newly_verified":0,
             "still_pending":0,"rejected_or_unavailable":0,
             "waiting_for_full_time":0,"retry_cooldown":0,
