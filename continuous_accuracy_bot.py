@@ -90,6 +90,14 @@ def source_capture_health(coverage, *, now):
         "v8_source_errors":len(coverage.get("v10_shadow_errors") or [])
                            if isinstance(coverage.get("v10_shadow_errors"),list) else 0,
         "v8_abstention_reasons":skipped,
+        "v37_sparse_saved":nonnegative(coverage.get("v37_sparse_shadow_saved")),
+        "v37_sparse_saved_by_league":counts(
+            coverage.get("v37_sparse_shadow_saved_by_league")),
+        "v37_sparse_status_by_league":{
+            str(k):counts(v) for k,v in
+            (coverage.get("v37_sparse_shadow_coverage") or {}).items()
+            if isinstance(k,str) and isinstance(v,dict)
+        },
         "v8_abstention_reasons_by_league":leagues,
         "v8_saved_by_league":counts(coverage.get("v10_shadow_v8_saved_by_league")),
         "v8_min_team_history_bins_by_league":per_league_bands(
@@ -103,7 +111,7 @@ def source_capture_health(coverage, *, now):
     }
 
 
-def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
+def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, v37=None):
     """Only preexisting independently validated archived report totals."""
     baseline = (v8 or {}).get("observed") or {}
     matched_v8 = (v25 or {}).get("v8") or {}
@@ -112,6 +120,7 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
     stats = v35.get("methods") or {}
     v36 = v36 or {}
     v36stats = v36.get("methods") or {}
+    v37 = v37 or {}
     v28 = v28 or {}
     v28freeze = v28.get("freeze") or {}
     v28grade = v28.get("verified_comparison") or {}
@@ -166,6 +175,16 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
         "original_v8_daily_five_doubles": original,
         "v8_v25_same_pair": matched,
         "source_capture_health": source_health,
+        "v37_sparse_uefa_research": {
+            "frozen_unique_physical_fixtures": v37.get("frozen_unique_physical_fixtures", 0),
+            "verified_matched_physical_fixtures": v37.get("verified_matched_physical_fixtures", 0),
+            "pending": v37.get("pending", 0),
+            "invalid_or_tampered_excluded": v37.get("invalid_or_tampered_excluded", 0),
+            "methods": v37.get("methods") or {},
+            "research_only": True,
+            "not_a_five_double_trial": True,
+            "ready_for_model_promotion": False,
+        },
         "v28_upstream_capture": {
             "new_original_decisions_last_run": len(v28freeze.get("created") or []),
             "original_frozen_decisions": v28grade.get("original_frozen_decisions", 0),
@@ -294,6 +313,7 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         now=clock, v36=load("data/v36_prospective_challengers/status.json"),
         v28=load("data/v28_independent_pair_trial/status.json"),
         coverage=load("data/prospective_ledger/capture_coverage.json"),
+        v37=load("data/v37_sparse_prospective/status.json"),
     )
     destination = Path(root)
     destination.mkdir(parents=True, exist_ok=True)
