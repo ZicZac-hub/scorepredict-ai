@@ -128,6 +128,7 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
         integrity = "SOURCE_AUDITS_RECORDED"
     both_absent = (v34 or {}).get("frozen_ticket_failure_attribution", {}).get(
         "v8_optimal_original", {}).get("both_leg_scores_absent", 0)
+    source_health = source_capture_health(coverage, now=now)
     next_priority = (
         "Investigate why original score distributions miss one or both final "
         "leg scores; prioritize independent high-goal calibration trials."
@@ -135,6 +136,14 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
         "Collect enough independent, frozen pre-kickoff same-pair results "
         "before comparing or promoting models."
     )
+    if source_health["collector_freshness"] != "recent":
+        next_priority = ("Verify the pre-match source collector's freshness, then "
+                         "diagnose authenticated V8 historical-evidence gaps. "
+                         "Do not issue or backdate V36 scores without fresh originals.")
+    elif source_health["v8_abstentions"] > source_health["v8_saved"]:
+        next_priority = ("Investigate league-specific authenticated V8 history "
+                         "shortfalls before changing score distributions; preserve "
+                         "the existing minimums and prospectively frozen tickets.")
     return {
         "version": VERSION,
         "last_run_utc": now.astimezone(timezone.utc).isoformat(),
@@ -145,7 +154,7 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
         "integrity": integrity,
         "original_v8_daily_five_doubles": original,
         "v8_v25_same_pair": matched,
-        "source_capture_health": source_capture_health(coverage, now=now),
+        "source_capture_health": source_health,
         "v28_upstream_capture": {
             "new_original_decisions_last_run": len(v28freeze.get("created") or []),
             "original_frozen_decisions": v28grade.get("original_frozen_decisions", 0),
@@ -226,7 +235,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     """One bounded optional API request: recommendations are TEXT ONLY."""
     snapshot = {key: report[key] for key in (
         "target_five_double_hit_rate", "integrity", "original_v8_daily_five_doubles",
-        "v8_v25_same_pair", "v28_upstream_capture", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
+        "v8_v25_same_pair", "v28_upstream_capture", "source_capture_health", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
         "v35_challengers", "v36_challengers", "next_priority",
     )}
     payload = {
