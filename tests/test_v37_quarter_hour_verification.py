@@ -21,7 +21,7 @@ def test_v37_evaluation_precedes_bot_report_on_every_quarter_hour():
     assert flow.index("run: python v37_sparse_evaluation.py") > (
         flow.index("run: python v36_prospective_double_trials.py"))
     assert flow.index("run: python v37_sparse_evaluation.py") < (
-        flow.index("run: python continuous_accuracy_bot.py"))
+        flow.index("- name: Generate watchdog report and optional bounded OpenAI research memo"))
     assert "tests/test_v37_sparse_history_research.py" in flow
     assert "tests/test_v37_quarter_hour_verification.py" in flow
     assert "- 'v37_sparse_evaluation.py'" in flow
