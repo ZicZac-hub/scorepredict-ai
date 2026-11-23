@@ -103,11 +103,12 @@ def capture(fixture, evidence, captured_at, *, api_key=None,
     league=evidence.get("league_history") or history
     forecast=research_predict(fixture,history,league_history=league,as_of=cutoff)
     if forecast is None or len(forecast.get("component_weights") or {})<2:
-        from v10_source_readiness import abstention_reason
+        from v10_source_readiness import history_readiness
+        readiness = history_readiness(fixture, history, league, cutoff)
         return {"v8_recorded":False,"v9_recorded":False,"v12_recorded":False,
                 "reason":"insufficient_verified_research_evidence",
-                "readiness_reason":abstention_reason(
-                    fixture, history, league, cutoff),
+                "readiness_reason":readiness["reason"],
+                "team_history_readiness":readiness,
                 "market_calls":0}
     frozen_at=max(when,utc(datetime.now(timezone.utc)))
     if frozen_at>=kickoff:
