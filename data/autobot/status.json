@@ -3,7 +3,7 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-23T17:46:10.274620+00:00",
+  "last_run_utc": "2026-11-23T18:41:51.711411+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
@@ -16,11 +16,11 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 45.6,
+    "age_minutes": 41.0,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-23T17:00:33.274415+00:00",
+    "collector_started_at_utc": "2026-11-23T18:00:50.508340+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 22,
+    "processed_fixtures": 23,
     "producer_api_budget_unchanged": true,
     "v37_sparse_saved": 0,
     "v37_sparse_saved_by_league": {},
@@ -72,8 +72,10 @@
         "3-4": 12
       }
     },
-    "v8_saved": 0,
-    "v8_saved_by_league": {},
+    "v8_saved": 1,
+    "v8_saved_by_league": {
+      "SA": 1
+    },
     "v8_source_errors": 0
   },
   "target_five_double_hit_rate": 0.7,
@@ -84,8 +86,8 @@
     "pending_days": 1,
     "source_ineligibility": {
       "invalid_source_time": 158,
-      "not_original_v8_model": 689,
-      "outside_research_freeze_window": 222
+      "not_original_v8_model": 697,
+      "outside_research_freeze_window": 225
     },
     "verified_paired_days": 2
   },
