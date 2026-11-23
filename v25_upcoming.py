@@ -221,8 +221,21 @@ def automatic_quality(report, *, min_model_mass=CAUTIOUS_MIN_V8_FIVE_MASS,
     if any(report.get("early_frozen_source") or []):
         reasons.append("original_source_over_72_hours_old")
     audited=report.get("source_evidence_audit") or []
-    if require_fresh_market and (len(audited)!=2 or not all(
-            item.get("verified_pre_match_market") is True for item in audited)):
+    archived_verified=(len(audited)==2 and all(
+        item.get("verified_pre_match_market") is True for item in audited))
+    # An explicitly requested live API-Football /odds spot check is allowed
+    # as a DIFFERENT source from the immutable V21 source-packet audit. It
+    # must verify both exact source fixture IDs, not just arbitrary odds.
+    live=report.get("live_market_evidence") or {}
+    expected=[str((report.get(side+"_fixture") or {}).get("id") or "")
+              for side in ("first","second")]
+    legs=live.get("legs") or []
+    live_verified=(live.get("both_verified") is True and len(legs)==2
+                   and all(str(leg.get("fixture_id"))==fid and
+                           leg.get("verified_pre_match_market") is True
+                           for leg,fid in zip(legs,expected))
+                   and all(expected))
+    if require_fresh_market and not (archived_verified or live_verified):
         reasons.append("no_source_matched_fresh_market_on_both_legs")
     return {"passed":not reasons,"reasons":reasons,
             "minimum_model_mass_research_only":min_model_mass,
