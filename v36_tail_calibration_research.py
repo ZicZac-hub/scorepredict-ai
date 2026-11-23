@@ -44,24 +44,22 @@ def evaluate_fixture(grid, actual):
     upstream. Do not use this function to retrospectively issue tickets.
     """
     h, a = actual
-    if not isinstance(h, int) or not isinstance(a, int) or h < 0 or a < 0:
+    if type(h) is not int or type(a) is not int or h < 0 or a < 0:
         raise ValueError("invalid_verified_final_score")
     out = {}
     for method in METHODS:
         p = np.asarray(transform_score_grid(grid, method))
-        if h >= p.shape[0] or a >= p.shape[1]:
-            # Explicitly mark out-of-grid observations; never silently clip.
-            out[method] = {"outside_grid": True, "exact_log_loss": None,
-                           "multiclass_brier": None, "over_3_5_brier": None}
-            continue
-        observed = np.zeros_like(p)
-        observed[h, a] = 1.0
+        outside = h >= p.shape[0] or a >= p.shape[1]
+        # An out-of-grid result is an observed miss, NEVER an omitted row.
+        # Use the same finite epsilon log-loss convention as V25's original
+        # independently verified score diagnostics.
+        probability = 0.0 if outside else float(p[h, a])
         home, away = np.indices(p.shape)
         high = float(p[(home + away) >= 4].sum())
         out[method] = {
-            "outside_grid": False,
-            "exact_log_loss": float(-np.log(max(p[h, a], 1e-15))),
-            "multiclass_brier": float(np.sum((p - observed) ** 2)),
+            "outside_grid": outside,
+            "exact_log_loss": float(-np.log(max(probability, 1e-15))),
+            "multiclass_brier": float(1 + np.square(p).sum() - 2*probability),
             "over_3_5_brier": float((high - int(h + a >= 4)) ** 2),
             "high_goal_probability": high,
         }
