@@ -70,22 +70,8 @@ jobs:
         id: persist_originals
         if: ${{ !cancelled() && steps.capture.outcome == 'success' }}
         run: python persist_prematch.py --snapshots-only
-      - name: Back up newly captured authenticated originals before long research stages
-        # Even if a later validation job times out, the original pre-match
-        # source files and collector diagnostics remain available to audit.
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: early-prematch-authenticated-source-checkpoint
-          path: |
-            data/v10_prospective/forecasts/
-            data/prospective_ledger/forecasts/
-            data/prospective_ledger/capture_coverage.json
-            data/prematch/snapshots/
-            data/daily_picks/
-          if-no-files-found: warn
-          retention-days: 30
       - name: Commit write-once source receipts early before long research stages
+        id: early_checkpoint
         # The ordinary 50+ step audit can be interrupted by timeout. Publish
         # authenticated original V8 / ledger forecasts promptly, not after
         # the entire pipeline. No new football or AI API calls.
@@ -136,6 +122,21 @@ jobs:
               exit 1
             fi
           fi
+      - name: Back up uncommitted source files only if early checkpoint fails
+        # Even if a later validation job times out, the original pre-match
+        # source files and collector diagnostics remain available to audit.
+        if: always() && steps.early_checkpoint.outcome != 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: early-prematch-authenticated-source-checkpoint
+          path: |
+            data/v10_prospective/forecasts/
+            data/prospective_ledger/forecasts/
+            data/prospective_ledger/capture_coverage.json
+            data/prematch/snapshots/
+            data/daily_picks/
+          if-no-files-found: warn
+          retention-days: 30
       - name: Persist evidence and verify completed matches
         if: steps.cadence.outputs.heavy == 'true'
         env:
