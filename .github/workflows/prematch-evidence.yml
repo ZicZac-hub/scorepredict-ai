@@ -45,7 +45,7 @@ jobs:
               handle.write('heavy='+str(heavy).lower()+'\n')
           PYCODE
       - name: Check snapshot script
-        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py v10_prospective.py v10_evaluate.py automatic_doubles_ui.py smart_double_v8.py v10_settlement.py llm_research_panel.py sportmonks_probability_research.py sportmonks_probability_ui.py llm_research_ui.py multi_market_v10.py verified_features_v10.py reconcile_capture_conflicts.py
+        run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py v10_prospective.py v10_source_readiness.py v10_evaluate.py automatic_doubles_ui.py smart_double_v8.py v10_settlement.py llm_research_panel.py sportmonks_probability_research.py sportmonks_probability_ui.py llm_research_ui.py multi_market_v10.py verified_features_v10.py reconcile_capture_conflicts.py
       - name: Independently verify recently completed exact-score and five-double fixtures
         # Scheduled passes can settle newly completed matches without waiting
         # for the six-hour heavy refresh. Cooldowns in v10_settlement.py cap

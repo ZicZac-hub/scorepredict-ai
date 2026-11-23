@@ -37,7 +37,62 @@ def as_rate(hits, verified):
     return hits / verified if verified else None
 
 
-def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None):
+def source_capture_health(coverage, *, now):
+    """Read-only health report; no source capture, model fitting, or API calls.
+
+    A historical report without a trustworthy UTC timestamp is UNKNOWN,
+    never presented as a fresh successful collector run. These counts are
+    source-attempt diagnostics, not verified predictions or hit rates.
+    """
+    coverage = coverage if isinstance(coverage, dict) else {}
+    def nonnegative(value):
+        return value if type(value) is int and value >= 0 else 0
+    def counts(value):
+        return {str(k):nonnegative(v) for k,v in value.items()
+                if isinstance(k,str) and type(v) is int and v >= 0
+                } if isinstance(value,dict) else {}
+    skipped=counts(coverage.get("v10_shadow_skipped"))
+    leagues={}
+    raw=coverage.get("v10_shadow_skipped_by_league")
+    if isinstance(raw,dict):
+        leagues={str(code):counts(reasons)
+                 for code,reasons in raw.items() if isinstance(code,str)}
+    stamp=coverage.get("collector_started_at_utc")
+    age=None
+    freshness="unknown_missing_capture_timestamp"
+    if isinstance(stamp,str):
+        try:
+            dt=datetime.fromisoformat(stamp.replace("Z","+00:00"))
+            if dt.tzinfo is not None and dt.utcoffset() is not None:
+                age=round((now.astimezone(timezone.utc)-
+                           dt.astimezone(timezone.utc)).total_seconds()/60,1)
+                if age < -1:
+                    freshness="invalid_future_capture_timestamp"
+                    age=None
+                else:
+                    freshness="stale" if age > 180 else "recent"
+            else:
+                freshness="invalid_capture_timestamp"
+        except (ValueError,TypeError,OverflowError):
+            freshness="invalid_capture_timestamp"
+    return {
+        "collector_started_at_utc":stamp if freshness in ("recent","stale") else None,
+        "collector_freshness":freshness,
+        "age_minutes":age,
+        "processed_fixtures":nonnegative(coverage.get("processed_fixtures")),
+        "v8_saved":nonnegative(coverage.get("v10_shadow_v8_saved")),
+        "v8_abstentions":sum(skipped.values()),
+        "v8_source_errors":len(coverage.get("v10_shadow_errors") or [])
+                           if isinstance(coverage.get("v10_shadow_errors"),list) else 0,
+        "v8_abstention_reasons":skipped,
+        "v8_abstention_reasons_by_league":leagues,
+        "v8_saved_by_league":counts(coverage.get("v10_shadow_v8_saved_by_league")),
+        "producer_api_budget_unchanged":True,
+        "not_a_prediction_accuracy_measure":True,
+    }
+
+
+def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None):
     """Only preexisting independently validated archived report totals."""
     baseline = (v8 or {}).get("observed") or {}
     matched_v8 = (v25 or {}).get("v8") or {}
@@ -73,6 +128,7 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None):
         integrity = "SOURCE_AUDITS_RECORDED"
     both_absent = (v34 or {}).get("frozen_ticket_failure_attribution", {}).get(
         "v8_optimal_original", {}).get("both_leg_scores_absent", 0)
+    source_health = source_capture_health(coverage, now=now)
     next_priority = (
         "Investigate why original score distributions miss one or both final "
         "leg scores; prioritize independent high-goal calibration trials."
@@ -80,6 +136,14 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None):
         "Collect enough independent, frozen pre-kickoff same-pair results "
         "before comparing or promoting models."
     )
+    if source_health["collector_freshness"] != "recent":
+        next_priority = ("Verify the pre-match source collector's freshness, then "
+                         "diagnose authenticated V8 historical-evidence gaps. "
+                         "Do not issue or backdate V36 scores without fresh originals.")
+    elif source_health["v8_abstentions"] > source_health["v8_saved"]:
+        next_priority = ("Investigate league-specific authenticated V8 history "
+                         "shortfalls before changing score distributions; preserve "
+                         "the existing minimums and prospectively frozen tickets.")
     return {
         "version": VERSION,
         "last_run_utc": now.astimezone(timezone.utc).isoformat(),
@@ -90,6 +154,7 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None):
         "integrity": integrity,
         "original_v8_daily_five_doubles": original,
         "v8_v25_same_pair": matched,
+        "source_capture_health": source_health,
         "v28_upstream_capture": {
             "new_original_decisions_last_run": len(v28freeze.get("created") or []),
             "original_frozen_decisions": v28grade.get("original_frozen_decisions", 0),
@@ -170,7 +235,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     """One bounded optional API request: recommendations are TEXT ONLY."""
     snapshot = {key: report[key] for key in (
         "target_five_double_hit_rate", "integrity", "original_v8_daily_five_doubles",
-        "v8_v25_same_pair", "v28_upstream_capture", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
+        "v8_v25_same_pair", "v28_upstream_capture", "source_capture_health", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
         "v35_challengers", "v36_challengers", "next_priority",
     )}
     payload = {
@@ -217,6 +282,7 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         load("data/v35_continuous_challengers/status.json"),
         now=clock, v36=load("data/v36_prospective_challengers/status.json"),
         v28=load("data/v28_independent_pair_trial/status.json"),
+        coverage=load("data/prospective_ledger/capture_coverage.json"),
     )
     destination = Path(root)
     destination.mkdir(parents=True, exist_ok=True)

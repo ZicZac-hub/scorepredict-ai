@@ -207,7 +207,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
     current_time = clock or ((lambda: fixed_now) if fixed_now is not None else (lambda: datetime.now(timezone.utc)))
     started = _time(current_time())
     monotonic_start = time.monotonic()
-    diagnostics = {'leagues_checked': 0, 'upcoming_fixtures': 0, 'eligible_horizon_fixtures': 0,
+    diagnostics = {'collector_started_at_utc': started.isoformat(), 'leagues_checked': 0, 'upcoming_fixtures': 0, 'eligible_horizon_fixtures': 0,
         'already_captured': 0, 'processed_fixtures': 0, 'captured_fixtures': 0, 'ledger_records_written': 0,
         'prediction_unavailable': 0, 'prediction_errors': [], 'league_errors': [], 'news_errors': [], 'history_source_errors': [],
         'budget_skipped': [], 'provider_fixture_counts': {}, 'next_kickoff_by_league': {},
@@ -217,7 +217,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         'discovery_cache_hits': 0, 'api_call_limit': max_api_calls, 'provider_adapter_calls': 0, 'discovery_budget_skipped': [],
         'v10_shadow_v8_saved':0,'v10_shadow_v9_saved':0,'v10_shadow_v10_saved':0,
         'v10_shadow_v12_saved':0,'v10_shadow_v13_saved':0,'v10_market_calls':0,
-        'v10_shadow_skipped':{},'v10_shadow_errors':[]}
+        'v10_shadow_skipped':{},'v10_shadow_v8_saved_by_league':{},
+        'v10_shadow_skipped_by_league':{},'v10_shadow_errors':[]}
     # Recover the immutable outbox before deciding that every horizon is done.
     # A database outage must not strand old files simply because no new pair is due.
     store = None
@@ -324,6 +325,9 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                                 fixture, evidence, observed_research, code, request,
                                 max(0, 4-diagnostics['v10_market_calls']))
                             diagnostics['v10_shadow_v8_saved'] += int(result.get('v8_recorded',False))
+                            if result.get('v8_recorded'):
+                                per_league=diagnostics['v10_shadow_v8_saved_by_league']
+                                per_league[code]=per_league.get(code,0)+1
                             diagnostics['v10_shadow_v9_saved'] += int(result.get('v9_recorded',False))
                             diagnostics['v10_shadow_v10_saved'] += int(result.get('v10_recorded',False))
                             diagnostics['v10_shadow_v12_saved'] += int(result.get('v12_recorded',False))
@@ -334,6 +338,9 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                             if not result.get('v8_recorded'):
                                 skipped=diagnostics['v10_shadow_skipped']
                                 skipped[reason]=skipped.get(reason,0)+1
+                                per_league=diagnostics['v10_shadow_skipped_by_league']
+                                league_reasons=per_league.setdefault(code,{})
+                                league_reasons[reason]=league_reasons.get(reason,0)+1
                         except Exception as exc:
                             diagnostics['v10_shadow_errors'].append({
                                 'fixture_id':fixture['id'],'error_type':type(exc).__name__})
