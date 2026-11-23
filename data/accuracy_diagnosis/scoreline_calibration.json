@@ -3,39 +3,39 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22606020106921165,
-          "expected_events": 28.656306082471122,
+          "brier": 0.22383343177596327,
+          "expected_events": 28.870062692465037,
           "observed_events": 30,
-          "observed_rate": 0.375,
-          "predicted_rate": 0.358203826030889,
-          "rate_gap_observed_minus_predicted": 0.016796173969110973
+          "observed_rate": 0.37037037037037035,
+          "predicted_rate": 0.3564205270674696,
+          "rate_gap_observed_minus_predicted": 0.013949843302900776
         },
         "exact_0_3": {
-          "brier": 0.0006893098482994838,
-          "expected_events": 1.7385059851599072,
-          "observed_events": 0,
-          "observed_rate": 0.0,
-          "predicted_rate": 0.02173132481449884,
-          "rate_gap_observed_minus_predicted": -0.02173132481449884
+          "brier": 0.0120460553649274,
+          "expected_events": 1.779034413566897,
+          "observed_events": 1,
+          "observed_rate": 0.012345679012345678,
+          "predicted_rate": 0.02196338782181354,
+          "rate_gap_observed_minus_predicted": -0.009617708809467863
         },
         "exact_3_0": {
-          "brier": 0.023848059064794747,
-          "expected_events": 3.3654679838910653,
+          "brier": 0.023556426010629683,
+          "expected_events": 3.380494017214092,
           "observed_events": 2,
-          "observed_rate": 0.025,
-          "predicted_rate": 0.04206834979863831,
-          "rate_gap_observed_minus_predicted": -0.017068349798638315
+          "observed_rate": 0.024691358024691357,
+          "predicted_rate": 0.04173449403968015,
+          "rate_gap_observed_minus_predicted": -0.017043136014988792
         },
         "winning_margin_at_least_three": {
-          "brier": 0.15496823063697346,
-          "expected_events": 14.178035822533635,
-          "observed_events": 15,
-          "observed_rate": 0.1875,
-          "predicted_rate": 0.17722544778167043,
-          "rate_gap_observed_minus_predicted": 0.010274552218329559
+          "brier": 0.16286396253527177,
+          "expected_events": 14.28667589837329,
+          "observed_events": 16,
+          "observed_rate": 0.19753086419753085,
+          "predicted_rate": 0.17637871479473197,
+          "rate_gap_observed_minus_predicted": 0.021152149402798897
         }
       },
-      "verified_fixtures": 80
+      "verified_fixtures": 81
     },
     "v8_near": {
       "events": {
@@ -2206,6 +2206,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.3168494500030344
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-3",
+        "captured_at_utc": "2026-11-22T19:13:25.965044+00:00",
+        "fixture_id": "1570456",
+        "fixture_name": "Getafe vs Atletico Madrid",
+        "forecast_id": "faae0d975aae5613d2e6d9fd43c4669d13d778a3d0a6d93920b371f54bf5ba1d",
+        "kickoff_utc": "2026-11-22T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0405284284069899,
+          "actual_exact_score_rank_min": 10,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.21375660999391305
+          },
+          "exact_0_3": {
+            "observed": 1,
+            "predicted_probability": 0.0405284284069899
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.015026033323026546
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.10864007583965399
           }
         },
         "provider": "API-Football"
@@ -4739,7 +4768,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-22T22:04:32.904554+00:00",
+  "result_cutoff_utc": "2026-11-23T23:16:36.457818+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
