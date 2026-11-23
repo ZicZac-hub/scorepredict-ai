@@ -47,6 +47,12 @@ jobs:
       - name: Check snapshot script
         run: python -m py_compile capture_prematch.py team_news.py engine.py rescore_predictions.py forecast_model.py revision_jobs.py revision_store.py double_revisions.py prospective_ensemble.py prospective_comparison.py prospective_double_comparison.py five_model_consensus.py five_model_comparison.py double_score_selection.py league_opponent_model.py smart_double_ai.py prospective_smart_double.py v10_prospective.py v10_source_readiness.py v10_evaluate.py automatic_doubles_ui.py smart_double_v8.py v10_settlement.py llm_research_panel.py sportmonks_probability_research.py sportmonks_probability_ui.py llm_research_ui.py multi_market_v10.py verified_features_v10.py reconcile_capture_conflicts.py
       - name: Independently verify recently completed exact-score and five-double fixtures
+        id: initial_settlement
+        # A result-provider failure must not block the independent future
+        # capture/freeze workflow or consume its narrow pre-kickoff window.
+        # Record the failure and make this workflow fail AFTER the remaining
+        # genuine source and result-integrity audits have completed.
+        continue-on-error: true
         # Scheduled passes can settle newly completed matches without waiting
         # for the six-hour heavy refresh. Cooldowns in v10_settlement.py cap
         # repeated requests; source-code pushes make no paid result calls.
@@ -446,6 +452,14 @@ jobs:
           else
             echo "No new research history to commit"
           fi
+      - name: Publish settlement failure after preserving genuine source evidence
+        # A failed settlement step MUST NOT be mistaken for verified finals.
+        # The prospective issue stages get to run, but the workflow outcome
+        # reports failure to the maintainer after all evidence is persisted.
+        if: ${{ always() && steps.initial_settlement.outcome == 'failure' }}
+        run: |
+          echo "::error::Independent result-settlement failed. Future pre-match source capture was allowed to continue. Inspect the original settlement logs before retrying."
+          exit 1
       - name: Archive immutable snapshots
         if: always()
         uses: actions/upload-artifact@v4
