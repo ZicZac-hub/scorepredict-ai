@@ -74,7 +74,8 @@ jobs:
         id: early_checkpoint
         # The ordinary 50+ step audit can be interrupted by timeout. Publish
         # authenticated original V8 / ledger forecasts promptly, not after
-        # the entire pipeline. No new football or AI API calls.
+        # the entire pipeline. Do NOT advance daily picks or legacy snapshots
+        # before their normal downstream audits. No new football or AI calls.
         # On concurrent bot commits, preserve upstream reports and NEVER
         # auto-merge conflicting immutable forecast files.
         if: ${{ !cancelled() && steps.capture.outcome == 'success' && steps.persist_originals.outcome == 'success' }}
@@ -82,7 +83,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/prospective_ledger/capture_coverage.json
-          for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts data/prematch/snapshots data/daily_picks; do
+          for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts; do
             if [ -d "$folder" ]; then
               git add -- "$folder"
             fi
