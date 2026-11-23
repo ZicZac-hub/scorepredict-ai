@@ -48,7 +48,6 @@ def test_early_checkpoint_never_stages_results_or_rewrites_old_forecasts():
         "data/daily_picks",
     }
     assert "git add -- data/prospective_ledger/capture_coverage.json" in publish
-    assert "for folder in " + " ".join(allowed) not in publish or True
     for folder in allowed:
         assert folder in publish
     assert "data/v10_prospective/verified_results.json" not in publish
