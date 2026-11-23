@@ -114,6 +114,31 @@ def assemble(v8, v25, v30, v34, v35, *, now):
     }
 
 
+def classify_openai_http_error(response):
+    """Return only allowlisted diagnostic fields; never persist raw API bodies."""
+    status = getattr(response, "status_code", None)
+    result = {"http_status": status if type(status) is int else None,
+              "error_code": "unavailable", "error_type": "unavailable"}
+    if response is None:
+        return result
+    try:
+        error = response.json().get("error", {})
+        if not isinstance(error, dict):
+            return result
+        codes = {"insufficient_quota", "rate_limit_exceeded",
+                 "billing_hard_limit_reached", "invalid_api_key",
+                 "invalid_request_error"}
+        types = {"insufficient_quota", "rate_limit_exceeded",
+                 "invalid_request_error", "authentication_error"}
+        if error.get("code") in codes:
+            result["error_code"] = error["code"]
+        if error.get("type") in types:
+            result["error_type"] = error["type"]
+    except (ValueError, AttributeError, TypeError):
+        pass
+    return result
+
+
 def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     """One bounded optional API request: recommendations are TEXT ONLY."""
     snapshot = {key: report[key] for key in (
@@ -200,6 +225,8 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         # Even errors count toward the one-per-day attempt budget. Repeated
         # runs may inspect reports, but cannot repeatedly charge the API.
         data["ai_connection"] = previous.get("status", "daily_api_attempt_already_recorded")
+        if isinstance(previous.get("http_error_diagnostic"), dict):
+            data["ai_http_error_diagnostic"] = previous["http_error_diagnostic"]
     else:
         model = (os.getenv("AI_RESEARCH_MODEL") or DEFAULT_AI_MODEL).strip()
         try:
@@ -214,6 +241,7 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
             response = getattr(exc, "response", None)
             http_code = getattr(response, "status_code", None)
             data["ai_connection"] = "api_http_" + str(http_code if type(http_code) is int else "unknown")
+            data["ai_http_error_diagnostic"] = classify_openai_http_error(response)
         except (requests.RequestException, ValueError, KeyError) as exc:
             # Do not publish secret-bearing request details or raw API content.
             data["ai_connection"] = ("api_request_failed_" +
@@ -227,6 +255,8 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
                 "status": data.get("ai_connection", "no_api_result"),
                 "model": model, "max_attempts_per_day": MAX_AI_CALLS_PER_UTC_DAY,
                 "manual_key_rotation_retry": bool(retry_allowed),
+                **({"http_error_diagnostic": data["ai_http_error_diagnostic"]}
+                   if "ai_http_error_diagnostic" in data else {}),
             }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     status = destination / "status.json"
     status.write_text(json.dumps(data, indent=2, sort_keys=True, allow_nan=False) + "\n",
