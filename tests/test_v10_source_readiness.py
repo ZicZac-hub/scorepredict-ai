@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import v10_prospective as v10
-from v10_source_readiness import abstention_reason
+from v10_source_readiness import abstention_reason, history_readiness, team_history_band
 
 
 PAIRS = ((1,2),(3,4),(1,3),(2,4),(1,4),(2,3))
@@ -82,3 +82,54 @@ def test_collector_prefers_precise_subreason_without_changing_api_budget():
     assert "result.get('readiness_reason') or" in source
     assert "research_backfill_limit=_positive_limit" in source
     assert "max_api_calls=_positive_limit" in source
+
+
+def test_verified_club_history_proximity_without_weakened_forecast_gate():
+    now=datetime(2035,1,10,tzinfo=timezone.utc)
+    game=fixture(now)
+    rows=history(now,4)
+    observed=history_readiness(game, rows, rows, now)
+    assert observed["reason"]=="team_history_below_five"
+    assert observed["minimum_team_qualified_matches"] == min(
+        observed["home_qualified_matches"], observed["away_qualified_matches"])
+    assert observed["minimum_missing_to_five"] == (
+        5-observed["minimum_team_qualified_matches"])
+    assert observed["minimum_missing_to_five"] > 0
+    assert observed["league_qualified_matches"] == len(rows)
+    assert team_history_band(observed["minimum_team_qualified_matches"]) in (
+        "0","1-2","3-4")
+    assert observed["unrelated_qualified_matches"] is None
+    assert abstention_reason(game, rows, rows, now)==observed["reason"]
+
+
+def test_history_bins_and_untrusted_sources_are_fail_closed():
+    assert [team_history_band(n) for n in (-1,0,1,2,3,4,5,9,None,True)] == (
+        [None,"0","1-2","1-2","3-4","3-4","5+","5+",None,None])
+    now=datetime(2035,1,10,tzinfo=timezone.utc)
+    game=fixture(now)
+    future=[{**row,"utcDate":(now+timedelta(hours=2)).isoformat()}
+            for row in history(now,50)]
+    report=history_readiness(game,future,future,now)
+    assert report["minimum_team_qualified_matches"]==0
+    assert report["league_qualified_matches"]==0
+    assert report["reason"]=="team_history_below_five"
+    bad=history_readiness(game,[42],[],now)
+    assert bad["reason"]=="unusable_authenticated_history_structure"
+    assert bad["minimum_team_qualified_matches"] is None
+
+
+def test_v8_capture_returns_verified_count_but_never_prediction_on_abstention(
+    monkeypatch,tmp_path):
+    now=datetime(2035,1,10,tzinfo=timezone.utc)
+    game=fixture(now)
+    rows=history(now,4)
+    monkeypatch.setattr(v10,"research_predict",lambda *a,**kw:None)
+    outcome=v10.capture(game,{
+        "history":rows,"league_history":rows,
+        "input_digest":"authentic-asof-source",
+        "as_of_utc":now.isoformat()
+    },now,root=tmp_path,market_calls_remaining=0)
+    assert outcome["v8_recorded"] is False
+    assert outcome["readiness_reason"]=="team_history_below_five"
+    assert outcome["team_history_readiness"]["minimum_missing_to_five"] > 0
+    assert not list(tmp_path.rglob("*.json"))
