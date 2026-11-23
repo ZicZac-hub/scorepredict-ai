@@ -37,13 +37,15 @@ def as_rate(hits, verified):
     return hits / verified if verified else None
 
 
-def assemble(v8, v25, v30, v34, v35, *, now):
+def assemble(v8, v25, v30, v34, v35, *, now, v36=None):
     """Only preexisting independently validated archived report totals."""
     baseline = (v8 or {}).get("observed") or {}
     matched_v8 = (v25 or {}).get("v8") or {}
     matched_v25 = (v25 or {}).get("v25") or {}
     v35 = v35 or {}
     stats = v35.get("methods") or {}
+    v36 = v36 or {}
+    v36stats = v36.get("methods") or {}
     v8n, v8hits = baseline.get("verified_sets", 0), baseline.get("hits", 0)
     matched_n = (v25 or {}).get("verified_matched_pairs", 0)
     original = {
@@ -107,6 +109,20 @@ def assemble(v8, v25, v30, v34, v35, *, now):
             } for k, row in stats.items()},
             "ready_for_separate_production_review": v35.get("ready_for_separate_production_review", []),
         },
+        "v36_challengers": {
+            "frozen_days": v36.get("frozen_prospective_days", 0),
+            "verified_independent_sydney_days": v36.get("verified_independent_sydney_days", 0),
+            "pending_days": v36.get("pending_days", 0),
+            "unique_verified_physical_fixtures": v36.get("unique_verified_physical_fixtures", 0),
+            "methods": {name: {
+                "hits": item.get("hits"),
+                "verified_days": item.get("verified_independent_sydney_days"),
+                "observed_hit_rate": item.get("observed_five_double_hit_rate"),
+                "mean_proper_scores": item.get("mean_proper_scores"),
+            } for name, item in v36stats.items()},
+            "ready_for_separate_production_review": v36.get("ready_for_separate_production_review", []),
+            "research_only_not_live_promoted": True,
+        },
         "next_priority": next_priority,
         "production_model_changed_by_bot": False,
         "ai_research_memo_is_non_executable": True,
@@ -144,7 +160,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     snapshot = {key: report[key] for key in (
         "target_five_double_hit_rate", "integrity", "original_v8_daily_five_doubles",
         "v8_v25_same_pair", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
-        "v35_challengers", "next_priority",
+        "v35_challengers", "v36_challengers", "next_priority",
     )}
     payload = {
         "model": model,
@@ -188,7 +204,7 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         load("data/v30_full_slate_ranking/status.json"),
         load("data/v34_score_error_research/status.json"),
         load("data/v35_continuous_challengers/status.json"),
-        now=clock,
+        now=clock, v36=load("data/v36_prospective_challengers/status.json"),
     )
     destination = Path(root)
     destination.mkdir(parents=True, exist_ok=True)

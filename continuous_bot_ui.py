@@ -32,6 +32,7 @@ def render(st):
     baseline = status.get("original_v8_daily_five_doubles") or {}
     v25 = status.get("v8_v25_same_pair") or {}
     v35 = status.get("v35_challengers") or {}
+    v36 = status.get("v36_challengers") or {}
     cols = st.columns(3)
     cols[0].metric("V8 verified five-double", f"{baseline.get('hits',0)}/{baseline.get('verified_sets',0)}", _pct(baseline.get("hit_rate")))
     cols[1].metric("V25 same-pair wins", f"{v25.get('v25_wins',0)}/{v25.get('verified_same_pair_sets',0)}")
@@ -53,6 +54,30 @@ def render(st):
         st.dataframe(rows, hide_index=True, use_container_width=True)
     else:
         st.caption("No qualified V35 pairs have been frozen and verified yet. Missing results are not failures.")
+    st.markdown("#### V36 prospective score-tail research")
+    st.caption("Research only. New tickets are frozen before kickoff from the same original V28 pair; missing finals are pending, never losses.")
+    st.write(
+        "Frozen days: " + str(v36.get("frozen_days", 0)) +
+        " · Independently verified Sydney days: " +
+        str(v36.get("verified_independent_sydney_days", 0)) +
+        " · Pending: " + str(v36.get("pending_days", 0))
+    )
+    v36_rows = []
+    for name, result in (v36.get("methods") or {}).items():
+        scores = result.get("mean_proper_scores") or {}
+        v36_rows.append({
+            "Method": name.replace("_", " "),
+            "Verified days": int(result.get("verified_days") or 0),
+            "Five-double hits": int(result.get("hits") or 0),
+            "Observed hit rate": _pct(result.get("observed_hit_rate")),
+            "Mean exact-score log loss": scores.get("exact_score_log_loss"),
+            "Mean multiclass Brier": scores.get("multiclass_score_brier"),
+            "High-goal Brier": scores.get("over_3_5_brier"),
+        })
+    if v36_rows:
+        st.dataframe(v36_rows, hide_index=True, use_container_width=True)
+    else:
+        st.caption("No independently verified future-frozen V36 outcomes yet.")
     st.write("**Next research priority:** " + str(status.get("next_priority", "Collect verified, frozen outcomes.")))
     st.caption("Source-integrity status: " + str(status.get("integrity", "Unknown")))
     st.caption("OpenAI research connection: " + str(status.get("ai_connection", "Not configured")))

@@ -13,6 +13,8 @@ on:
     paths:
       - 'continuous_accuracy_bot.py'
       - 'v35_continuous_double_trials.py'
+      - 'v36_tail_calibration_research.py'
+      - 'v36_prospective_double_trials.py'
       - 'continuous_bot_ui.py'
       - '.github/workflows/continuous-five-double-bot.yml'
   schedule:
@@ -46,13 +48,16 @@ jobs:
       - name: Install bounded numerical/test dependencies
         run: python -m pip install -r requirements.txt 'pytest>=8,<10' 'scipy>=1.11,<2'
       - name: Test the bot and candidate score methods without provider or AI calls
-        run: python -m pytest -q tests/test_continuous_accuracy_bot.py
+        run: python -m pytest -q tests/test_continuous_accuracy_bot.py tests/test_v36_tail_calibration_research.py tests/test_v36_prospective_double_trials.py
       - name: Recheck original V34 frozen score failures and source integrity
         run: python v34_score_error_research.py
       - name: Verify and only prospectively freeze NEW V35 methods
         # No new external football data request. Reverify the immutable V28
         # catalog against original receipts and record all six methods.
         run: python v35_continuous_double_trials.py
+      - name: Freeze only future eligible V36 five-double methods and independently verify
+        # Same original V28 pair, no historical issue or external data calls.
+        run: python v36_prospective_double_trials.py
       - name: Generate watchdog report and optional bounded OpenAI research memo
         # A manual owner dispatch can request one extra attempt ONLY for a
         # saved API 401 after key rotation, and never for a 429.
@@ -72,6 +77,7 @@ jobs:
           from pathlib import Path
           b=json.loads(Path('data/autobot/status.json').read_text())
           v=json.loads(Path('data/v35_continuous_challengers/status.json').read_text())
+          w=json.loads(Path('data/v36_prospective_challengers/status.json').read_text())
           assert b['priority']=='five_exact_score_doubles'
           assert not b['production_model_changed_by_bot']
           assert b['no_claimed_70_percent_without_independent_evidence']
@@ -80,8 +86,15 @@ jobs:
           assert v['late_and_missing_results_remain_pending']
           assert not v['invalid_or_altered_v35_sets_excluded']
           assert not v['original_v28_rejected_or_tampered']
+          assert w['same_pair_comparisons_only']
+          assert w['no_hindsight_ticket_reselection']
+          assert w['no_live_model_change']
+          assert w['not_validated_at_seventy_percent']
+          assert not w['invalid_or_tampered_v36_sets_excluded']
+          assert not w['original_v28_rejected_or_tampered']
           print('Verified V35 paired days:',v['verified_same_pair_days'])
           print('Research methods:',list(v['methods']))
+          print('Verified independent V36 days:',w['verified_independent_sydney_days'])
           PY
       - name: Persist immutable new pre-match candidates and safe research reports
         # Never auto-change any production forecasting code. Only these
@@ -89,7 +102,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/autobot/ data/v35_continuous_challengers/ data/v34_score_error_research/status.json
+          git add data/autobot/ data/v35_continuous_challengers/ data/v36_prospective_challengers/ data/v34_score_error_research/status.json
           if git diff --cached --quiet; then
             echo 'No new bot research status'
             exit 0
@@ -109,6 +122,8 @@ jobs:
             data/autobot/openai_retry_*.json
             data/v34_score_error_research/status.json
             data/v35_continuous_challengers/status.json
+            data/v36_prospective_challengers/status.json
+            data/v36_prospective_challengers/sets/*.json
             data/v35_continuous_challengers/sets/*.json
           if-no-files-found: warn
           retention-days: 30
