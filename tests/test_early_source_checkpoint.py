@@ -44,12 +44,13 @@ def test_early_checkpoint_never_stages_results_or_rewrites_old_forecasts():
     allowed = {
         "data/v10_prospective/forecasts",
         "data/prospective_ledger/forecasts",
-        "data/prematch/snapshots",
-        "data/daily_picks",
     }
     assert "git add -- data/prospective_ledger/capture_coverage.json" in publish
+    assert "for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts; do" in publish
     for folder in allowed:
         assert folder in publish
+    assert "git add -- data/prematch/snapshots" not in publish
+    assert "git add -- data/daily_picks" not in publish
     assert "data/v10_prospective/verified_results.json" not in publish
     assert "data/prematch/verified_results.json" not in publish
     assert "git rebase --autostash origin/main" in publish
