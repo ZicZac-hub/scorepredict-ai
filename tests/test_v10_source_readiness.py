@@ -56,7 +56,7 @@ def test_v8_abstentions_do_not_look_ahead_or_trust_bad_history():
     assert abstention_reason(game,future,future,now)=="team_history_below_five"
     assert abstention_reason(game,past,past,now+timedelta(days=3))==(
         "not_before_original_kickoff")
-    assert abstention_reason(game,[{"malformed":True}]*50,[],now)==(
+    assert abstention_reason(game,[42]*50,[],now)==(
         "unusable_authenticated_history_structure")
 
 
