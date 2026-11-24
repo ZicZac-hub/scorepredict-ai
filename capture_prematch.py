@@ -16,6 +16,7 @@ from api_football import LEAGUES, _convert, _request, ProviderQuotaError, Provid
 from forecast_model import predict
 from history_pipeline import load_evidence
 from v10_source_readiness import team_history_band
+from uefa_history_coverage import audit_history
 
 CODES = ("PL", "PD", "BL1", "SA", "FL1", "CL", "EL", "DED", "PPL", "BSA", "ELC")
 LOOKAHEAD_DAYS = 14
@@ -225,7 +226,8 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         'v8_min_team_history_bins_by_league':{},
         'v8_qualified_home_history_bins_by_league':{},
         'v8_qualified_away_history_bins_by_league':{},
-        'v10_shadow_errors':[]}
+        'v10_shadow_errors':[], 'uefa_two_season_history_coverage':[],
+        'uefa_history_audit_errors':[]}
     # Recover the immutable outbox before deciding that every horizon is done.
     # A database outage must not strand old files simply because no new pair is due.
     store = None
@@ -321,6 +323,15 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                     raise CaptureBudgetExceeded('History lookup reached the configured provider-call budget')
                 if any('history unavailable' in warning for warning in evidence.get('warnings', [])):
                     diagnostics['history_source_errors'].append({'fixture_id':fixture['id'],'provider':fixture.get('provider'),'reason':'one_or_more_history_sources_unavailable'})
+                # Research-only: expose which seasons supplied qualified history,
+                # without changing forecast eligibility or consuming API calls.
+                try:
+                    history_audit = audit_history(fixture, evidence, history_cache)
+                    if history_audit is not None:
+                        diagnostics['uefa_two_season_history_coverage'].append(history_audit)
+                except (ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+                    diagnostics['uefa_history_audit_errors'].append({
+                        'fixture_id': str(fixture['id']), 'error_type': type(exc).__name__})
                 # Save the new independent research forecast BEFORE the old
                 # baseline gate. A sparse v6/v7 forecast must not erase a
                 # separately valid v8 candidate, and vice versa.
