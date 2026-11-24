@@ -280,3 +280,20 @@ def test_machine_rounding_tolerance_preserves_authentic_result_but_rejects_proba
     assert evaluate(paths)["valid_opportunities"] == 0
     assert not study._same_calculation(True, 1)
     assert not study._same_calculation(float("nan"), float("nan"))
+
+
+def test_v3_registration_keeps_previous_version_files_immutable(tmp_path):
+    assert study.ROOT.name == "professional_paired_study_v3"
+    assert study.VERSION == "professional-fixed-pair-ablation-v3"
+    previous = tmp_path/"professional_paired_study_v2"
+    (previous/"trials").mkdir(parents=True)
+    old_protocol = previous/"protocol.json"
+    old_trial = previous/"trials"/"2026-11-23.json"
+    old_protocol.write_bytes(b'{"version":"v2"}')
+    old_trial.write_bytes(b'{"original":true}')
+    active = tmp_path/study.ROOT.name
+    record = study.register_protocol(root=active)
+    assert record["protocol"]["version"] == study.VERSION
+    assert old_protocol.read_bytes() == b'{"version":"v2"}'
+    assert old_trial.read_bytes() == b'{"original":true}'
+    assert not (active/"trials").exists()

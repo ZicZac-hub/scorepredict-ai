@@ -32,7 +32,9 @@ def _count(value):
 def render(st, root=Path("data"), *, now=None):
     """Re-evaluate immutable records; never display performance.json as proof."""
     base = Path(root)
-    study_root = base/"professional_paired_study"
+    # Never substitute an older cohort for the currently registered study.
+    from professional_paired_study import ROOT as ACTIVE_ROOT
+    study_root = base/ACTIVE_ROOT.name
     protocol_path = study_root/"protocol.json"
     with st.expander("Prospective five-double evidence · same original pair"):
         st.caption("Original V8 control, market and historical xG variants use the same "

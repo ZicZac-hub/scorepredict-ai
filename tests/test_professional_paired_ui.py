@@ -24,7 +24,7 @@ def app_for(tmp_path):
 
 
 def protocol(tmp_path):
-    path=tmp_path/"professional_paired_study"
+    path=tmp_path/"professional_paired_study_v3"
     path.mkdir()
     (path/"protocol.json").write_text(json.dumps({"fixed": True}))
     return path
@@ -38,7 +38,7 @@ def test_missing_protocol_does_not_create_a_study_or_accuracy(tmp_path, monkeypa
     assert not app.exception
     assert any("waiting for its fixed protocol" in text.value for text in app.info)
     assert len(app.dataframe)==0
-    assert not (tmp_path/"professional_paired_study").exists()
+    assert not (tmp_path/"professional_paired_study_v3").exists()
 
 
 def test_no_settled_results_ignore_fabricated_cached_performance(tmp_path, monkeypatch):
@@ -128,7 +128,7 @@ def test_real_empty_study_runtime_is_read_only_and_makes_no_provider_calls(tmp_p
     import api_football
     import professional_paired_study as study
     import requests
-    path=tmp_path/"professional_paired_study"
+    path=tmp_path/"professional_paired_study_v3"
     study.register_protocol(root=path)
     original=(path/"protocol.json").read_bytes()
     def forbidden(*args, **kwargs):
