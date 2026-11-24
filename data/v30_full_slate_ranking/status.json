@@ -1,7 +1,7 @@
 {
-  "candidate_pair_rows_awaiting_verified_finals": 56,
-  "candidate_pair_rows_independently_verified": 216,
-  "complete_day_unweighted_mean_candidate_hit_fraction": 0.015873015873015872,
+  "candidate_pair_rows_awaiting_verified_finals": 28,
+  "candidate_pair_rows_independently_verified": 244,
+  "complete_day_unweighted_mean_candidate_hit_fraction": 0.03869047619047619,
   "days": [
     {
       "candidate_count": 3,
@@ -5676,72 +5676,836 @@
     {
       "candidate_count": 28,
       "candidate_hit_rows_are_correlated_not_independent_trials": true,
-      "candidate_pairs_pending": 28,
-      "candidate_pairs_verified": 0,
-      "candidate_rows": [],
-      "complete_slate": false,
-      "exploratory_verified_candidate_rows": {
-        "mean_v8_reference_mass_for_robust_five": null,
-        "model_expected_robust_hits_sum_correlated": null,
-        "observed_robust_five_fraction": null,
-        "observed_robust_five_hits": 0,
-        "observed_v8_optimal_five_hits": 0,
-        "verified_pair_rows": 0
-      },
-      "frozen_source_count": 8,
-      "missing_fixture_evidence": [
+      "candidate_pairs_pending": 0,
+      "candidate_pairs_verified": 28,
+      "candidate_rows": [
         {
-          "fixture_id": "1563275",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "0-4"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1563276"
+            ]
+          ],
+          "quality_rank": 13,
+          "quality_rank_score_uncalibrated": 0.050611599364,
+          "reference_robust_five_mass_under_v8": 0.044756340008,
+          "reference_v8_optimal_five_mass": 0.054515105601,
+          "robust_five_hit": false,
+          "robustness_rank": 12,
+          "robustness_rank_score_uncalibrated": 0.042372342161,
+          "v8_baseline_five_hit": false
         },
         {
-          "fixture_id": "1563276",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "4-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1563277"
+            ]
+          ],
+          "quality_rank": 1,
+          "quality_rank_score_uncalibrated": 0.074978778847,
+          "reference_robust_five_mass_under_v8": 0.070265117832,
+          "reference_v8_optimal_five_mass": 0.078121219523,
+          "robust_five_hit": false,
+          "robustness_rank": 1,
+          "robustness_rank_score_uncalibrated": 0.065353859336,
+          "v8_baseline_five_hit": false
         },
         {
-          "fixture_id": "1563277",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "2-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1563278"
+            ]
+          ],
+          "quality_rank": 6,
+          "quality_rank_score_uncalibrated": 0.059250193395,
+          "reference_robust_five_mass_under_v8": 0.054961829525,
+          "reference_v8_optimal_five_mass": 0.062109102642,
+          "robust_five_hit": false,
+          "robustness_rank": 5,
+          "robustness_rank_score_uncalibrated": 0.049983086744,
+          "v8_baseline_five_hit": true
         },
         {
-          "fixture_id": "1563278",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1563279"
+            ]
+          ],
+          "quality_rank": 7,
+          "quality_rank_score_uncalibrated": 0.057086563818,
+          "reference_robust_five_mass_under_v8": 0.052431959409,
+          "reference_v8_optimal_five_mass": 0.060189633424,
+          "robust_five_hit": false,
+          "robustness_rank": 7,
+          "robustness_rank_score_uncalibrated": 0.047242944518,
+          "v8_baseline_five_hit": true
         },
         {
-          "fixture_id": "1563279",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1563280"
+            ]
+          ],
+          "quality_rank": 9,
+          "quality_rank_score_uncalibrated": 0.055813007262,
+          "reference_robust_five_mass_under_v8": 0.053372273122,
+          "reference_v8_optimal_five_mass": 0.057440163355,
+          "robust_five_hit": false,
+          "robustness_rank": 10,
+          "robustness_rank_score_uncalibrated": 0.044174531675,
+          "v8_baseline_five_hit": false
         },
         {
-          "fixture_id": "1563280",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1563281"
+            ]
+          ],
+          "quality_rank": 3,
+          "quality_rank_score_uncalibrated": 0.063292311244,
+          "reference_robust_five_mass_under_v8": 0.059115257175,
+          "reference_v8_optimal_five_mass": 0.066077013957,
+          "robust_five_hit": false,
+          "robustness_rank": 3,
+          "robustness_rank_score_uncalibrated": 0.05367017932,
+          "v8_baseline_five_hit": true
         },
         {
-          "fixture_id": "1563281",
-          "kickoff_utc": "2026-11-24T19:45:00+00:00",
-          "provider": "API-Football",
-          "status": "verified_regulation_final_unavailable"
+          "actual_scores": [
+            "1-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563275"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 18,
+          "quality_rank_score_uncalibrated": 0.04447752427,
+          "reference_robust_five_mass_under_v8": 0.040248673309,
+          "reference_v8_optimal_five_mass": 0.047296758245,
+          "robust_five_hit": false,
+          "robustness_rank": 17,
+          "robustness_rank_score_uncalibrated": 0.036660310271,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "0-4",
+            "4-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563276"
+            ],
+            [
+              "API-Football",
+              "1563277"
+            ]
+          ],
+          "quality_rank": 10,
+          "quality_rank_score_uncalibrated": 0.05287910675,
+          "reference_robust_five_mass_under_v8": 0.047437107552,
+          "reference_v8_optimal_five_mass": 0.056507106216,
+          "robust_five_hit": false,
+          "robustness_rank": 9,
+          "robustness_rank_score_uncalibrated": 0.044808710941,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "0-4",
+            "2-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563276"
+            ],
+            [
+              "API-Football",
+              "1563278"
+            ]
+          ],
+          "quality_rank": 21,
+          "quality_rank_score_uncalibrated": 0.042426128155,
+          "reference_robust_five_mass_under_v8": 0.038843715923,
+          "reference_v8_optimal_five_mass": 0.044814402976,
+          "robust_five_hit": false,
+          "robustness_rank": 20,
+          "robustness_rank_score_uncalibrated": 0.034080064105,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "0-4",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563276"
+            ],
+            [
+              "API-Football",
+              "1563279"
+            ]
+          ],
+          "quality_rank": 22,
+          "quality_rank_score_uncalibrated": 0.040965500401,
+          "reference_robust_five_mass_under_v8": 0.036655671095,
+          "reference_v8_optimal_five_mass": 0.043838719939,
+          "robust_five_hit": false,
+          "robustness_rank": 22,
+          "robustness_rank_score_uncalibrated": 0.032042920163,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "0-4",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563276"
+            ],
+            [
+              "API-Football",
+              "1563280"
+            ]
+          ],
+          "quality_rank": 23,
+          "quality_rank_score_uncalibrated": 0.040494605387,
+          "reference_robust_five_mass_under_v8": 0.03837948333,
+          "reference_v8_optimal_five_mass": 0.041904686759,
+          "robust_five_hit": false,
+          "robustness_rank": 24,
+          "robustness_rank_score_uncalibrated": 0.02947600845,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "0-4",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563276"
+            ],
+            [
+              "API-Football",
+              "1563281"
+            ]
+          ],
+          "quality_rank": 19,
+          "quality_rank_score_uncalibrated": 0.044014099535,
+          "reference_robust_five_mass_under_v8": 0.036913214683,
+          "reference_v8_optimal_five_mass": 0.04874802277,
+          "robust_five_hit": false,
+          "robustness_rank": 18,
+          "robustness_rank_score_uncalibrated": 0.036316873063,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "0-4",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563276"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 28,
+          "quality_rank_score_uncalibrated": 0.032234485196,
+          "reference_robust_five_mass_under_v8": 0.029565454879,
+          "reference_v8_optimal_five_mass": 0.034013838741,
+          "robust_five_hit": false,
+          "robustness_rank": 28,
+          "robustness_rank_score_uncalibrated": 0.023975271999,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "4-0",
+            "2-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563277"
+            ],
+            [
+              "API-Football",
+              "1563278"
+            ]
+          ],
+          "quality_rank": 4,
+          "quality_rank_score_uncalibrated": 0.062156986407,
+          "reference_robust_five_mass_under_v8": 0.058858177181,
+          "reference_v8_optimal_five_mass": 0.064356192558,
+          "robust_five_hit": false,
+          "robustness_rank": 4,
+          "robustness_rank_score_uncalibrated": 0.053077256828,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "4-0",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563277"
+            ],
+            [
+              "API-Football",
+              "1563279"
+            ]
+          ],
+          "quality_rank": 5,
+          "quality_rank_score_uncalibrated": 0.059696286053,
+          "reference_robust_five_mass_under_v8": 0.055007098722,
+          "reference_v8_optimal_five_mass": 0.06282241094,
+          "robust_five_hit": false,
+          "robustness_rank": 6,
+          "robustness_rank_score_uncalibrated": 0.049938493837,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "4-0",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563277"
+            ],
+            [
+              "API-Football",
+              "1563280"
+            ]
+          ],
+          "quality_rank": 8,
+          "quality_rank_score_uncalibrated": 0.056421355188,
+          "reference_robust_five_mass_under_v8": 0.051363577171,
+          "reference_v8_optimal_five_mass": 0.0597932072,
+          "robust_five_hit": false,
+          "robustness_rank": 8,
+          "robustness_rank_score_uncalibrated": 0.046776719684,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "4-0",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563277"
+            ],
+            [
+              "API-Football",
+              "1563281"
+            ]
+          ],
+          "quality_rank": 2,
+          "quality_rank_score_uncalibrated": 0.066771487873,
+          "reference_robust_five_mass_under_v8": 0.06365483163,
+          "reference_v8_optimal_five_mass": 0.068849258702,
+          "robust_five_hit": false,
+          "robustness_rank": 2,
+          "robustness_rank_score_uncalibrated": 0.057475938596,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "4-0",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563277"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 16,
+          "quality_rank_score_uncalibrated": 0.046831430149,
+          "reference_robust_five_mass_under_v8": 0.043539419162,
+          "reference_v8_optimal_five_mass": 0.049026104141,
+          "robust_five_hit": false,
+          "robustness_rank": 14,
+          "robustness_rank_score_uncalibrated": 0.039201730637,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "2-1",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563278"
+            ],
+            [
+              "API-Football",
+              "1563279"
+            ]
+          ],
+          "quality_rank": 15,
+          "quality_rank_score_uncalibrated": 0.047163511074,
+          "reference_robust_five_mass_under_v8": 0.04299772156,
+          "reference_v8_optimal_five_mass": 0.049940704084,
+          "robust_five_hit": false,
+          "robustness_rank": 16,
+          "robustness_rank_score_uncalibrated": 0.03766668827,
+          "v8_baseline_five_hit": true
+        },
+        {
+          "actual_scores": [
+            "2-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563278"
+            ],
+            [
+              "API-Football",
+              "1563280"
+            ]
+          ],
+          "quality_rank": 17,
+          "quality_rank_score_uncalibrated": 0.046287167948,
+          "reference_robust_five_mass_under_v8": 0.043618678155,
+          "reference_v8_optimal_five_mass": 0.048066161143,
+          "robust_five_hit": false,
+          "robustness_rank": 19,
+          "robustness_rank_score_uncalibrated": 0.034730475743,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "2-1",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563278"
+            ],
+            [
+              "API-Football",
+              "1563281"
+            ]
+          ],
+          "quality_rank": 11,
+          "quality_rank_score_uncalibrated": 0.052043390524,
+          "reference_robust_five_mass_under_v8": 0.046093872232,
+          "reference_v8_optimal_five_mass": 0.056009736053,
+          "robust_five_hit": false,
+          "robustness_rank": 11,
+          "robustness_rank_score_uncalibrated": 0.04260565008,
+          "v8_baseline_five_hit": true
+        },
+        {
+          "actual_scores": [
+            "2-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563278"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 25,
+          "quality_rank_score_uncalibrated": 0.036809837636,
+          "reference_robust_five_mass_under_v8": 0.034233485719,
+          "reference_v8_optimal_five_mass": 0.03852740558,
+          "robust_five_hit": false,
+          "robustness_rank": 25,
+          "robustness_rank_score_uncalibrated": 0.028762535305,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "1-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563279"
+            ],
+            [
+              "API-Football",
+              "1563280"
+            ]
+          ],
+          "quality_rank": 20,
+          "quality_rank_score_uncalibrated": 0.043464671575,
+          "reference_robust_five_mass_under_v8": 0.039374925,
+          "reference_v8_optimal_five_mass": 0.046191169291,
+          "robust_five_hit": true,
+          "robustness_rank": 21,
+          "robustness_rank_score_uncalibrated": 0.033276289062,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "1-1",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563279"
+            ],
+            [
+              "API-Football",
+              "1563281"
+            ]
+          ],
+          "quality_rank": 12,
+          "quality_rank_score_uncalibrated": 0.051335476304,
+          "reference_robust_five_mass_under_v8": 0.04866761498,
+          "reference_v8_optimal_five_mass": 0.053114050521,
+          "robust_five_hit": true,
+          "robustness_rank": 13,
+          "robustness_rank_score_uncalibrated": 0.040492770913,
+          "v8_baseline_five_hit": true
+        },
+        {
+          "actual_scores": [
+            "1-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563279"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 26,
+          "quality_rank_score_uncalibrated": 0.036500205547,
+          "reference_robust_five_mass_under_v8": 0.034199429301,
+          "reference_v8_optimal_five_mass": 0.038034056378,
+          "robust_five_hit": false,
+          "robustness_rank": 26,
+          "robustness_rank_score_uncalibrated": 0.026596271075,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "1-0",
+            "1-1"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563280"
+            ],
+            [
+              "API-Football",
+              "1563281"
+            ]
+          ],
+          "quality_rank": 14,
+          "quality_rank_score_uncalibrated": 0.04911300018,
+          "reference_robust_five_mass_under_v8": 0.045956224142,
+          "reference_v8_optimal_five_mass": 0.051217517539,
+          "robust_five_hit": true,
+          "robustness_rank": 15,
+          "robustness_rank_score_uncalibrated": 0.038678138139,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "1-0",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563280"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 27,
+          "quality_rank_score_uncalibrated": 0.034081896502,
+          "reference_robust_five_mass_under_v8": 0.030888471535,
+          "reference_v8_optimal_five_mass": 0.03621084648,
+          "robust_five_hit": false,
+          "robustness_rank": 27,
+          "robustness_rank_score_uncalibrated": 0.024157060776,
+          "v8_baseline_five_hit": false
+        },
+        {
+          "actual_scores": [
+            "1-1",
+            "1-0"
+          ],
+          "fixture_keys": [
+            [
+              "API-Football",
+              "1563281"
+            ],
+            [
+              "API-Football",
+              "1635641"
+            ]
+          ],
+          "quality_rank": 24,
+          "quality_rank_score_uncalibrated": 0.039933748801,
+          "reference_robust_five_mass_under_v8": 0.037055236108,
+          "reference_v8_optimal_five_mass": 0.041852757263,
+          "robust_five_hit": false,
+          "robustness_rank": 23,
+          "robustness_rank_score_uncalibrated": 0.031152063667,
+          "v8_baseline_five_hit": false
         }
       ],
+      "complete_slate": true,
+      "exploratory_verified_candidate_rows": {
+        "mean_v8_reference_mass_for_robust_five": 0.04565910215857143,
+        "model_expected_robust_hits_sum_correlated": 1.27845486044,
+        "observed_robust_five_fraction": 0.10714285714285714,
+        "observed_robust_five_hits": 3,
+        "observed_v8_optimal_five_hits": 6,
+        "verified_pair_rows": 28
+      },
+      "frozen_source_count": 8,
+      "full_slate_diagnostics": {
+        "all_candidate_pairs": {
+          "mean_v8_reference_mass_for_robust_five": 0.04565910215857143,
+          "model_expected_robust_hits_sum_correlated": 1.27845486044,
+          "observed_robust_five_fraction": 0.10714285714285714,
+          "observed_robust_five_hits": 3,
+          "observed_v8_optimal_five_hits": 6,
+          "verified_pair_rows": 28
+        },
+        "equal_budget_top_k_comparisons": {
+          "1": {
+            "correlated_matches_preclude_independent_pair_inference": true,
+            "not_comparable_to_one_five_double_ticket_set": false,
+            "quality_ranked_pairs": {
+              "any_pair_five_double_hit": false,
+              "model_expected_hits_sum_not_independent": 0.070265117832,
+              "number_of_hit_pairs": 0,
+              "pair_count": 1,
+              "ticket_budget_if_all_pairs_used": 5,
+              "unique_underlying_fixtures": 2
+            },
+            "robustness_ranked_pairs": {
+              "any_pair_five_double_hit": false,
+              "model_expected_hits_sum_not_independent": 0.070265117832,
+              "number_of_hit_pairs": 0,
+              "pair_count": 1,
+              "ticket_budget_if_all_pairs_used": 5,
+              "unique_underlying_fixtures": 2
+            },
+            "top_k": 1
+          },
+          "10": {
+            "correlated_matches_preclude_independent_pair_inference": true,
+            "not_comparable_to_one_five_double_ticket_set": true,
+            "quality_ranked_pairs": {
+              "any_pair_five_double_hit": false,
+              "model_expected_hits_sum_not_independent": 0.566467229319,
+              "number_of_hit_pairs": 0,
+              "pair_count": 10,
+              "ticket_budget_if_all_pairs_used": 50,
+              "unique_underlying_fixtures": 7
+            },
+            "robustness_ranked_pairs": {
+              "any_pair_five_double_hit": false,
+              "model_expected_hits_sum_not_independent": 0.566467229319,
+              "number_of_hit_pairs": 0,
+              "pair_count": 10,
+              "ticket_budget_if_all_pairs_used": 50,
+              "unique_underlying_fixtures": 7
+            },
+            "top_k": 10
+          },
+          "5": {
+            "correlated_matches_preclude_independent_pair_inference": true,
+            "not_comparable_to_one_five_double_ticket_set": true,
+            "quality_ranked_pairs": {
+              "any_pair_five_double_hit": false,
+              "model_expected_hits_sum_not_independent": 0.30690048254,
+              "number_of_hit_pairs": 0,
+              "pair_count": 5,
+              "ticket_budget_if_all_pairs_used": 25,
+              "unique_underlying_fixtures": 5
+            },
+            "robustness_ranked_pairs": {
+              "any_pair_five_double_hit": false,
+              "model_expected_hits_sum_not_independent": 0.306855213343,
+              "number_of_hit_pairs": 0,
+              "pair_count": 5,
+              "ticket_budget_if_all_pairs_used": 25,
+              "unique_underlying_fixtures": 4
+            },
+            "top_k": 5
+          }
+        },
+        "full_slate_learning_only_not_independent_policy_win_rate": true,
+        "original_quality_selected_pair_keys": [
+          [
+            "API-Football",
+            "1563275"
+          ],
+          [
+            "API-Football",
+            "1563277"
+          ]
+        ],
+        "original_robustness_control_pair_keys": [
+          [
+            "API-Football",
+            "1563275"
+          ],
+          [
+            "API-Football",
+            "1563277"
+          ]
+        ],
+        "predefined_quality_quartiles": [
+          {
+            "mean_v8_reference_mass_for_robust_five": 0.059184895924857144,
+            "model_expected_robust_hits_sum_correlated": 0.414294271474,
+            "observed_robust_five_fraction": 0.0,
+            "observed_robust_five_hits": 0,
+            "observed_v8_optimal_five_hits": 3,
+            "quality_rank_quartile": 1,
+            "verified_pair_rows": 7
+          },
+          {
+            "mean_v8_reference_mass_for_robust_five": 0.04823528702957142,
+            "model_expected_robust_hits_sum_correlated": 0.33764700920699997,
+            "observed_robust_five_fraction": 0.2857142857142857,
+            "observed_robust_five_hits": 2,
+            "observed_v8_optimal_five_hits": 2,
+            "quality_rank_quartile": 2,
+            "verified_pair_rows": 7
+          },
+          {
+            "mean_v8_reference_mass_for_robust_five": 0.04079090682742857,
+            "model_expected_robust_hits_sum_correlated": 0.285536347792,
+            "observed_robust_five_fraction": 0.14285714285714285,
+            "observed_robust_five_hits": 1,
+            "observed_v8_optimal_five_hits": 1,
+            "quality_rank_quartile": 3,
+            "verified_pair_rows": 7
+          },
+          {
+            "mean_v8_reference_mass_for_robust_five": 0.03442531885242857,
+            "model_expected_robust_hits_sum_correlated": 0.240977231967,
+            "observed_robust_five_fraction": 0.0,
+            "observed_robust_five_hits": 0,
+            "observed_v8_optimal_five_hits": 0,
+            "quality_rank_quartile": 4,
+            "verified_pair_rows": 7
+          }
+        ]
+      },
+      "missing_fixture_evidence": [],
       "no_forecasts_created_during_grading": true,
       "original_candidate_catalog_sha256": "958668b7738f8dbcab86135b1475c72291b4de52062ca4cb533cbbc2c08a09ce",
       "original_cutoff_utc": "2026-11-23T19:50:51.045352+00:00",
       "original_issued_at_utc": "2026-11-23T19:50:52.110454+00:00",
       "original_policy": "FROZEN",
-      "status": "awaiting_verified_finals",
+      "status": "complete_verified_catalog",
       "sydney_day": "2026-11-25",
-      "unique_fixtures_missing_verified_final": 7,
-      "unique_fixtures_verified": 1
+      "unique_fixtures_missing_verified_final": 0,
+      "unique_fixtures_verified": 8
     },
     {
       "candidate_count": 28,
@@ -5820,11 +6584,11 @@
       "unique_fixtures_verified": 0
     }
   ],
-  "days_still_missing_results": 2,
-  "days_with_some_verified_pairs": 3,
-  "evaluated_at_utc": "2026-11-24T23:16:00.567863+00:00",
+  "days_still_missing_results": 1,
+  "days_with_some_verified_pairs": 4,
+  "evaluated_at_utc": "2026-11-24T23:19:53.538119+00:00",
   "frozen_candidate_pair_rows": 272,
-  "fully_verified_slate_days": 3,
+  "fully_verified_slate_days": 4,
   "initial_full_slate_day_review_target": 30,
   "initial_review_ready": false,
   "invalid_independent_final_sources": {},

@@ -1230,6 +1230,8 @@
       "checkpoints": {
         "quality": {
           "1": {
+            "bottom_any_hit": false,
+            "bottom_hit_pairs_correlated": 0,
             "original_bottom_pairs": [
               [
                 [
@@ -1254,14 +1256,19 @@
                 ]
               ]
             ],
-            "pending_bottom_pair_results": 1,
-            "pending_top_pair_results": 1,
+            "pending_bottom_pair_results": 0,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 1,
             "requested_pairs_per_arm": 1,
-            "status": "pending",
-            "tickets_per_arm": 5
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 5,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": 0.0
           },
           "10": {
+            "bottom_any_hit": true,
+            "bottom_hit_pairs_correlated": 1,
             "original_bottom_pairs": [
               [
                 [
@@ -1466,14 +1473,19 @@
                 ]
               ]
             ],
-            "pending_bottom_pair_results": 10,
-            "pending_top_pair_results": 10,
+            "pending_bottom_pair_results": 0,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 10,
             "requested_pairs_per_arm": 10,
-            "status": "pending",
-            "tickets_per_arm": 50
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 50,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": -0.1
           },
           "5": {
+            "bottom_any_hit": false,
+            "bottom_hit_pairs_correlated": 0,
             "original_bottom_pairs": [
               [
                 [
@@ -1578,16 +1590,21 @@
                 ]
               ]
             ],
-            "pending_bottom_pair_results": 5,
-            "pending_top_pair_results": 5,
+            "pending_bottom_pair_results": 0,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 5,
             "requested_pairs_per_arm": 5,
-            "status": "pending",
-            "tickets_per_arm": 25
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 25,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": 0.0
           }
         },
         "robustness": {
           "1": {
+            "bottom_any_hit": false,
+            "bottom_hit_pairs_correlated": 0,
             "original_bottom_pairs": [
               [
                 [
@@ -1612,14 +1629,19 @@
                 ]
               ]
             ],
-            "pending_bottom_pair_results": 1,
-            "pending_top_pair_results": 1,
+            "pending_bottom_pair_results": 0,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 1,
             "requested_pairs_per_arm": 1,
-            "status": "pending",
-            "tickets_per_arm": 5
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 5,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": 0.0
           },
           "10": {
+            "bottom_any_hit": true,
+            "bottom_hit_pairs_correlated": 1,
             "original_bottom_pairs": [
               [
                 [
@@ -1824,14 +1846,19 @@
                 ]
               ]
             ],
-            "pending_bottom_pair_results": 10,
-            "pending_top_pair_results": 10,
+            "pending_bottom_pair_results": 0,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 10,
             "requested_pairs_per_arm": 10,
-            "status": "pending",
-            "tickets_per_arm": 50
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 50,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": -0.1
           },
           "5": {
+            "bottom_any_hit": false,
+            "bottom_hit_pairs_correlated": 0,
             "original_bottom_pairs": [
               [
                 [
@@ -1936,20 +1963,23 @@
                 ]
               ]
             ],
-            "pending_bottom_pair_results": 5,
-            "pending_top_pair_results": 5,
+            "pending_bottom_pair_results": 0,
+            "pending_top_pair_results": 0,
             "predeclared_pairs_per_arm": 5,
             "requested_pairs_per_arm": 5,
-            "status": "pending",
-            "tickets_per_arm": 25
+            "status": "fully_verified_original_checkpoint",
+            "tickets_per_arm": 25,
+            "top_any_hit": false,
+            "top_hit_pairs_correlated": 0,
+            "top_minus_bottom_pair_fraction_descriptive": 0.0
           }
         }
       },
-      "full_slate_verified": false,
+      "full_slate_verified": true,
       "original_candidate_catalog_sha256": "958668b7738f8dbcab86135b1475c72291b4de52062ca4cb533cbbc2c08a09ce",
       "original_candidate_pairs": 28,
       "sydney_day": "2026-11-25",
-      "verified_candidate_pair_results_correlated": 0
+      "verified_candidate_pair_results_correlated": 28
     },
     {
       "checkpoints": {
@@ -2677,8 +2707,8 @@
       "verified_candidate_pair_results_correlated": 0
     }
   ],
-  "evaluated_at_utc": "2026-11-24T23:16:08.671660+00:00",
-  "fully_verified_daily_slates_v32_basis": 3,
+  "evaluated_at_utc": "2026-11-24T23:20:03.554155+00:00",
+  "fully_verified_daily_slates_v32_basis": 4,
   "initial_review_verified_day_target": 30,
   "live_model_changed": false,
   "original_candidate_pair_rows": 272,
@@ -2686,69 +2716,69 @@
   "original_rank_checkpoint_results": {
     "quality_top_bottom_1": {
       "days_bottom_outperformed_top": 0,
-      "days_tied": 3,
+      "days_tied": 4,
       "days_top_outperformed_bottom": 0,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
       "unweighted_mean_day_level_pair_fraction_difference": 0.0,
-      "verified_day_units": 3
+      "verified_day_units": 4
     },
     "quality_top_bottom_10": {
-      "days_bottom_outperformed_top": 0,
+      "days_bottom_outperformed_top": 1,
       "days_tied": 2,
       "days_top_outperformed_bottom": 1,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
-      "unweighted_mean_day_level_pair_fraction_difference": 0.03333333333333333,
-      "verified_day_units": 3
+      "unweighted_mean_day_level_pair_fraction_difference": 0.0,
+      "verified_day_units": 4
     },
     "quality_top_bottom_5": {
       "days_bottom_outperformed_top": 0,
-      "days_tied": 3,
+      "days_tied": 4,
       "days_top_outperformed_bottom": 0,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
       "unweighted_mean_day_level_pair_fraction_difference": 0.0,
-      "verified_day_units": 3
+      "verified_day_units": 4
     },
     "robustness_top_bottom_1": {
       "days_bottom_outperformed_top": 0,
-      "days_tied": 3,
+      "days_tied": 4,
       "days_top_outperformed_bottom": 0,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
       "unweighted_mean_day_level_pair_fraction_difference": 0.0,
-      "verified_day_units": 3
+      "verified_day_units": 4
     },
     "robustness_top_bottom_10": {
-      "days_bottom_outperformed_top": 0,
+      "days_bottom_outperformed_top": 1,
       "days_tied": 2,
       "days_top_outperformed_bottom": 1,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
-      "unweighted_mean_day_level_pair_fraction_difference": 0.03333333333333333,
-      "verified_day_units": 3
+      "unweighted_mean_day_level_pair_fraction_difference": 0.0,
+      "verified_day_units": 4
     },
     "robustness_top_bottom_5": {
       "days_bottom_outperformed_top": 0,
-      "days_tied": 2,
+      "days_tied": 3,
       "days_top_outperformed_bottom": 1,
       "overlapping_candidate_pairs_are_not_iid_samples": true,
       "paired_day_sign_test_two_sided_exploratory": null,
-      "pending_day_units": 2,
+      "pending_day_units": 1,
       "statistical_review_ready": false,
-      "unweighted_mean_day_level_pair_fraction_difference": 0.06666666666666667,
-      "verified_day_units": 3
+      "unweighted_mean_day_level_pair_fraction_difference": 0.05,
+      "verified_day_units": 4
     }
   },
   "partial_checkpoint_never_scored_as_loss": true,
