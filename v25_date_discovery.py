@@ -3,7 +3,7 @@
 This is a fixture-discovery view, not a forecast generator: provider-sourced
 games can appear before a valid full score-distribution model exists.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 SYDNEY=ZoneInfo("Australia/Sydney")
@@ -87,3 +87,28 @@ def fixture_table(day, scored, discovered):
             continue
     return sorted(items.values(),key=lambda row:(datetime.strptime(
         row["Kickoff (Sydney)"],"%I:%M %p").time(),row["Match"]))
+
+
+def retry_gate(last, now):
+    """Re-check a quota failure only after its recorded cooldown.
+
+    A cooldown never restores an exhausted API subscription. It only avoids
+    repeated requests during the provider's short-term rate-limit window.
+    The user must explicitly request a new search after the gate reopens.
+    """
+    if not (last or {}).get("quota_limited"):
+        return {"allowed": True, "reason": "not_limited"}
+    try:
+        raw=last["quota_retry_after_utc"]
+        until=datetime.fromisoformat(str(raw).replace("Z","+00:00"))
+        if until.tzinfo is None:
+            return {"allowed": False, "reason": "invalid_retry_timestamp"}
+        instant=now.astimezone(timezone.utc)
+        if instant < until:
+            return {"allowed": False, "reason": "cooldown",
+                    "retry_after_utc":until.isoformat()}
+    except (KeyError,ValueError,TypeError):
+        # Old sessions lacked a cooldown field and had an indefinite
+        # blockade. One explicit retry is allowed; any new 429 gets a timer.
+        return {"allowed": True, "reason": "legacy_sticky_flag"}
+    return {"allowed": True, "reason": "cooldown_elapsed"}
