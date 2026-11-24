@@ -1,12 +1,12 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-24T02:43:39.033372+00:00",
+  "evaluated_at_utc": "2026-11-24T03:43:19.496878+00:00",
   "external_requests": 0,
   "frozen_set_files": 13,
   "hits": 0,
   "note": "Only raw-policy prospective calibration bootstrap; premium still requires independent calibration evidence.",
   "observed_hit_rate": 0.0,
-  "pending_sets": 8,
+  "pending_sets": 7,
   "policy_id": "professional-probability-five-v1",
   "premium_release_approved": false,
   "result_rejections": {},
@@ -97,11 +97,14 @@
           2,
           5
         ],
-        null
+        [
+          1,
+          1
+        ]
       ],
       "estimated_coverage": 0.07719833091047025,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-24"
     },
     {
@@ -375,11 +378,50 @@
       "source_record_sha256": "3100548a686ffa90c413b31b44d333c4a7ee7f57558bd8c9eb810d7df916e0dd",
       "verification_status": "verified",
       "verified_at_utc": "2026-11-22T17:08:04.334798+00:00"
+    },
+    {
+      "estimated_coverage": 0.07719833091047025,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1492467"
+        ],
+        [
+          "API-Football",
+          "1492463"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Internacional",
+          "Vitoria"
+        ],
+        [
+          "Botafogo",
+          "Sao Paulo"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-23T22:30:00.000000Z",
+        "2026-11-23T23:00:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-22T20:06:27.200603+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "375aa87f0df158c18065ef07f1e67a67f507674cdb37884b30236d00a40eb226",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-24T03:15:37.035134+00:00"
     }
   ],
-  "verified_sets": 5,
+  "verified_sets": 6,
   "wilson_95": [
-    0.0,
-    0.43448246478317476
+    2.7755575615628914e-17,
+    0.3903342879021653
   ]
 }

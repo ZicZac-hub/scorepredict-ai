@@ -9,10 +9,10 @@
     "sets_with_target_model_coverage": 0,
     "verified_miss_attribution": {
       "both_leg_scores_outside_selected_options": 3,
-      "one_leg_score_outside_selected_options": 3
+      "one_leg_score_outside_selected_options": 4
     }
   },
-  "evaluated_at_utc": "2026-11-24T02:44:06.859929+00:00",
+  "evaluated_at_utc": "2026-11-24T03:43:54.575948+00:00",
   "evidence_policy": "original_archived_v8_source_ids_before_selection_and_both_kickoffs_identity_matched_verified_regulation_results",
   "external_requests_performed": 0,
   "limitations": [
@@ -30,12 +30,12 @@
     "hits": 0,
     "independence_of_repeated_sets_not_established": true,
     "minimum_100_sets_and_lower_interval_at_target": false,
-    "misses": 6,
-    "pending_sets": 2,
-    "verified_sets": 6,
+    "misses": 7,
+    "pending_sets": 1,
+    "verified_sets": 7,
     "wilson_95": [
-      2.7755575615628914e-17,
-      0.3903342879021653
+      5.551115123125783e-17,
+      0.35433043506668743
     ]
   },
   "original_forecasts_or_doubles_modified": false,
@@ -708,10 +708,42 @@
         "v8_near",
         "v8_near"
       ],
-      "status": "pending",
+      "status": "miss",
       "sydney_date": "2026-11-24",
       "target_model_mass_reached_by_five": false,
-      "verified_result_attribution": null
+      "verified_result_attribution": {
+        "actual_joint_model_probability": 7.145741537850155e-05,
+        "actual_joint_score_rank_max": 617,
+        "actual_joint_score_rank_min": 617,
+        "classification": "one_leg_score_outside_selected_options",
+        "legs": [
+          {
+            "actual_leg_score_covered": true,
+            "actual_model_probability": 0.1303715327087959,
+            "actual_score": "1-1",
+            "actual_score_rank_min": 1,
+            "fixture_id": "1492463",
+            "match": "Botafogo vs Sao Paulo",
+            "selected_leg_scores": [
+              "1-0",
+              "1-1"
+            ]
+          },
+          {
+            "actual_leg_score_covered": false,
+            "actual_model_probability": 0.0005481059698677645,
+            "actual_score": "2-5",
+            "actual_score_rank_min": 34,
+            "fixture_id": "1492467",
+            "match": "Internacional vs Vitoria",
+            "selected_leg_scores": [
+              "1-0",
+              "1-1",
+              "2-0"
+            ]
+          }
+        ]
+      }
     },
     {
       "captured_at_utc": "2026-11-23T23:11:32.257964+00:00",
