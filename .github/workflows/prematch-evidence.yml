@@ -237,6 +237,9 @@ jobs:
         # Same local original receipt, no new provider requests or hindsight.
         if: always()
         run: python v38_prospective_double_trials.py
+      - name: Freeze V39 fixed Poisson comparison in the same pre-match decision window
+        if: always()
+        run: python v39_prospective_double_trials.py
       - name: Freeze V25 anchored probability challenger on genuinely new V28 same-match pairs
         # Before results: same two fixtures, fixed 75/25 distribution, write-once.
         # No new sports or AI calls, no retrospective score selection or live changes.
@@ -438,6 +441,9 @@ jobs:
           if [ -d data/v38_prospective_challengers/sets ]; then
             git add data/v38_prospective_challengers/sets/
           fi
+          if [ -d data/v39_prospective_challengers/sets ]; then
+            git add data/v39_prospective_challengers/sets/
+          fi
           if ! git diff --cached --quiet; then
             git commit -m "data: preserve pre-match evidence and verified results [skip ci]"
             # Source edits or another data run can land during capture.
@@ -525,6 +531,7 @@ jobs:
             data/v32_rank_discrimination/
             data/v33_early_rank_checkpoints/ data/v37_sparse_prospective/ data/v35_continuous_challengers/ data/v36_prospective_challengers/ data/v34_score_error_research/
             data/v38_prospective_challengers/
+            data/v39_prospective_challengers/
             data/professional_double_shadow/
             data/professional_paired_study/
             data/professional_paired_study_v2/
