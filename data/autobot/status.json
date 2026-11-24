@@ -4,7 +4,7 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-24T05:12:56.382641+00:00",
+  "last_run_utc": "2026-11-24T05:22:04.689133+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
@@ -17,12 +17,15 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 24.0,
+    "age_minutes": 33.1,
     "collector_freshness": "recent",
     "collector_started_at_utc": "2026-11-24T04:48:58.004994+00:00",
     "not_a_prediction_accuracy_measure": true,
     "processed_fixtures": 22,
     "producer_api_budget_unchanged": true,
+    "uefa_history_audit_available": false,
+    "uefa_history_fixture_observations": 0,
+    "uefa_history_season_source_states": {},
     "v37_sparse_saved": 0,
     "v37_sparse_saved_by_league": {},
     "v37_sparse_status_by_league": {
@@ -252,6 +255,42 @@
     "ready_for_model_promotion": false,
     "research_only": true,
     "verified_matched_physical_fixtures": 0
+  },
+  "v38_challengers": {
+    "capture_skipped": {
+      "original_v28_window_expired": 4
+    },
+    "frozen_days": 0,
+    "methods": {
+      "baseline": {
+        "hits": 0,
+        "mean_proper_scores": {
+          "exact_score_log_loss": null,
+          "margin_3_plus_brier": null,
+          "multiclass_score_brier": null,
+          "over_3_5_brier": null,
+          "under_1_5_brier": null
+        },
+        "observed_hit_rate": null,
+        "verified_days": 0
+      },
+      "conditional_margin_125": {
+        "hits": 0,
+        "mean_proper_scores": {
+          "exact_score_log_loss": null,
+          "margin_3_plus_brier": null,
+          "multiclass_score_brier": null,
+          "over_3_5_brier": null,
+          "under_1_5_brier": null
+        },
+        "observed_hit_rate": null,
+        "verified_days": 0
+      }
+    },
+    "pending_days": 0,
+    "report_available": true,
+    "research_only_not_live_promoted": true,
+    "verified_days": 0
   },
   "v8_v25_same_pair": {
     "pending_pairs": 1,
