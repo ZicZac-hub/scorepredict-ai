@@ -1,13 +1,9 @@
 {
-  "already_captured": 0,
+  "already_captured": 215,
   "api_call_limit": 120,
   "budget_skipped": [],
   "captured_fixtures": 0,
-  "collector_blocker": {
-    "reason": "provider_quota",
-    "source": "API-Football"
-  },
-  "collector_started_at_utc": "2026-11-23T23:11:15.416141+00:00",
+  "collector_started_at_utc": "2026-11-24T00:04:47.421462+00:00",
   "coverage_complete": false,
   "daily_pick_days_written": [],
   "daily_research_candidates": 0,
@@ -17,29 +13,47 @@
   "database_status": "not_configured",
   "discovery_budget_skipped": [],
   "discovery_cache_hits": 0,
-  "eligible_horizon_fixtures": 0,
+  "eligible_horizon_fixtures": 22,
   "fixture_limit": 0,
   "history_source_errors": [],
-  "league_errors": [
-    {
-      "error_type": "ProviderQuotaError",
-      "league": "PL",
-      "stage": "fixtures"
-    }
-  ],
-  "leagues_checked": 1,
+  "league_errors": [],
+  "leagues_checked": 11,
   "ledger_records_written": 0,
   "lookahead_days": 14,
   "news_coverage_complete": true,
   "news_errors": [],
-  "next_kickoff_by_league": {},
+  "next_kickoff_by_league": {
+    "BL1": "2026-11-27T19:30:00+00:00",
+    "BSA": "2026-11-24T21:00:00+00:00",
+    "CL": "2026-11-24T17:45:00+00:00",
+    "DED": "2026-11-27T19:00:00+00:00",
+    "EL": "2026-11-26T17:45:00+00:00",
+    "ELC": "2026-11-24T19:45:00+00:00",
+    "FL1": "2026-11-27T19:45:00+00:00",
+    "PD": "2026-11-27T20:00:00+00:00",
+    "PL": "2026-11-27T20:00:00+00:00",
+    "PPL": "2026-11-27T20:15:00+00:00",
+    "SA": "2026-11-27T19:45:00+00:00"
+  },
   "prediction_errors": [],
-  "prediction_unavailable": 0,
-  "processed_fixtures": 0,
-  "provider_adapter_calls": 1,
-  "provider_fixture_counts": {},
+  "prediction_unavailable": 22,
+  "processed_fixtures": 22,
+  "provider_adapter_calls": 15,
+  "provider_fixture_counts": {
+    "BL1": 18,
+    "BSA": 22,
+    "CL": 27,
+    "DED": 18,
+    "EL": 18,
+    "ELC": 44,
+    "FL1": 18,
+    "PD": 22,
+    "PL": 30,
+    "PPL": 18,
+    "SA": 20
+  },
   "time_limit_seconds": 600,
-  "upcoming_fixtures": 0,
+  "upcoming_fixtures": 237,
   "v10_market_calls": 0,
   "v10_market_refresh_checked": 0,
   "v10_market_refresh_errors": [],
@@ -50,18 +64,59 @@
   "v10_research_backfill_errors": [],
   "v10_research_backfill_saved": 0,
   "v10_shadow_errors": [],
-  "v10_shadow_skipped": {},
-  "v10_shadow_skipped_by_league": {},
+  "v10_shadow_skipped": {
+    "team_history_below_five": 22
+  },
+  "v10_shadow_skipped_by_league": {
+    "CL": {
+      "team_history_below_five": 10
+    },
+    "EL": {
+      "team_history_below_five": 12
+    }
+  },
   "v10_shadow_v10_saved": 0,
   "v10_shadow_v12_saved": 0,
   "v10_shadow_v13_saved": 0,
   "v10_shadow_v8_saved": 0,
   "v10_shadow_v8_saved_by_league": {},
   "v10_shadow_v9_saved": 0,
-  "v37_sparse_shadow_coverage": {},
+  "v37_sparse_shadow_coverage": {
+    "CL": {
+      "original_v37_already_issued": 10
+    },
+    "EL": {
+      "original_v37_already_issued": 12
+    }
+  },
   "v37_sparse_shadow_saved": 0,
   "v37_sparse_shadow_saved_by_league": {},
-  "v8_min_team_history_bins_by_league": {},
-  "v8_qualified_away_history_bins_by_league": {},
-  "v8_qualified_home_history_bins_by_league": {}
+  "v8_min_team_history_bins_by_league": {
+    "CL": {
+      "3-4": 10
+    },
+    "EL": {
+      "3-4": 12
+    }
+  },
+  "v8_qualified_away_history_bins_by_league": {
+    "CL": {
+      "3-4": 7,
+      "5+": 3
+    },
+    "EL": {
+      "3-4": 6,
+      "5+": 6
+    }
+  },
+  "v8_qualified_home_history_bins_by_league": {
+    "CL": {
+      "3-4": 4,
+      "5+": 6
+    },
+    "EL": {
+      "3-4": 10,
+      "5+": 2
+    }
+  }
 }
