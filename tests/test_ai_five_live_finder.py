@@ -152,3 +152,71 @@ def test_user_selected_twelve_fixture_batch_is_bounded_and_default_remains_four(
     third=research_day("key",DAY,limit=1000,discover=lambda *a:(events,[]),
                        model=model,now=NOW)
     assert third["checked"]==12
+
+
+def test_history_supported_leagues_are_prioritized_not_youth_fixture_order():
+    events=[fixture(10,"2026-11-15T08:00:00Z"),
+            fixture(11,"2026-11-15T09:00:00Z"),
+            fixture(12,"2026-11-15T10:00:00Z")]
+    events[0]["league_id"]=9999  # unclassified / possibly sparse
+    events[1]["league_id"]=39    # English Premier League
+    events[2]["league_id"]=140   # La Liga
+    called=[]
+    def model(key,event,model_variant=None):
+        called.append(event["fixture"]["id"])
+        return modeled(event),None
+    r=research_day("key",DAY,limit=2,now=NOW,
+                   discover=lambda *args:(events,[]),model=model)
+    assert r["discovered"]==3
+    assert called==[11,12]
+    assert r["remaining"]==1
+    assert r["prioritization_not_a_win_probability"] is True
+
+
+def test_quota_at_discovery_does_not_attempt_more_model_requests():
+    events=[fixture(44,"2026-11-15T08:00:00Z")]
+    def forbid(*args,**kwargs):
+        raise AssertionError("No paid history calls after provider quota failure")
+    report=research_day("key",DAY,now=NOW,
+                        discover=lambda *args:(events,["429 provider quota limit"]),
+                        model=forbid)
+    assert report["quota_limited"] is True
+    assert report["checked"]==0
+    assert report["checked_ids"]==[]
+    assert report["remaining"]==1
+    assert report["quota_retry_after_utc"]
+
+
+def test_model_quota_failure_does_not_mark_fixture_as_completed():
+    events=[fixture(11,"2026-11-15T08:00:00Z"),
+            fixture(12,"2026-11-15T08:00:00Z")]
+    calls=[]
+    def model(key,event,model_variant=None):
+        calls.append(event["fixture"]["id"])
+        if len(calls)==1:
+            return None,"Provider quota reached"
+        return modeled(event),None
+    first=research_day("key",DAY,now=NOW,
+                       discover=lambda *args:(events,[]),model=model)
+    assert first["checked"]==1
+    assert first["quota_limited"]
+    assert first["checked_ids"]==[]
+    assert first["blocked_fixture_id"]=="11"
+    assert first["remaining"]==2
+    after=research_day("key",DAY,now=NOW,known_ids=first["checked_ids"],
+                       discover=lambda *args:(events,[]),model=model)
+    assert after["checked_ids"]==["11","12"]
+    assert calls==[11,11,12]
+
+
+def test_duplicate_discovered_fixture_identity_is_modelled_once():
+    events=[fixture(18,"2026-11-15T08:00:00Z")]*2
+    calls=[]
+    def model(key,event,model_variant=None):
+        calls.append(event["fixture"]["id"])
+        return modeled(event),None
+    report=research_day("key",DAY,now=NOW,limit=8,
+                        discover=lambda *args:(events,[]),model=model)
+    assert report["checked"]==1
+    assert report["checked_ids"]==["18"]
+    assert calls==[18]
