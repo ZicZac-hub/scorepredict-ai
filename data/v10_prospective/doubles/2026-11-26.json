@@ -1,0 +1,139 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-24T17:54:03.456738+00:00",
+  "challenger_exclusions": {
+    "v12": "missing_one_or_both_challenger_forecasts",
+    "v13": "missing_same_evidence_pre_match_v13_pair"
+  },
+  "estimated_coverage": 0.06920207052351286,
+  "first": {
+    "away_team": "Corinthians",
+    "away_team_id": "131",
+    "fixture_id": "1492461",
+    "forecast_id": "7bf5350abf23b0adc2a2a31ad6770e96e1a6c3849528af8620ca4d92f61a265b",
+    "home_team": "Atletico-MG",
+    "home_team_id": "1062",
+    "kickoff_utc": "2026-11-25T23:00:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.014818780329950357,
+      "score1": "1-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.014440181241856039,
+      "score1": "1-1",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.014208193514075465,
+      "score1": "1-0",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.013845194064179807,
+      "score1": "1-1",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.011889721373451201,
+      "score1": "1-0",
+      "score2": "2-1"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v2-fresh-research",
+  "same_pair_challengers": {
+    "v10": [
+      {
+        "joint_probability": 0.019873783687224655,
+        "score1": "1-0",
+        "score2": "1-1"
+      },
+      {
+        "joint_probability": 0.01962567735096211,
+        "score1": "1-0",
+        "score2": "1-0"
+      },
+      {
+        "joint_probability": 0.018958600970391,
+        "score1": "1-1",
+        "score2": "1-1"
+      },
+      {
+        "joint_probability": 0.018721919868218646,
+        "score1": "1-1",
+        "score2": "1-0"
+      },
+      {
+        "joint_probability": 0.016238080597210137,
+        "score1": "0-1",
+        "score2": "1-1"
+      }
+    ],
+    "v9": [
+      {
+        "joint_probability": 0.015615571497538044,
+        "score1": "1-1",
+        "score2": "1-1"
+      },
+      {
+        "joint_probability": 0.01403484619108415,
+        "score1": "1-0",
+        "score2": "1-1"
+      },
+      {
+        "joint_probability": 0.012859271192244146,
+        "score1": "1-1",
+        "score2": "1-0"
+      },
+      {
+        "joint_probability": 0.011557559282479039,
+        "score1": "1-0",
+        "score2": "1-0"
+      },
+      {
+        "joint_probability": 0.011138465903980035,
+        "score1": "0-0",
+        "score2": "1-1"
+      }
+    ]
+  },
+  "second": {
+    "away_team": "Millwall",
+    "away_team_id": "58",
+    "fixture_id": "1563285",
+    "forecast_id": "0bdc1262dfaf4b1150fb561505967f12abbd867fd0a58068fc01f06d16c12977",
+    "home_team": "Stoke City",
+    "home_team_id": "75",
+    "kickoff_utc": "2026-11-25T20:00:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "selected_forecasts": {
+    "1": {
+      "captured_at_utc": "2026-11-24T05:59:32.000357Z",
+      "input_digest": "081d6a31a3162eaa232e8137e219bf96e64c1ff4f5ea9bd9b17f306ffc67b5db",
+      "source": "v8_near"
+    },
+    "2": {
+      "captured_at_utc": "2026-11-23T20:16:01.831133Z",
+      "input_digest": "a2e91470da6e01c2b1e9752c7ae96f3f9c387aa60b2566dbb2b609c0a0aefe81",
+      "source": "v8_near"
+    }
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "selection_window": {
+    "max_hours_before_first_eligible_kickoff": 24,
+    "minimum_minutes_before_each_selected_match": 45
+  },
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-26"
+}

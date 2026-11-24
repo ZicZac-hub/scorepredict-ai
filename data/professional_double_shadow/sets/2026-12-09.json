@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-24T17:55:42.892638+00:00",
+  "prospective": true,
+  "record_sha256": "dcd27fe6b9bd905e0764228914efce011f5ffb19659fe639a8f2ae6bd7798599",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.07994571096184477,
+        "joint_probability": 0.006713339901334076,
+        "score1": "2-1",
+        "score2": "1-1",
+        "second_probability": 0.08397373443258405
+      },
+      {
+        "first_probability": 0.07994571096184477,
+        "joint_probability": 0.006617368781897912,
+        "score1": "2-1",
+        "score2": "1-2",
+        "second_probability": 0.08277328079621614
+      },
+      {
+        "first_probability": 0.07816646533614374,
+        "joint_probability": 0.006563930001671121,
+        "score1": "3-1",
+        "score2": "1-1",
+        "second_probability": 0.08397373443258405
+      },
+      {
+        "first_probability": 0.07816646533614374,
+        "joint_probability": 0.006470094784116321,
+        "score1": "3-1",
+        "score2": "1-2",
+        "second_probability": 0.08277328079621614
+      },
+      {
+        "first_probability": 0.07994571096184477,
+        "joint_probability": 0.005820571078721398,
+        "score1": "2-1",
+        "score2": "2-1",
+        "second_probability": 0.07280654595090597
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.03218530454774083,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "209",
+        "name": "Feyenoord"
+      },
+      "competition": {
+        "code": "CL",
+        "name": "CL"
+      },
+      "homeTeam": {
+        "id": "759",
+        "name": "Viking"
+      },
+      "id": "1635744",
+      "provider": "API-Football",
+      "utcDate": "2026-12-08T17:45:00+00:00"
+    },
+    "generated_at_utc": "2026-11-24T17:55:42.892619+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "13976",
+        "name": "Sabah FA"
+      },
+      "competition": {
+        "code": "CL",
+        "name": "CL"
+      },
+      "homeTeam": {
+        "id": "533",
+        "name": "Villarreal"
+      },
+      "id": "1635749",
+      "provider": "API-Football",
+      "utcDate": "2026-12-08T17:45:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "209",
+        "fixture_id": "1635744",
+        "forecast_id": "7ca9e26a20cf546bef49f6e5f192d6e468b5f9d47be1cd0fe8092d11b77259d6",
+        "home_team_id": "759",
+        "input_digest": "d906a81e8a998be38f198416e783ec499b9bcd60e560dbc33ed2cdcf4e4dcc63",
+        "kickoff_utc": "2026-12-08T17:45:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "13976",
+        "fixture_id": "1635749",
+        "forecast_id": "4e8bc69da7de4e602ee16f0dc984723a3d3d32398c605329ff03368c0cf82769",
+        "home_team_id": "533",
+        "input_digest": "0bd67786f0a76054e431d9a6d0ab1e783ee4ca36cea58f17eff34b6f7ce0bf26",
+        "kickoff_utc": "2026-12-08T17:45:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-24T17:53:55.262024+00:00",
+      "2026-11-24T17:53:55.454629+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-09",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-09",
+  "target_70_percent_proven": false
+}
