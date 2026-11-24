@@ -198,3 +198,51 @@ def test_inconsistent_frozen_pair_cannot_prioritize_wrong_provider_identity(tmp_
     assert len(ordered)==2
     # A corrupted pair cannot add any new verification reference IDs.
     assert set(x[0] for x in ordered)==set(refs)
+
+
+def test_systemic_provider_refusals_stop_repeat_requests_without_losing_results(tmp_path):
+    cases=[
+        (429,{}, "provider_quota","ProviderQuotaError"),
+        (403,{}, "provider_credentials_or_plan","ProviderAccessError"),
+        (200,{"errors":{"requests":"You have reached the limit of calls for this day"}},
+         "provider_quota","ProviderQuotaError"),
+        (200,{"errors":{"token":"Invalid API key: sensitive-value"}},
+         "provider_credentials_or_plan","ProviderAccessError"),
+    ]
+    for index,(http,payload,reason,error_type) in enumerate(cases):
+        root=tmp_path/str(index)
+        root.mkdir()
+        one_frozen(root,98001)
+        one_frozen(root,98002)
+        calls=[]
+        def fetch(url,params,headers,timeout):
+            calls.append(params["id"])
+            reply=Response(payload)
+            reply.status_code=http
+            return reply
+        report=settlement.collect("sensitive-value",root=root,legacy_results={},
+                                  request=fetch,limit=20)
+        assert len(calls)==report["checked"]==1
+        assert report["provider_blocker"]["reason"]==reason
+        assert report["source_errors"][0]["error_type"]==error_type
+        assert report["deferred_provider_block"]==1
+        assert report["still_pending"]==2 and report["newly_verified"]==0
+        assert json.loads((root/"verified_results.json").read_text())=={}
+        assert "sensitive-value" not in (root/"settlement_status.json").read_text()
+
+
+def test_fixture_specific_refusal_does_not_block_other_results(tmp_path):
+    first=one_frozen(tmp_path,98011)
+    second=one_frozen(tmp_path,98012)
+    rows={str(r["fixture_id"]):r for r in (first,second)}
+    calls=[]
+    def fetch(url,params,headers,timeout):
+        calls.append(params["id"])
+        if len(calls)==1:
+            return Response({"errors":{"id":"Fixture not available"}})
+        return Response({"response":[fulltime_result(rows[params["id"]])]})
+    report=settlement.collect("test",root=tmp_path,legacy_results={},request=fetch)
+    assert len(calls)==2
+    assert report["provider_blocker"] is None
+    assert report["source_errors"][0]["error_type"]=="ProviderRejectedError"
+    assert report["newly_verified"]==1 and report["still_pending"]==1
