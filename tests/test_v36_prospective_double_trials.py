@@ -109,3 +109,58 @@ def test_v36_does_not_count_same_fixture_on_two_days():
     with pytest.raises(ValueError,match="same_physical_fixture_repeated"):
         trial.summarize([row("2035-01-01"),row("2035-01-02")],
                         now=datetime(2035,1,3,tzinfo=timezone.utc))
+
+
+def test_roundoff_only_never_reselects_frozen_tickets(monkeypatch):
+    from copy import deepcopy
+    from math import nextafter, inf
+    issued, original, items = fixture_data()
+    monkeypatch.setattr(trial, "_frozen_eligible", lambda *_: True)
+    base = trial.build_packet(original, items, issued)
+    near = deepcopy(base)
+    arm = near["policies"]["tail_temperature_1_10"]
+    grid = arm["score_grids"][0]
+    grid[0][0] = nextafter(grid[0][0], inf)
+    ticket = arm["five_joint_scores"][0]
+    ticket["joint_probability"] = nextafter(ticket["joint_probability"], inf)
+    assert trial._reproduces_packet(base, near)
+    assert base == trial.build_packet(original, items, issued)
+
+    for change in ("ticket", "order", "grid", "missing", "source", "nan", "type"):
+        altered = deepcopy(near)
+        arm = altered["policies"]["tail_temperature_1_10"]
+        picks = arm["five_joint_scores"]
+        if change == "ticket":
+            picks[0]["score1"] = "99-99"
+        elif change == "order":
+            picks[0], picks[1] = picks[1], picks[0]
+        elif change == "grid":
+            arm["score_grids"][0][0][0] += 1e-6
+            arm["score_grids"][0][0][1] -= 1e-6
+        elif change == "missing":
+            picks.pop()
+        elif change == "source":
+            altered["original_catalog_sha256"] = "changed"
+        elif change == "nan":
+            picks[0]["joint_probability"] = float("nan")
+        else:
+            picks[0]["joint_probability"] = str(picks[0]["joint_probability"])
+        assert not trial._reproduces_packet(base, altered), change
+    assert not trial._reproduces_packet(0.0, 1e-20)
+
+
+def test_real_v36_frozen_packet_reproduces_from_original_receipts():
+    from pathlib import Path
+    # Actual archived pre-match packet, not a newly generated substitute.
+    repo = Path(__file__).resolve().parents[1]
+    path = repo / trial.ROOT / "sets" / "2026-11-25.json"
+    before = path.read_bytes()
+    packet = json.loads(before)
+    verified = trial.verify_packet(
+        path, root=repo / trial.ORIGINAL_ROOT,
+        v28_root=repo / trial.V28_ROOT,
+        clock=trial.utc(packet["frozen_at_utc"]))
+    assert verified == packet
+    assert path.read_bytes() == before
+    assert all(len(arm["five_joint_scores"]) == 5
+               for arm in verified["policies"].values())
