@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2237545201819389,
-          "expected_events": 30.53694018013308,
-          "observed_events": 31,
-          "observed_rate": 0.36046511627906974,
-          "predicted_rate": 0.3550806997689893,
-          "rate_gap_observed_minus_predicted": 0.00538441651008047
+          "brier": 0.22781588727653967,
+          "expected_events": 30.777273504931244,
+          "observed_events": 32,
+          "observed_rate": 0.367816091954023,
+          "predicted_rate": 0.3537617644244971,
+          "rate_gap_observed_minus_predicted": 0.014054327529525925
         },
         "exact_0_3": {
-          "brier": 0.01136737576230797,
-          "expected_events": 1.870238370379477,
+          "brier": 0.011237971082876818,
+          "expected_events": 1.880686750722754,
           "observed_events": 1,
-          "observed_rate": 0.011627906976744186,
-          "predicted_rate": 0.021746957795110197,
-          "rate_gap_observed_minus_predicted": -0.010119050818366011
+          "observed_rate": 0.011494252873563218,
+          "predicted_rate": 0.021617089088767288,
+          "rate_gap_observed_minus_predicted": -0.01012283621520407
         },
         "exact_3_0": {
-          "brier": 0.03334292999299752,
-          "expected_events": 3.5861750756271538,
+          "brier": 0.03299357708729304,
+          "expected_events": 3.640481863386212,
           "observed_events": 3,
-          "observed_rate": 0.03488372093023256,
-          "predicted_rate": 0.04169971018171109,
-          "rate_gap_observed_minus_predicted": -0.006815989251478532
+          "observed_rate": 0.034482758620689655,
+          "predicted_rate": 0.04184461911938175,
+          "rate_gap_observed_minus_predicted": -0.007361860498692094
         },
         "winning_margin_at_least_three": {
-          "brier": 0.17074726056425202,
-          "expected_events": 15.024187244727344,
-          "observed_events": 18,
-          "observed_rate": 0.20930232558139536,
-          "predicted_rate": 0.17469985168287608,
-          "rate_gap_observed_minus_predicted": 0.03460247389851926
+          "brier": 0.17737499270957466,
+          "expected_events": 15.15968741406957,
+          "observed_events": 19,
+          "observed_rate": 0.21839080459770116,
+          "predicted_rate": 0.1742492806214893,
+          "rate_gap_observed_minus_predicted": 0.04414152397621184
         }
       },
-      "verified_fixtures": 86
+      "verified_fixtures": 87
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22830369548562388,
-          "expected_events": 27.35513725032513,
-          "observed_events": 27,
-          "observed_rate": 0.34615384615384615,
-          "predicted_rate": 0.3507068878246811,
-          "rate_gap_observed_minus_predicted": -0.004553041670834983
+          "brier": 0.23270942858062071,
+          "expected_events": 27.595955710777194,
+          "observed_events": 28,
+          "observed_rate": 0.35443037974683544,
+          "predicted_rate": 0.34931589507312905,
+          "rate_gap_observed_minus_predicted": 0.005114484673706411
         },
         "exact_0_3": {
-          "brier": 0.0006332567220811389,
-          "expected_events": 1.659429871243747,
+          "brier": 0.0006266256796421665,
+          "expected_events": 1.6698895256071717,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021274741939022398,
-          "rate_gap_observed_minus_predicted": -0.021274741939022398
+          "predicted_rate": 0.021137842096293314,
+          "rate_gap_observed_minus_predicted": -0.021137842096293314
         },
         "exact_3_0": {
-          "brier": 0.03648165798833559,
-          "expected_events": 3.2388141773619266,
+          "brier": 0.03605722843932279,
+          "expected_events": 3.2931439446752955,
           "observed_events": 3,
-          "observed_rate": 0.038461538461538464,
-          "predicted_rate": 0.04152325868412726,
-          "rate_gap_observed_minus_predicted": -0.003061720222588802
+          "observed_rate": 0.0379746835443038,
+          "predicted_rate": 0.04168536638829488,
+          "rate_gap_observed_minus_predicted": -0.003710682843991082
         },
         "winning_margin_at_least_three": {
-          "brier": 0.17343987027349397,
-          "expected_events": 13.340804624717228,
-          "observed_events": 17,
-          "observed_rate": 0.21794871794871795,
-          "predicted_rate": 0.17103595672714395,
-          "rate_gap_observed_minus_predicted": 0.046912761221574006
+          "brier": 0.1807007273153506,
+          "expected_events": 13.47648548424875,
+          "observed_events": 18,
+          "observed_rate": 0.22784810126582278,
+          "predicted_rate": 0.17058842385125,
+          "rate_gap_observed_minus_predicted": 0.05725967741457279
         }
       },
-      "verified_fixtures": 78
+      "verified_fixtures": 79
     }
   },
   "focus": {
@@ -756,6 +756,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.14381327991001955
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-5",
+        "captured_at_utc": "2026-11-22T22:29:41.372693+00:00",
+        "fixture_id": "1492467",
+        "fixture_name": "Internacional vs Vitoria",
+        "forecast_id": "59af036596c401bc5b4aa7bbd0dcbd9879476fcb186b6760ae8551e013d4d9b3",
+        "kickoff_utc": "2026-11-23T22:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0005459938418570008,
+          "actual_exact_score_rank_min": 34,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.24033332479816608
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.010448380343276952
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.054306787759058645
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.1355001693422259
           }
         },
         "provider": "API-Football"
@@ -3199,6 +3228,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "2-5",
+        "captured_at_utc": "2026-11-22T20:04:08.517468+00:00",
+        "fixture_id": "1492467",
+        "fixture_name": "Internacional vs Vitoria",
+        "forecast_id": "ecac672b5a342595e9d306e43ead4c8eb224a2925490dc3cbc8686095d8e793d",
+        "kickoff_utc": "2026-11-23T22:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0005481059698677645,
+          "actual_exact_score_rank_min": 34,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.2408184604520642
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01045965436342473
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05432976731336914
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.13568085953152323
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-1",
         "captured_at_utc": "2026-11-21T18:14:11.445563+00:00",
         "fixture_id": "1492468",
@@ -5058,7 +5116,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-24T00:10:30.072815+00:00",
+  "result_cutoff_utc": "2026-11-24T01:44:10.658118+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
