@@ -4,7 +4,7 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-24T18:13:20.009871+00:00",
+  "last_run_utc": "2026-11-24T19:25:49.084060+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
@@ -17,17 +17,17 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 19.5,
+    "age_minutes": 27.7,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-24T17:53:50.480173+00:00",
+    "collector_started_at_utc": "2026-11-24T18:58:07.501832+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 25,
+    "processed_fixtures": 32,
     "producer_api_budget_unchanged": true,
     "uefa_fixtures_one_qualified_match_short": 21,
     "uefa_history_audit_available": true,
-    "uefa_history_fixture_observations": 25,
+    "uefa_history_fixture_observations": 24,
     "uefa_history_season_source_states": {
-      "rows_returned": 50
+      "rows_returned": 48
     },
     "v37_sparse_saved": 0,
     "v37_sparse_saved_by_league": {},
@@ -79,9 +79,10 @@
         "3-4": 12
       }
     },
-    "v8_saved": 4,
+    "v8_saved": 11,
     "v8_saved_by_league": {
-      "CL": 4
+      "CL": 3,
+      "ELC": 8
     },
     "v8_source_errors": 0
   },
@@ -93,8 +94,8 @@
     "pending_days": 1,
     "source_ineligibility": {
       "invalid_source_time": 172,
-      "not_original_v8_model": 740,
-      "outside_research_freeze_window": 209
+      "not_original_v8_model": 762,
+      "outside_research_freeze_window": 231
     },
     "verified_paired_days": 3
   },
@@ -306,15 +307,17 @@
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-24T17:56:07.503868+00:00",
-    "evaluated_at_utc": "2026-11-24T17:56:07.503906+00:00",
+    "capture_at_utc": "2026-11-24T19:00:44.509597+00:00",
+    "evaluated_at_utc": "2026-11-24T19:00:44.509704+00:00",
     "hits": 0,
-    "issued": 0,
+    "issued": 1,
     "minimum_review_pairs": 100,
-    "new_trials": [],
+    "new_trials": [
+      "2026-11-25"
+    ],
     "observed_hit_rate": null,
-    "outside_decision_window": 14,
-    "pending": 0,
+    "outside_decision_window": 13,
+    "pending": 1,
     "report_available": true,
     "research_only": true,
     "same_pair_comparison": {
