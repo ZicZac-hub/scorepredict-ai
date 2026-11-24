@@ -298,3 +298,34 @@ def test_openai_429_diagnostic_persisted_without_retry_or_raw_message(tmp_path, 
     assert "private-key" not in receipt
     assert "example-secret" not in receipt
     assert json.loads(receipt)["http_error_diagnostic"]["http_status"] == 429
+
+
+def test_v38_monitor_distinguishes_missing_pending_and_verified_results():
+    now = datetime(2035,1,1,tzinfo=timezone.utc)
+    missing = assemble(None,None,None,None,None,now=now)
+    assert missing["v38_challengers"]["report_available"] is False
+    assert missing["v38_challengers"]["verified_days"] is None
+    report = {"frozen_prospective_days":1,"verified_independent_sydney_days":0,
+              "pending_days":1,"methods":{"baseline":{"hits":0,
+              "verified_independent_sydney_days":0,"observed_five_double_hit_rate":1}}}
+    pending = assemble(None,None,None,None,None,now=now,v38=report)
+    assert pending["v38_challengers"]["pending_days"] == 1
+    assert pending["v38_challengers"]["methods"]["baseline"]["observed_hit_rate"] is None
+    assert pending["goal_verified"] is False
+
+
+def test_uefa_monitor_separates_provider_states_from_accuracy():
+    from continuous_accuracy_bot import source_capture_health
+    now = datetime(2035,1,1,tzinfo=timezone.utc)
+    old = source_capture_health({},now=now)
+    assert not old["uefa_history_audit_available"]
+    new = source_capture_health({"uefa_two_season_history_coverage":[
+        {"competition":"CL","seasons":[{"source_state":"rows_returned"},
+                                      {"source_state":"empty_response"}]},
+        {"competition":"EL","seasons":[{"source_state":"request_unavailable"},
+                                      {"source_state":"stale_response"}]}]},now=now)
+    assert new["uefa_history_audit_available"]
+    assert new["uefa_history_fixture_observations"] == 2
+    assert new["uefa_history_season_source_states"] == {
+        "rows_returned":1,"empty_response":1,"request_unavailable":1,"stale_response":1}
+    assert new["not_a_prediction_accuracy_measure"]
