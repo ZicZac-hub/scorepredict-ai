@@ -369,7 +369,7 @@ jobs:
         # No additional external API calls; records never overwrite prior picks.
         if: always()
         run: python v23_prospective.py
-      - name: Freeze versioned v2 matched odds/xG research (preserve immutable v1)
+      - name: Freeze versioned v3 matched odds/xG research (preserve immutable v1/v2)
         # Runs after bounded source collection. All arms share the original
         # two fixtures and a common pre-kickoff decision; no new API calls.
         # Missing sources remain explicit abstentions, not retrospective fixes.
@@ -420,8 +420,8 @@ jobs:
           python v25_prospective_monitor.py --require-provenance
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis data/pro_analyst_shadow data/sportmonks_xg data/professional_double_shadow data/professional_paired_study data/professional_paired_study_v2 data/verified_xg_replay
-          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/ data/pro_analyst_shadow/ data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/ data/v37_sparse_prospective/ data/sportmonks_xg/ data/professional_double_shadow/ data/professional_paired_study/ data/professional_paired_study_v2/ data/verified_xg_replay/
+          mkdir -p data/prospective_ledger data/daily_picks data/v10_prospective data/llm_research data/independent_football data/tracking data/v15_ai_double data/v17_confidence data/v18_accuracy data/v19_intelligence data/v21_sources data/v21_prospective data/v22_prospective data/v23_prospective data/v24_market_catalog data/accuracy_diagnosis data/pro_analyst_shadow data/sportmonks_xg data/professional_double_shadow data/professional_paired_study data/professional_paired_study_v2 data/professional_paired_study_v3 data/verified_xg_replay
+          git add data/prematch/ data/prospective_ledger/ data/daily_picks/ data/v10_prospective/ data/llm_research/ data/independent_football/ data/tracking/ data/v15_ai_double/ data/v17_confidence/ data/v18_accuracy/ data/v19_intelligence/ data/v21_sources/ data/v21_prospective/ data/v22_prospective/ data/v23_prospective/ data/v24_market_catalog/ data/accuracy_diagnosis/ data/pro_analyst_shadow/ data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/ data/v37_sparse_prospective/ data/sportmonks_xg/ data/professional_double_shadow/ data/professional_paired_study/ data/professional_paired_study_v2/ data/professional_paired_study_v3/ data/verified_xg_replay/
           # Bot owns changing V34/V35/V36 status files. Only genuinely NEW
           # pre-kickoff frozen V35/V36 sets belong to permanent capture.
           # Avoid racing the 15-minute bot on generated status.json files.
@@ -520,6 +520,7 @@ jobs:
             data/professional_double_shadow/
             data/professional_paired_study/
             data/professional_paired_study_v2/
+            data/professional_paired_study_v3/
             data/verified_xg_replay/
             data/independent_football/status.json
             data/independent_football/evaluation.json
