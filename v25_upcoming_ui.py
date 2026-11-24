@@ -16,7 +16,7 @@ from v25_upcoming import (
 )
 from v25_goal_validation import historical_reality_check
 from v25_date_discovery import (
-    SYDNEY, visible_days, date_label, merge_modelled, fixture_table,
+    SYDNEY, visible_days, date_label, merge_modelled, fixture_table, retry_gate,
 )
 
 
@@ -170,6 +170,8 @@ def render(st,rows,histories=None):
     joined=merged_forecasts()
     available_by_day,excluded=available(joined,clock)
     st.markdown("### 🧮 V25 · Predict five doubles for upcoming matches")
+    st.caption("V25 RELEASE · 24 NOV 2026 · PRIORITY DISCOVERY & QUOTA-SAFE RETRY. "
+               "If this line is missing, your browser still has an older deployment.")
     with st.expander("📉 Historical model limits (read-only)",expanded=False):
         history=historical_reality_check()
         if history.get("status")!="ready":
@@ -233,6 +235,13 @@ def render(st,rows,histories=None):
         options=[4,8,12],value=4,key="zz_v25_discovery_batch",
         help="Four remains the default. Larger batches can use much more API-Football quota; "
              "a fixture without sufficient real history stays unmodelled.")
+    previous=research.get(day) or {}
+    cooldown=retry_gate(previous.get("last") or {}, clock)
+    if not cooldown["allowed"]:
+        st.info("Provider rate-limit cooldown is active until "+
+                sydney_timestamp(cooldown.get("retry_after_utc") or clock)+
+                ". The API subscription allowance may remain exhausted "
+                "after this time. Archived predictions remain available.")
     requested=st.button(
         "🔎 Find & model matches · "+date.fromisoformat(day).strftime("%d %b"),
         key="zz_v25_discover_day",type="primary",use_container_width=True,
@@ -250,11 +259,9 @@ def render(st,rows,histories=None):
                      "Cannot confirm missing today's fixtures; saved forecast "
                      "models remain available.")
         else:
-            previous=research.get(day) or {}
-            if (previous.get("last") or {}).get("quota_limited"):
-                st.warning("The last provider search hit a rate limit or quota. "
-                           "Additional searches for this date are paused for "
-                           "this session to avoid repeated API costs.")
+            if not cooldown["allowed"]:
+                st.warning("Provider limit detected; the safe retry window "
+                           "has not opened yet. No paid provider request was made.")
             else:
                 with st.spinner("Checking real upcoming fixtures and modelling "
                                 f"up to {batch_size} previously unchecked matches..."):
@@ -288,9 +295,14 @@ def render(st,rows,histories=None):
     last=saved.get("last") or {}
     if last:
         if last.get("quota_limited"):
-            st.error("API-Football quota or rate limit prevented a complete "
-                     "search. Zero returned fixtures does NOT mean today's "
-                     "football schedule is empty.")
+            st.warning("API-Football quota/rate limit interrupted the search. "
+                       "Existing model grids remain usable for research. "
+                       "An expired cooldown is NOT proof that a subscription "
+                       "quota has reset. No matches are invented.")
+            if last.get("blocked_fixture_id"):
+                st.caption("Unattempted after quota interruption: fixture "+
+                           str(last["blocked_fixture_id"])+
+                           " remains retryable when provider access returns.")
         else:
             st.caption("Source search "+day+": "+
                        str(last.get("discovered",0))+" upcoming fixtures · "+
@@ -303,9 +315,11 @@ def render(st,rows,histories=None):
         for message in (last.get("errors") or [])[:3]:
             st.caption("Provider/model limitation: "+str(message)[:190])
         if last.get("remaining",0):
-            st.caption("Tap Find & model again to process another selected "
-                       "batch of previously unchecked fixtures. Historical "
-                       "evidence and API quota determine which become V25-ready.")
+            st.caption("Remaining unmodelled fixture attempts: "+
+                       str(last["remaining"])+
+                       ". Model checks prioritize established competitions "
+                       "with more likely historical coverage, but no league "
+                       "guarantees reliable exact scores or fresh odds.")
 
     chosen=available_by_day.get(day,[])
     all_fixtures=fixture_table(day,chosen,saved.get("fixtures") or [])
@@ -415,8 +429,16 @@ def render(st,rows,histories=None):
                                    "requests to verify source fixture IDs, kickoffs, "
                                    "quote types and timestamps. These prices do not "
                                    "change V25 scores or prove higher accuracy.")
+                        nonmarket=[reason for reason in alternative["failed_checks"]
+                                   if reason!="no_source_matched_fresh_market_on_both_legs"]
+                        if nonmarket:
+                            st.info("Skipping provider odds requests: this pair "
+                                    "also fails "+", ".join(nonmarket)+
+                                    ". Fresh odds alone cannot pass the cautious "
+                                    "filter or improve the five-score coverage.")
                         if st.button("🔎 Check current odds for both legs",
-                                     key="zz_v25_check_live_odds"):
+                                     key="zz_v25_check_live_odds",
+                                     disabled=bool(nonmarket)):
                             try:
                                 api_key=str(st.secrets.get("API_FOOTBALL_KEY") or
                                             os.environ.get("API_FOOTBALL_KEY") or "").strip()

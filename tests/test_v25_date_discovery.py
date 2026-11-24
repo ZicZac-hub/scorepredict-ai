@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 
 from v25_date_discovery import (
-    visible_days,date_label,merge_modelled,fixture_table,
+    visible_days,date_label,merge_modelled,fixture_table,retry_gate,
 )
 from ai_five_double_engine import identity
 
@@ -111,3 +111,25 @@ def test_cloud_entrypoint_exposes_today_forward_release_marker():
     for path in ("v25_upcoming_ui.py","v25_date_discovery.py",
                  "ai_five_live_finder.py"):
         assert path in smoke
+
+
+def test_quota_cooldown_blocks_repeated_calls_but_not_indefinitely():
+    from datetime import timedelta
+    record={"quota_limited":True,
+            "quota_retry_after_utc":(NOW+timedelta(minutes=30)).isoformat()}
+    assert retry_gate(record,NOW)["reason"]=="cooldown"
+    assert retry_gate(record,NOW)["allowed"] is False
+    assert retry_gate(record,NOW+timedelta(minutes=31))["allowed"] is True
+    assert retry_gate({"quota_limited":False},NOW)["allowed"] is True
+    # Legacy sticky session can be rechecked ONCE with explicit click,
+    # then it gets a timed gate if the provider says 429 again.
+    assert retry_gate({"quota_limited":True},NOW)["reason"]=="legacy_sticky_flag"
+
+
+def test_v25_user_release_marker_and_market_data_quota_controls():
+    from pathlib import Path
+    ui=Path("v25_upcoming_ui.py").read_text(encoding="utf-8")
+    assert "V25 RELEASE · 24 NOV 2026" in ui
+    assert "retry_gate(previous.get" in ui
+    assert "disabled=bool(nonmarket)" in ui
+    assert "st.select_slider(" in ui
