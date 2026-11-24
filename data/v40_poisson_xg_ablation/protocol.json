@@ -1,0 +1,52 @@
+{
+  "implementation_sha256": {
+    "five_double_accuracy.py": "19845d7e87d802abc78a52d2b92cdc68be0942092c5a276c8df8a9e4e5ed1b6c",
+    "forecast_ledger.py": "3489da8696070c6a4f599d5edffcc9ddc7422fa243fdf4ede269422f4aefe0ab",
+    "professional_double_optimizer.py": "bbd4b1bd1d1cf4df41e51d6c6405be22c2fc25b8c4dc913c712b454d2df26995",
+    "professional_double_shadow.py": "df3896248bf5a91b6e3fe9276a8bc7211b4479d18a7a3b2f1539da817ba263e3",
+    "v21_capture_sources.py": "7b47cdb8799ec0755209e8c38d28a25d993cc9a5165f738c00754850769117d2",
+    "v21_goal_model_comparison.py": "0e844a12868ba3c03fcad904aa9f817dd1a4ec8e72fe1a87c8fb03f78d887a11",
+    "v21_provider_evidence.py": "16cd2923b84a019641845897792ffa5c1eda4435a6458361d11743583d691c3e",
+    "v22_evidence_models.py": "83c560a23d02af14b87c4a2ff05ec4b1e33ee11d662bdaad3c415d66f9ef9a37",
+    "v22_prospective.py": "157294c0859bdb34426b19f060023c4e83eba7cdf527d0d266ee3b615d375b0a",
+    "v38_margin_calibration.py": "7e94fbb6ebd6b93766487fc6f38a2ed7d6e9de6edfba636eac438b09785964da",
+    "v39_poisson_marginal.py": "778127fff64683b1311635ae00bbcde0658ed793227ed7a7b803b43a753ea4d0",
+    "v40_poisson_xg_ablation.py": "eb632f3039998f8232924f71e330c7df7234596fcf7ce468989e7b6aae2b2974"
+  },
+  "protocol": {
+    "automatic_model_promotion": false,
+    "component_selection": "newest_usable_same_source_packet_at_common_cutoff_then_snapshot_hash",
+    "decision_rule": "first_scheduled_pass_5_to_60_minutes_before_earliest_kickoff",
+    "historical_xg_availability": "all_packet_xg_fixtures_kickoff_plus_3h_before_capture",
+    "incremental_xg_comparison": "poisson_xg_versus_poisson_marginal_on_identical_verified_pairs",
+    "market_numerical_weight": 0.0,
+    "maximum_component_age_seconds": 10800,
+    "maximum_lead_seconds_inclusive": 3600,
+    "maximum_market_quote_age_seconds": 43200,
+    "methods": [
+      "baseline_v8",
+      "conditional_margin_125",
+      "poisson_marginal",
+      "xg_only",
+      "poisson_xg"
+    ],
+    "minimum_lead_seconds_exclusive": 300,
+    "minimum_xg_matches_per_team": 6,
+    "minimum_xg_venue_matches_per_team": 3,
+    "missing_arms": "abstain_preserve_baseline_opportunity_and_report_matched_overlap",
+    "numerical_ai_weight": 0.0,
+    "numerical_lineup_weight": 0.0,
+    "pair_selection": "existing_authenticated_professional_raw_baseline_set",
+    "poisson_transform": "unchanged_v39_fixed_marginal",
+    "primary_comparison": "paired_same_event_single_exact_score_log_loss",
+    "refit_or_threshold_tuning": false,
+    "secondary_comparison": "paired_same_event_1x2_brier",
+    "set_brier_comparison": "descriptive_different_five_score_events_not_proper_score_superiority",
+    "single_score_log_loss_floor": 1e-15,
+    "target_70_percent_proven": false,
+    "version": "v40-fixed-pair-poisson-xg-ablation-v1",
+    "xg_blend_weight": 0.25
+  },
+  "protocol_sha256": "68970cb0ac4fe277b23ad3a32038da83b92b0927088ceabc9030e26cc9658e70",
+  "registered_at_utc": "2026-11-24T06:03:06.664672+00:00"
+}

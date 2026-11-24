@@ -122,7 +122,7 @@
       "verified_evaluated": 0
     }
   },
-  "checked_at_utc": "2026-11-24T04:50:47.737327+00:00",
+  "checked_at_utc": "2026-11-24T06:03:11.993324+00:00",
   "frozen_v22_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
@@ -154,18 +154,25 @@
       "source_matched_verified_fixtures": 2
     },
     "gemini": {
-      "conservative_95pct_lower_bound": -0.0012681220080174892,
-      "mean_paired_outcome_brier_advantage": 0.0008352875281787849,
+      "conservative_95pct_lower_bound": -0.001151042664426455,
+      "mean_paired_outcome_brier_advantage": 0.0007593522983443474,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 20
+      "source_matched_verified_fixtures": 22
     },
     "groqcloud": {
-      "conservative_95pct_lower_bound": -0.0012307691643368552,
-      "mean_paired_outcome_brier_advantage": 0.0012770330614193827,
+      "conservative_95pct_lower_bound": -0.001136063761757298,
+      "mean_paired_outcome_brier_advantage": 0.001178799749002507,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 12
+      "source_matched_verified_fixtures": 13
+    },
+    "openai": {
+      "conservative_95pct_lower_bound": null,
+      "mean_paired_outcome_brier_advantage": 0.0,
+      "passes_statistical_shadow_gate": false,
+      "production_weight": 0.0,
+      "source_matched_verified_fixtures": 1
     }
   },
   "missing_records_are_not_wins_or_losses": true,
@@ -185,37 +192,37 @@
   "source_capture_daily_attempts_used": 4,
   "source_capture_eligible_legs": 22,
   "source_capture_enabled": true,
-  "source_capture_last_run": "2026-11-24T04:50:31.043780+00:00",
+  "source_capture_last_run": "2026-11-24T06:02:50.309171+00:00",
   "source_capture_reason": "no_new_source_evidence",
   "source_capture_saved_packets": 0,
   "source_capture_skipped_reasons": [
     "1635641:original_preserved",
     "1563275:original_preserved",
-    "1563276:near_kickoff_budget_reserved",
-    "1563277:near_kickoff_budget_reserved",
-    "1563278:near_kickoff_budget_reserved",
-    "1563279:near_kickoff_budget_reserved",
-    "1563280:near_kickoff_budget_reserved",
-    "1563281:near_kickoff_budget_reserved",
-    "1563282:near_kickoff_budget_reserved",
-    "1635611:near_kickoff_budget_reserved",
-    "1635692:near_kickoff_budget_reserved",
-    "1635715:near_kickoff_budget_reserved",
-    "1492472:near_kickoff_budget_reserved",
-    "1635718:near_kickoff_budget_reserved",
-    "1635728:near_kickoff_budget_reserved",
-    "1563283:near_kickoff_budget_reserved",
-    "1563284:near_kickoff_budget_reserved",
-    "1563286:near_kickoff_budget_reserved",
-    "1563285:near_kickoff_budget_reserved",
-    "1635625:near_kickoff_budget_reserved",
-    "1635642:near_kickoff_budget_reserved",
-    "1492461:near_kickoff_budget_reserved"
+    "1563276:fixed_pair_common_cutoff_budget_reserved",
+    "1563277:fixed_pair_common_cutoff_budget_reserved",
+    "1563278:fixed_pair_common_cutoff_budget_reserved",
+    "1563279:fixed_pair_common_cutoff_budget_reserved",
+    "1563280:fixed_pair_common_cutoff_budget_reserved",
+    "1563281:fixed_pair_common_cutoff_budget_reserved",
+    "1563282:fixed_pair_common_cutoff_budget_reserved",
+    "1635611:fixed_pair_common_cutoff_budget_reserved",
+    "1635692:fixed_pair_common_cutoff_budget_reserved",
+    "1635715:fixed_pair_common_cutoff_budget_reserved",
+    "1492472:fixed_pair_common_cutoff_budget_reserved",
+    "1635718:fixed_pair_common_cutoff_budget_reserved",
+    "1635728:fixed_pair_common_cutoff_budget_reserved",
+    "1563283:fixed_pair_common_cutoff_budget_reserved",
+    "1563284:fixed_pair_common_cutoff_budget_reserved",
+    "1563286:fixed_pair_common_cutoff_budget_reserved",
+    "1563285:fixed_pair_common_cutoff_budget_reserved",
+    "1635625:fixed_pair_common_cutoff_budget_reserved",
+    "1635642:fixed_pair_common_cutoff_budget_reserved",
+    "1492461:fixed_pair_common_cutoff_budget_reserved"
   ],
   "source_capture_source_queries": 0,
   "source_completeness": {
-    "packets_checked": 292,
-    "with_2_market_types": 289,
+    "packets_checked": 300,
+    "with_2_market_types": 297,
     "with_6_per_team": 29,
     "with_both_starting_XIs": 1,
     "with_historical_xg": 30,
@@ -249,7 +256,7 @@
         "row_count": 0
       }
     },
-    "last_run_utc": "2026-11-24T04:50:32.426526+00:00",
+    "last_run_utc": "2026-11-24T06:03:00.925234+00:00",
     "matched_future_fixtures_last_run": 0,
     "matched_historical_xg_last_run": 0,
     "provider_error_type": null,
@@ -265,8 +272,8 @@
     "unverified_source_packet_reasons": {}
   },
   "v23_early_market_capture_enabled": true,
-  "v23_early_market_last_run": "2026-11-24T04:50:29.730815+00:00",
-  "v23_early_market_new_packets": 0,
+  "v23_early_market_last_run": "2026-11-24T06:02:48.720319+00:00",
+  "v23_early_market_new_packets": 2,
   "v23_market_form_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
@@ -293,12 +300,12 @@
   "v23_source_qualified_pairs": 25,
   "v24_broad_market_collection": {
     "enabled": true,
-    "last_run_utc": "2026-11-24T04:50:26.135842+00:00",
+    "last_run_utc": "2026-11-24T06:02:45.147045+00:00",
     "max_requests_per_day": 12,
-    "new_fixture_markets_last_run": 20,
-    "new_v8_source_bindings_last_run": 0,
+    "new_fixture_markets_last_run": 19,
+    "new_v8_source_bindings_last_run": 6,
     "not_all_external_web_sources": true,
     "queries_last_run": 2,
-    "requests_used_today": 10
+    "requests_used_today": 12
   }
 }

@@ -1,5 +1,8 @@
 {
-  "actual_score": null,
+  "actual_score": [
+    1,
+    1
+  ],
   "away_team": "Sao Paulo",
   "away_team_id": 126,
   "changed": true,
@@ -8,21 +11,22 @@
   "excluded_from_original_accuracy": true,
   "fallback_reason": null,
   "fixture_id": 1492463,
-  "history_as_of_utc": "2026-11-22T20:04:13.233530+00:00",
+  "history_as_of_utc": "2026-11-13T09:18:11.078884+00:00",
   "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
-  "history_count": 733,
+  "history_count": 719,
   "history_warnings": [],
-  "history_window_start_utc": "2024-11-22T20:04:13.233530+00:00",
+  "history_window_start_utc": "2024-11-13T09:18:11.078884+00:00",
   "home_team": "Botafogo",
   "home_team_id": 120,
-  "input_digest": "5f7092c2e9874da5ddfa7459e007fc6f3810b3f3f0440f4a7dcf7b43e6849867",
+  "input_digest": "9ae1ad817a53b9ffd30d487cdb19ad8e50bdd1ea126c41267cc6414d42b67ae8",
   "kickoff_utc": "2026-11-23T23:00:00Z",
-  "label": "Upcoming forecast revision",
-  "mode": "upcoming",
+  "label": "Retrospective as-of comparison",
+  "mode": "retrospective",
   "model_sources": [
     "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
   ],
   "original_captured_at_utc": "2026-11-13T09:18:11.078884+00:00",
+  "original_hit": false,
   "original_kickoff_utc": "2026-11-23T23:00:00Z",
   "original_model": "reference-informed-v7-v6-retained",
   "original_provider": "API-Football",
@@ -36,7 +40,7 @@
   "provenance": {
     "history_days": 730,
     "provider": "API-Football",
-    "requested_as_of_utc": "2026-11-22T20:04:13.233530+00:00",
+    "requested_as_of_utc": "2026-11-13T09:18:11.078884+00:00",
     "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
     "seasons": [
       2026,
@@ -44,26 +48,26 @@
     ],
     "sources": [
       {
-        "age_seconds": 18.193023204803467,
+        "age_seconds": 11.81897258758545,
         "cache_status": "fresh_cache",
         "endpoint": "/fixtures",
-        "fetched_at_utc": "2026-11-22T20:03:58.423032+00:00",
+        "fetched_at_utc": "2026-11-24T05:59:30.866514+00:00",
         "freshness_known": true,
         "provider": "API-Football",
-        "retrieved_at_utc": "2026-11-22T20:04:16.616055+00:00",
+        "retrieved_at_utc": "2026-11-24T05:59:42.685487+00:00",
         "season": 2026,
         "source_season_mismatches": 0,
         "stale": false,
         "ttl_seconds": 900
       },
       {
-        "age_seconds": 17.959228515625,
+        "age_seconds": 11.577033281326294,
         "cache_status": "fresh_cache",
         "endpoint": "/fixtures",
-        "fetched_at_utc": "2026-11-22T20:03:58.662109+00:00",
+        "fetched_at_utc": "2026-11-24T05:59:31.112355+00:00",
         "freshness_known": true,
         "provider": "API-Football",
-        "retrieved_at_utc": "2026-11-22T20:04:16.621338+00:00",
+        "retrieved_at_utc": "2026-11-24T05:59:42.689388+00:00",
         "season": 2025,
         "source_season_mismatches": 0,
         "stale": false,
@@ -72,75 +76,76 @@
     ]
   },
   "provider": "API-Football",
-  "rescored_at_utc": "2026-11-22T20:04:13.233530+00:00",
-  "revision_id": "20261122T200413233530Z-03fcc819-280e42d54d6a",
-  "run_id": "20261122T200413233530Z-03fcc819",
+  "rescored_at_utc": "2026-11-24T05:59:37.323778+00:00",
+  "revision_id": "20261124T055937323778Z-46c09c91-33f18a4b678a",
+  "run_id": "20261124T055937323778Z-46c09c91",
   "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.0127141295217021,
-    "home": 1.3415610633744701
+    "away": 0.9791894508190016,
+    "home": 1.362435437263753
   },
+  "updated_hit": true,
   "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.27472158992790796,
-    "draw": 0.2904918603307759,
-    "home": 0.43478654974131603
+    "away": 0.2618979026517916,
+    "draw": 0.2895595808083054,
+    "home": 0.4485425165399032
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.13675853962386827,
+  "updated_score_probability": 0.135998386181885,
   "updated_top10_scores": [
     [
       1,
       1,
-      0.13675853962386827
+      0.135998386181885
     ],
     [
       1,
       0,
-      0.11965668944527125
+      0.12332908858879449
     ],
     [
       0,
       0,
-      0.10270336034477731
+      0.10386926552729041
+    ],
+    [
+      2,
+      0,
+      0.08925798927831832
+    ],
+    [
+      2,
+      1,
+      0.08740048150292537
     ],
     [
       0,
       1,
-      0.08842862464078291
-    ],
-    [
-      2,
-      1,
-      0.08654242069669478
-    ],
-    [
-      2,
-      0,
-      0.085455923022559
+      0.08647184541273928
     ],
     [
       1,
       2,
-      0.06532891764647814
+      0.06281518164063107
     ],
     [
       0,
       2,
-      0.04869619387295725
+      0.04610507030907664
     ],
     [
       2,
       2,
-      0.04382136612149501
+      0.04279081474222025
     ],
     [
       3,
-      1,
-      0.03870064731938563
+      0,
+      0.0405360825596028
     ]
   ]
 }

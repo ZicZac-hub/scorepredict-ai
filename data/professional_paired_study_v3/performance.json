@@ -1,0 +1,195 @@
+{
+  "conflicting_result_identities": 0,
+  "evaluated_at_utc": "2026-11-24T06:03:06.512715+00:00",
+  "external_requests": 0,
+  "invalid_opportunities": 0,
+  "limitations": [
+    "Historical baseline and challenger have different evidence ages; this measures the whole evidence refresh, not a time-matched model-only effect.",
+    "Set Brier scores concern different five-score events and are descriptive; proper paired comparison uses the same actual score/outcome.",
+    "Wilson and normal intervals assume suitable independence; serial teams/leagues and repeated scheduled environments can violate it.",
+    "Missing arms remain abstentions; compare models only on explicitly reported common verified pairs.",
+    "Lineup context has zero numerical weight; no player-impact improvement or betting ROI is established."
+  ],
+  "lineup_coverage": {
+    "both_matches_confirmed_at_decision": 0,
+    "numerical_lineup_weight": 0.0,
+    "some_reported_lineup_at_decision": 0
+  },
+  "methods": {
+    "baseline_v8": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "market_only": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "xg_market": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "xg_only": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    }
+  },
+  "model_promoted": false,
+  "opportunities": 0,
+  "paired_comparisons": {
+    "market_only": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "market_only": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "xg_market": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "xg_market": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "xg_only": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "xg_only": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    }
+  },
+  "pending_opportunities": 0,
+  "realized_roi": null,
+  "result_rejections": {},
+  "rows": [],
+  "source_rejections": {},
+  "target_70_percent_proven": false,
+  "valid_opportunities": 0,
+  "verified_opportunities": 0,
+  "version": "professional-fixed-pair-ablation-v3"
+}

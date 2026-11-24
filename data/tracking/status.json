@@ -12,8 +12,8 @@
       "hit": 3,
       "hit_rate": 0.13636363636363635,
       "miss": 19,
-      "pending": 0,
-      "recorded": 22,
+      "pending": 1,
+      "recorded": 23,
       "verified": 22
     },
     "ai_groqcloud": {
@@ -28,8 +28,8 @@
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 1,
-      "pending": 0,
-      "recorded": 1,
+      "pending": 1,
+      "recorded": 2,
       "verified": 1
     },
     "automatic_five_double": {
@@ -44,8 +44,8 @@
       "hit": 12,
       "hit_rate": 0.14814814814814814,
       "miss": 69,
-      "pending": 21,
-      "recorded": 102,
+      "pending": 22,
+      "recorded": 103,
       "verified": 81
     },
     "frozen_v12": {
@@ -76,24 +76,24 @@
       "hit": 6,
       "hit_rate": 0.125,
       "miss": 42,
-      "pending": 21,
-      "recorded": 69,
+      "pending": 22,
+      "recorded": 70,
       "verified": 48
     },
     "frozen_v8_near": {
       "hit": 12,
       "hit_rate": 0.14814814814814814,
       "miss": 69,
-      "pending": 21,
-      "recorded": 102,
+      "pending": 22,
+      "recorded": 103,
       "verified": 81
     },
     "frozen_v9": {
       "hit": 13,
       "hit_rate": 0.1566265060240964,
       "miss": 70,
-      "pending": 21,
-      "recorded": 104,
+      "pending": 22,
+      "recorded": 105,
       "verified": 83
     },
     "website_original": {
@@ -105,7 +105,7 @@
       "verified": 59
     }
   },
-  "checked_at_utc": "2026-11-24T04:50:49.399568+00:00",
+  "checked_at_utc": "2026-11-24T06:03:13.162562+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -19291,6 +19291,35 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-24T05:59:33.151605+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492461', 'v10')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Corinthians",
+          "away_team_id": "131",
+          "fixture_id": "1492461",
+          "home_team": "Atletico-MG",
+          "home_team_id": "1062",
+          "kickoff_utc": "2026-11-25T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v10",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-25T23:00:00.000000Z",
+      "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-14T02:29:01.618954+00:00",
       "choices": [
         [
@@ -19316,6 +19345,93 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-25T23:00:00.000000Z",
       "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-24T05:59:32.000357+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492461', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Corinthians",
+          "away_team_id": "131",
+          "fixture_id": "1492461",
+          "home_team": "Atletico-MG",
+          "home_team_id": "1062",
+          "kickoff_utc": "2026-11-25T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-25T23:00:00.000000Z",
+      "source": "frozen_v8_near",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-24T05:59:33.124304+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492461', 'v9')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Corinthians",
+          "away_team_id": "131",
+          "fixture_id": "1492461",
+          "home_team": "Atletico-MG",
+          "home_team_id": "1062",
+          "kickoff_utc": "2026-11-25T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v9",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-25T23:00:00.000000Z",
+      "source": "frozen_v9",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-24T05:59:33.124304+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492461', 'v8_control')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Corinthians",
+          "away_team_id": "131",
+          "fixture_id": "1492461",
+          "home_team": "Atletico-MG",
+          "home_team_id": "1062",
+          "kickoff_utc": "2026-11-25T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_control",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-25T23:00:00.000000Z",
+      "source": "frozen_v8_control",
       "status": "pending"
     },
     {
@@ -23083,6 +23199,64 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-24T17:45:00.000000Z",
       "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-24T06:03:00.770926+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1635641', 'gemini')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Lask Linz",
+          "away_team_id": "1026",
+          "fixture_id": "1635641",
+          "home_team": "Bodo/Glimt",
+          "home_team_id": "327",
+          "kickoff_utc": "2026-11-24T17:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-24T17:45:00.000000Z",
+      "source": "ai_gemini",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-24T06:03:00.770926+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1635641', 'openai')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Lask Linz",
+          "away_team_id": "1026",
+          "fixture_id": "1635641",
+          "home_team": "Bodo/Glimt",
+          "home_team_id": "327",
+          "kickoff_utc": "2026-11-24T17:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gpt-4o-mini",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-24T17:45:00.000000Z",
+      "source": "ai_openai",
       "status": "pending"
     },
     {
@@ -45023,8 +45197,8 @@
     "hit": 92,
     "hit_rate": 0.141321044546851,
     "miss": 559,
-    "pending": 790,
-    "recorded": 1441,
+    "pending": 796,
+    "recorded": 1447,
     "verified": 651
   },
   "unique_verified_single_fixtures": 89
