@@ -200,3 +200,44 @@ def test_enrollment_deduplicates_already_saved_physical_result(tmp_path):
     assert summary["already_in_saved_result_file"]==1
     assert summary["unique_original_fixtures_enrolled"]==4
     assert summary["new_five_score_predictions_issued"] is False
+
+
+def test_cup_finals_use_regulation_score_and_missing_score_stays_pending(tmp_path, monkeypatch):
+    root,v28,results,diagnostic,records=prepare(tmp_path)
+    configure(monkeypatch,root,v28,results,diagnostic)
+    base,seen=fixture_response(records)
+    def request(*args,**kwargs):
+        response=base(*args,**kwargs)
+        for item in response["data"]:
+            fid=item["fixture"]["id"]
+            if fid==1:
+                item["fixture"]["status"]["short"]="AET"
+                item["goals"]={"home":3,"away":2}
+                item["score"]={"fulltime":{"home":2,"away":2}}
+            elif fid==2:
+                item["fixture"]["status"]["short"]="PEN"
+                item["goals"]={"home":1,"away":1}
+                item["score"]={"fulltime":{"home":0,"away":0},
+                               "penalty":{"home":5,"away":4}}
+            elif fid==3:
+                item["fixture"]["status"]["short"]="AET"
+                item["goals"]={"home":4,"away":3}
+                item["score"]={"fulltime":{"home":None,"away":None}}
+        return response
+    now=SELECT+timedelta(hours=11)
+    status=backfill.run(request=request,now=now)
+    received=json.loads(results.read_text())
+    assert set(received)=={"1","2","4"}
+    assert received["1"]["status"]=="AET"
+    assert (received["1"]["home_goals"],received["1"]["away_goals"])==(2,2)
+    assert received["2"]["status"]=="PEN"
+    assert (received["2"]["home_goals"],received["2"]["away_goals"])==(0,0)
+    assert received["4"]["status"]=="FT"
+    assert all(r["score_basis"]=="regulation" for r in received.values())
+    assert status["missing_regulation_score"]==1
+    assert status["requests"]==1
+    assert len(seen)==4
+    second=backfill.run(request=request,now=now+timedelta(minutes=1))
+    assert second["requested_fixture_ids"]==1
+    assert second["new_verified"]==[]
+    assert seen[-1]=="3"

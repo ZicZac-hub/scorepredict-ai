@@ -17,8 +17,8 @@ def _accept_verified(item,fid,frozen,existing,status,clock):
     teams=item.get("teams") or {}
     home=teams.get("home") or {}
     away=teams.get("away") or {}
-    goals=item.get("goals") or {}
-    if (fixture.get("status") or {}).get("short")!="FT":
+    final_status=(fixture.get("status") or {}).get("short")
+    if final_status not in ("FT","AET","PEN"):
         return
     if (str(fixture.get("id"))!=fid or
         str(home.get("id"))!=str(frozen["home_team_id"]) or
@@ -26,15 +26,21 @@ def _accept_verified(item,fid,frozen,existing,status,clock):
         utc(fixture["date"])!=utc(frozen["kickoff_utc"])):
         status["skipped_identity"]+=1
         return
-    hg,ag=goals.get("home"),goals.get("away")
+    # API-Football goals may include extra time for AET/PEN. Only the
+    # provider\u0027s explicit 90-minute fulltime score is valid in those cases.
+    fulltime=(item.get("score") or {}).get("fulltime") or {}
+    if final_status=="FT" and not all(type(fulltime.get(side)) is int for side in ("home","away")):
+        fulltime=item.get("goals") or {}
+    hg,ag=fulltime.get("home"),fulltime.get("away")
     if type(hg)!=int or type(ag)!=int or hg<0 or ag<0:
+        status["missing_regulation_score"]=status.get("missing_regulation_score",0)+1
         return
     existing[fid]={"provider":"API-Football","fixture_id":int(fid),
         "home_team_id":int(home["id"]),"away_team_id":int(away["id"]),
         "home_team":home.get("name"),"away_team":away.get("name"),
         "kickoff_utc":utc(fixture["date"]).isoformat(),
         "home_goals":hg,"away_goals":ag,"score_basis":"regulation",
-        "status":"FT","verified_at_utc":clock.isoformat(),
+        "status":final_status,"verified_at_utc":clock.isoformat(),
         "evidence_version":2}
     status["new_verified"].append(fid)
 
