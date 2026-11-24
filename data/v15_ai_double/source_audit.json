@@ -12,19 +12,20 @@
   "configured_provider_count": 6,
   "latest_scheduled_attempted": 1,
   "latest_scheduled_captured": 1,
-  "saved_valid_individual_ai_fixture_records": 23,
+  "saved_valid_individual_ai_fixture_records": 24,
   "actual_successful_provider_counts_by_name": {
-    "gemini": 23,
-    "openai": 2,
+    "gemini": 24,
     "groqcloud": 13,
-    "cohere": 2
+    "cohere": 3,
+    "openai": 3
   },
   "unique_providers_with_valid_saved_votes": 4,
   "frozen_original_double_sets_checked": 8,
-  "original_sets_with_any_individual_ai_evidence": 0,
+  "original_sets_with_any_individual_ai_evidence": 1,
   "original_sets_with_at_least_two_ai_votes_on_both_legs": 0,
   "source_match_abstention_counts": {
-    "no_source_matched_pre_kickoff_ai_panel": 16
+    "no_source_matched_pre_kickoff_ai_panel": 15,
+    "ready": 1
   },
   "complete_five_ai_panels_with_verified_results": 0,
   "complete_ten_ai_panels_with_verified_results": 0,
@@ -164,16 +165,20 @@
     {
       "sydney_day": "2026-11-25",
       "actual_provider_votes_per_leg": [
-        0,
+        3,
         0
       ],
       "actual_provider_names_per_leg": [
-        [],
+        [
+          "cohere",
+          "gemini",
+          "openai"
+        ],
         []
       ],
       "shared_provider_names": [],
       "leg_reasons": [
-        "no_source_matched_pre_kickoff_ai_panel",
+        "ready",
         "no_source_matched_pre_kickoff_ai_panel"
       ],
       "both_legs_have_at_least_two_providers": false,
