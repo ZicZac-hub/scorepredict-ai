@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22781588727653967,
-          "expected_events": 30.777273504931244,
+          "brier": 0.22402331267876938,
+          "expected_events": 31.26091686546256,
           "observed_events": 32,
-          "observed_rate": 0.367816091954023,
-          "predicted_rate": 0.3537617644244971,
-          "rate_gap_observed_minus_predicted": 0.014054327529525925
+          "observed_rate": 0.3595505617977528,
+          "predicted_rate": 0.35124625691530964,
+          "rate_gap_observed_minus_predicted": 0.008304304882443164
         },
         "exact_0_3": {
-          "brier": 0.011237971082876818,
-          "expected_events": 1.880686750722754,
+          "brier": 0.010989973160771348,
+          "expected_events": 1.908984994223246,
           "observed_events": 1,
-          "observed_rate": 0.011494252873563218,
-          "predicted_rate": 0.021617089088767288,
-          "rate_gap_observed_minus_predicted": -0.01012283621520407
+          "observed_rate": 0.011235955056179775,
+          "predicted_rate": 0.021449269598014,
+          "rate_gap_observed_minus_predicted": -0.010213314541834224
         },
         "exact_3_0": {
-          "brier": 0.03299357708729304,
-          "expected_events": 3.640481863386212,
+          "brier": 0.03229952778023471,
+          "expected_events": 3.7317571697335694,
           "observed_events": 3,
-          "observed_rate": 0.034482758620689655,
-          "predicted_rate": 0.04184461911938175,
-          "rate_gap_observed_minus_predicted": -0.007361860498692094
+          "observed_rate": 0.033707865168539325,
+          "predicted_rate": 0.041929855839703024,
+          "rate_gap_observed_minus_predicted": -0.008221990671163701
         },
         "winning_margin_at_least_three": {
-          "brier": 0.17737499270957466,
-          "expected_events": 15.15968741406957,
+          "brier": 0.173740031252264,
+          "expected_events": 15.4078917214526,
           "observed_events": 19,
-          "observed_rate": 0.21839080459770116,
-          "predicted_rate": 0.1742492806214893,
-          "rate_gap_observed_minus_predicted": 0.04414152397621184
+          "observed_rate": 0.21348314606741572,
+          "predicted_rate": 0.17312237889272583,
+          "rate_gap_observed_minus_predicted": 0.040360767174689886
         }
       },
-      "verified_fixtures": 87
+      "verified_fixtures": 89
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.23270942858062071,
-          "expected_events": 27.595955710777194,
+          "brier": 0.2282989229228418,
+          "expected_events": 28.0601459448005,
           "observed_events": 28,
-          "observed_rate": 0.35443037974683544,
-          "predicted_rate": 0.34931589507312905,
-          "rate_gap_observed_minus_predicted": 0.005114484673706411
+          "observed_rate": 0.345679012345679,
+          "predicted_rate": 0.3464215548740802,
+          "rate_gap_observed_minus_predicted": -0.0007425425284012285
         },
         "exact_0_3": {
-          "brier": 0.0006266256796421665,
-          "expected_events": 1.6698895256071717,
+          "brier": 0.0006159897451967907,
+          "expected_events": 1.697682957803601,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.021137842096293314,
-          "rate_gap_observed_minus_predicted": -0.021137842096293314
+          "predicted_rate": 0.020959048861772852,
+          "rate_gap_observed_minus_predicted": -0.020959048861772852
         },
         "exact_3_0": {
-          "brier": 0.03605722843932279,
-          "expected_events": 3.2931439446752955,
+          "brier": 0.03521943737127365,
+          "expected_events": 3.3847534745069723,
           "observed_events": 3,
-          "observed_rate": 0.0379746835443038,
-          "predicted_rate": 0.04168536638829488,
-          "rate_gap_observed_minus_predicted": -0.003710682843991082
+          "observed_rate": 0.037037037037037035,
+          "predicted_rate": 0.04178707993218484,
+          "rate_gap_observed_minus_predicted": -0.004750042895147806
         },
         "winning_margin_at_least_three": {
-          "brier": 0.1807007273153506,
-          "expected_events": 13.47648548424875,
+          "brier": 0.17660699378472403,
+          "expected_events": 13.719389447081491,
           "observed_events": 18,
-          "observed_rate": 0.22784810126582278,
-          "predicted_rate": 0.17058842385125,
-          "rate_gap_observed_minus_predicted": 0.05725967741457279
+          "observed_rate": 0.2222222222222222,
+          "predicted_rate": 0.16937517835903076,
+          "rate_gap_observed_minus_predicted": 0.052847043863191466
         }
       },
-      "verified_fixtures": 79
+      "verified_fixtures": 81
     }
   },
   "focus": {
@@ -674,6 +674,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-1",
+        "captured_at_utc": "2026-11-23T22:11:21.203471+00:00",
+        "fixture_id": "1492463",
+        "fixture_name": "Botafogo vs Sao Paulo",
+        "forecast_id": "ab74c4ef2d6a8a02c9c0370bca7fb1a7812c7b2301115f8df5e88b104cc4fc60",
+        "kickoff_utc": "2026-11-23T23:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.12982614751760663,
+          "actual_exact_score_rank_min": 1,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.21797649984578066
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.015515102306501296
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.040579240774845295
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.10934196031953314
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-0",
         "captured_at_utc": "2026-11-22T21:44:23.193883+00:00",
         "fixture_id": "1492464",
@@ -814,6 +843,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.12232125391125719
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-2",
+        "captured_at_utc": "2026-11-14T02:00:06.724832+00:00",
+        "fixture_id": "1492469",
+        "fixture_name": "Santos vs Gremio",
+        "forecast_id": "3ec1cf0bb39c57ea6b29bbead182e7b04eff2fb8c42f6195ae8e5ddaffa87591",
+        "kickoff_utc": "2026-11-24T00:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.037776780642299675,
+          "actual_exact_score_rank_min": 11,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2656668606855314
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.012783141193990592
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.050696065572511856
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.13886234706349668
           }
         },
         "provider": "API-Football"
@@ -3170,6 +3228,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-1",
+        "captured_at_utc": "2026-11-22T20:04:09.593493+00:00",
+        "fixture_id": "1492463",
+        "fixture_name": "Botafogo vs Sao Paulo",
+        "forecast_id": "c0039275102010018137e5ce2bf569a57e727d1c7e0d6ebeebb73a4f3b21f0c6",
+        "kickoff_utc": "2026-11-23T23:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.1303715327087959,
+          "actual_exact_score_rank_min": 1,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.21740477665069446
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.015555515751600349
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.040455587938243706
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.10904490541064132
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-0",
         "captured_at_utc": "2026-11-22T20:04:01.724242+00:00",
         "fixture_id": "1492464",
@@ -3281,6 +3368,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.12416323984835297
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-2",
+        "captured_at_utc": "2026-11-22T20:04:10.621547+00:00",
+        "fixture_id": "1492469",
+        "fixture_name": "Santos vs Gremio",
+        "forecast_id": "0427d4414921a4e2ebd204fb603d28a30fa00d818e13e27ced686d8bc0b6cae9",
+        "kickoff_utc": "2026-11-24T00:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.03771552671327561,
+          "actual_exact_score_rank_min": 11,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.24678545737261184
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.012237916444828835
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05115394189343285
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1338590574220992
           }
         },
         "provider": "API-Football"
@@ -5116,7 +5232,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-24T01:44:10.658118+00:00",
+  "result_cutoff_utc": "2026-11-24T03:15:46.915577+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
