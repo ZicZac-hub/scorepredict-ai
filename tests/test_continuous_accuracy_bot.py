@@ -329,3 +329,28 @@ def test_uefa_monitor_separates_provider_states_from_accuracy():
     assert new["uefa_history_season_source_states"] == {
         "rows_returned":1,"empty_response":1,"request_unavailable":1,"stale_response":1}
     assert new["not_a_prediction_accuracy_measure"]
+
+
+def test_unified_monitor_never_counts_missing_or_pending_as_losses():
+    from continuous_accuracy_bot import unified_status
+    missing = unified_status(None,None)
+    assert missing["report_available"] is False and missing["observed_hit_rate"] is None
+    pending = unified_status({"methods":{"unified_final":{"issued":1,"pending":1,"verified":0,"hits":0}}},
+                             {"new_trials":["2035-01-01"],"outside_decision_window":3})
+    assert pending["pending"] == 1 and pending["observed_hit_rate"] is None
+    assert pending["outside_decision_window"] == 3
+    done = unified_status({"methods":{"unified_final":{"verified":4,"hits":1}},
+                           "paired_comparisons":{"unified_final":{"verified_common_pairs":4}}}, {})
+    assert done["observed_hit_rate"] == .25
+    assert done["same_pair_comparison"]["verified_common_pairs"] == 4
+    assert done["target_70_percent_proven"] is False
+
+
+def test_uefa_one_match_short_is_reported_without_relaxation():
+    from continuous_accuracy_bot import source_capture_health
+    now = datetime(2035,1,1,tzinfo=timezone.utc)
+    report = source_capture_health({"uefa_two_season_history_coverage":[
+        {"competition":"CL","minimum_missing_to_five":1,"seasons":[]},
+        {"competition":"EL","minimum_missing_to_five":2,"seasons":[]}]},now=now)
+    assert report["uefa_fixtures_one_qualified_match_short"] == 1
+    assert report["not_a_prediction_accuracy_measure"]

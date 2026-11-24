@@ -92,7 +92,9 @@ def source_capture_health(coverage, *, now):
             state = season.get("source_state")
             if state in ("not_observed", "request_unavailable", "stale_response", "empty_response", "rows_returned"):
                 uefa_states[state] = uefa_states.get(state, 0) + 1
+    one_short = sum(isinstance(row,dict) and type(row.get("minimum_missing_to_five")) is int and row["minimum_missing_to_five"]==1 for row in uefa_rows)
     return {
+        "uefa_fixtures_one_qualified_match_short": one_short,
         "uefa_history_audit_available": isinstance(raw_uefa, list),
         "uefa_history_fixture_observations": len(uefa_rows),
         "uefa_history_season_source_states": uefa_states,
@@ -126,7 +128,32 @@ def source_capture_health(coverage, *, now):
     }
 
 
-def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, v37=None, v38=None):
+def unified_status(performance, capture):
+    """Keep original results, V41 outcomes and availability distinct."""
+    available = isinstance(performance, dict) and bool(performance)
+    report = performance if available else {}
+    capture = capture if isinstance(capture,dict) else {}
+    arm = (report.get("methods") or {}).get("unified_final") or {}
+    comparison = (report.get("paired_comparisons") or {}).get("unified_final") or {}
+    n, hits = arm.get("verified"), arm.get("hits")
+    return {
+        "report_available": available,
+        "evaluated_at_utc": report.get("evaluated_at_utc"),
+        "capture_at_utc": capture.get("completed_at_utc"),
+        "outside_decision_window": capture.get("outside_decision_window"),
+        "new_trials": capture.get("new_trials") or [],
+        "issued": arm.get("issued"), "pending": arm.get("pending"),
+        "abstained": arm.get("abstained"), "verified": n, "hits": hits,
+        "observed_hit_rate": as_rate(hits,n),
+        "same_pair_comparison": comparison,
+        "source_rejections": report.get("source_rejections") or {},
+        "minimum_review_pairs": 100,
+        "research_only": True,
+        "target_70_percent_proven": False,
+    }
+
+
+def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, v37=None, v38=None, v39=None, v41=None, v41_capture=None):
     """Only preexisting independently validated archived report totals."""
     baseline = (v8 or {}).get("observed") or {}
     matched_v8 = (v25 or {}).get("v8") or {}
@@ -260,6 +287,14 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, 
             } for name, row in (v38.get("methods") or {}).items() if isinstance(row, dict)},
             "research_only_not_live_promoted": True,
         },
+        "v39_challengers": {
+            "report_available": bool(v39),
+            "frozen_days": (v39 or {}).get("frozen_prospective_days"),
+            "verified_days": (v39 or {}).get("verified_independent_sydney_days"),
+            "pending_days": (v39 or {}).get("pending_days"),
+            "research_only": True,
+        },
+        "v41_unified_final": unified_status(v41, v41_capture),
         "next_priority": next_priority,
         "production_model_changed_by_bot": False,
         "ai_research_memo_is_non_executable": True,
@@ -297,7 +332,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     snapshot = {key: report[key] for key in (
         "target_five_double_hit_rate", "integrity", "original_v8_daily_five_doubles",
         "v8_v25_same_pair", "v28_upstream_capture", "source_capture_health", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
-        "v35_challengers", "v36_challengers", "v38_challengers", "next_priority",
+        "v35_challengers", "v36_challengers", "v38_challengers", "v39_challengers", "v41_unified_final", "next_priority",
     )}
     payload = {
         "model": model,
@@ -346,6 +381,9 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         coverage=load("data/prospective_ledger/capture_coverage.json"),
         v37=load("data/v37_sparse_prospective/status.json"),
         v38=load("data/v38_prospective_challengers/status.json"),
+        v39=load("data/v39_prospective_challengers/status.json"),
+        v41=load("data/v41_unified_ensemble/performance.json"),
+        v41_capture=load("data/v41_unified_ensemble/status.json"),
     )
     destination = Path(root)
     destination.mkdir(parents=True, exist_ok=True)
