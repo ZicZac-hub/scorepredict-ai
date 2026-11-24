@@ -275,3 +275,32 @@ def test_provider_response_after_kickoff_cannot_replace_or_add_packet(monkeypatc
     assert base.read_bytes()==original
     assert list((root/"versions").glob("*.json"))==[]
     assert json.loads((root/"usage"/"2031-06-01.json").read_text())["attempts"]==1
+
+
+def test_upcoming_fixed_pair_reserve_blocks_unrelated_near_kickoff(monkeypatch,tmp_path):
+    source,pairs,legs=fixture_sources(tmp_path)
+    early=NOW-timedelta(minutes=30)
+    unrelated={**model(3,10),"forecast_id":"unrelated-original"}
+    root=tmp_path/"packets"
+    usage=root/"usage"/"2031-06-01.json"
+    usage.parent.mkdir(parents=True)
+    usage.write_text(json.dumps({"attempts":4}))
+    current,seen=arrange_capture(monkeypatch,[unrelated,*legs],at=[early])
+    result=collector.capture_pair(root=root,source_root=source,pair_root=pairs,
+        now=early,clock=lambda:current[0],enabled=True,api_key="test")
+    assert result["reserved_future_pair_fixture_ids"]==[leg["fixture_id"] for leg in legs]
+    assert result["attempted_legs"]==0 and seen==[]
+    assert "3:fixed_pair_common_cutoff_budget_reserved" in result["skipped"]
+    assert json.loads(usage.read_text())["attempts"]==4
+    current[0]=NOW
+    result=collector.capture_pair(root=root,source_root=source,pair_root=pairs,
+        now=NOW,clock=lambda:current[0],enabled=True,api_key="test")
+    assert seen==[leg["fixture_id"] for leg in legs]
+    assert result["daily_attempts_used"]==6
+    assert result["reserved_future_pair_fixture_ids"]==[]
+
+
+def test_reservation_does_not_start_before_original_pair_was_issued(tmp_path):
+    source,pairs,legs=fixture_sources(tmp_path)
+    assert collector.targeted_pair_models(source_root=source,pair_root=pairs,
+        now=NOW-timedelta(hours=2),reserve_ahead=True)==[]
