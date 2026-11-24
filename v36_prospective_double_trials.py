@@ -8,7 +8,7 @@ fetch new football data, or promote live models.
 import argparse
 from collections import Counter
 from datetime import datetime, timezone
-from math import fsum
+from math import fsum, isclose
 import json
 from pathlib import Path
 
@@ -93,6 +93,21 @@ def freeze(*, root=ORIGINAL_ROOT, v28_root=V28_ROOT, out=ROOT, now=None):
     return {"created_days": created, "skipped": dict(skipped)}
 
 
+def _reproduces_packet(expected, actual):
+    """Allow only relative floating-point roundoff, never ticket or identity edits."""
+    if type(expected) is not type(actual):
+        return False
+    if isinstance(expected, dict):
+        return expected.keys() == actual.keys() and all(
+            _reproduces_packet(value, actual[key]) for key, value in expected.items())
+    if isinstance(expected, list):
+        return len(expected) == len(actual) and all(
+            _reproduces_packet(a, b) for a, b in zip(expected, actual))
+    if isinstance(expected, float):
+        return isclose(expected, actual, rel_tol=2e-14, abs_tol=0.0)
+    return expected == actual
+
+
 def verify_packet(file, *, root, v28_root, clock):
     file = Path(file)
     packet = json.loads(file.read_text(encoding="utf-8"))
@@ -103,7 +118,8 @@ def verify_packet(file, *, root, v28_root, clock):
     issued = utc(packet["frozen_at_utc"])
     if issued > utc(clock) or not _frozen_eligible(original, issued):
         raise ValueError("late_or_future_v36_issue")
-    if build_packet(original, items, issued) != packet:
+    reproduced = build_packet(original, items, issued)
+    if not _reproduces_packet(reproduced, packet):
         raise ValueError("tampered_v36_source_or_ticket")
     return packet
 
