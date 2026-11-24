@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from v10_prospective import utc
-from v21_capture_sources import qualified_packet
+from v21_capture_sources import qualified_packet, confirmed_provider_xi_ids
 
 SOURCE_ROOT = Path("data/v21_sources")
 MARKET_MAX_AGE = timedelta(hours=12)
@@ -113,12 +113,18 @@ def trace_leg(candidate, now, *, root=SOURCE_ROOT, packet_loader=None):
         ]
         info["verified_historical_xg_fixtures_per_team"] = counts
         info["verified_historical_xg_both_teams"] = min(counts) >= 1
-        lineups = packet.get("confirmed_starting_xi") or []
-        info["confirmed_starting_xi_both_teams"] = all(
-            any(str(item.get("team_id")) == tid and
-                item.get("provider_reported") is True and
-                len(item.get("starting_xi") or []) == 11 for item in lineups)
-            for tid in (home, away))
+        # A history-rich snapshot can hide a newer, independently qualified
+        # lineup snapshot. Read it separately, never synthesize a source packet.
+        lineup_packet = packet
+        ids = {home, away}
+        if set(confirmed_provider_xi_ids(source, packet, now=clock)) != ids:
+            lineup_record = packet_loader(root, source, now=clock, priority="lineup")
+            if qualified_packet(lineup_record, source, now=clock):
+                lineup_packet = lineup_record["provider_snapshot"]
+        info["confirmed_starting_xi_both_teams"] = (
+            set(confirmed_provider_xi_ids(source, lineup_packet, now=clock)) == ids)
+        if info["confirmed_starting_xi_both_teams"]:
+            info["lineup_snapshot_at_utc"] = lineup_packet["captured_at_utc"]
         info["reported_injury_entries"] = len(packet.get("reported_injuries") or [])
         # A history-rich packet may contain stale odds even when another
         # separately frozen, identity-matched packet contains current prices.
