@@ -2,12 +2,29 @@
   "capture": {
     "created_days": [],
     "skipped": {
+      "already_frozen": 1,
       "original_v28_window_expired": 4
     }
   },
-  "days": [],
-  "evaluated_at_utc": "2026-11-24T19:25:37.100286+00:00",
-  "frozen_prospective_days": 0,
+  "days": [
+    {
+      "frozen_at_utc": "2026-11-24T20:06:06.449953+00:00",
+      "original_selected_fixture_keys": [
+        [
+          "API-Football",
+          "1563285"
+        ],
+        [
+          "API-Football",
+          "1563286"
+        ]
+      ],
+      "status": "pending",
+      "sydney_day": "2026-11-26"
+    }
+  ],
+  "evaluated_at_utc": "2026-11-24T20:27:55.455737+00:00",
+  "frozen_prospective_days": 1,
   "invalid_or_tampered_v38_sets_excluded": {},
   "methods": {
     "baseline": {
@@ -48,7 +65,7 @@
   "no_live_model_change": true,
   "not_validated_at_seventy_percent": true,
   "original_v28_rejected_or_tampered": {},
-  "pending_days": 0,
+  "pending_days": 1,
   "ready_for_separate_production_review": [],
   "same_pair_comparisons_only": true,
   "unique_verified_physical_fixtures": 0,
