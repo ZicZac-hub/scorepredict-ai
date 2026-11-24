@@ -10,6 +10,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from math import comb, fsum
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -139,6 +140,62 @@ def freeze(*, root=ORIGINAL_ROOT, v28_root=V28_ROOT, out=ROOT, now=None):
     return {"created_days": made, "skipped": dict(reasons)}
 
 
+
+def _same_portfolio_with_float_tolerance(reproduced, saved):
+    """Strict source/ticket equality with 1e-12 absolute numeric tolerance.
+
+    Only cross-environment NumPy rounding may differ. Original V28 receipts,
+    method names, every selected scoreline and their ordering MUST match.
+    No frozen file is rewritten and no changed ticket can become verified.
+    """
+    if not isinstance(saved,dict) or set(saved)!=set(reproduced):
+        return False
+    if any(saved[k]!=v for k,v in reproduced.items() if k!="policies"):
+        return False
+    if not isinstance(saved.get("policies"),dict) or (
+            set(saved["policies"])!=set(reproduced["policies"])):
+        return False
+    for method, expected in reproduced["policies"].items():
+        candidate=saved["policies"].get(method)
+        if not isinstance(candidate,dict) or set(candidate)!=set(expected):
+            return False
+        frozen_grids=candidate["score_grids"]
+        expected_grids=expected["score_grids"]
+        if not isinstance(frozen_grids,list) or len(frozen_grids)!=2:
+            return False
+        for frozen, regenerated in zip(frozen_grids,expected_grids):
+            try:
+                if any(type(v) not in (float,int) for row in frozen for v in row):
+                    return False
+                x=np.asarray(frozen,dtype=float)
+                y=np.asarray(regenerated,dtype=float)
+                if (x.ndim!=2 or x.shape!=y.shape or min(x.shape)<5 or
+                        not np.isfinite(x).all() or np.any(x<0) or
+                        abs(float(x.sum())-1)>1e-6 or
+                        not np.allclose(x,y,rtol=0,atol=1e-12)):
+                    return False
+            except (TypeError,ValueError,OverflowError):
+                return False
+        frozen_picks=candidate["five_joint_scores"]
+        expected_picks=expected["five_joint_scores"]
+        if not isinstance(frozen_picks,list) or len(frozen_picks)!=5 or len(expected_picks)!=5:
+            return False
+        if len({(p.get("score1"),p.get("score2")) for p in frozen_picks
+                if isinstance(p,dict)})!=5:
+            return False
+        for old,new in zip(frozen_picks,expected_picks):
+            if (not isinstance(old,dict) or set(old)!=set(new) or
+                    old.get("score1")!=new["score1"] or
+                    old.get("score2")!=new["score2"]):
+                return False
+            p=old["joint_probability"]
+            q=new["joint_probability"]
+            if (type(p) not in (float,int) or type(q) not in (float,int)
+                    or not math.isfinite(p) or not math.isfinite(q)
+                    or p<0 or abs(p-q)>1e-12):
+                return False
+    return True
+
 def verify_packet(file, *, root, v28_root, clock):
     packet = json.loads(Path(file).read_text(encoding="utf-8"))
     if packet.get("version") != VERSION or packet.get("sydney_day") != Path(file).stem:
@@ -149,26 +206,8 @@ def verify_packet(file, *, root, v28_root, clock):
     if issued > clock or not _frozen_eligible(original, issued):
         raise ValueError("late_or_future_frozen_challenger")
     reproduced = original_portfolio(original, items, issued)
-    if reproduced != packet:
-        # Report only field names, not full original sensitive/large grids.
-        # Keep strict original-source integrity protection untouched.
-        different = sorted(k for k in set(reproduced) | set(packet)
-                           if reproduced.get(k) != packet.get(k))
-        if "policies" in different:
-            policies = [
-                str(method) + ":" + ",".join(
-                    sorted(k for k in
-                           set((reproduced["policies"].get(method) or {})) |
-                           set((packet.get("policies",{}).get(method) or {}))
-                           if (reproduced["policies"].get(method) or {}).get(k) !=
-                              (packet.get("policies",{}).get(method) or {}).get(k)))
-                for method in METHODS
-                if reproduced["policies"].get(method) !=
-                   (packet.get("policies",{}).get(method))
-            ]
-            different += ["policy_fields=" + ";".join(policies)]
-        raise ValueError("modified_original_forecast_or_challenger_tickets:"
-                         + ",".join(different)[:360])
+    if not _same_portfolio_with_float_tolerance(reproduced,packet):
+        raise ValueError("modified_original_forecast_or_challenger_tickets")
     return packet
 
 
