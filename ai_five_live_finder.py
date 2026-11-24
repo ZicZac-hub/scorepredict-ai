@@ -4,7 +4,7 @@ Never manufacture fixtures or statistical scores. A user click performs a
 single date-scoped API-Football fixture search and a small bounded batch of
 model evaluations; results are session-only and not counted as frozen wins.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from ai_five_double_engine import eligible
 from global_fixtures import global_fixtures
@@ -14,6 +14,38 @@ from on_demand_ai import utc
 
 MAX_NEW_MODELS_PER_CLICK = 12
 DEFAULT_NEW_MODELS_PER_CLICK = 4
+# The listed competitions typically have better supported league histories.
+# This is a collection priority, NEVER a claim that their scores are safer.
+HISTORY_PRIORITY_LEAGUES = frozenset((2,3,39,40,61,78,88,94,135,140))
+
+
+def _history_priority(event):
+    """Fetch order only: known established leagues before sparse youth leagues.
+
+    Never invent missing team histories, goals, probabilities or bookmaker data.
+    Every other genuine provider fixture stays eligible for a later batch.
+    """
+    fixture = event.get("fixture") or {}
+    league = event.get("league_id")
+    if league is None:
+        league = (fixture.get("competition") or {}).get("id")
+    try:
+        established = int(league) in HISTORY_PRIORITY_LEAGUES
+    except (TypeError,ValueError):
+        established = False
+    start = utc(fixture.get("utcDate"))
+    return (not established, start or datetime.max.replace(tzinfo=timezone.utc),
+            str(fixture.get("id") or ""))
+
+
+def _quota_backoff(report, clock):
+    report["quota_limited"] = True
+    report["quota_retry_after_utc"] = (clock + timedelta(minutes=30)).isoformat()
+    report["quota_retry_note"] = (
+        "Retry is manual after the cooldown; this does not refill the "
+        "provider's actual daily/monthly allowance."
+    )
+
 
 
 def _quota_limited(message):
@@ -33,7 +65,8 @@ def research_day(api_key, local_day, *, known_ids=None, limit=DEFAULT_NEW_MODELS
         return report
     events, source_errors = discover(api_key, local_day, 1)
     report["errors"].extend(str(e)[:150] for e in source_errors[:3])
-    report["quota_limited"] = any(_quota_limited(e) for e in source_errors)
+    if any(_quota_limited(e) for e in source_errors):
+        _quota_backoff(report, clock)
     future=[]
     for event in events:
         if event.get("source")!="API-Football":
@@ -64,34 +97,48 @@ def research_day(api_key, local_day, *, known_ids=None, limit=DEFAULT_NEW_MODELS
         }
         for event in future
     ]
-    previously=set(known_ids or [])
-    queued=[event for event in future
-            if str((event.get("fixture") or {}).get("id")) not in previously]
-    # A user-selected larger batch does not alter the default four-call
-    # policy; the hard cap protects the provider allowance.
-    max_attempts=max(0,min(int(limit),MAX_NEW_MODELS_PER_CLICK))
+    previously={str(x) for x in (known_ids or [])}
+    queued = []
+    already = set(previously)
+    for event in sorted(future, key=_history_priority):
+        fid = str((event.get("fixture") or {}).get("id"))
+        if fid not in already:
+            queued.append(event)
+            already.add(fid)
+    report["selection_policy"] = "established_league_history_first_then_kickoff"
+    report["prioritization_not_a_win_probability"] = True
+    # If discovery already failed on quota, do not spend another call on
+    # historical modelling. Preserve the previously retrieved fixture list.
+    if report["quota_limited"]:
+        report["remaining"] = len(queued)
+        report["checked_ids"] = []
+        return report
+    max_attempts = max(0,min(int(limit),MAX_NEW_MODELS_PER_CLICK))
+    completed_ids = []
     for event in queued[:max_attempts]:
-        report["checked"]+=1
+        fid = str(event["fixture"]["id"])
+        report["checked"] += 1
+        limited = False
         try:
-            row,err=model(api_key,event,model_variant="research_v8")
+            row, err = model(api_key,event,model_variant="research_v8")
             if isinstance(row,dict) and eligible(row,now=clock):
                 report["modeled"].append(row)
             else:
-                report["unmodeled"]+=1
+                report["unmodeled"] += 1
                 if err:
                     report["errors"].append(str(err)[:160])
-                    if _quota_limited(err):
-                        report["quota_limited"]=True
+                    limited = _quota_limited(err)
         except Exception as exc:
-            report["unmodeled"]+=1
+            report["unmodeled"] += 1
             report["errors"].append("Model research failed: "+type(exc).__name__)
-            if _quota_limited(type(exc).__name__):
-                report["quota_limited"]=True
-        # A quota failure affects the whole account. Never spin through the
-        # rest of the day's candidate fixtures after detecting it.
-        if report["quota_limited"]:
+            limited = _quota_limited(type(exc).__name__) or _quota_limited(str(exc))
+        if limited:
+            # A rate-limit failure is not a completed historical-model check:
+            # keep this match retryable after genuine provider access returns.
+            _quota_backoff(report, clock)
+            report["blocked_fixture_id"] = fid
             break
-    report["remaining"]=max(0,len(queued)-report["checked"])
-    report["checked_ids"]=[str((event["fixture"] or {})["id"])
-                           for event in queued[:report["checked"]]]
+        completed_ids.append(fid)
+    report["checked_ids"] = completed_ids
+    report["remaining"] = len(queued) - len(completed_ids)
     return report
