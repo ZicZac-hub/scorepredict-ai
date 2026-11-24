@@ -4,7 +4,7 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-24T22:33:26.515162+00:00",
+  "last_run_utc": "2026-11-24T23:28:17.428146+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
@@ -17,11 +17,11 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 18.2,
+    "age_minutes": 13.6,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-24T22:15:13.405700+00:00",
+    "collector_started_at_utc": "2026-11-24T23:14:41.459248+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 19,
+    "processed_fixtures": 20,
     "producer_api_budget_unchanged": true,
     "uefa_fixtures_one_qualified_match_short": 19,
     "uefa_history_audit_available": true,
@@ -53,8 +53,8 @@
     "v8_abstentions": 19,
     "v8_away_history_bins_by_league": {
       "CL": {
-        "3-4": 4,
-        "5+": 3
+        "3-4": 3,
+        "5+": 4
       },
       "EL": {
         "3-4": 6,
@@ -79,8 +79,10 @@
         "3-4": 12
       }
     },
-    "v8_saved": 0,
-    "v8_saved_by_league": {},
+    "v8_saved": 1,
+    "v8_saved_by_league": {
+      "BSA": 1
+    },
     "v8_source_errors": 0
   },
   "target_five_double_hit_rate": 0.7,
@@ -88,22 +90,22 @@
     "new_original_decisions_last_run": 0,
     "new_source_capture_required_for_future_v36": true,
     "original_frozen_decisions": 5,
-    "pending_days": 2,
+    "pending_days": 1,
     "source_ineligibility": {
       "invalid_source_time": 196,
-      "not_original_v8_model": 794,
-      "outside_research_freeze_window": 216
+      "not_original_v8_model": 796,
+      "outside_research_freeze_window": 214
     },
-    "verified_paired_days": 3
+    "verified_paired_days": 4
   },
   "v30_frozen_candidate_pair_rows": {
-    "completed_independent_sydney_days": 3,
-    "correlated_verified": 216,
-    "pending": 56
+    "completed_independent_sydney_days": 4,
+    "correlated_verified": 244,
+    "pending": 28
   },
   "v34_diagnosis": {
-    "both_actual_leg_scores_missing": 122,
-    "unique_verified_fixtures": 27
+    "both_actual_leg_scores_missing": 128,
+    "unique_verified_fixtures": 35
   },
   "v35_challengers": {
     "frozen_days": 2,
@@ -118,44 +120,44 @@
     "methods": {
       "high_goal_tilt_0_15": {
         "hits": 0,
-        "observed_hit_rate": null,
+        "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 0
+        "verified_days": 1
       },
       "low_goal_tilt_0_15": {
         "hits": 0,
-        "observed_hit_rate": null,
+        "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 0
+        "verified_days": 1
       },
       "temperature_flatten_1_15": {
         "hits": 0,
-        "observed_hit_rate": null,
+        "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 0
+        "verified_days": 1
       },
       "temperature_sharpen_0_85": {
         "hits": 0,
-        "observed_hit_rate": null,
+        "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 0
+        "verified_days": 1
       },
       "v25_anchored_75_25": {
         "hits": 0,
-        "observed_hit_rate": null,
+        "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 0
+        "verified_days": 1
       },
       "v8_original": {
         "hits": 0,
-        "observed_hit_rate": null,
+        "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 0
+        "verified_days": 1
       }
     },
-    "pending_days": 2,
+    "pending_days": 1,
     "ready_for_separate_production_review": [],
-    "verified_same_pair_days": 0
+    "verified_same_pair_days": 1
   },
   "v36_challengers": {
     "frozen_days": 2,
@@ -163,42 +165,42 @@
       "baseline": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": null,
-          "multiclass_score_brier": null,
-          "over_3_5_brier": null,
-          "under_1_5_brier": null
+          "exact_score_log_loss": 3.2788283686449553,
+          "multiclass_score_brier": 0.9375519739124965,
+          "over_3_5_brier": 0.34477520657006855,
+          "under_1_5_brier": 0.10356847597521059
         },
-        "observed_hit_rate": null,
-        "verified_days": 0
+        "observed_hit_rate": 0.0,
+        "verified_days": 1
       },
       "tail_shift_0_10": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": null,
-          "multiclass_score_brier": null,
-          "over_3_5_brier": null,
-          "under_1_5_brier": null
+          "exact_score_log_loss": 3.2246726887868356,
+          "multiclass_score_brier": 0.9333334322520577,
+          "over_3_5_brier": 0.31877585469367864,
+          "under_1_5_brier": 0.07297353993033845
         },
-        "observed_hit_rate": null,
-        "verified_days": 0
+        "observed_hit_rate": 0.0,
+        "verified_days": 1
       },
       "tail_temperature_1_10": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": null,
-          "multiclass_score_brier": null,
-          "over_3_5_brier": null,
-          "under_1_5_brier": null
+          "exact_score_log_loss": 3.237948103585358,
+          "multiclass_score_brier": 0.939190185939496,
+          "over_3_5_brier": 0.3295906380035511,
+          "under_1_5_brier": 0.09284740915144021
         },
-        "observed_hit_rate": null,
-        "verified_days": 0
+        "observed_hit_rate": 0.0,
+        "verified_days": 1
       }
     },
-    "pending_days": 2,
+    "pending_days": 1,
     "ready_for_separate_production_review": [],
     "research_only_not_live_promoted": true,
-    "unique_verified_physical_fixtures": 0,
-    "verified_independent_sydney_days": 0
+    "unique_verified_physical_fixtures": 2,
+    "verified_independent_sydney_days": 1
   },
   "v37_sparse_uefa_research": {
     "frozen_unique_physical_fixtures": 25,
@@ -305,8 +307,8 @@
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-24T22:16:58.491406+00:00",
-    "evaluated_at_utc": "2026-11-24T22:16:58.491453+00:00",
+    "capture_at_utc": "2026-11-24T23:16:46.295804+00:00",
+    "evaluated_at_utc": "2026-11-24T23:16:46.295839+00:00",
     "hits": 0,
     "issued": 1,
     "minimum_review_pairs": 100,
@@ -355,10 +357,10 @@
     "verified": 0
   },
   "v8_v25_same_pair": {
-    "pending_pairs": 2,
+    "pending_pairs": 1,
     "v25_wins": 1,
     "v8_wins": 0,
-    "verified_same_pair_sets": 6
+    "verified_same_pair_sets": 7
   },
   "version": "ziczac-five-double-research-bot-v1"
 }
