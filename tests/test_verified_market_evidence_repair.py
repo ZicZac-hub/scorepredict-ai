@@ -94,12 +94,14 @@ def test_v25_audit_reads_market_version_without_overwriting_history():
     def load(_root, _source, *, now, priority):
         assert _source == source and now == NOW
         requests.append(priority)
-        return researched if priority == "research" else current_market
+        return {"research": researched, "lineup": None,
+                "market": current_market}[priority]
 
     actual = trace_leg({"row": {"fixture": fixture,
                                 "source_forecast": source}}, NOW,
                        packet_loader=load)
-    assert requests == ["research", "market"]
+    assert requests == ["research", "lineup", "market"]
+    assert actual["confirmed_starting_xi_both_teams"] is False
     assert actual["matching_provider_packet"] is True
     assert actual["verified_historical_xg_both_teams"] is True
     assert actual["verified_pre_match_market"] is True
