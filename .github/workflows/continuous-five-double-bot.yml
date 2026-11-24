@@ -146,7 +146,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/v38_prospective_challengers/ data/autobot/ data/v28_independent_pair_trial/ data/v35_continuous_challengers/ data/v36_prospective_challengers/ data/v37_sparse_prospective/status.json data/v34_score_error_research/status.json
+          git add data/autobot/ data/v28_independent_pair_trial/ data/v35_continuous_challengers/ data/v36_prospective_challengers/ data/v37_sparse_prospective/status.json data/v34_score_error_research/status.json data/v38_prospective_challengers/
           if git diff --cached --quiet; then
             echo 'No new bot research status'
             exit 0
