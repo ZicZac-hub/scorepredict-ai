@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22402331267876938,
-          "expected_events": 31.26091686546256,
+          "brier": 0.22485911720392338,
+          "expected_events": 31.80795042927983,
           "observed_events": 32,
-          "observed_rate": 0.3595505617977528,
-          "predicted_rate": 0.35124625691530964,
-          "rate_gap_observed_minus_predicted": 0.008304304882443164
+          "observed_rate": 0.35555555555555557,
+          "predicted_rate": 0.35342167143644254,
+          "rate_gap_observed_minus_predicted": 0.002133884119112987
         },
         "exact_0_3": {
-          "brier": 0.010989973160771348,
-          "expected_events": 1.908984994223246,
+          "brier": 0.01087065360770553,
+          "expected_events": 1.9248347066764042,
           "observed_events": 1,
-          "observed_rate": 0.011235955056179775,
-          "predicted_rate": 0.021449269598014,
-          "rate_gap_observed_minus_predicted": -0.010213314541834224
+          "observed_rate": 0.011111111111111112,
+          "predicted_rate": 0.02138705229640449,
+          "rate_gap_observed_minus_predicted": -0.01027594118529338
         },
         "exact_3_0": {
-          "brier": 0.03229952778023471,
-          "expected_events": 3.7317571697335694,
+          "brier": 0.03195375666022457,
+          "expected_events": 3.7661101460139697,
           "observed_events": 3,
-          "observed_rate": 0.033707865168539325,
-          "predicted_rate": 0.041929855839703024,
-          "rate_gap_observed_minus_predicted": -0.008221990671163701
+          "observed_rate": 0.03333333333333333,
+          "predicted_rate": 0.04184566828904411,
+          "rate_gap_observed_minus_predicted": -0.008512334955710774
         },
         "winning_margin_at_least_three": {
-          "brier": 0.173740031252264,
-          "expected_events": 15.4078917214526,
+          "brier": 0.17230360342866125,
+          "expected_events": 15.618750743379607,
           "observed_events": 19,
-          "observed_rate": 0.21348314606741572,
-          "predicted_rate": 0.17312237889272583,
-          "rate_gap_observed_minus_predicted": 0.040360767174689886
+          "observed_rate": 0.2111111111111111,
+          "predicted_rate": 0.17354167492644007,
+          "rate_gap_observed_minus_predicted": 0.03756943618467103
         }
       },
-      "verified_fixtures": 89
+      "verified_fixtures": 90
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2282989229228418,
-          "expected_events": 28.0601459448005,
+          "brier": 0.2291641277645465,
+          "expected_events": 28.607179508617776,
           "observed_events": 28,
-          "observed_rate": 0.345679012345679,
-          "predicted_rate": 0.3464215548740802,
-          "rate_gap_observed_minus_predicted": -0.0007425425284012285
+          "observed_rate": 0.34146341463414637,
+          "predicted_rate": 0.34886804278802164,
+          "rate_gap_observed_minus_predicted": -0.007404628153875315
         },
         "exact_0_3": {
-          "brier": 0.0006159897451967907,
-          "expected_events": 1.697682957803601,
+          "brier": 0.0006115412529974128,
+          "expected_events": 1.7135326702567593,
           "observed_events": 0,
           "observed_rate": 0.0,
-          "predicted_rate": 0.020959048861772852,
-          "rate_gap_observed_minus_predicted": -0.020959048861772852
+          "predicted_rate": 0.02089673988117999,
+          "rate_gap_observed_minus_predicted": -0.02089673988117999
         },
         "exact_3_0": {
-          "brier": 0.03521943737127365,
-          "expected_events": 3.3847534745069723,
+          "brier": 0.03480432382990839,
+          "expected_events": 3.4191064507873725,
           "observed_events": 3,
-          "observed_rate": 0.037037037037037035,
-          "predicted_rate": 0.04178707993218484,
-          "rate_gap_observed_minus_predicted": -0.004750042895147806
+          "observed_rate": 0.036585365853658534,
+          "predicted_rate": 0.04169642013155332,
+          "rate_gap_observed_minus_predicted": -0.0051110542778947865
         },
         "winning_margin_at_least_three": {
-          "brier": 0.17660699378472403,
-          "expected_events": 13.719389447081491,
+          "brier": 0.17499546370354463,
+          "expected_events": 13.930248469008498,
           "observed_events": 18,
-          "observed_rate": 0.2222222222222222,
-          "predicted_rate": 0.16937517835903076,
-          "rate_gap_observed_minus_predicted": 0.052847043863191466
+          "observed_rate": 0.21951219512195122,
+          "predicted_rate": 0.16988107889034754,
+          "rate_gap_observed_minus_predicted": 0.04963111623160368
         }
       },
-      "verified_fixtures": 81
+      "verified_fixtures": 82
     }
   },
   "focus": {
@@ -2876,6 +2876,35 @@
           }
         },
         "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-0",
+        "captured_at_utc": "2026-11-24T16:49:50.789134+00:00",
+        "fixture_id": "1635641",
+        "fixture_name": "Bodo/Glimt vs Lask Linz",
+        "forecast_id": "1374d71abadd902cb4e88b779f75d1a1af738abdaecfbe79e388e5d7dd8a6f73",
+        "kickoff_utc": "2026-11-24T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.04747778197725804,
+          "actual_exact_score_rank_min": 8,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.5470335638172737
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01584971245315832
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.034352976280400224
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.21085902192700695
+          }
+        },
+        "provider": "API-Football"
       }
     ],
     "v8_near": [
@@ -5227,12 +5256,41 @@
           }
         },
         "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-0",
+        "captured_at_utc": "2026-11-23T06:42:29.744210+00:00",
+        "fixture_id": "1635641",
+        "fixture_name": "Bodo/Glimt vs Lask Linz",
+        "forecast_id": "9fde13834a0d78344ca5ee6cce1905e7c91c70836803052f5d198eef4d2eacac",
+        "kickoff_utc": "2026-11-24T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.04747778197725804,
+          "actual_exact_score_rank_min": 8,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.5470335638172737
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01584971245315832
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.034352976280400224
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.21085902192700695
+          }
+        },
+        "provider": "API-Football"
       }
     ]
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-24T03:15:46.915577+00:00",
+  "result_cutoff_utc": "2026-11-24T21:19:32.806466+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
