@@ -26,7 +26,7 @@ SOURCE_FRESHNESS_HOURS=3
 PAIR_ROOT=Path("data/professional_double_shadow")
 
 
-def targeted_pair_models(*, source_root, pair_root=PAIR_ROOT, now):
+def targeted_pair_models(*, source_root, pair_root=PAIR_ROOT, now, reserve_ahead=False):
     """Prioritize one authenticated fixed pair before its common cutoff.
 
     The later leg may not yet be in its own near-kickoff window. Observing
@@ -43,11 +43,18 @@ def targeted_pair_models(*, source_root, pair_root=PAIR_ROOT, now):
             if record["sydney_date"]!=path.stem:
                 continue
             kickoffs=[utc(model["kickoff_utc"]) for model in models]
+            earliest=min(kickoffs)
+            # The upcoming pair may open its common-cutoff window later
+            # TODAY. Protect the existing daily reserve from unrelated
+            # near-kickoff games, not just early scouting.
+            opens=earliest-timedelta(minutes=NEAR_REFRESH_MAX_MINUTES)
+            reference=max(clock,opens) if reserve_ahead else clock
             if (all(model["provider"]=="API-Football" for model in models)
-                    and clock+timedelta(minutes=8)<min(kickoffs)<=
-                        clock+timedelta(minutes=NEAR_REFRESH_MAX_MINUTES)
-                    and max(kickoffs)<=clock+timedelta(hours=SOURCE_FRESHNESS_HOURS)):
-                choices.append((min(kickoffs),path.stem,models))
+                    and clock+timedelta(minutes=8)<earliest
+                    and (opens.date()<=clock.date() if reserve_ahead else
+                         earliest<=clock+timedelta(minutes=NEAR_REFRESH_MAX_MINUTES))
+                    and max(kickoffs)<=reference+timedelta(hours=SOURCE_FRESHNESS_HOURS)):
+                choices.append((earliest,path.stem,models))
         except (KeyError,TypeError,ValueError,OSError,AttributeError,OverflowError):
             continue
     return min(choices,key=lambda item:(item[0],item[1]))[2] if choices else []
@@ -337,6 +344,9 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
         models=list(targeted)+[row for row in models if
             (str(row["provider"]),str(row["fixture_id"])) not in identities]
         result["targeted_pair_fixture_ids"]=[str(row["fixture_id"]) for row in targeted]
+    upcoming = targeted_pair_models(source_root=source_root,pair_root=pair_root,
+                                    now=clock,reserve_ahead=True) if not targeted else []
+    result["reserved_future_pair_fixture_ids"] = [str(row["fixture_id"]) for row in upcoming]
     result["eligible_legs"]=len(models)
     if not models:
         return finish("no_original_frozen_leg_in_8_min_to_48_hour_window")
@@ -384,6 +394,10 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             # daily allowance before confirmed lineups become available.
             early=kickoff>clock+timedelta(minutes=90) and not target
             reserved=min(2,max(0,daily_limit-1))
+            if upcoming and not target and used>=daily_limit-reserved:
+                result["skipped"].append(str(leg["fixture_id"])+
+                    ":fixed_pair_common_cutoff_budget_reserved")
+                continue
             if early and used>=daily_limit-reserved:
                 result["skipped"].append(str(leg["fixture_id"])+
                     ":near_kickoff_budget_reserved")
