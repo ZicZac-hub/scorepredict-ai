@@ -24,6 +24,7 @@ on:
       - 'v37_sparse_evaluation.py'
       - 'v37_sparse_history_research.py'
       - 'v28_independent_pair_trial.py'
+      - 'final_five_doubles.py'
       - 'continuous_bot_ui.py'
       - '.github/workflows/continuous-five-double-bot.yml'
   schedule:
@@ -64,6 +65,12 @@ jobs:
         # Reads only already persisted original V8 forecast receipts.
         # Never backfills old matches, calls providers, or changes live picks.
         run: python v28_independent_pair_trial.py
+      - name: Compare the complete eligible slate and verify Final Five Doubles
+        id: final_five_doubles
+        # Use newly frozen V28 receipts while their pre-match window is open.
+        # This bot is the sole publisher of the final-policy evidence files.
+        continue-on-error: true
+        run: python final_five_doubles.py
       - name: Recheck original V34 frozen score failures and source integrity
         run: python v34_score_error_research.py
       - name: Verify and only prospectively freeze NEW V35 methods
@@ -155,10 +162,15 @@ jobs:
       - name: Persist immutable new pre-match candidates and safe research reports
         # Never auto-change any production forecasting code. Only these
         # generated research paths may be written by this bot.
+        env:
+          FINAL_FIVE_DOUBLES_OUTCOME: ${{ steps.final_five_doubles.outcome }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/autobot/ data/v28_independent_pair_trial/ data/v35_continuous_challengers/ data/v36_prospective_challengers/ data/v37_sparse_prospective/status.json data/v34_score_error_research/status.json data/v38_prospective_challengers/ data/v39_prospective_challengers/ data/v41_weight_audit/
+          if [ "$FINAL_FIVE_DOUBLES_OUTCOME" = success ]; then
+            git add -- data/final_five_doubles/
+          fi
           if git diff --cached --quiet; then
             echo 'No new bot research status'
             exit 0
@@ -166,6 +178,9 @@ jobs:
           git commit -m "data: research bot verified scores and monitored methods [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
+      - name: Report a failed Final Five Doubles comparison after preserving other research
+        if: ${{ always() && steps.final_five_doubles.outcome == 'failure' }}
+        run: exit 1
       - name: Preserve evidence even when status publication fails
         if: always()
         uses: actions/upload-artifact@v4
@@ -178,6 +193,9 @@ jobs:
             data/autobot/openai_retry_*.json
             data/v28_independent_pair_trial/status.json
             data/v28_independent_pair_trial/decisions/*.json
+            data/final_five_doubles/activation.json
+            data/final_five_doubles/status.json
+            data/final_five_doubles/decisions/*.json
             data/v34_score_error_research/status.json
             data/v35_continuous_challengers/status.json
             data/v41_weight_audit/status.json

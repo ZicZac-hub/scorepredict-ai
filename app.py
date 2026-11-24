@@ -165,6 +165,11 @@ active_page_slot=st.container()
 with active_page_slot:
     st.info({'home':'🏠 Home dashboard and today’s featured match','predict':'🎯 Upcoming predictions and match analysis','deep':'🧠 Deep Research AI · select a match and run the challenger','single50':'🎯 Single match research · five estimated fair-odds outcomes at 80+','doubles':'🔗 Doubles and exact-score combinations','ai_five':'🤖 Choose two matches and run AI-assisted five-double research','autobot':'🤖 Always-scheduled research bot · verified double accuracy and source checks','benchmark':'📐 Verified model comparison · same-fixture accuracy','quality':'🧪 Advanced source and verification quality','archive':'📊 Prediction accuracy and archive','finished':'🏁 Finished matches · verified hits and misses','private':'🔒 Private access · hosting permissions and password protection','more':'☰ Model methodology and settings'}[view])
 
+if view == 'doubles':
+    with active_page_slot:
+        from final_five_doubles_ui import render as render_final_five_doubles
+        render_final_five_doubles(st)
+
 # The 24/7 bot panel is read-only and does not wait for football APIs.
 if view == 'autobot':
     with active_page_slot:
@@ -1804,6 +1809,8 @@ with active_page_slot:
 
     if view in ['doubles']:
         with tabs[6]:
+            st.subheader('Other five-double forecasts')
+            st.caption('Browse frozen selections and run experimental or manual comparisons.')
             st.button('🤖 Open separate AI Five-Double Studio',
                       use_container_width=True,key='open_ai_five_studio',
                       on_click=_navigate_to,args=('ai_five',))
@@ -1825,7 +1832,7 @@ with active_page_slot:
             render_v8_doubles(st, eligible, histories, fixture_label)
             render_v9_market_doubles(st, eligible, histories, fixture_label, secondary_key)
             st.divider()
-            st.subheader('⚡ Five exact-score doubles')
+            st.subheader('Exact-score research and manual selection')
             smart_mode=st.radio('Choose your selection mode',
                 ['AI Auto Select', 'Manual Select'], horizontal=True,
                 key='smart_double_mode', on_change=_sync_double_mode)

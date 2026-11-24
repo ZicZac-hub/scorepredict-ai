@@ -456,7 +456,7 @@ def _display(st,report,first,second):
               "V22 verified xG + market challenger" if v22_mode else
               "research goal-form challenger" if form_research else
               "balanced challenger" if challenger else "original baseline")
-    st.markdown("### ✅ Final five exact-score doubles · " + method)
+    st.markdown("### Five exact-score doubles for research · " + method)
     st.caption("Match 1: "+label(first))
     st.caption("Match 2: "+label(second))
     st.caption("Research compiled "+sydney_timestamp(report["generated_at_utc"])+
@@ -664,11 +664,14 @@ def _display(st,report,first,second):
 
 def render(st,rows,histories=None):
     st.subheader("🤖 AI Five-Double Studio")
+    from final_five_doubles_ui import render as render_final_five_doubles
+    render_final_five_doubles(st)
+    st.subheader("Other five-double forecasts")
     try:
         v25_selected=str(st.query_params.get("v25",""))=="1"
     except (AttributeError,TypeError):
         v25_selected=False
-    engine=st.radio("Choose your five-double prediction engine",
+    engine=st.radio("Choose a research prediction engine",
                     ["🧮 V25 Professional Analyst · all upcoming matches",
                      "🤖 Original AI Five-Double Studio",
                      "Professional probability optimizer"],
@@ -688,8 +691,6 @@ def render(st,rows,histories=None):
     st.write("Choose **two matches**. ZicZac uses its existing statistical "
              "predictions and any validated saved AI research, with optional "
              "fresh calls to connected ChatGPT/OpenAI, Gemini and other providers.")
-    st.caption("The original Five Doubles page and frozen prediction history "
-               "remain unchanged.")
     from five_double_accuracy_ui import render as render_diagnosis
     render_diagnosis(st)
     with st.expander("📊 V21 verified research tournament", expanded=False):
