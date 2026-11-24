@@ -166,6 +166,16 @@ def qualified_packet(record,leg,now=None):
 
 
 
+def confirmed_provider_xi_ids(leg, snapshot, *, now):
+    """Require genuine provider-reported, unique, nonconflicting starting XIs."""
+    filtered = dict(snapshot)
+    filtered["confirmed_starting_xi"] = [
+        row for row in snapshot.get("confirmed_starting_xi") or []
+        if isinstance(row, dict) and row.get("provider_reported") is True
+    ]
+    return source_availability(leg, filtered, now=now)["confirmed_xi_team_ids"]
+
+
 def best_packet(root, leg, *, now=None, priority="research"):
     """Best currently valid write-once packet for a NEW forecast.
 
@@ -210,7 +220,11 @@ def best_packet(root, leg, *, now=None, priority="research"):
                 latest_market=max(t.isoformat() for t in valid_times.values())
         except (KeyError,TypeError,ValueError):
             valid_market=False
-        if priority=="market":
+        if priority=="lineup":
+            clock=utc(now or datetime.now(timezone.utc))
+            xi=confirmed_provider_xi_ids(leg,snap,now=clock)
+            quality=(len(xi),utc(snap["captured_at_utc"]),int(valid_market))
+        elif priority=="market":
             quality=(int(valid_market),latest_market,nmarkets,
                      min(counts),str(snap.get("captured_at_utc") or ""))
         else:
