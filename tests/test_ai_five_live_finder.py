@@ -129,7 +129,9 @@ def test_quota_error_stops_other_fixture_model_calls_in_same_search():
         discover=lambda *a:(events,[]),model=failed_model)
     assert result["quota_limited"] is True
     assert result["checked"] == 1
-    assert result["remaining"] == 4
+    # Quota-blocked fixture must remain in the retry queue; no result was checked.
+    assert result["remaining"] == 5
+    assert result["checked_ids"] == []
     assert attempts == [10]
 
 
