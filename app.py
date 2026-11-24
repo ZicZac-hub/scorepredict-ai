@@ -245,12 +245,19 @@ with st.sidebar:
               args=('Manual Select',))
     st.divider()
     st.header('Model settings')
-    _model_choice=st.selectbox('Score model',
-        ['Evidence Ensemble v8 · enhanced (default)', 'Preserved v6 · original', 'Fitted Dixon–Coles v7 · research'],
-        key='forecast_model_choice')
-    _forecast_variant=('research_v8' if _model_choice.startswith('Evidence Ensemble')
-                       else 'reference_v7' if _model_choice.startswith('Fitted') else 'baseline')
-    st.caption('New default: research ensemble v8. The previous v6 model remains available and unchanged. In a 632-match historical replay, v8 had 77 exact hits vs v6\'s 70, not a statistically established improvement. Market-informed v9 is available on demand in Deep Research when verified odds exist.')
+    _score_models = {
+        'Market-assisted V8 · daily default': 'archived_market_v8',
+        'Evidence Ensemble V8 · form only': 'research_v8',
+        'Preserved v6 · original': 'baseline',
+        'Fitted Dixon–Coles v7 · research': 'reference_v7',
+    }
+    _model_choice=st.selectbox('Score model', list(_score_models), key='forecast_model_choice')
+    _forecast_variant = _score_models[_model_choice]
+    if _forecast_variant == 'archived_market_v8' and view not in ('home', 'predict'):
+        _forecast_variant = 'research_v8'
+    st.caption('Daily predictions in the five benchmarked European leagues use saved pre-match '
+               '1X2 and over/under 2.5 prices when they qualify. '
+               'V8 form probabilities cover the remaining fixtures.')
     days=st.slider('Upcoming days',1,14,14)
     st.caption('Fixtures are sorted by kickoff, earliest first. Today and tomorrow are included.')
     max_games=st.slider('Display fixtures',5,80,30,5)
@@ -1616,6 +1623,10 @@ with active_page_slot:
                     st.caption(f"{r['league']} · {sydney_kickoff(r['kickoff'])}")
                     st.subheader(match_name(m))
                     if p is None:st.info('Insufficient historical results for this fixture.');continue
+                    if p.get('market_used'):
+                        st.caption('Market-assisted V8 · verified pre-match 1X2 and over/under 2.5 prices')
+                    elif _forecast_variant == 'archived_market_v8':
+                        st.caption('Form-only V8 · market adjustment unavailable for this fixture')
                     best=p['scores'][0]
                     cols=st.columns(5)
                     for col,label,val in zip(cols,['Top exact score','Home win','Draw','Away win','Expected goals'],
