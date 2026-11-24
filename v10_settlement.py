@@ -11,7 +11,8 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import requests
-from api_football import ROOT as API_ROOT, _convert
+from api_football import (ROOT as API_ROOT, _convert, ProviderQuotaError,
+                          ProviderAccessError, ProviderRejectedError)
 from persist_prematch import (RESULTS as LEGACY_RESULTS, load_json,
                               matches_snapshot, verified_result, write_json)
 from reconcile_capture_conflicts import merge_verified
@@ -148,10 +149,25 @@ def _provider_match(key,fixture_id,reference,request=None):
     response=get(API_ROOT+"/fixtures",
                  params={"id":str(fixture_id)},
                  headers={"x-apisports-key":key},timeout=25)
+    status=getattr(response,"status_code",None)
+    if status==429:
+        raise ProviderQuotaError("Result provider quota or rate limit")
+    if status in (401,403):
+        raise ProviderAccessError("Result provider credentials or plan unavailable")
     response.raise_for_status()
     data=response.json()
+    if not isinstance(data,dict):
+        raise ValueError("Invalid result provider envelope")
     if data.get("errors"):
-        raise RuntimeError("Provider refused the result verification request")
+        # Classify locally; never store or log raw vendor bodies or keys.
+        hint=str(data["errors"]).casefold()[:3000]
+        if any(word in hint for word in ("rate limit","request limit","quota",
+                "too many","reached the limit","limit of requests","limit of calls")):
+            raise ProviderQuotaError("Result provider quota or rate limit")
+        if any(word in hint for word in ("api key","token","subscription",
+                "plan access","not authorized","not authorised")):
+            raise ProviderAccessError("Result provider credentials or plan unavailable")
+        raise ProviderRejectedError("Result provider rejected request")
     raw=next((r for r in data.get("response") or []
               if str((r.get("fixture") or {}).get("id"))==str(fixture_id)),None)
     if raw is None:
@@ -199,7 +215,7 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
             "already_verified":0,"checked":0,"newly_verified":0,
             "still_pending":0,"rejected_or_unavailable":0,
             "waiting_for_full_time":0,"retry_cooldown":0,
-            "source_errors":[]}
+            "source_errors":[],"provider_blocker":None,"deferred_provider_block":0}
     merged=merge_verified(old,own)
     for fixture_id,reference in _verification_order(references,root,clock):
         known=merged.get(str(fixture_id))
@@ -222,6 +238,9 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
         if last_check is not None and clock-last_check<RETRY_WAIT:
             status["retry_cooldown"]+=1
             continue
+        if status["provider_blocker"] is not None:
+            status["deferred_provider_block"]+=1
+            continue
         if status["checked"]>=limit:
             status["still_pending"]+=1
             continue
@@ -240,6 +259,14 @@ def collect(key, *, now=None, limit=20, root=ROOT, request=None,
         except (requests.RequestException,ValueError,TypeError,RuntimeError,KeyError) as exc:
             status["source_errors"].append({"fixture_id":fixture_id,
                                              "error_type":type(exc).__name__})
+            if isinstance(exc,(ProviderQuotaError,ProviderAccessError)):
+                # Stop further network requests, but still reconcile known verified
+                # results below in the same pass. Untouched fixtures remain pending.
+                status["provider_blocker"]={
+                    "fixture_id":fixture_id,
+                    "reason":"provider_quota" if isinstance(exc,ProviderQuotaError)
+                             else "provider_credentials_or_plan"
+                }
     # All not-yet-verified references remain pending, including early
     # kickoffs, missing provider scores and cooldowns: never mislabel losses.
     status["still_pending"]=max(0,len(references)-status["already_verified"]-
