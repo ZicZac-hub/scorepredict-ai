@@ -80,7 +80,22 @@ def source_capture_health(coverage, *, now):
                 freshness="invalid_capture_timestamp"
         except (ValueError,TypeError,OverflowError):
             freshness="invalid_capture_timestamp"
+    raw_uefa = coverage.get("uefa_two_season_history_coverage")
+    uefa_rows = raw_uefa if isinstance(raw_uefa, list) else []
+    uefa_states = {}
+    for row in uefa_rows:
+        if not isinstance(row, dict) or row.get("competition") not in ("CL", "EL"):
+            continue
+        for season in row.get("seasons") or []:
+            if not isinstance(season, dict):
+                continue
+            state = season.get("source_state")
+            if state in ("not_observed", "request_unavailable", "stale_response", "empty_response", "rows_returned"):
+                uefa_states[state] = uefa_states.get(state, 0) + 1
     return {
+        "uefa_history_audit_available": isinstance(raw_uefa, list),
+        "uefa_history_fixture_observations": len(uefa_rows),
+        "uefa_history_season_source_states": uefa_states,
         "collector_started_at_utc":stamp if freshness in ("recent","stale") else None,
         "collector_freshness":freshness,
         "age_minutes":age,
@@ -111,7 +126,7 @@ def source_capture_health(coverage, *, now):
     }
 
 
-def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, v37=None):
+def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, v37=None, v38=None):
     """Only preexisting independently validated archived report totals."""
     baseline = (v8 or {}).get("observed") or {}
     matched_v8 = (v25 or {}).get("v8") or {}
@@ -121,6 +136,8 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, 
     v36 = v36 or {}
     v36stats = v36.get("methods") or {}
     v37 = v37 or {}
+    v38_available = isinstance(v38, dict) and bool(v38)
+    v38 = v38 if v38_available else {}
     v28 = v28 or {}
     v28freeze = v28.get("freeze") or {}
     v28grade = v28.get("verified_comparison") or {}
@@ -229,6 +246,20 @@ def assemble(v8, v25, v30, v34, v35, *, now, v36=None, v28=None, coverage=None, 
             "ready_for_separate_production_review": v36.get("ready_for_separate_production_review", []),
             "research_only_not_live_promoted": True,
         },
+        "v38_challengers": {
+            "report_available": v38_available,
+            "frozen_days": v38.get("frozen_prospective_days") if v38_available else None,
+            "verified_days": v38.get("verified_independent_sydney_days") if v38_available else None,
+            "pending_days": v38.get("pending_days") if v38_available else None,
+            "capture_skipped": (v38.get("capture") or {}).get("skipped") or {},
+            "methods": {name: {
+                "hits": row.get("hits"),
+                "verified_days": row.get("verified_independent_sydney_days"),
+                "observed_hit_rate": as_rate(row.get("hits"), row.get("verified_independent_sydney_days")),
+                "mean_proper_scores": row.get("mean_proper_scores"),
+            } for name, row in (v38.get("methods") or {}).items() if isinstance(row, dict)},
+            "research_only_not_live_promoted": True,
+        },
         "next_priority": next_priority,
         "production_model_changed_by_bot": False,
         "ai_research_memo_is_non_executable": True,
@@ -266,7 +297,7 @@ def api_research_memo(report, *, key, model=DEFAULT_AI_MODEL):
     snapshot = {key: report[key] for key in (
         "target_five_double_hit_rate", "integrity", "original_v8_daily_five_doubles",
         "v8_v25_same_pair", "v28_upstream_capture", "source_capture_health", "v30_frozen_candidate_pair_rows", "v34_diagnosis",
-        "v35_challengers", "v36_challengers", "next_priority",
+        "v35_challengers", "v36_challengers", "v38_challengers", "next_priority",
     )}
     payload = {
         "model": model,
@@ -314,6 +345,7 @@ def run(*, root=ROOT, now=None, use_ai=True, manual_retry=False):
         v28=load("data/v28_independent_pair_trial/status.json"),
         coverage=load("data/prospective_ledger/capture_coverage.json"),
         v37=load("data/v37_sparse_prospective/status.json"),
+        v38=load("data/v38_prospective_challengers/status.json"),
     )
     destination = Path(root)
     destination.mkdir(parents=True, exist_ok=True)
