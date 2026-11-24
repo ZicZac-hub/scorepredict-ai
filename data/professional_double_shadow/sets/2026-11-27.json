@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-24T20:07:13.227456+00:00",
+  "prospective": true,
+  "record_sha256": "c9c0ebc59c79e97fe1f9a12122282e19a279ff3ca927e734ee44c2990703a0d9",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.1397780495251251,
+        "joint_probability": 0.017988362502403106,
+        "score1": "2-0",
+        "score2": "1-1",
+        "second_probability": 0.12869232732546965
+      },
+      {
+        "first_probability": 0.1397780495251251,
+        "joint_probability": 0.017022044923457786,
+        "score1": "2-0",
+        "score2": "1-0",
+        "second_probability": 0.12177909894498903
+      },
+      {
+        "first_probability": 0.1397780495251251,
+        "joint_probability": 0.016601451740632628,
+        "score1": "2-0",
+        "score2": "0-1",
+        "second_probability": 0.11877009156325735
+      },
+      {
+        "first_probability": 0.12515223719832927,
+        "joint_probability": 0.01610613267504221,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.12869232732546965
+      },
+      {
+        "first_probability": 0.12515223719832927,
+        "joint_probability": 0.015240926676962077,
+        "score1": "1-0",
+        "score2": "1-0",
+        "second_probability": 0.12177909894498903
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.0829589185184978,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "563",
+        "name": "Hapoel Beer Sheva"
+      },
+      "competition": {
+        "code": "EL",
+        "name": "EL"
+      },
+      "homeTeam": {
+        "id": "549",
+        "name": "Be\u015fikta\u015f"
+      },
+      "id": "1636231",
+      "provider": "API-Football",
+      "utcDate": "2026-11-26T17:45:00+00:00"
+    },
+    "generated_at_utc": "2026-11-24T20:07:13.227286+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "554",
+        "name": "Anderlecht"
+      },
+      "competition": {
+        "code": "EL",
+        "name": "EL"
+      },
+      "homeTeam": {
+        "id": "1124",
+        "name": "OFI"
+      },
+      "id": "1636305",
+      "provider": "API-Football",
+      "utcDate": "2026-11-26T20:00:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "563",
+        "fixture_id": "1636231",
+        "forecast_id": "a67af2ae8c7b14865ae59446c22cc83b019e74dd79397ee75ddaf6ff2d8f6030",
+        "home_team_id": "549",
+        "input_digest": "f5c620deac09c95ed996bc66f5c76b48100fef15bec68be4b2f879c15c12d2ca",
+        "kickoff_utc": "2026-11-26T17:45:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "554",
+        "fixture_id": "1636305",
+        "forecast_id": "bf8c7ebda0105e51df17ba533af582aba2114e560bd4bbe56cdedfde85be9d49",
+        "home_team_id": "1124",
+        "input_digest": "47928454274fce144ce1130ae1ba00b2d680f6d452f518a92a151696050f9e13",
+        "kickoff_utc": "2026-11-26T20:00:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-24T20:02:56.416419+00:00",
+      "2026-11-24T20:03:05.108613+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-27",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-27",
+  "target_70_percent_proven": false
+}
