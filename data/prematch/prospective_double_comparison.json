@@ -2,23 +2,23 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 0,
   "exclusions": {
-    "awaiting_both_verified_results": 21
+    "awaiting_both_verified_results": 15
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.05338164625492728,
-      "win_rate": 0.045454545454545456,
+      "mean_estimated_probability_coverage": 0.053091607161820493,
+      "win_rate": 0.04,
       "wins": 2
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.040833606584928094,
+      "mean_estimated_probability_coverage": 0.04067464857653614,
       "win_rate": 0.0,
       "wins": 0
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.05395250074732853,
-      "win_rate": 0.045454545454545456,
+      "mean_estimated_probability_coverage": 0.053728543093992664,
+      "win_rate": 0.04,
       "wins": 2
     }
   },
@@ -26,7 +26,7 @@
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 2,
   "pairs_frozen": 65,
-  "pairs_verified": 44,
+  "pairs_verified": 50,
   "rows": [
     {
       "actual_scores": [
@@ -464,6 +464,68 @@
     },
     {
       "actual_scores": [
+        "1-0",
+        "1-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05058886641003191,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.03848807618070827,
+      "first_match": "Bodo/Glimt vs Lask Linz",
+      "league": "CL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.050881298221289846,
+      "pair_key": "CL_1635611_1635641",
+      "second_match": "Arsenal vs Borussia Dortmund"
+    },
+    {
+      "actual_scores": [
+        "2-2",
+        "5-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.039642028744407296,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.031116595718026174,
+      "first_match": "Manchester City vs Napoli",
+      "league": "CL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.040189220486515555,
+      "pair_key": "CL_1635692_1635715",
+      "second_match": "Real Madrid vs PSV Eindhoven"
+    },
+    {
+      "actual_scores": [
         "3-0",
         "1-5"
       ],
@@ -771,6 +833,130 @@
       "original_probability_coverage": 0.05202946169499677,
       "pair_key": "ELC_1563272_1563273",
       "second_match": "West Ham vs Preston"
+    },
+    {
+      "actual_scores": [
+        "1-1",
+        "0-4"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05030542857533391,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04110520129015202,
+      "first_match": "Bristol City vs Wrexham",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05333871062384386,
+      "pair_key": "ELC_1563275_1563276",
+      "second_match": "Cardiff vs Preston"
+    },
+    {
+      "actual_scores": [
+        "4-0",
+        "2-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05775373314325229,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04506624925543243,
+      "first_match": "Charlton vs Lincoln",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05921872743671466,
+      "pair_key": "ELC_1563277_1563278",
+      "second_match": "Middlesbrough vs Swansea"
+    },
+    {
+      "actual_scores": [
+        "1-1",
+        "1-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.044557559212995236,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.0343532020104965,
+      "first_match": "Norwich vs QPR",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.045948858260610466,
+      "pair_key": "ELC_1563279_1563280",
+      "second_match": "Portsmouth vs West Ham"
+    },
+    {
+      "actual_scores": [
+        "1-1",
+        "3-0"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.06294030678820359,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.04692441463515604,
+      "first_match": "Sheffield Utd vs Southampton",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.06294030678820359,
+      "pair_key": "ELC_1563281_1563282",
+      "second_match": "Wolves vs Derby"
     },
     {
       "actual_scores": [

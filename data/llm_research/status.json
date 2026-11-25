@@ -1,8 +1,8 @@
 {
-  "actual_successful_ai_votes": 3,
+  "actual_successful_ai_votes": 2,
   "attempted": 1,
   "captured": 1,
-  "checked_at_utc": "2026-11-24T20:07:28.742428+00:00",
+  "checked_at_utc": "2026-11-25T02:47:33.240419+00:00",
   "configured_providers": [
     "openai",
     "claude",
@@ -11,14 +11,18 @@
     "groqcloud",
     "cohere"
   ],
-  "eligible_fixture_count": 10,
+  "eligible_fixture_count": 9,
   "enabled": true,
-  "last_attempt_at_utc": "2026-11-24T20:07:30.438535+00:00",
+  "last_attempt_at_utc": "2026-11-25T02:47:34.883137+00:00",
   "last_attempt_errors": {
     "claude": {
       "http_status": 400,
       "reason": "invalid_request_or_model",
       "type": "HTTPError"
+    },
+    "cohere": {
+      "reason": "response_format_or_model_configuration",
+      "type": "ValueError"
     },
     "grok": {
       "http_status": 400,
@@ -41,6 +45,10 @@
       "reason": "invalid_request_or_model",
       "type": "HTTPError"
     },
+    "cohere": {
+      "reason": "response_format_or_model_configuration",
+      "type": "ValueError"
+    },
     "grok": {
       "http_status": 400,
       "reason": "invalid_request_or_model",
@@ -54,6 +62,7 @@
   },
   "provider_error_types": {
     "claude": "HTTPError",
+    "cohere": "ValueError",
     "grok": "HTTPError",
     "groqcloud": "HTTPError"
   },
@@ -65,7 +74,7 @@
   "research_history_external_requests": 0,
   "same_day_pair_selected": false,
   "selected_fixture_ids": [
-    "1492472"
+    "1635718"
   ],
   "selected_original_frozen_pair_day": null,
   "source_quality": "shared_time_checked_research_dossier_missing_inputs_explicit",
