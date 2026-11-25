@@ -332,6 +332,18 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                 except (ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
                     diagnostics['uefa_history_audit_errors'].append({
                         'fixture_id': str(fixture['id']), 'error_type': type(exc).__name__})
+                # Research-only, opt-in: reuse already observed league histories.
+                # This must never call a provider or affect the live forecast gate.
+                if os.environ.get("CROSS_COMPETITION_RESEARCH_ENABLED") == "true" and code in ("CL", "EL"):
+                    try:
+                        from cross_competition_capture import freeze as freeze_cross_competition
+                        outcome = freeze_cross_competition(fixture, evidence, history_cache, clock=current_time)
+                        summary = diagnostics.setdefault("cross_competition_capture", {})
+                        summary[outcome] = summary.get(outcome, 0) + 1
+                    except (OSError, ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+                        errors = diagnostics.setdefault("cross_competition_capture_errors", {})
+                        kind = type(exc).__name__
+                        errors[kind] = errors.get(kind, 0) + 1
                 # Save the new independent research forecast BEFORE the old
                 # baseline gate. A sparse v6/v7 forecast must not erase a
                 # separately valid v8 candidate, and vice versa.
