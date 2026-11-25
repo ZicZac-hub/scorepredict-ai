@@ -4,7 +4,7 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-25T19:34:28.236100+00:00",
+  "last_run_utc": "2026-11-25T20:29:45.767811+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
@@ -17,44 +17,47 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 12.4,
+    "age_minutes": 3.3,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-25T19:22:04.996855+00:00",
+    "collector_started_at_utc": "2026-11-25T20:26:28.001330+00:00",
     "not_a_prediction_accuracy_measure": true,
     "processed_fixtures": 26,
     "producer_api_budget_unchanged": true,
-    "uefa_fixtures_one_qualified_match_short": 20,
+    "uefa_fixtures_one_qualified_match_short": 16,
     "uefa_history_audit_available": true,
     "uefa_history_fixture_observations": 22,
     "uefa_history_season_source_states": {
       "rows_returned": 44
     },
-    "v37_sparse_saved": 0,
-    "v37_sparse_saved_by_league": {},
+    "v37_sparse_saved": 1,
+    "v37_sparse_saved_by_league": {
+      "CL": 1
+    },
     "v37_sparse_status_by_league": {
       "CL": {
-        "original_v37_already_issued": 8
+        "new_pre_kickoff_sparse_model_issued": 1,
+        "original_v37_already_issued": 3
       },
       "EL": {
         "original_v37_already_issued": 12
       }
     },
     "v8_abstention_reasons": {
-      "team_history_below_five": 20
+      "team_history_below_five": 16
     },
     "v8_abstention_reasons_by_league": {
       "CL": {
-        "team_history_below_five": 8
+        "team_history_below_five": 4
       },
       "EL": {
         "team_history_below_five": 12
       }
     },
-    "v8_abstentions": 20,
+    "v8_abstentions": 16,
     "v8_away_history_bins_by_league": {
       "CL": {
-        "3-4": 4,
-        "5+": 4
+        "3-4": 2,
+        "5+": 2
       },
       "EL": {
         "3-4": 6,
@@ -63,8 +66,8 @@
     },
     "v8_home_history_bins_by_league": {
       "CL": {
-        "3-4": 4,
-        "5+": 4
+        "3-4": 3,
+        "5+": 1
       },
       "EL": {
         "3-4": 10,
@@ -73,15 +76,15 @@
     },
     "v8_min_team_history_bins_by_league": {
       "CL": {
-        "3-4": 8
+        "3-4": 4
       },
       "EL": {
         "3-4": 12
       }
     },
-    "v8_saved": 6,
+    "v8_saved": 10,
     "v8_saved_by_league": {
-      "CL": 2,
+      "CL": 6,
       "ELC": 4
     },
     "v8_source_errors": 0
@@ -93,9 +96,9 @@
     "original_frozen_decisions": 6,
     "pending_days": 2,
     "source_ineligibility": {
-      "invalid_source_time": 200,
-      "not_original_v8_model": 825,
-      "outside_research_freeze_window": 222
+      "invalid_source_time": 212,
+      "not_original_v8_model": 845,
+      "outside_research_freeze_window": 214
     },
     "verified_paired_days": 4
   },
@@ -204,7 +207,7 @@
     "verified_independent_sydney_days": 1
   },
   "v37_sparse_uefa_research": {
-    "frozen_unique_physical_fixtures": 26,
+    "frozen_unique_physical_fixtures": 27,
     "invalid_or_tampered_excluded": 0,
     "methods": {
       "league_only": {
@@ -257,7 +260,7 @@
       }
     },
     "not_a_five_double_trial": true,
-    "pending": 26,
+    "pending": 27,
     "ready_for_model_promotion": false,
     "research_only": true,
     "verified_matched_physical_fixtures": 0
@@ -308,14 +311,14 @@
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-25T18:19:51.093483+00:00",
-    "evaluated_at_utc": "2026-11-25T18:19:51.093525+00:00",
+    "capture_at_utc": "2026-11-25T20:28:21.323020+00:00",
+    "evaluated_at_utc": "2026-11-25T20:28:21.323054+00:00",
     "hits": 0,
     "issued": 1,
     "minimum_review_pairs": 100,
     "new_trials": [],
     "observed_hit_rate": 0.0,
-    "outside_decision_window": 14,
+    "outside_decision_window": 15,
     "pending": 0,
     "report_available": true,
     "research_only": true,
