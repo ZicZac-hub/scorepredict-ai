@@ -24,7 +24,7 @@
       "total_goals_bias_actual_minus_expected": null,
       "verified_leg_slots": 0
     },
-    "finished_original_v8_fixtures": 89,
+    "finished_original_v8_fixtures": 102,
     "holdout_source_receipts": [],
     "kind": "retrospective_chronological_replay_from_real_original_pre_match_forecasts",
     "limitations": [
@@ -48,7 +48,7 @@
       "historical_chronological_test_ready": false,
       "max_prior_verified_before_any_historical_source_capture": 0,
       "minimum_prior_verified_fixtures_for_correction": 30,
-      "verified_original_v8_fixtures_known_now": 89
+      "verified_original_v8_fixtures_known_now": 102
     },
     "v26_minus_v8_log_loss": null,
     "v26_minus_v8_multiclass_brier": null,
@@ -79,14 +79,12 @@
     "verified_holdout_fixtures": 0,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
-  "evaluated_at_utc": "2026-11-24T07:17:16.396834+00:00",
+  "evaluated_at_utc": "2026-11-25T06:21:45.229497+00:00",
   "no_provider_calls": true,
   "original_frozen_forecasts_changed": false,
   "production_model_promoted": false,
   "prospective_freeze": {
-    "abstentions": {
-      "v25_set_not_new_in_same_freeze_window": 7
-    },
+    "abstentions": {},
     "live_model_changed": false,
     "model": "v26-temporal-tail-calibration-v1-research-only",
     "new_frozen_days": []
@@ -189,60 +187,150 @@
         "v8_same_pair_five_hit": false
       },
       {
+        "actual_scores": [
+          "1-1",
+          "4-0"
+        ],
         "new_v26_selection_at_utc": "2026-11-23T23:11:39.944133+00:00",
         "original_v25_source_selected_at_utc": "2026-11-23T23:11:36.702964+00:00",
-        "status": "pending",
+        "status": "verified",
         "sydney_date": "2026-11-25",
-        "training_fixtures_before_selection": 81
+        "training_fixtures_before_selection": 81,
+        "v25_robust_five_hit": false,
+        "v26_five_hit": false,
+        "v26_leg_score_metrics": [
+          {
+            "actual_score": "1-1",
+            "actual_total_goals": 2,
+            "exact_score_log_loss": 2.076584797061815,
+            "exact_score_probability": 0.12535760362516843,
+            "expected_total_goals": 2.3603497681215853,
+            "goal_mae": 0.18017488406079263,
+            "multiclass_score_brier": 0.8272798349060855,
+            "over_3_5_brier": 0.048812887232024614,
+            "over_3_5_observed": 0,
+            "over_3_5_probability": 0.2209363872973952,
+            "top_five_hit": 1,
+            "top_one_hit": 1,
+            "top_three_hit": 1,
+            "under_1_5_brier": 0.10796004489859179,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.32857273912878376
+          },
+          {
+            "actual_score": "4-0",
+            "actual_total_goals": 4,
+            "exact_score_log_loss": 4.517395105994366,
+            "exact_score_probability": 0.010917425396721673,
+            "expected_total_goals": 2.259251060122795,
+            "goal_mae": 1.8811904873508523,
+            "multiclass_score_brier": 1.0607058100852298,
+            "over_3_5_brier": 0.6391384719829588,
+            "over_3_5_observed": 1,
+            "over_3_5_probability": 0.20053863634134342,
+            "top_five_hit": 0,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.12402493096559089,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.35217173504639876
+          }
+        ],
+        "v8_leg_score_metrics": [
+          {
+            "actual_score": "1-1",
+            "actual_total_goals": 2,
+            "exact_score_log_loss": 2.032535767085608,
+            "exact_score_probability": 0.13100290675134285,
+            "expected_total_goals": 2.3878603238020544,
+            "goal_mae": 0.1939301619010273,
+            "multiclass_score_brier": 0.8152998211809996,
+            "over_3_5_brier": 0.047941838313773806,
+            "over_3_5_observed": 0,
+            "over_3_5_probability": 0.2189562474874234,
+            "top_five_hit": 1,
+            "top_one_hit": 1,
+            "top_three_hit": 1,
+            "under_1_5_brier": 0.09626477786193795,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.31026565691667835
+          },
+          {
+            "actual_score": "4-0",
+            "actual_total_goals": 4,
+            "exact_score_log_loss": 4.525120970204302,
+            "exact_score_probability": 0.010833403838090503,
+            "expected_total_goals": 2.28930039704751,
+            "goal_mae": 1.8796063692102,
+            "multiclass_score_brier": 1.0598041266439933,
+            "over_3_5_brier": 0.6416085748263632,
+            "over_3_5_observed": 1,
+            "over_3_5_probability": 0.19899527165792383,
+            "top_five_hit": 0,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.11087217408848322,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.33297473491014784
+          }
+        ],
+        "v8_same_pair_five_hit": false
+      },
+      {
+        "new_v26_selection_at_utc": "2026-11-24T20:05:22.441268+00:00",
+        "original_v25_source_selected_at_utc": "2026-11-24T20:05:19.737042+00:00",
+        "status": "pending",
+        "sydney_date": "2026-11-26",
+        "training_fixtures_before_selection": 90
       }
     ],
     "same_legs_v26_score_metrics": {
-      "high_goal_4_plus_observed": 1,
-      "high_goal_probability_gap_observed_minus_predicted": 0.19185022742398616,
+      "high_goal_4_plus_observed": 2,
+      "high_goal_probability_gap_observed_minus_predicted": 0.24055635780230844,
       "low_goal_0_or_1_observed": 0,
       "mean_actual_total_goals": 3.0,
-      "mean_exact_score_log_loss": 3.116688172335226,
-      "mean_expected_total_goals": 2.7697651971466386,
-      "mean_goal_mae": 1.131611663476156,
-      "mean_multiclass_score_brier": 0.9424608722418948,
-      "mean_over_3_5_brier": 0.35843000122426666,
+      "mean_exact_score_log_loss": 3.206839061931658,
+      "mean_expected_total_goals": 2.5397828056344145,
+      "mean_goal_mae": 1.0811471745909893,
+      "mean_multiclass_score_brier": 0.9432268473687762,
+      "mean_over_3_5_brier": 0.3512028404158792,
       "mean_over_3_5_observed": 0.5,
-      "mean_over_3_5_probability": 0.30814977257601384,
+      "mean_over_3_5_probability": 0.25944364219769156,
       "mean_top_five_hit": 0.5,
       "mean_top_one_hit": 0.5,
       "mean_top_three_hit": 0.5,
-      "mean_under_1_5_brier": 0.06604979008075865,
+      "mean_under_1_5_brier": 0.09102113900642499,
       "mean_under_1_5_observed": 0.0,
-      "mean_under_1_5_probability": 0.2513793882655459,
-      "top_five_exact_hits": 1,
-      "top_one_exact_hits": 1,
-      "top_three_exact_hits": 1,
-      "total_goals_bias_actual_minus_expected": 0.2302348028533614,
-      "verified_leg_slots": 2
+      "mean_under_1_5_probability": 0.2958758126765686,
+      "top_five_exact_hits": 2,
+      "top_one_exact_hits": 2,
+      "top_three_exact_hits": 2,
+      "total_goals_bias_actual_minus_expected": 0.4602171943655855,
+      "verified_leg_slots": 4
     },
     "same_legs_v8_score_metrics": {
-      "high_goal_4_plus_observed": 1,
-      "high_goal_probability_gap_observed_minus_predicted": 0.18996208229538092,
+      "high_goal_4_plus_observed": 2,
+      "high_goal_probability_gap_observed_minus_predicted": 0.24049316136135368,
       "low_goal_0_or_1_observed": 0,
       "mean_actual_total_goals": 3.0,
-      "mean_exact_score_log_loss": 3.0952642623739566,
-      "mean_expected_total_goals": 2.8058274404441397,
-      "mean_goal_mae": 1.1366221038044613,
-      "mean_multiclass_score_brier": 0.938386233550271,
-      "mean_over_3_5_brier": 0.35688609299564916,
+      "mean_exact_score_log_loss": 3.187046315509456,
+      "mean_expected_total_goals": 2.572203900434461,
+      "mean_goal_mae": 1.0866951846800375,
+      "mean_multiclass_score_brier": 0.9379691037313838,
+      "mean_over_3_5_brier": 0.3508306497828588,
       "mean_over_3_5_observed": 0.5,
-      "mean_over_3_5_probability": 0.3100379177046191,
+      "mean_over_3_5_probability": 0.2595068386386463,
       "mean_top_five_hit": 0.5,
       "mean_top_one_hit": 0.5,
       "mean_top_three_hit": 0.5,
-      "mean_under_1_5_brier": 0.05699087502999332,
+      "mean_under_1_5_brier": 0.08027967550260195,
       "mean_under_1_5_observed": 0.0,
-      "mean_under_1_5_probability": 0.23332951744088426,
-      "top_five_exact_hits": 1,
-      "top_one_exact_hits": 1,
-      "top_three_exact_hits": 1,
-      "total_goals_bias_actual_minus_expected": 0.19417255955586032,
-      "verified_leg_slots": 2
+      "mean_under_1_5_probability": 0.27747485667714866,
+      "top_five_exact_hits": 2,
+      "top_one_exact_hits": 2,
+      "top_three_exact_hits": 2,
+      "total_goals_bias_actual_minus_expected": 0.4277960995655392,
+      "verified_leg_slots": 4
     },
     "same_pair_five_hits": {
       "v25_robust": 0,
@@ -253,11 +341,11 @@
     "study": "genuinely_frozen_v26_on_same_original_v25_fixture_pairs",
     "v26_five_hit_wilson_95": [
       0.0,
-      0.7934506856227626
+      0.6576197724933469
     ],
-    "v26_minus_v8_log_loss": 0.021423909961269416,
-    "v26_minus_v8_multiclass_brier": 0.004074638691623833,
-    "verified_pairs": 1,
+    "v26_minus_v8_log_loss": 0.01979274642220208,
+    "v26_minus_v8_multiclass_brier": 0.005257743637392398,
+    "verified_pairs": 2,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
   "seventy_percent_proven": false,

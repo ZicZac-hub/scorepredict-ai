@@ -1,5 +1,5 @@
 {
-  "completed_independently_verified_days": 3,
+  "completed_independently_verified_days": 4,
   "days": [
     {
       "frozen_candidate_pairs": 3,
@@ -288,16 +288,112 @@
         }
       },
       "sydney_day": "2026-11-24"
+    },
+    {
+      "frozen_candidate_pairs": 28,
+      "original_candidate_catalog_sha256": "958668b7738f8dbcab86135b1475c72291b4de52062ca4cb533cbbc2c08a09ce",
+      "original_fixtures_verified": 8,
+      "policies": {
+        "quality": {
+          "equal_ticket_top_vs_bottom": {
+            "1": {
+              "actual_pairs_per_arm": 1,
+              "bottom_any_hit": false,
+              "bottom_hit_pair_fraction_correlated": 0.0,
+              "bottom_hits": 0,
+              "different_underlying_fixtures_not_guaranteed": true,
+              "requested_pairs_per_arm": 1,
+              "tickets_per_arm": 5,
+              "top_any_hit": false,
+              "top_hit_pair_fraction_correlated": 0.0,
+              "top_hits": 0,
+              "top_minus_bottom_pair_fraction_descriptive": 0.0
+            },
+            "10": {
+              "actual_pairs_per_arm": 10,
+              "bottom_any_hit": true,
+              "bottom_hit_pair_fraction_correlated": 0.1,
+              "bottom_hits": 1,
+              "different_underlying_fixtures_not_guaranteed": true,
+              "requested_pairs_per_arm": 10,
+              "tickets_per_arm": 50,
+              "top_any_hit": false,
+              "top_hit_pair_fraction_correlated": 0.0,
+              "top_hits": 0,
+              "top_minus_bottom_pair_fraction_descriptive": -0.1
+            },
+            "5": {
+              "actual_pairs_per_arm": 5,
+              "bottom_any_hit": false,
+              "bottom_hit_pair_fraction_correlated": 0.0,
+              "bottom_hits": 0,
+              "different_underlying_fixtures_not_guaranteed": true,
+              "requested_pairs_per_arm": 5,
+              "tickets_per_arm": 25,
+              "top_any_hit": false,
+              "top_hit_pair_fraction_correlated": 0.0,
+              "top_hits": 0,
+              "top_minus_bottom_pair_fraction_descriptive": 0.0
+            }
+          },
+          "within_day_hit_vs_miss_rank_concordance": 0.4666666666666667
+        },
+        "robustness": {
+          "equal_ticket_top_vs_bottom": {
+            "1": {
+              "actual_pairs_per_arm": 1,
+              "bottom_any_hit": false,
+              "bottom_hit_pair_fraction_correlated": 0.0,
+              "bottom_hits": 0,
+              "different_underlying_fixtures_not_guaranteed": true,
+              "requested_pairs_per_arm": 1,
+              "tickets_per_arm": 5,
+              "top_any_hit": false,
+              "top_hit_pair_fraction_correlated": 0.0,
+              "top_hits": 0,
+              "top_minus_bottom_pair_fraction_descriptive": 0.0
+            },
+            "10": {
+              "actual_pairs_per_arm": 10,
+              "bottom_any_hit": true,
+              "bottom_hit_pair_fraction_correlated": 0.1,
+              "bottom_hits": 1,
+              "different_underlying_fixtures_not_guaranteed": true,
+              "requested_pairs_per_arm": 10,
+              "tickets_per_arm": 50,
+              "top_any_hit": false,
+              "top_hit_pair_fraction_correlated": 0.0,
+              "top_hits": 0,
+              "top_minus_bottom_pair_fraction_descriptive": -0.1
+            },
+            "5": {
+              "actual_pairs_per_arm": 5,
+              "bottom_any_hit": false,
+              "bottom_hit_pair_fraction_correlated": 0.0,
+              "bottom_hits": 0,
+              "different_underlying_fixtures_not_guaranteed": true,
+              "requested_pairs_per_arm": 5,
+              "tickets_per_arm": 25,
+              "top_any_hit": false,
+              "top_hit_pair_fraction_correlated": 0.0,
+              "top_hits": 0,
+              "top_minus_bottom_pair_fraction_descriptive": 0.0
+            }
+          },
+          "within_day_hit_vs_miss_rank_concordance": 0.4266666666666667
+        }
+      },
+      "sydney_day": "2026-11-25"
     }
   ],
-  "evaluated_at_utc": "2026-11-24T07:18:30.286447+00:00",
+  "evaluated_at_utc": "2026-11-25T06:22:13.738801+00:00",
   "initial_review_complete_day_target": 30,
   "initial_review_ready": false,
   "live_model_unchanged": true,
   "missing_results_are_pending_not_losses": true,
   "no_hindsight_selections_or_new_predictions": true,
-  "original_candidate_pair_rows": 244,
-  "original_frozen_slate_days": 4,
+  "original_candidate_pair_rows": 272,
+  "original_frozen_slate_days": 5,
   "pending_or_incomplete_days": 1,
   "rank_concordance_is_descriptive_not_iid_inference": true,
   "seventy_percent_five_double_accuracy_not_proven": true,
@@ -308,9 +404,9 @@
   "version": "v32-original-full-slate-ranked-lift-v1-research-only",
   "within_day_rank_lift": {
     "quality_top_bottom_1": {
-      "complete_day_units": 3,
+      "complete_day_units": 4,
       "days_bottom_outperformed_top": 0,
-      "days_tied": 3,
+      "days_tied": 4,
       "days_top_outperformed_bottom": 0,
       "not_an_independent_pair_win_rate": true,
       "paired_day_sign_test_two_sided_exploratory": null,
@@ -318,19 +414,19 @@
       "unweighted_mean_day_level_pair_fraction_difference": 0.0
     },
     "quality_top_bottom_10": {
-      "complete_day_units": 3,
-      "days_bottom_outperformed_top": 0,
+      "complete_day_units": 4,
+      "days_bottom_outperformed_top": 1,
       "days_tied": 2,
       "days_top_outperformed_bottom": 1,
       "not_an_independent_pair_win_rate": true,
       "paired_day_sign_test_two_sided_exploratory": null,
       "statistical_review_ready": false,
-      "unweighted_mean_day_level_pair_fraction_difference": 0.03333333333333333
+      "unweighted_mean_day_level_pair_fraction_difference": 0.0
     },
     "quality_top_bottom_5": {
-      "complete_day_units": 3,
+      "complete_day_units": 4,
       "days_bottom_outperformed_top": 0,
-      "days_tied": 3,
+      "days_tied": 4,
       "days_top_outperformed_bottom": 0,
       "not_an_independent_pair_win_rate": true,
       "paired_day_sign_test_two_sided_exploratory": null,
@@ -338,9 +434,9 @@
       "unweighted_mean_day_level_pair_fraction_difference": 0.0
     },
     "robustness_top_bottom_1": {
-      "complete_day_units": 3,
+      "complete_day_units": 4,
       "days_bottom_outperformed_top": 0,
-      "days_tied": 3,
+      "days_tied": 4,
       "days_top_outperformed_bottom": 0,
       "not_an_independent_pair_win_rate": true,
       "paired_day_sign_test_two_sided_exploratory": null,
@@ -348,24 +444,24 @@
       "unweighted_mean_day_level_pair_fraction_difference": 0.0
     },
     "robustness_top_bottom_10": {
-      "complete_day_units": 3,
-      "days_bottom_outperformed_top": 0,
+      "complete_day_units": 4,
+      "days_bottom_outperformed_top": 1,
       "days_tied": 2,
       "days_top_outperformed_bottom": 1,
       "not_an_independent_pair_win_rate": true,
       "paired_day_sign_test_two_sided_exploratory": null,
       "statistical_review_ready": false,
-      "unweighted_mean_day_level_pair_fraction_difference": 0.03333333333333333
+      "unweighted_mean_day_level_pair_fraction_difference": 0.0
     },
     "robustness_top_bottom_5": {
-      "complete_day_units": 3,
+      "complete_day_units": 4,
       "days_bottom_outperformed_top": 0,
-      "days_tied": 2,
+      "days_tied": 3,
       "days_top_outperformed_bottom": 1,
       "not_an_independent_pair_win_rate": true,
       "paired_day_sign_test_two_sided_exploratory": null,
       "statistical_review_ready": false,
-      "unweighted_mean_day_level_pair_fraction_difference": 0.06666666666666667
+      "unweighted_mean_day_level_pair_fraction_difference": 0.05
     }
   }
 }

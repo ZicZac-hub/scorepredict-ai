@@ -4,45 +4,38 @@
     "created": [],
     "no_live_model_change": true,
     "not_frozen_inspected": [],
-    "skipped": {
-      "already_frozen_day": 1
-    },
-    "source_ineligibility": {
-      "invalid_source_time": 170,
-      "not_original_v8_model": 730,
-      "outside_research_freeze_window": 211
-    },
-    "version": "v28-independent-paired-pair-policy-v1-research-only"
+    "skipped": {},
+    "source_ineligibility": {}
   },
-  "generated_at_utc": "2026-11-24T07:17:24.928457+00:00",
+  "generated_at_utc": "2026-11-25T06:21:52.185013+00:00",
   "no_additional_provider_or_llm_calls": true,
   "original_v8_v25_v26_v27_forecasts_changed": false,
   "prospective_accuracy_improvement_not_established": true,
   "verified_comparison": {
     "abstained_days": 0,
-    "both_policies_same_pair_days": 3,
+    "both_policies_same_pair_days": 4,
     "caution": "Same-day DIFFERENT-fixture pair-policy selection test, not same-fixture model calibration",
     "control_hit_rate": 0.0,
     "control_hit_wilson_95": [
-      5.551115123125783e-17,
-      0.5614970317550454
+      0.0,
+      0.4898908364545973
     ],
     "control_only_wins": 0,
     "different_pair_days": 0,
     "do_not_treat_pending_as_losses": true,
-    "evaluated_at_utc": "2026-11-24T07:17:26.477085+00:00",
+    "evaluated_at_utc": "2026-11-25T06:21:52.185026+00:00",
     "exact_paired_test_two_sided_p": null,
     "excluded_invalid_or_tampered_files": {},
     "initial_review_ready": false,
     "initial_verified_day_review_target": 100,
     "invalid_verified_final_evidence": {},
     "no_promotion_to_live_model": true,
-    "original_frozen_decisions": 4,
+    "original_frozen_decisions": 5,
     "pending_days": 1,
     "quality_hit_rate": 0.0,
     "quality_hit_wilson_95": [
-      5.551115123125783e-17,
-      0.5614970317550454
+      0.0,
+      0.4898908364545973
     ],
     "quality_only_wins": 0,
     "quality_wins": 0,
@@ -173,6 +166,11 @@
       },
       {
         "all_qualified_four_team_pairs": 28,
+        "control_actual_scores": [
+          "1-1",
+          "4-0"
+        ],
+        "control_five_double_hit": false,
         "control_pair": [
           [
             "API-Football",
@@ -185,6 +183,11 @@
         ],
         "eligible_fixtures": 8,
         "policy": "FROZEN",
+        "quality_actual_scores": [
+          "1-1",
+          "4-0"
+        ],
+        "quality_five_double_hit": false,
         "quality_pair": [
           [
             "API-Football",
@@ -197,8 +200,39 @@
         ],
         "same_fixture_pair": true,
         "same_pre_match_cutoff_for_both_arms": true,
-        "status": "pending",
+        "status": "verified",
         "sydney_day": "2026-11-25",
+        "verified_control": true,
+        "verified_quality": true
+      },
+      {
+        "all_qualified_four_team_pairs": 28,
+        "control_pair": [
+          [
+            "API-Football",
+            "1563285"
+          ],
+          [
+            "API-Football",
+            "1563286"
+          ]
+        ],
+        "eligible_fixtures": 8,
+        "policy": "FROZEN",
+        "quality_pair": [
+          [
+            "API-Football",
+            "1563285"
+          ],
+          [
+            "API-Football",
+            "1563286"
+          ]
+        ],
+        "same_fixture_pair": true,
+        "same_pre_match_cutoff_for_both_arms": true,
+        "status": "pending",
+        "sydney_day": "2026-11-26",
         "verified_control": false,
         "verified_quality": false
       }
@@ -207,7 +241,7 @@
     "seventy_percent_accuracy_demonstrated": false,
     "study": "standalone_genuinely_prospective_two_pair_selection_policies_same_slate",
     "verified_final_conflicts_excluded": 0,
-    "verified_paired_days": 3,
+    "verified_paired_days": 4,
     "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
   "version": "v28-independent-paired-pair-policy-v1-research-only"

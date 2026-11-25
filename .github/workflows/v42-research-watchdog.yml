@@ -1,0 +1,116 @@
+name: V42 isolated research watchdog
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/v42-research-watchdog.yml'
+      - 'v42_research_bot.py'
+      - 'v42_research_trial.py'
+      - 'v42_research_engine.py'
+      - 'v42_late_research_trial.py'
+      - 'tests/test_v42_late_cutoff.py'
+      - 'tests/test_v42_research.py'
+  workflow_run:
+    workflows: ['Capture verified pre-match evidence']
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: v42-research-only
+  cancel-in-progress: false
+jobs:
+  research:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      V42_AI_RESEARCH_ENABLED: ${{ vars.V42_AI_RESEARCH_ENABLED }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt 'pytest>=8,<10'
+      - run: python -m pytest -q tests/test_v42_research.py tests/test_v42_late_cutoff.py
+      - name: Refresh authenticated research archive
+        id: refresh
+        run: |
+          # Source pushes and collector completions only refresh local evidence.
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_run" ]; then
+            python v42_research_bot.py --no-ai
+          else
+            python v42_research_bot.py
+          fi
+      - name: Run separate late-cutoff trial without API requests
+        id: late
+        continue-on-error: true
+        run: python v42_late_research_trial.py
+      - name: Publish only isolated research archive
+        if: steps.refresh.outcome == 'success'
+        env:
+          LATE_OUTCOME: ${{ steps.late.outcome }}
+        run: |
+          python - <<'PY'
+          import json, subprocess, os
+          from pathlib import Path
+          roots=[Path("data/v42_research")]
+          if os.environ["LATE_OUTCOME"] == "success":
+              roots.append(Path("data/v42_late_research"))
+          volatile={"checked_at_utc","evaluated_at_utc","started_at_utc","completed_at_utc"}
+          for p in (p for root in roots for p in root.glob("*.json")):
+              if p.name not in {"status.json","performance.json","watchdog.json"}:
+                  continue
+              old=subprocess.run(["git","show","HEAD:"+str(p)],capture_output=True,text=True)
+              if old.returncode==0:
+                  a,b=json.loads(old.stdout),json.loads(p.read_text())
+                  if {k:v for k,v in a.items() if k not in volatile}=={k:v for k,v in b.items() if k not in volatile}:
+                      p.write_text(old.stdout)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/v42_research/
+          if [ "$LATE_OUTCOME" = "success" ]; then
+            git add data/v42_late_research/
+          else
+            git restore --worktree -- data/v42_late_research/ 2>/dev/null || true
+          fi
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data: isolated V42 research refresh [skip ci]'
+          # Other scheduled evidence writers may update main concurrently.
+          # Retry non-fast-forward pushes, but never silently merge a frozen
+          # receipt conflict or force-push. The artifact step preserves output.
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::error::V42 publication conflict; preserve original records and inspect the research artifact."
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Main changed or push failed (attempt ${attempt}/4)."
+            sleep 3
+          done
+          echo "::error::V42 could not publish after four attempts."
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v42-research-reports
+          path: |
+            data/v42_research/
+            data/v42_late_research/
+          if-no-files-found: warn
+          retention-days: 14
