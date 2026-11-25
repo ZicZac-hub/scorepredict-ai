@@ -41,3 +41,20 @@ def test_bad_digest_missing_source_and_late_clock_abstain(tmp_path, monkeypatch)
     times=iter([NOW, NOW+timedelta(hours=2)])
     assert capture.freeze(FIXTURE,evidence,source(),root=tmp_path,clock=lambda: next(times)) == "calculation_after_kickoff"
     assert not (tmp_path/"trials"/"9999.json").exists()
+
+
+def test_evaluation_keeps_pending_distinct_and_rejects_modified_receipt(tmp_path, monkeypatch):
+    import cross_competition_evaluate as grader
+    monkeypatch.setattr(capture,"predict",lambda *a,**k:{"matrix":P})
+    monkeypatch.setattr(grader,"predict",lambda *a,**k:{"matrix":P})
+    monkeypatch.setattr(grader,"index_verified_results",lambda *a,**k:({},set(),{}))
+    assert capture.freeze(FIXTURE,build_evidence(FIXTURE,[],NOW),source(),root=tmp_path,clock=lambda:NOW)=="frozen"
+    report=grader.evaluate(root=tmp_path,now=NOW)
+    assert report["frozen"]==report["pending"]==1
+    assert report["verified"]==report["invalid"]==0
+    path=tmp_path/"trials"/"9999.json"
+    row=json.loads(path.read_text())
+    row["model"]["home_tilt"]=999
+    path.write_text(json.dumps(row))
+    report=grader.evaluate(root=tmp_path,now=NOW)
+    assert report["invalid"]==1 and report["pending"]==0
