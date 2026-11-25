@@ -3,13 +3,13 @@ Run --watch on a continuously running host with refreshed provider archives.
 One optional bounded AI advisory attempt per UTC day; no code execution.
 """
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 import os
 from pathlib import Path
 import time
 import requests
-from v42_research_trial import main, ROOT
+from v42_research_trial import main, ROOT, PAIR_ROOT, SOURCE_ROOT, _pair, utc, PROTOCOL
 from persist_prematch import write_json
 
 def advisory(report, root=ROOT):
@@ -40,6 +40,9 @@ def advisory(report, root=ROOT):
             raise ValueError("empty_memo")
         write_json(Path(root)/("ai_memo_"+day+".json"),{"memo":memo[:1800],"advisory_only":True})
         return "saved"
+    except requests.HTTPError as exc:
+        code = getattr(exc.response, "status_code", None)
+        return "failed_http_" + str(code) if type(code) is int and 400 <= code <= 599 else "failed_HTTPError"
     except (requests.RequestException,ValueError,TypeError,KeyError) as exc:
         return "failed_"+type(exc).__name__
 
@@ -57,6 +60,34 @@ def evidence_coverage(performance):
     result["confirmed_lineups_both_matches"] = performance["lineup_coverage"]["both_matches_confirmed_at_decision"]
     return result
 
+def window_diagnostics(*, now, root=ROOT, pair_root=PAIR_ROOT, source_root=SOURCE_ROOT):
+    """Read-only schedule audit; does not change registered forecast rules."""
+    now = utc(now)
+    counts = {"already_frozen": 0, "too_early": 0, "in_window": 0,
+              "too_late": 0, "invalid": 0}
+    next_window = None
+    for path in sorted((Path(pair_root)/"sets").glob("*.json")):
+        try:
+            record, models = _pair(path, source_root=source_root, decision=now)
+            if (Path(root)/"trials"/(record["sydney_date"]+".json")).exists():
+                counts["already_frozen"] += 1
+                continue
+            kickoff = min(utc(m["kickoff_utc"]) for m in models)
+            lead = (kickoff-now).total_seconds()
+            if lead > PROTOCOL["maximum_lead_seconds_inclusive"]:
+                counts["too_early"] += 1
+                opens = kickoff-timedelta(seconds=PROTOCOL["maximum_lead_seconds_inclusive"])
+                if next_window is None or opens < next_window:
+                    next_window = opens
+            elif lead <= PROTOCOL["minimum_lead_seconds_exclusive"]:
+                counts["too_late"] += 1
+            else:
+                counts["in_window"] += 1
+        except (ValueError, KeyError, TypeError, OSError, AttributeError, OverflowError):
+            counts["invalid"] += 1
+    return {**counts, "as_of_utc": now.isoformat(),
+            "next_window_opens_utc": next_window.isoformat() if next_window else None}
+
 def tick(*, use_ai=True):
     clock=datetime.now(timezone.utc)
     try:
@@ -71,6 +102,8 @@ def tick(*, use_ai=True):
                 "capture_rejections":report["capture"]["rejections"],
                 "outside_decision_window":report["capture"]["outside_decision_window"],
                 "paired_data":e["lineup_coverage"],"evidence_coverage":coverage,
+                "decision_windows":window_diagnostics(now=clock),
+                "ai_mode":"configured_advisory" if use_ai else "no_ai_smoke",
                 "ai":advisory(report) if use_ai else "disabled",
                 "auto_promotes":False,"auto_edits_code":False}
     except Exception as exc:
