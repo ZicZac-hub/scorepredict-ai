@@ -9,6 +9,10 @@ on:
       - 'v42_research_trial.py'
       - 'v42_research_engine.py'
       - 'tests/test_v42_research.py'
+  workflow_run:
+    workflows: ['Capture verified pre-match evidence']
+    types: [completed]
+    branches: [main]
   schedule:
     - cron: '*/5 * * * *'
 permissions:
@@ -18,7 +22,12 @@ concurrency:
   cancel-in-progress: false
 jobs:
   research:
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository))
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
@@ -35,8 +44,8 @@ jobs:
       - name: Refresh authenticated research archive
         id: refresh
         run: |
-          # Source-code changes can trigger a smoke run, never paid AI requests.
-          if [ "${{ github.event_name }}" = "push" ]; then
+          # Source pushes and collector completions only refresh local evidence.
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_run" ]; then
             python v42_research_bot.py --no-ai
           else
             python v42_research_bot.py
