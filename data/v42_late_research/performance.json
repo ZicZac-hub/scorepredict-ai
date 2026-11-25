@@ -1,0 +1,355 @@
+{
+  "conflicting_result_identities": 0,
+  "evaluated_at_utc": "2026-11-25T05:26:09.789726+00:00",
+  "external_requests": 0,
+  "invalid_opportunities": 0,
+  "limitations": [
+    "Historical baseline and challenger have different evidence ages; this measures the whole evidence refresh, not a time-matched model-only effect.",
+    "Set Brier scores concern different five-score events and are descriptive; proper paired comparison uses the same actual score/outcome.",
+    "Wilson and normal intervals assume suitable independence; serial teams/leagues and repeated scheduled environments can violate it.",
+    "Missing arms remain abstentions; compare models only on explicitly reported common verified pairs.",
+    "Lineup context has zero numerical weight; no player-impact improvement or betting ROI is established."
+  ],
+  "lineup_coverage": {
+    "both_matches_confirmed_at_decision": 0,
+    "numerical_lineup_weight": 0.0,
+    "some_reported_lineup_at_decision": 0
+  },
+  "methods": {
+    "baseline_v8": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "high_goal": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "low_goal": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "unified_final": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "upset_sensitivity": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "v41_control": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    },
+    "wide_margin": {
+      "abstained": 0,
+      "hit_rate": null,
+      "hits": 0,
+      "invalid_opportunities": 0,
+      "issued": 0,
+      "opportunities": 0,
+      "outcome_brier": null,
+      "pending": 0,
+      "set_brier_descriptive": null,
+      "single_fixtures_evaluated": 0,
+      "single_score_log_loss": null,
+      "verified": 0,
+      "wilson_95": null
+    }
+  },
+  "minimum_review_verified_pairs": 100,
+  "model_promoted": false,
+  "no_automatic_promotion": true,
+  "opportunities": 0,
+  "paired_comparisons": {
+    "high_goal": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "high_goal": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "low_goal": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "low_goal": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "unified_final": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "unified_final": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "upset_sensitivity": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "upset_sensitivity": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "v41_control": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "v41_control": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    },
+    "wide_margin": {
+      "baseline_only_set_wins": 0,
+      "challenger_only_set_wins": 0,
+      "positive_advantage_means_lower_challenger_loss": true,
+      "proper_same_event_outcome_brier_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "proper_same_event_score_log_loss_advantage": {
+        "mean": null,
+        "normal_95_interval": null,
+        "sample_pairs": 0
+      },
+      "same_pair_metrics": {
+        "baseline_v8": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        },
+        "wide_margin": {
+          "hit_rate": null,
+          "hits": 0,
+          "outcome_brier": null,
+          "single_score_log_loss": null,
+          "verified_sets": 0,
+          "wilson_95": null
+        }
+      },
+      "verified_common_pairs": 0
+    }
+  },
+  "pending_opportunities": 0,
+  "realized_roi": null,
+  "result_rejections": {},
+  "rows": [],
+  "same_cutoff_v41_comparison": {
+    "score_log_loss_advantage": {
+      "mean": null,
+      "normal_95_interval": null,
+      "sample_pairs": 0
+    },
+    "v41_hits": 0,
+    "v42_hits": 0,
+    "verified_pairs": 0
+  },
+  "single_final_arm": "unified_final",
+  "source_rejections": {},
+  "target_70_percent_proven": false,
+  "valid_opportunities": 0,
+  "verified_opportunities": 0,
+  "version": "v42-late-fixed-pair-research-v1"
+}
