@@ -1,27 +1,27 @@
 {
   "ai_connection": "daily_research_memo_saved",
-  "ai_memo": "**Recommended Method:** Utilize \"Conditional Probability Adjustments\" based on historical performance under similar conditions (e.g., weather, pitch type, team roster changes). This method would focus on correlating past performance metrics with specific situational variables, adjusting future predictions based on the conditional probabilities derived from similar historical instances.\n\n**Falsifiable Validation Test:** Construct a retrospective analysis comparing predictions from this method to actual outcomes over a defined period (e.g., the last three seasons). The test can be considered successful if the adjusted predictions achieve at least a 5% improvement in hit rate compared to a baseline model that does not account for conditional probabilities. If the adjusted model does not exhibit a statistically significant improvement, this would disprove the efficacy of the method in enhancing prediction accuracy.",
+  "ai_memo": "**New Method for Future-Only Pre-Kickoff Research**: Implement a \"Dynamic Contextual Modeling\" approach. This technique should incorporate not just historical performance data but also real-time factors like player injuries, weather conditions, and match context (e.g., rivalry status, tournament stakes). By dynamically adjusting models pre-kickoff, this method can provide more nuanced probative insights into game outcomes.\n\n**Falsifiable Validation Test**: To validate this model, conduct a \"Performance Comparison Test\" against a static baseline model that uses only historical data. Analyze a sample of fixtures over a defined period, ensuring that both models make predictions prior to kickoff. The null hypothesis will be that there is no significant difference in hit rates between the two models. If the dynamic model significantly outperforms the static model (p < 0.05), it would support its efficacy; otherwise, it will indicate no performance advantage.",
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-24T23:28:17.428146+00:00",
+  "last_run_utc": "2026-11-25T00:27:11.049318+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
     "hit_rate": 0.0,
     "hits": 0,
-    "pending_sets": 2,
-    "verified_sets": 7
+    "pending_sets": 1,
+    "verified_sets": 8
   },
   "priority": "five_exact_score_doubles",
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 13.6,
+    "age_minutes": 22.3,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-24T23:14:41.459248+00:00",
+    "collector_started_at_utc": "2026-11-25T00:04:52.083622+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 20,
+    "processed_fixtures": 19,
     "producer_api_budget_unchanged": true,
     "uefa_fixtures_one_qualified_match_short": 19,
     "uefa_history_audit_available": true,
@@ -79,10 +79,8 @@
         "3-4": 12
       }
     },
-    "v8_saved": 1,
-    "v8_saved_by_league": {
-      "BSA": 1
-    },
+    "v8_saved": 0,
+    "v8_saved_by_league": {},
     "v8_source_errors": 0
   },
   "target_five_double_hit_rate": 0.7,
@@ -307,15 +305,15 @@
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-24T23:16:46.295804+00:00",
-    "evaluated_at_utc": "2026-11-24T23:16:46.295839+00:00",
+    "capture_at_utc": "2026-11-25T00:07:25.151048+00:00",
+    "evaluated_at_utc": "2026-11-25T00:07:25.151086+00:00",
     "hits": 0,
     "issued": 1,
     "minimum_review_pairs": 100,
     "new_trials": [],
-    "observed_hit_rate": null,
+    "observed_hit_rate": 0.0,
     "outside_decision_window": 14,
-    "pending": 1,
+    "pending": 0,
     "report_available": true,
     "research_only": true,
     "same_pair_comparison": {
@@ -323,38 +321,44 @@
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": null,
+        "mean": -0.0010015611840056282,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": null,
+        "mean": 0.014858420173219145,
         "normal_95_interval": null,
-        "sample_pairs": 0
+        "sample_pairs": 1
       },
       "same_pair_metrics": {
         "baseline_v8": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.6473244244642089,
+          "single_score_log_loss": 3.2788283686449553,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         },
         "unified_final": {
-          "hit_rate": null,
+          "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": null,
-          "single_score_log_loss": null,
-          "verified_sets": 0,
-          "wilson_95": null
+          "outcome_brier": 0.6483259856482145,
+          "single_score_log_loss": 3.263969948471736,
+          "verified_sets": 1,
+          "wilson_95": [
+            0.0,
+            0.7934506856227626
+          ]
         }
       },
-      "verified_common_pairs": 0
+      "verified_common_pairs": 1
     },
     "source_rejections": {},
     "target_70_percent_proven": false,
-    "verified": 0
+    "verified": 1
   },
   "v8_v25_same_pair": {
     "pending_pairs": 1,
