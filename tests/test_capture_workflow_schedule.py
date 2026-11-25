@@ -22,7 +22,7 @@ def test_scheduled_capture_not_triggered_by_every_source_code_push():
 
 def test_matched_study_uses_collected_sources_before_permanent_publication():
     workflow=Path(".github/workflows/prematch-evidence.yml").read_text()
-    sources=workflow.index("run: python v21_capture_sources.py")
+    sources=workflow.index("run: python v21_capture_sources_v2.py")
     study=workflow.index("run: python professional_paired_study.py")
     publish=workflow.index("- name: Commit permanent research history")
     assert sources < study < publish
@@ -35,7 +35,7 @@ def test_matched_study_uses_collected_sources_before_permanent_publication():
 
 def test_ai_reads_new_source_packets_and_accuracy_is_authenticated_before_board():
     workflow=Path(".github/workflows/prematch-evidence.yml").read_text()
-    capture=workflow.index("run: python v21_capture_sources.py")
+    capture=workflow.index("run: python v21_capture_sources_v2.py")
     panel=workflow.index("run: python llm_research_panel.py")
     assert capture < panel
     legacy=workflow.index("run: python v23_prospective.py")
