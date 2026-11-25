@@ -340,7 +340,8 @@ def evaluate(*, root=ROOT, v28_out=V28_OUT, source_root=ORIGINAL_ROOT,
     }
 
 
-def presentation(*, root=ROOT, now=None):
+def presentation(*, root=ROOT, v28_out=V28_OUT, source_root=ORIGINAL_ROOT,
+                 provider_root=PROVIDER_ROOT, prematch=PREMATCH, now=None):
     """Expose selection details only for a current, signed, independently reviewed decision."""
     root = Path(root)
     clock = utc(now or datetime.now(timezone.utc))
@@ -373,6 +374,16 @@ def presentation(*, root=ROOT, now=None):
             return {**view, "state": "expired"}
         if not validation["ready"]:
             return {**view, "state": "awaiting_validation"}
+        # A generated status file is a cache, not proof of a release gate.
+        # Reauthenticate all original decisions and verified results before
+        # publication; a modified, stale or incomplete cache cannot unlock it.
+        authenticated = evaluate(root=root, v28_out=v28_out, source_root=source_root,
+                                 provider_root=provider_root, prematch=prematch, now=clock)
+        actual = authenticated["validation"]
+        if (not actual["ready"] or actual != validation
+                or authenticated["active_decisions"].get(decision_day) != row["decision_sha256"]
+                or not any(candidate == row for candidate in authenticated["rows"])):
+            return {**view, "state": "evidence_unavailable", "validation": actual}
         if report["active_decisions"].get(decision_day) != row["decision_sha256"]:
             return {**view, "state": "evidence_unavailable"}
         # Require a canonical calendar key before deriving the local filename.
@@ -391,7 +402,7 @@ def presentation(*, root=ROOT, now=None):
         return {**view, "state": "available"}
     except FileNotFoundError:
         return empty
-    except (OSError, ValueError, TypeError, KeyError, ArithmeticError):
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, ArithmeticError):
         return {**empty, "state": "evidence_unavailable"}
 
 
