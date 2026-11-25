@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2214339168189253,
-          "expected_events": 37.233631991469714,
-          "observed_events": 37,
-          "observed_rate": 0.3557692307692308,
-          "predicted_rate": 0.3580156922256703,
-          "rate_gap_observed_minus_predicted": -0.00224646145643956
+          "brier": 0.22195986897662764,
+          "expected_events": 39.5651933044623,
+          "observed_events": 38,
+          "observed_rate": 0.34545454545454546,
+          "predicted_rate": 0.3596835754951118,
+          "rate_gap_observed_minus_predicted": -0.014229030040566344
         },
         "exact_0_3": {
-          "brier": 0.009532527045414615,
-          "expected_events": 2.2423465903512336,
-          "observed_events": 1,
-          "observed_rate": 0.009615384615384616,
-          "predicted_rate": 0.0215610249072234,
-          "rate_gap_observed_minus_predicted": -0.011945640291838784
+          "brier": 0.01784080599199469,
+          "expected_events": 2.4043101807536207,
+          "observed_events": 2,
+          "observed_rate": 0.01818181818181818,
+          "predicted_rate": 0.02185736527957837,
+          "rate_gap_observed_minus_predicted": -0.003675547097760188
         },
         "exact_3_0": {
-          "brier": 0.04575152132613555,
-          "expected_events": 4.374757913458187,
+          "brier": 0.04331176938634975,
+          "expected_events": 4.550404459220741,
           "observed_events": 5,
-          "observed_rate": 0.04807692307692308,
-          "predicted_rate": 0.04206497993709795,
-          "rate_gap_observed_minus_predicted": 0.006011943139825124
+          "observed_rate": 0.045454545454545456,
+          "predicted_rate": 0.0413673132656431,
+          "rate_gap_observed_minus_predicted": 0.004087232188902355
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18884237190043449,
-          "expected_events": 18.40791983670356,
-          "observed_events": 25,
-          "observed_rate": 0.2403846153846154,
-          "predicted_rate": 0.17699922919907268,
-          "rate_gap_observed_minus_predicted": 0.0633853861855427
+          "brier": 0.1849835656984653,
+          "expected_events": 19.388595910348215,
+          "observed_events": 26,
+          "observed_rate": 0.23636363636363636,
+          "predicted_rate": 0.1762599628213474,
+          "rate_gap_observed_minus_predicted": 0.06010367354228895
         }
       },
-      "verified_fixtures": 104
+      "verified_fixtures": 110
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22482246797323505,
-          "expected_events": 34.03238705491613,
-          "observed_events": 33,
-          "observed_rate": 0.34375,
-          "predicted_rate": 0.354504031822043,
-          "rate_gap_observed_minus_predicted": -0.010754031822043006
+          "brier": 0.22503966250623741,
+          "expected_events": 36.37806484886246,
+          "observed_events": 34,
+          "observed_rate": 0.3333333333333333,
+          "predicted_rate": 0.35664769459669077,
+          "rate_gap_observed_minus_predicted": -0.02331436126335743
         },
         "exact_0_3": {
-          "brier": 0.0006571308079296088,
-          "expected_events": 2.0305439494169155,
-          "observed_events": 0,
-          "observed_rate": 0.0,
-          "predicted_rate": 0.02115149947309287,
-          "rate_gap_observed_minus_predicted": -0.02115149947309287
+          "brier": 0.0101447012968908,
+          "expected_events": 2.1925936204853675,
+          "observed_events": 1,
+          "observed_rate": 0.00980392156862745,
+          "predicted_rate": 0.021496015887111447,
+          "rate_gap_observed_minus_predicted": -0.011692094318483996
         },
         "exact_3_0": {
-          "brier": 0.04933532824339624,
-          "expected_events": 4.027796028996428,
+          "brier": 0.04649296789781742,
+          "expected_events": 4.203334463642196,
           "observed_events": 5,
-          "observed_rate": 0.052083333333333336,
-          "predicted_rate": 0.04195620863537946,
-          "rate_gap_observed_minus_predicted": 0.010127124697953876
+          "observed_rate": 0.049019607843137254,
+          "predicted_rate": 0.04120916140825682,
+          "rate_gap_observed_minus_predicted": 0.007810446434880435
         },
         "winning_margin_at_least_three": {
-          "brier": 0.19254448253142029,
-          "expected_events": 16.7178689243856,
-          "observed_events": 24,
-          "observed_rate": 0.25,
-          "predicted_rate": 0.17414446796234997,
-          "rate_gap_observed_minus_predicted": 0.07585553203765001
+          "brier": 0.18814744338461628,
+          "expected_events": 17.699079657422097,
+          "observed_events": 25,
+          "observed_rate": 0.24509803921568626,
+          "predicted_rate": 0.17352038879825585,
+          "rate_gap_observed_minus_predicted": 0.07157765041743043
         }
       },
-      "verified_fixtures": 96
+      "verified_fixtures": 102
     }
   },
   "focus": {
@@ -2588,6 +2588,122 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-3",
+        "captured_at_utc": "2026-11-14T02:01:54.307723+00:00",
+        "fixture_id": "1563283",
+        "fixture_name": "Bolton vs West Brom",
+        "forecast_id": "c77514ba7baf4e0b1e59aedb57f7fddaf04e09201d9ae2d4da994d6114bcca4d",
+        "kickoff_utc": "2026-11-25T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.051680010543099966,
+          "actual_exact_score_rank_min": 9,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.32061384514784136
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.042763161018456515
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.01685680409838445
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.14282640561704724
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-2",
+        "captured_at_utc": "2026-11-14T02:01:54.345661+00:00",
+        "fixture_id": "1563284",
+        "fixture_name": "Burnley vs Birmingham",
+        "forecast_id": "71bca286c1cb95ff68684609e337c1b7e5babf2fff8abae639a9e7c0ad340031",
+        "kickoff_utc": "2026-11-25T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08059223305208166,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.32838342357917527
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.04591272663596995
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.015240788859425747
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.15133791889705722
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-1",
+        "captured_at_utc": "2026-11-25T19:22:10.797909+00:00",
+        "fixture_id": "1563285",
+        "fixture_name": "Stoke City vs Millwall",
+        "forecast_id": "163c89660bd5d9805f8d09880e8dd95936f84075da31745468f2ef0822208af4",
+        "kickoff_utc": "2026-11-25T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.09489007653554413,
+          "actual_exact_score_rank_min": 3,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.27608431259905164
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01284263932246151
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.051618264858356945
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1442521469580499
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-1",
+        "captured_at_utc": "2026-11-14T02:01:54.384678+00:00",
+        "fixture_id": "1563286",
+        "fixture_name": "Watford vs Blackburn",
+        "forecast_id": "7ca656de8c85f26c0c76dedc80339028c8018e18ce506c7f60c6d213ddb7dfbe",
+        "kickoff_utc": "2026-11-25T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.10042195818817258,
+          "actual_exact_score_rank_min": 2,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2517842206777837
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.027406549168704195
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0258191855323678
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.10983320419333105
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "3-1",
         "captured_at_utc": "2026-11-21T12:18:35.378164+00:00",
         "fixture_id": "1570453",
@@ -3168,6 +3284,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "2-0",
+        "captured_at_utc": "2026-11-25T19:22:11.967957+00:00",
+        "fixture_id": "1635625",
+        "fixture_name": "Atletico Madrid vs Viking",
+        "forecast_id": "8808f43faaabed419d75a1ccb4459336eabcac986b06f79855cf2ca635f6364d",
+        "kickoff_utc": "2026-11-25T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.05652863364055895,
+          "actual_exact_score_rank_min": 6,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.5039368742162642
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01589179852980441
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.04025089215922351
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.20167230635476407
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-0",
         "captured_at_utc": "2026-11-24T16:49:50.789134+00:00",
         "fixture_id": "1635641",
@@ -3192,6 +3337,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.21085902192700695
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-3",
+        "captured_at_utc": "2026-11-25T19:22:12.588839+00:00",
+        "fixture_id": "1635642",
+        "fixture_name": "Club Brugge KV vs Liverpool",
+        "forecast_id": "c7dce9f0fcf4a3ae18a5f6ddae05cec816103eb8601354f0260fc078689adcc6",
+        "kickoff_utc": "2026-11-25T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.017146715726990693,
+          "actual_exact_score_rank_min": 21,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.6507586367724678
+          },
+          "exact_0_3": {
+            "observed": 1,
+            "predicted_probability": 0.017146715726990693
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.02586061025479498
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.23075409162440763
           }
         },
         "provider": "API-Football"
@@ -5432,6 +5606,122 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-3",
+        "captured_at_utc": "2026-11-23T20:15:53.222417+00:00",
+        "fixture_id": "1563283",
+        "fixture_name": "Bolton vs West Brom",
+        "forecast_id": "9c293d96bee40376b8096888531dfae20f1ff55bcbfe6a294d82fee49743dded",
+        "kickoff_utc": "2026-11-25T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0512860674556034,
+          "actual_exact_score_rank_min": 9,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.3294530336785192
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.04108766587833539
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.01785716965166848
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1430498084368166
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-2",
+        "captured_at_utc": "2026-11-23T20:15:56.098856+00:00",
+        "fixture_id": "1563284",
+        "fixture_name": "Burnley vs Birmingham",
+        "forecast_id": "b242c4343b2a691f494037852b7a4af53529655d479d0eecec3402531285327f",
+        "kickoff_utc": "2026-11-25T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.07827000916487947,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.3271311539038467
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.04387298262979335
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.016173617720392563
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.14811063978791952
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-1",
+        "captured_at_utc": "2026-11-23T20:16:01.831133+00:00",
+        "fixture_id": "1563285",
+        "fixture_name": "Stoke City vs Millwall",
+        "forecast_id": "0bdc1262dfaf4b1150fb561505967f12abbd867fd0a58068fc01f06d16c12977",
+        "kickoff_utc": "2026-11-25T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.09474135909459667,
+          "actual_exact_score_rank_min": 3,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2754344280159243
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.012947976716685785
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05139311867967636
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.14380665192256123
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-1",
+        "captured_at_utc": "2026-11-23T20:15:58.953634+00:00",
+        "fixture_id": "1563286",
+        "fixture_name": "Watford vs Blackburn",
+        "forecast_id": "61e72c3b8d40de6812037f4b0d2c0e3caf2c5068f0595dcaa2e2839ab32ba154",
+        "kickoff_utc": "2026-11-25T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.09981048177809948,
+          "actual_exact_score_rank_min": 2,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2691637099099936
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.03120963298037283
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.02311105043072956
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.11615441609856327
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "3-1",
         "captured_at_utc": "2026-11-19T20:27:44.424045+00:00",
         "fixture_id": "1570453",
@@ -5954,6 +6244,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "2-0",
+        "captured_at_utc": "2026-11-23T20:16:04.682177+00:00",
+        "fixture_id": "1635625",
+        "fixture_name": "Atletico Madrid vs Viking",
+        "forecast_id": "2adc30ea93357664d9b8cafe76bcec3dc4e0f91d7f68ae5d5d66fc37014b30a7",
+        "kickoff_utc": "2026-11-25T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.05712632639620166,
+          "actual_exact_score_rank_min": 6,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.49743978410117917
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01612029833703517
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.040233880292993005
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.19867542884454698
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-0",
         "captured_at_utc": "2026-11-23T06:42:29.744210+00:00",
         "fixture_id": "1635641",
@@ -5978,6 +6297,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.21085902192700695
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-3",
+        "captured_at_utc": "2026-11-23T20:16:06.023117+00:00",
+        "fixture_id": "1635642",
+        "fixture_name": "Club Brugge KV vs Liverpool",
+        "forecast_id": "831717fcde89ac74b7fcffcfa27beb3346ff5e3ab7b0a6dffe899768755af44c",
+        "kickoff_utc": "2026-11-25T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.01681111452622963,
+          "actual_exact_score_rank_min": 21,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.6470556843368656
+          },
+          "exact_0_3": {
+            "observed": 1,
+            "predicted_probability": 0.01681111452622963
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.02676959787030707
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.23141378794609185
           }
         },
         "provider": "API-Football"
@@ -6102,7 +6450,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-25T21:26:38.040517+00:00",
+  "result_cutoff_utc": "2026-11-25T23:15:50.460417+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},

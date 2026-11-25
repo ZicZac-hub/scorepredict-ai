@@ -7,7 +7,7 @@
     "The two games are treated as independent conditional on the saved distributions.",
     "Pending or unmatched final scores are never counted as losses."
   ],
-  "evaluated_at_utc": "2026-11-25T21:32:42.112657+00:00",
+  "evaluated_at_utc": "2026-11-25T23:15:51.251116+00:00",
   "five_model_coverage_max": 0.07812121952302488,
   "five_model_coverage_mean": 0.06689402066213496,
   "five_model_coverage_min": 0.059225282828107406,
@@ -16,14 +16,14 @@
   "min_number_of_combinations_to_70pct_model_mass": 105,
   "original_archived_sets": 9,
   "original_v8_verified": {
-    "verified_pairs": 7,
+    "verified_pairs": 8,
     "wilson_95": [
-      5.551115123125783e-17,
-      0.35433043506668743
+      0.0,
+      0.32440756488388023
     ],
     "wins": 0
   },
-  "pending_original_pairs": 2,
+  "pending_original_pairs": 1,
   "promoted_production_model": false,
   "real_70pct_five_double_hit_rate_proven": false,
   "research_conclusion": "70pct_model_mass_not_reached_with_five_original_v8_combinations",
@@ -340,8 +340,8 @@
         "target_count_status": "exact",
         "target_met_by_five_model_choices": false
       },
-      "original_v8_five_double_hit": null,
-      "status": "pending",
+      "original_v8_five_double_hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-26",
       "v25_frozen_probability_status": "frozen",
       "v25_originally_frozen_probability": {
@@ -368,7 +368,7 @@
         "target_count_status": "exact",
         "target_met_by_five_model_choices": false
       },
-      "v25_robust_five_double_hit": null
+      "v25_robust_five_double_hit": false
     },
     {
       "never_rewrite_original_five_choices": true,
@@ -435,12 +435,12 @@
   "study": "pre_match_original_v8_model_five_double_70pct_feasibility_frontier",
   "target_model_coverage": 0.7,
   "v25_robust_verified": {
-    "verified_pairs": 7,
+    "verified_pairs": 8,
     "wilson_95": [
-      0.02567962434474355,
-      0.5131278292743189
+      0.02241749145005667,
+      0.4708881822128535
     ],
     "wins": 1
   },
-  "verifiably_frozen_v25_completed_pairs": 2
+  "verifiably_frozen_v25_completed_pairs": 3
 }

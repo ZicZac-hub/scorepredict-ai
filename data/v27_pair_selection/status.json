@@ -1,15 +1,15 @@
 {
-  "evaluated_at_utc": "2026-11-25T21:30:45.879876+00:00",
+  "evaluated_at_utc": "2026-11-25T23:15:57.345060+00:00",
   "no_new_external_requests": true,
   "original_frozen_predictions_modified": false,
   "production_model_promoted": false,
   "prospective_comparison": {
     "70_percent_five_double_accuracy_proven": false,
     "abstained_days": 0,
-    "both_policies_verified_same_days": 2,
+    "both_policies_verified_same_days": 3,
     "comparability_warning": "The same-day policies may select DIFFERENT match fixtures. Compare day-level selection success, NOT same-match probability calibration or a controlled same-fixture prediction experiment.",
     "different_fixture_pairs_same_day": 0,
-    "evaluated_at_utc": "2026-11-25T21:30:45.879876+00:00",
+    "evaluated_at_utc": "2026-11-25T23:15:57.345060+00:00",
     "frozen_decision_days": 4,
     "invalid_or_tampered_decisions_excluded": {},
     "invalid_verified_results_excluded": {},
@@ -111,7 +111,7 @@
         "evaluated_pairs": 28,
         "model_mass_is_not_measured_accuracy": true,
         "same_two_fixtures_as_v25": true,
-        "status": "pending",
+        "status": "verified_day_comparison",
         "sydney_date": "2026-11-26",
         "v25_frozen_pair_ids": [
           [
@@ -123,7 +123,12 @@
             "1563286"
           ]
         ],
-        "v25_pair_status": "pending",
+        "v25_original_robust_five_hit": false,
+        "v25_pair_status": "verified",
+        "v25_verified_scores": [
+          "2-1",
+          "0-1"
+        ],
         "v27_frozen_pair_ids": [
           [
             "API-Football",
@@ -135,7 +140,13 @@
           ]
         ],
         "v27_model_rank_score_not_hit_probability": 0.061732504844,
-        "v27_pair_status": "pending"
+        "v27_pair_status": "verified",
+        "v27_robust_five_hit": false,
+        "v27_v8_five_hit": false,
+        "v27_verified_scores": [
+          "2-1",
+          "0-1"
+        ]
       },
       {
         "candidate_fixtures": 3,
@@ -171,18 +182,18 @@
         "v27_pair_status": "pending"
       }
     ],
-    "same_fixture_pair_comparisons": 2,
+    "same_fixture_pair_comparisons": 3,
     "schema_version": 1,
     "study": "prospective_same_day_pair_selection_policy_vs_original_v25",
     "v25_wilson_95_same_days": [
-      0.0,
-      0.6576197724933469
+      5.551115123125783e-17,
+      0.5614970317550454
     ],
-    "v27_pending_pair_results": 2,
-    "v27_verified_pair_results": 2,
+    "v27_pending_pair_results": 1,
+    "v27_verified_pair_results": 3,
     "v27_wilson_95_same_days": [
-      0.0,
-      0.6576197724933469
+      5.551115123125783e-17,
+      0.5614970317550454
     ],
     "verified_score_conflicts_excluded": 0,
     "version": "v27-frozen-full-slate-pair-quality-v1-research-only",
@@ -195,9 +206,7 @@
   "prospective_freeze": {
     "live_predictions_unchanged": true,
     "new_decisions": [],
-    "not_created": {
-      "not_a_new_v25_freeze": 9
-    },
+    "not_created": {},
     "version": "v27-frozen-full-slate-pair-quality-v1-research-only"
   },
   "version": "v27-frozen-full-slate-pair-quality-v1-research-only"
