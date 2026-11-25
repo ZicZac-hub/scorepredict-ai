@@ -70,6 +70,11 @@ def _domestic_context(fixture, team, venue, history_cache, cutoff):
             raw, metadata, error = entry
             if error or not metadata.get("freshness_known") or metadata.get("stale") is not False:
                 continue
+            try:
+                if _date(metadata["fetched_at_utc"]) > cutoff:
+                    continue
+            except (KeyError, TypeError, ValueError):
+                continue
             proxy = {**fixture, "competition": {"id": league, "code": code, "season": year}}
             evidence = build_evidence(proxy, raw, cutoff)
             # Restrict to the explicitly requested season to avoid duplicated rows.
