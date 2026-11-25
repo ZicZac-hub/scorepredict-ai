@@ -26,6 +26,15 @@ def advisory(report, root=ROOT):
             json.dump({"status":"reserved","day":day},f)
     except FileExistsError:
         return "daily_attempt_already_reserved"
+    def finish(status):
+        # Separate write-once outcome from the original daily reservation.
+        outcome = Path(root)/("ai_outcome_"+day+".json")
+        try:
+            with outcome.open("x", encoding="utf-8") as handle:
+                json.dump({"day":day,"status":status,"observed_at_utc":datetime.now(timezone.utc).isoformat()},handle)
+        except FileExistsError:
+            pass
+        return status
     try:
         evaluation=report["evaluation"]
         snapshot={k:evaluation[k] for k in ("methods","same_cutoff_v41_comparison","lineup_coverage","source_rejections","result_rejections")}
@@ -39,12 +48,48 @@ def advisory(report, root=ROOT):
         if not memo:
             raise ValueError("empty_memo")
         write_json(Path(root)/("ai_memo_"+day+".json"),{"memo":memo[:1800],"advisory_only":True})
-        return "saved"
+        return finish("saved")
     except requests.HTTPError as exc:
         code = getattr(exc.response, "status_code", None)
-        return "failed_http_" + str(code) if type(code) is int and 400 <= code <= 599 else "failed_HTTPError"
+        return finish("failed_http_" + str(code) if type(code) is int and 400 <= code <= 599 else "failed_HTTPError")
     except (requests.RequestException,ValueError,TypeError,KeyError) as exc:
-        return "failed_"+type(exc).__name__
+        return finish("failed_"+type(exc).__name__)
+
+def advisory_evidence(*, root=ROOT, now=None):
+    """Read today's persisted advisory evidence even on no-AI watchdog runs."""
+    day = utc(now or datetime.now(timezone.utc)).date().isoformat()
+    root = Path(root)
+    reservation = root/("ai_attempt_"+day+".json")
+    outcome = root/("ai_outcome_"+day+".json")
+    memo = root/("ai_memo_"+day+".json")
+    result = {"day_utc":day,"reserved":reservation.exists(),"outcome":"not_attempted",
+              "memo_present":False}
+    try:
+        if memo.exists():
+            data = json.loads(memo.read_text(encoding="utf-8"))
+            result["memo_present"] = (data.get("advisory_only") is True and
+                isinstance(data.get("memo"),str) and bool(data["memo"].strip()))
+        if outcome.exists():
+            data = json.loads(outcome.read_text(encoding="utf-8"))
+            status = data.get("status")
+            safe = {"saved","failed_HTTPError","failed_ValueError","failed_TypeError",
+                    "failed_KeyError","failed_ConnectionError","failed_Timeout",
+                    "failed_ReadTimeout","failed_ConnectTimeout","failed_RequestException",
+                    "failed_JSONDecodeError","failed_TooManyRedirects","failed_SSLError"}
+            http = isinstance(status,str) and status.startswith("failed_http_") and status[12:].isdigit() and len(status[12:])==3 and 400<=int(status[12:])<=599
+            if data.get("day") != day or not (isinstance(status,str) and (status in safe or http)):
+                result["outcome"]="invalid_outcome"
+            elif not result["reserved"] or (status=="saved" and not result["memo_present"]):
+                result["outcome"]="inconsistent_outcome"
+            else:
+                result["outcome"]=status
+        elif result["reserved"]:
+            result["outcome"]="legacy_memo_present" if result["memo_present"] else "reserved_no_outcome"
+        elif result["memo_present"]:
+            result["outcome"]="inconsistent_outcome"
+    except (OSError,ValueError,TypeError,AttributeError):
+        result["outcome"]="unreadable_evidence"
+    return result
 
 def evidence_coverage(performance):
     """Summarize validated trial rows without changing the frozen protocol."""
@@ -105,6 +150,7 @@ def tick(*, use_ai=True):
                 "decision_windows":window_diagnostics(now=clock),
                 "ai_mode":"configured_advisory" if use_ai else "no_ai_smoke",
                 "ai":advisory(report) if use_ai else "disabled",
+                "ai_evidence":advisory_evidence(),
                 "auto_promotes":False,"auto_edits_code":False}
     except Exception as exc:
         status={"checked_at_utc":clock.isoformat(),"status":"failed","error_class":type(exc).__name__,
