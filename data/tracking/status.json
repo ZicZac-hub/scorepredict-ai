@@ -4,8 +4,8 @@
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 4,
-      "pending": 0,
-      "recorded": 4,
+      "pending": 1,
+      "recorded": 5,
       "verified": 4
     },
     "ai_gemini": {
@@ -28,8 +28,8 @@
       "hit": 1,
       "hit_rate": 0.25,
       "miss": 3,
-      "pending": 2,
-      "recorded": 6,
+      "pending": 3,
+      "recorded": 7,
       "verified": 4
     },
     "automatic_five_double": {
@@ -105,7 +105,7 @@
       "verified": 72
     }
   },
-  "checked_at_utc": "2026-11-25T15:04:27.447391+00:00",
+  "checked_at_utc": "2026-11-25T16:33:11.792599+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -22880,6 +22880,64 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-25T19:45:00.000000Z",
       "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-25T16:32:49.701837+00:00",
+      "choices": [
+        [
+          "0-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1563283', 'cohere')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "West Brom",
+          "away_team_id": "60",
+          "fixture_id": "1563283",
+          "home_team": "Bolton",
+          "home_team_id": "68",
+          "kickoff_utc": "2026-11-25T19:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "command-r7b-12-2024",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-25T19:45:00.000000Z",
+      "source": "ai_cohere",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-25T16:32:49.701837+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1563283', 'openai')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "West Brom",
+          "away_team_id": "60",
+          "fixture_id": "1563283",
+          "home_team": "Bolton",
+          "home_team_id": "68",
+          "kickoff_utc": "2026-11-25T19:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gpt-4o-mini",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-25T19:45:00.000000Z",
+      "source": "ai_openai",
       "status": "pending"
     },
     {
@@ -49160,8 +49218,8 @@
     "hit": 119,
     "hit_rate": 0.1559633027522936,
     "miss": 644,
-    "pending": 803,
-    "recorded": 1566,
+    "pending": 805,
+    "recorded": 1568,
     "verified": 763
   },
   "unique_verified_single_fixtures": 102
