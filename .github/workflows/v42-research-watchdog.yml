@@ -46,8 +46,24 @@ jobs:
           git add data/v42_research/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data: isolated V42 research refresh [skip ci]'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          # Other scheduled evidence writers may update main concurrently.
+          # Retry non-fast-forward pushes, but never silently merge a frozen
+          # receipt conflict or force-push. The artifact step preserves output.
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::error::V42 publication conflict; preserve original records and inspect the research artifact."
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Main changed or push failed (attempt ${attempt}/4)."
+            sleep 3
+          done
+          echo "::error::V42 could not publish after four attempts."
+          exit 1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
