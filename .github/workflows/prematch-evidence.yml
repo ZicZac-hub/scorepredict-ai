@@ -316,7 +316,7 @@ jobs:
           V22_DEEP_XG_ENABLED: "true"
           V21_DAILY_CAPTURE_ATTEMPTS: ${{ vars.V21_DAILY_CAPTURE_ATTEMPTS }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-        run: python v21_capture_sources.py
+        run: python v21_capture_sources_v2.py
       - name: Optional independent ten-AI research panel (shadow only)
         # Never make paid model calls merely because source code was pushed.
         if: steps.cadence.outputs.heavy == 'true' && github.event_name != 'push'
