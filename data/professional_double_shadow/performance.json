@@ -1,12 +1,12 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-24T23:16:26.244687+00:00",
+  "evaluated_at_utc": "2026-11-25T00:06:53.877185+00:00",
   "external_requests": 0,
   "frozen_set_files": 15,
   "hits": 0,
   "note": "Only raw-policy prospective calibration bootstrap; premium still requires independent calibration evidence.",
   "observed_hit_rate": 0.0,
-  "pending_sets": 9,
+  "pending_sets": 8,
   "policy_id": "professional-probability-five-v1",
   "premium_release_approved": false,
   "result_rejections": {},
@@ -109,12 +109,18 @@
     },
     {
       "actual_scores": [
-        null,
-        null
+        [
+          1,
+          1
+        ],
+        [
+          4,
+          0
+        ]
       ],
       "estimated_coverage": 0.07812121952302489,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-25"
     },
     {
@@ -437,11 +443,50 @@
       "source_record_sha256": "375aa87f0df158c18065ef07f1e67a67f507674cdb37884b30236d00a40eb226",
       "verification_status": "verified",
       "verified_at_utc": "2026-11-24T03:15:37.035134+00:00"
+    },
+    {
+      "estimated_coverage": 0.07812121952302489,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1563275"
+        ],
+        [
+          "API-Football",
+          "1563277"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Bristol City",
+          "Wrexham"
+        ],
+        [
+          "Charlton",
+          "Lincoln"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-24T19:45:00.000000Z",
+        "2026-11-24T19:45:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-23T23:12:49.107269+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "91ede41c76ebe35ec9779c7ab4c8d12510398625f024a4028af4077bca6d3071",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-24T23:19:17.650684+00:00"
     }
   ],
-  "verified_sets": 6,
+  "verified_sets": 7,
   "wilson_95": [
-    2.7755575615628914e-17,
-    0.3903342879021653
+    5.551115123125783e-17,
+    0.35433043506668743
   ]
 }
