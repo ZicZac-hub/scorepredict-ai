@@ -195,6 +195,9 @@ jobs:
       - name: Freeze v10 research doubles and grade independent prospective forecasts
         if: always()
         run: python v10_evaluate.py
+      - name: Independently grade frozen cross-competition research receipts
+        if: always()
+        run: python cross_competition_evaluate.py
       - name: Independently grade new V37 sparse-history European shadow forecasts
         # Uses authentic, immutable pre-kickoff V37 grids and verified regulation
         # results only. Missing finals remain pending, NOT five-double losses.
