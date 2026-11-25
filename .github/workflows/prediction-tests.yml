@@ -91,5 +91,7 @@ jobs:
           python v35_continuous_double_trials.py --verify-only
           python continuous_accuracy_bot.py --no-ai
           python -c 'import json; a=json.load(open("data/autobot/status.json")); b=json.load(open("data/v35_continuous_challengers/status.json")); assert a["priority"]=="five_exact_score_doubles"; assert not a["production_model_changed_by_bot"]; assert b["research_only_methods_not_live_promoted"] and b["independent_same_fixture_comparisons_only"]; print("V35 integrity exclusion detail:", b["invalid_or_altered_v35_sets_excluded"]); assert not b["invalid_or_altered_v35_sets_excluded"]; print("Future frozen pairs:",b["frozen_prospective_days"])'
+      - name: Audit competition-specific goal families on verified archived fixtures
+        run: python competition_adaptive_audit.py --output /tmp/competition_adaptive_audit.json
       - name: Compile application modules
         run: python -m compileall -q -x '/\\.git/' .
