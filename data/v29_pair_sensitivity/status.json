@@ -1,13 +1,21 @@
 {
   "freeze": {
-    "created": [],
-    "excluded": {},
+    "created": [
+      {
+        "decision": "DISTINCT_PAIR_FROZEN",
+        "sydney_day": "2026-11-27"
+      }
+    ],
+    "excluded": {
+      "original_v28_older_than_20_minute_window": 3,
+      "write_once_v29_already_exists": 2
+    },
     "live_forecast_changed": false
   },
-  "generated_at_utc": "2026-11-25T18:06:49.018480+00:00",
+  "generated_at_utc": "2026-11-25T18:18:47.983661+00:00",
   "no_new_provider_or_llm_requests": true,
   "research": {
-    "evaluated_at_utc": "2026-11-25T18:06:49.018480+00:00",
+    "evaluated_at_utc": "2026-11-25T18:18:47.983661+00:00",
     "invalid_final_result_sources_excluded": {},
     "live_predictions_unchanged": true,
     "no_source_or_forecast_changes": true,
@@ -173,16 +181,43 @@
           "unique_fixtures_awaiting_kickoff": 2,
           "unique_fixtures_awaiting_verified_final": 0,
           "verified_unique_fixtures": 0
+        },
+        {
+          "eligible_pairs": 3,
+          "fixture_statuses": [
+            {
+              "final_status": "waiting_for_kickoff",
+              "fixture_id": "1636231",
+              "kickoff_utc": "2026-11-26T17:45:00+00:00",
+              "provider": "API-Football",
+              "verified_goals": null
+            },
+            {
+              "final_status": "waiting_for_kickoff",
+              "fixture_id": "1636315",
+              "kickoff_utc": "2026-11-26T17:45:00+00:00",
+              "provider": "API-Football",
+              "verified_goals": null
+            }
+          ],
+          "policy": "FROZEN",
+          "quality_and_robustness_identical_pair": true,
+          "status": "pending",
+          "sydney_day": "2026-11-27",
+          "unique_fixture_count": 2,
+          "unique_fixtures_awaiting_kickoff": 2,
+          "unique_fixtures_awaiting_verified_final": 0,
+          "verified_unique_fixtures": 0
         }
       ],
       "invalid_original_v28_days_excluded": {},
       "next_saved_fixture_kickoff_utc": "2026-11-25T19:45:00+00:00",
       "v28_distinct_policy_pair_days": 0,
-      "v28_fixtures_before_kickoff": 2,
+      "v28_fixtures_before_kickoff": 4,
       "v28_fixtures_past_kickoff_awaiting_verified_result": 0,
-      "v28_frozen_active_days": 5,
-      "v28_identical_policy_pair_days": 5,
-      "v28_total_distinct_fixture_count": 10,
+      "v28_frozen_active_days": 6,
+      "v28_identical_policy_pair_days": 6,
+      "v28_total_distinct_fixture_count": 12,
       "v28_verified_day_count": 4,
       "v28_verified_distinct_fixture_count": 8,
       "verified_fixture_count_is_not_five_double_win_rate": true
@@ -196,13 +231,13 @@
         0.7934506856227626
       ],
       "both_arms_verified_days": 1,
-      "decisions": 2,
-      "frozen_alternatives": 2,
+      "decisions": 3,
+      "frozen_alternatives": 3,
       "initial_review_ready": false,
       "invalid_or_modified_set_exclusions": {},
       "minimum_initial_verified_day_review": 100,
       "paired_exact_p": null,
-      "pending_alternatives": 1,
+      "pending_alternatives": 2,
       "rows": [
         {
           "alt_pair_shares_fixtures_with_v28_quality": 1,
@@ -288,6 +323,44 @@
             [
               "API-Football",
               "1563286"
+            ]
+          ]
+        },
+        {
+          "alt_pair_shares_fixtures_with_v28_quality": 1,
+          "alternative_fixture_keys": [
+            [
+              "API-Football",
+              "1636231"
+            ],
+            [
+              "API-Football",
+              "1636334"
+            ]
+          ],
+          "alternative_verified_legs": 0,
+          "control_verified_legs": 0,
+          "decision": "DISTINCT_PAIR_FROZEN",
+          "status": "pending",
+          "sydney_day": "2026-11-27",
+          "v28_quality_fixture_keys": [
+            [
+              "API-Football",
+              "1636231"
+            ],
+            [
+              "API-Football",
+              "1636315"
+            ]
+          ],
+          "v28_robustness_fixture_keys": [
+            [
+              "API-Football",
+              "1636231"
+            ],
+            [
+              "API-Football",
+              "1636315"
             ]
           ]
         }

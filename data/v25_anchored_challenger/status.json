@@ -6,12 +6,17 @@
     0.7934506856227626
   ],
   "capture": {
-    "created": [],
-    "skipped": {}
+    "created": [
+      "2026-11-27"
+    ],
+    "skipped": {
+      "already_frozen": 2,
+      "not_new_original_v28_decision": 3
+    }
   },
   "estimated_model_mass_is_not_observed_accuracy": true,
-  "evaluated_at_utc": "2026-11-25T18:06:44.495759+00:00",
-  "frozen_prospective_same_pair_days": 2,
+  "evaluated_at_utc": "2026-11-25T18:18:38.447132+00:00",
+  "frozen_prospective_same_pair_days": 3,
   "independent_original_frozen_score_calibration": {
     "anchored_minus_v8": {
       "exact_score_log_loss": 0.005230912506013041,
@@ -70,7 +75,7 @@
   "no_post_result_probability_reconstruction": true,
   "original_robust_only_wins_over_anchor": 0,
   "pending_is_not_a_miss": true,
-  "pending_pair_days": 1,
+  "pending_pair_days": 2,
   "report_rows": [
     {
       "actual_scores": [
@@ -220,6 +225,23 @@
       "same_pair_comparison": true,
       "status": "pending",
       "sydney_day": "2026-11-26"
+    },
+    {
+      "frozen_at_utc": "2026-11-25T18:18:38.442274+00:00",
+      "original_candidate_catalog_sha256": "da7b6a47b7ad12e8307cc73c5edf7e2c93e5b05a646d3d096a345e543328ff54",
+      "original_selected_fixture_keys": [
+        [
+          "API-Football",
+          "1636231"
+        ],
+        [
+          "API-Football",
+          "1636315"
+        ]
+      ],
+      "same_pair_comparison": true,
+      "status": "pending",
+      "sydney_day": "2026-11-27"
     }
   ],
   "review_ready": false,

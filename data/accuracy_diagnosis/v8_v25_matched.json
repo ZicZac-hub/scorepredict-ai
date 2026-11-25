@@ -1,7 +1,7 @@
 {
   "archived_picks_modified": false,
-  "archived_sets_found": 8,
-  "evaluated_at_utc": "2026-11-24T23:19:29.248088+00:00",
+  "archived_sets_found": 9,
+  "evaluated_at_utc": "2026-11-25T18:19:21.964771+00:00",
   "limitations": [
     "All saved policies are graded on the original V25 fixture pairs.",
     "V25 lower-envelope scores are not probabilities and cannot be used for log-loss or Brier.",
@@ -13,10 +13,10 @@
     "Sensitivity replays are post-hoc transformations of archived V8 matrices, not frozen V25 predictions."
   ],
   "matched_mixture_five": {
-    "pending_pairs": 1,
+    "pending_pairs": 2,
     "policy": "v25-mixture-optimal-five-v1",
     "selection_coverage_by_pair": {
-      "frozen": 3,
+      "frozen": 4,
       "unavailable": 5
     },
     "v25_mixture": {
@@ -46,9 +46,9 @@
     "verified_pairs": 2
   },
   "matched_probability_calibration": {
-    "pending_pairs": 1,
+    "pending_pairs": 2,
     "v25_grid_coverage_by_pair": {
-      "frozen": 3,
+      "frozen": 4,
       "unavailable": 5
     },
     "v8_on_same_legs": {
@@ -62,7 +62,7 @@
     "verified_pairs": 2
   },
   "no_provider_calls": true,
-  "pending_matched_pairs": 1,
+  "pending_matched_pairs": 2,
   "production_model_promoted": false,
   "repeated_verified_fixture_ids": 0,
   "result_conflicts_excluded": 0,
@@ -459,6 +459,26 @@
       "v25_robust_five_mass_under_mixture": 0.058496756123287585,
       "v25_selected_five_mass_under_v8_model": 0.05796054653802025,
       "v8_five_model_mass": 0.06424714371436865
+    },
+    {
+      "fixture_ids": [
+        "1636231",
+        "1636315"
+      ],
+      "selection_time_utc": "2026-11-25T18:17:35.500387+00:00",
+      "source_forecast_ids": [
+        "a67af2ae8c7b14865ae59446c22cc83b019e74dd79397ee75ddaf6ff2d8f6030",
+        "9105ab82b443ac7ea01624ae33a41cc196b97ec15278df6c43f86597a439976b"
+      ],
+      "status": "pending",
+      "sydney_date": "2026-11-27",
+      "v25_lower_envelope_is_not_calibrated_probability": true,
+      "v25_mixture_five_model_mass": 0.05723053718385595,
+      "v25_mixture_five_status": "frozen",
+      "v25_probability_status": "frozen",
+      "v25_robust_five_mass_under_mixture": 0.056426715883232274,
+      "v25_selected_five_mass_under_v8_model": 0.05589013295862659,
+      "v8_five_model_mass": 0.06181617743996308
     }
   ],
   "same_pair_discordance": {
@@ -469,7 +489,7 @@
   "schema_version": 3,
   "seventy_percent_accuracy_proven": false,
   "source_exclusions": {},
-  "source_valid_sets": 8,
+  "source_valid_sets": 9,
   "study": "original_v25_robust_selection_vs_original_v8_baseline_same_pairs",
   "v25": {
     "five_double_hit_rate": 0.14285714285714285,

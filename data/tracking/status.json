@@ -36,8 +36,8 @@
       "hit": 0,
       "hit_rate": 0.0,
       "miss": 8,
-      "pending": 1,
-      "recorded": 9,
+      "pending": 2,
+      "recorded": 10,
       "verified": 8
     },
     "frozen_v10": {
@@ -52,24 +52,24 @@
       "hit": 16,
       "hit_rate": 0.16161616161616163,
       "miss": 83,
-      "pending": 160,
-      "recorded": 259,
+      "pending": 161,
+      "recorded": 260,
       "verified": 99
     },
     "frozen_v13": {
       "hit": 16,
       "hit_rate": 0.16161616161616163,
       "miss": 83,
-      "pending": 160,
-      "recorded": 259,
+      "pending": 161,
+      "recorded": 260,
       "verified": 99
     },
     "frozen_v8": {
       "hit": 14,
       "hit_rate": 0.13725490196078433,
       "miss": 88,
-      "pending": 217,
-      "recorded": 319,
+      "pending": 218,
+      "recorded": 320,
       "verified": 102
     },
     "frozen_v8_control": {
@@ -105,13 +105,13 @@
       "verified": 72
     }
   },
-  "checked_at_utc": "2026-11-25T17:28:20.581819+00:00",
+  "checked_at_utc": "2026-11-25T18:20:04.687336+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
     "miss": 8,
-    "pending": 1,
-    "recorded": 9,
+    "pending": 2,
+    "recorded": 10,
     "verified": 8
   },
   "identity_conflicts": 0,
@@ -120,6 +120,93 @@
   "policy": "first_saved_pre_kickoff_only_verified_regulation_time",
   "private_database_status": "not_loaded",
   "records": [
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-25T18:17:21.599820+00:00",
+      "choices": [
+        [
+          "1-2"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1635637', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Como",
+          "away_team_id": "895",
+          "fixture_id": "1635637",
+          "home_team": "Real Betis",
+          "home_team_id": "543",
+          "kickoff_utc": "2026-12-09T17:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-09T17:45:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-25T18:17:21.574354+00:00",
+      "choices": [
+        [
+          "1-2"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1635637', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Como",
+          "away_team_id": "895",
+          "fixture_id": "1635637",
+          "home_team": "Real Betis",
+          "home_team_id": "543",
+          "kickoff_utc": "2026-12-09T17:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-09T17:45:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-25T18:17:21.562010+00:00",
+      "choices": [
+        [
+          "1-2"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1635637', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Como",
+          "away_team_id": "895",
+          "fixture_id": "1635637",
+          "home_team": "Real Betis",
+          "home_team_id": "543",
+          "kickoff_utc": "2026-12-09T17:45:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-12-09T17:45:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
     {
       "actual_scores": [],
       "captured_at_utc": "2026-11-24T20:02:50.166009+00:00",
@@ -21375,6 +21462,61 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T17:45:00.000000Z",
       "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-25T18:17:29.876511+00:00",
+      "choices": [
+        [
+          "2-0",
+          "1-1"
+        ],
+        [
+          "2-0",
+          "1-0"
+        ],
+        [
+          "2-0",
+          "0-1"
+        ],
+        [
+          "1-0",
+          "1-1"
+        ],
+        [
+          "1-0",
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('automatic_double', '2026-11-27')",
+      "kind": "double",
+      "legs": [
+        {
+          "away_team": "Hapoel Beer Sheva",
+          "away_team_id": "563",
+          "fixture_id": "1636231",
+          "home_team": "Be\u015fikta\u015f",
+          "home_team_id": "549",
+          "kickoff_utc": "2026-11-26T17:45:00.000000Z",
+          "provider": "API-Football"
+        },
+        {
+          "away_team": "Anderlecht",
+          "away_team_id": "554",
+          "fixture_id": "1636305",
+          "home_team": "OFI",
+          "home_team_id": "1124",
+          "kickoff_utc": "2026-11-26T20:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-26T17:45:00.000000Z",
+      "source": "automatic_five_double",
       "status": "pending"
     },
     {
@@ -49218,8 +49360,8 @@
     "hit": 119,
     "hit_rate": 0.1559633027522936,
     "miss": 644,
-    "pending": 805,
-    "recorded": 1568,
+    "pending": 808,
+    "recorded": 1571,
     "verified": 763
   },
   "unique_verified_single_fixtures": 102

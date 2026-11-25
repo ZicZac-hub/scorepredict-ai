@@ -1,5 +1,5 @@
 {
-  "candidate_pair_rows_awaiting_verified_finals": 28,
+  "candidate_pair_rows_awaiting_verified_finals": 31,
   "candidate_pair_rows_independently_verified": 244,
   "complete_day_unweighted_mean_candidate_hit_fraction": 0.03869047619047619,
   "days": [
@@ -6582,12 +6582,58 @@
       "sydney_day": "2026-11-26",
       "unique_fixtures_missing_verified_final": 8,
       "unique_fixtures_verified": 0
+    },
+    {
+      "candidate_count": 3,
+      "candidate_hit_rows_are_correlated_not_independent_trials": true,
+      "candidate_pairs_pending": 3,
+      "candidate_pairs_verified": 0,
+      "candidate_rows": [],
+      "complete_slate": false,
+      "exploratory_verified_candidate_rows": {
+        "mean_v8_reference_mass_for_robust_five": null,
+        "model_expected_robust_hits_sum_correlated": null,
+        "observed_robust_five_fraction": null,
+        "observed_robust_five_hits": 0,
+        "observed_v8_optimal_five_hits": 0,
+        "verified_pair_rows": 0
+      },
+      "frozen_source_count": 3,
+      "missing_fixture_evidence": [
+        {
+          "fixture_id": "1636231",
+          "kickoff_utc": "2026-11-26T17:45:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1636315",
+          "kickoff_utc": "2026-11-26T17:45:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1636334",
+          "kickoff_utc": "2026-11-26T17:45:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        }
+      ],
+      "no_forecasts_created_during_grading": true,
+      "original_candidate_catalog_sha256": "da7b6a47b7ad12e8307cc73c5edf7e2c93e5b05a646d3d096a345e543328ff54",
+      "original_cutoff_utc": "2026-11-25T18:17:49.446803+00:00",
+      "original_issued_at_utc": "2026-11-25T18:17:51.249862+00:00",
+      "original_policy": "FROZEN",
+      "status": "awaiting_verified_finals",
+      "sydney_day": "2026-11-27",
+      "unique_fixtures_missing_verified_final": 3,
+      "unique_fixtures_verified": 0
     }
   ],
-  "days_still_missing_results": 1,
+  "days_still_missing_results": 2,
   "days_with_some_verified_pairs": 4,
-  "evaluated_at_utc": "2026-11-25T18:06:53.511085+00:00",
-  "frozen_candidate_pair_rows": 272,
+  "evaluated_at_utc": "2026-11-25T18:18:53.381548+00:00",
+  "frozen_candidate_pair_rows": 275,
   "fully_verified_slate_days": 4,
   "initial_full_slate_day_review_target": 30,
   "initial_review_ready": false,
@@ -6598,7 +6644,7 @@
   "no_production_model_promotion": true,
   "no_retroactive_chosen_pair_alteration": true,
   "original_abstained_days": 0,
-  "original_frozen_days": 5,
+  "original_frozen_days": 6,
   "overlapping_pairs_are_not_independent_samples": true,
   "partially_verified_slate_days": 0,
   "research_scope": "original_pre_match_write_once_v28_full_candidate_catalogs",

@@ -1,0 +1,86 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-25T18:17:29.876511+00:00",
+  "challenger_exclusions": {
+    "v10": "ineligible_or_different_selected_v8_evidence",
+    "v12": "missing_one_or_both_challenger_forecasts",
+    "v13": "missing_same_evidence_pre_match_v13_pair",
+    "v9": "ineligible_or_different_selected_v8_evidence"
+  },
+  "estimated_coverage": 0.0829589185184978,
+  "first": {
+    "away_team": "Hapoel Beer Sheva",
+    "away_team_id": "563",
+    "fixture_id": "1636231",
+    "forecast_id": "a67af2ae8c7b14865ae59446c22cc83b019e74dd79397ee75ddaf6ff2d8f6030",
+    "home_team": "Be\u015fikta\u015f",
+    "home_team_id": "549",
+    "kickoff_utc": "2026-11-26T17:45:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.017988362502403106,
+      "score1": "2-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.017022044923457786,
+      "score1": "2-0",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.016601451740632628,
+      "score1": "2-0",
+      "score2": "0-1"
+    },
+    {
+      "joint_probability": 0.01610613267504221,
+      "score1": "1-0",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.015240926676962077,
+      "score1": "1-0",
+      "score2": "1-0"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v2-fresh-research",
+  "same_pair_challengers": {},
+  "second": {
+    "away_team": "Anderlecht",
+    "away_team_id": "554",
+    "fixture_id": "1636305",
+    "forecast_id": "bf8c7ebda0105e51df17ba533af582aba2114e560bd4bbe56cdedfde85be9d49",
+    "home_team": "OFI",
+    "home_team_id": "1124",
+    "kickoff_utc": "2026-11-26T20:00:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "selected_forecasts": {
+    "1": {
+      "captured_at_utc": "2026-11-24T20:02:56.416419Z",
+      "input_digest": "f5c620deac09c95ed996bc66f5c76b48100fef15bec68be4b2f879c15c12d2ca",
+      "source": "v8_near"
+    },
+    "2": {
+      "captured_at_utc": "2026-11-24T20:03:05.108613Z",
+      "input_digest": "47928454274fce144ce1130ae1ba00b2d680f6d452f518a92a151696050f9e13",
+      "source": "v8_near"
+    }
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "selection_window": {
+    "max_hours_before_first_eligible_kickoff": 24,
+    "minimum_minutes_before_each_selected_match": 45
+  },
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-27"
+}

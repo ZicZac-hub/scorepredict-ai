@@ -1,13 +1,26 @@
 {
   "forecast_production_model_modified": false,
   "freeze": {
-    "created": [],
+    "created": [
+      {
+        "day": "2026-11-27",
+        "eligible_pairs": 3,
+        "policy": "FROZEN"
+      }
+    ],
     "no_live_model_change": true,
     "not_frozen_inspected": [],
-    "skipped": {},
-    "source_ineligibility": {}
+    "skipped": {
+      "already_frozen_day": 1
+    },
+    "source_ineligibility": {
+      "invalid_source_time": 200,
+      "not_original_v8_model": 819,
+      "outside_research_freeze_window": 210
+    },
+    "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
-  "generated_at_utc": "2026-11-25T18:06:40.420134+00:00",
+  "generated_at_utc": "2026-11-25T18:17:49.446792+00:00",
   "no_additional_provider_or_llm_calls": true,
   "original_v8_v25_v26_v27_forecasts_changed": false,
   "prospective_accuracy_improvement_not_established": true,
@@ -23,15 +36,15 @@
     "control_only_wins": 0,
     "different_pair_days": 0,
     "do_not_treat_pending_as_losses": true,
-    "evaluated_at_utc": "2026-11-25T18:06:40.420145+00:00",
+    "evaluated_at_utc": "2026-11-25T18:17:51.265665+00:00",
     "exact_paired_test_two_sided_p": null,
     "excluded_invalid_or_tampered_files": {},
     "initial_review_ready": false,
     "initial_verified_day_review_target": 100,
     "invalid_verified_final_evidence": {},
     "no_promotion_to_live_model": true,
-    "original_frozen_decisions": 5,
-    "pending_days": 1,
+    "original_frozen_decisions": 6,
+    "pending_days": 2,
     "quality_hit_rate": 0.0,
     "quality_hit_wilson_95": [
       0.0,
@@ -233,6 +246,37 @@
         "same_pre_match_cutoff_for_both_arms": true,
         "status": "pending",
         "sydney_day": "2026-11-26",
+        "verified_control": false,
+        "verified_quality": false
+      },
+      {
+        "all_qualified_four_team_pairs": 3,
+        "control_pair": [
+          [
+            "API-Football",
+            "1636231"
+          ],
+          [
+            "API-Football",
+            "1636315"
+          ]
+        ],
+        "eligible_fixtures": 3,
+        "policy": "FROZEN",
+        "quality_pair": [
+          [
+            "API-Football",
+            "1636231"
+          ],
+          [
+            "API-Football",
+            "1636315"
+          ]
+        ],
+        "same_fixture_pair": true,
+        "same_pre_match_cutoff_for_both_arms": true,
+        "status": "pending",
+        "sydney_day": "2026-11-27",
         "verified_control": false,
         "verified_quality": false
       }
