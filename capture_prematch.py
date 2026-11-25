@@ -568,6 +568,19 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
         except Exception as exc:
             diagnostics['v10_market_refresh_errors'].append({
                 'stage':'market_refresh_discovery','error_type':type(exc).__name__})
+    # After ALL baseline and market refresh work: use only the remaining run
+    # budget. Cache-only on light runs; bounded extra history on heavy runs.
+    if os.environ.get("CROSS_COMPETITION_RESEARCH_ENABLED") == "true":
+        try:
+            from cross_competition_source_refresh import refresh
+            diagnostics["cross_competition_source_refresh"] = refresh(
+                [fixture for _,fixture,code in fixtures.values() if code in ("CL","EL")],
+                history_cache,key=key,request=request,clock=current_time,
+                remaining_calls=lambda: max(0,max_api_calls-provider_calls) if max_api_calls else 0,
+                time_available=lambda: not max_seconds or time.monotonic()-monotonic_start<max_seconds-30,
+                extra_limit=_positive_limit(os.environ.get("CROSS_COMPETITION_HISTORY_MAX_CALLS"),0))
+        except (OSError,ValueError,TypeError,KeyError,AttributeError,OverflowError) as exc:
+            diagnostics["cross_competition_source_refresh_error"]=type(exc).__name__
     diagnostics['provider_adapter_calls'] = provider_calls
     diagnostics['news_coverage_complete'] = not diagnostics['news_errors']
     diagnostics['coverage_complete'] = not (diagnostics['discovery_budget_skipped'] or diagnostics['budget_skipped'] or diagnostics['league_errors'] or diagnostics['prediction_errors'] or diagnostics['prediction_unavailable'] or diagnostics['history_source_errors'])
