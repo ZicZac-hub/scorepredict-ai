@@ -254,7 +254,7 @@ def test_missed_post_activation_slate_is_an_abstention_without_a_ticket(tmp_path
     assert not list((settings["root"] / "decisions").glob("*.json"))
 
 
-def test_public_view_requires_validation_and_expires_with_kickoff(tmp_path, frozen_slate):
+def test_public_view_requires_validation_and_expires_with_kickoff(tmp_path, frozen_slate, monkeypatch):
     settings = study_paths(tmp_path, frozen_slate)
     assert final.freeze(**settings, now=CUTOFF, clock=lambda: CUTOFF)
     report = final.evaluate(**settings, prematch=tmp_path / "prematch", now=CUTOFF)
@@ -267,6 +267,13 @@ def test_public_view_requires_validation_and_expires_with_kickoff(tmp_path, froz
     report["rows"] = historical_rows(final.MINIMUM_VERIFIED) + report["rows"]
     report["validation"] = final.validation_summary(report["rows"][:-1])
     write(root / "status.json", report)
+    # Fabricated status rows alone must not unlock the UI.
+    forged = final.presentation(**settings, prematch=tmp_path / "prematch", now=CUTOFF)
+    assert forged["state"] == "evidence_unavailable"
+    assert "names" not in forged["decision"] and "five_doubles" not in forged["decision"]
+    # Positive UI-path test: simulate the independent evaluator authenticating
+    # the full historical cohort and current original decision.
+    monkeypatch.setattr(final, "evaluate", lambda **kwargs: report)
     released = final.presentation(root=root, now=CUTOFF)
     assert released["state"] == "available"
     assert len(released["decision"]["names"]) == 2
