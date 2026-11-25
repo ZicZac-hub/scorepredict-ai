@@ -2,17 +2,19 @@
   "protocol": "verified-xg-prospective-paired-v1",
   "collection_health": {
     "api_football": {
-      "at_utc": "2026-11-25T20:28:11.758383+00:00",
+      "at_utc": "2026-11-25T21:32:18.039393+00:00",
       "enabled": true,
-      "reason": "no_new_source_evidence",
+      "reason": "partial_or_complete_source_packets",
       "eligible_legs": 16,
-      "attempted_legs": 0,
+      "attempted_legs": 1,
       "daily_attempts_limit": 6,
-      "daily_attempts_used": 4,
-      "new_packets": []
+      "daily_attempts_used": 5,
+      "new_packets": [
+        "1492461"
+      ]
     },
     "sportmonks_independent_not_pooled": {
-      "at_utc": "2026-11-25T20:28:13.133405+00:00",
+      "at_utc": "2026-11-25T21:32:24.244860+00:00",
       "enabled": true,
       "reason": "daily_request_budget_exhausted",
       "eligible_frozen_forecasts": 16,
@@ -31,18 +33,18 @@
   "lineup_comparison_is_observational": true,
   "holdout_start": "2026-12-15",
   "authenticated_archive": {
-    "packets_seen": 344,
-    "authenticated_packets": 344,
-    "packets_with_3_xg_rows_each_side": 33,
-    "packets_with_6_xg_rows_each_side": 31,
+    "packets_seen": 345,
+    "authenticated_packets": 345,
+    "packets_with_3_xg_rows_each_side": 34,
+    "packets_with_6_xg_rows_each_side": 32,
     "packets_with_both_provider_XIs": 1,
     "unique_fixtures_with_authenticated_packets": 115
   },
-  "frozen_history_records": 9,
+  "frozen_history_records": 10,
   "comparison_uses_original_pre_kickoff_probabilities": true,
   "independently_settled_candidate_cases": 3,
   "case_exclusions": {
-    "missing_verified_final": 5
+    "missing_verified_final": 6
   },
   "minimum_evidence": {
     "training_cases": 30,
