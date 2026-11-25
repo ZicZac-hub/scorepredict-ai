@@ -25,7 +25,7 @@
       "observed_minus_expected_rate": -0.06965046420304791
     }
   },
-  "evaluated_at_utc": "2026-11-25T07:23:04.161266+00:00",
+  "evaluated_at_utc": "2026-11-25T10:16:07.225862+00:00",
   "evidence_rejections": {},
   "fixture_reuse_in_denominator_allowed": false,
   "full_variant_and_choice_reconstruction": true,
@@ -34,25 +34,25 @@
   "methods": {
     "baseline_v8": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
+      "pending": 3,
       "verified": 6,
       "wins": 0
     },
     "bivariate_poisson_c012": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
+      "pending": 3,
       "verified": 6,
       "wins": 0
     },
     "negative_binomial_r3": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
+      "pending": 3,
       "verified": 6,
       "wins": 0
     },
     "poisson_marginal": {
       "observed_hit_rate": 0.0,
-      "pending": 2,
+      "pending": 3,
       "verified": 6,
       "wins": 0
     }
@@ -197,9 +197,24 @@
       ],
       "sydney_date": "2026-11-26",
       "verified": false
+    },
+    {
+      "actual_scores": null,
+      "model_hits": {
+        "baseline_v8": null,
+        "bivariate_poisson_c012": null,
+        "negative_binomial_r3": null,
+        "poisson_marginal": null
+      },
+      "source_model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "sydney_date": "2026-11-27",
+      "verified": false
     }
   ],
   "result_rejections": {},
   "schema": 1,
-  "valid_unique_pairs": 8
+  "valid_unique_pairs": 9
 }
