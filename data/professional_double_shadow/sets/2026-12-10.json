@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-25T20:28:02.513315+00:00",
+  "prospective": true,
+  "record_sha256": "b980fa8fed0b4eb2baffe580626663daa4dae3a7d6109c478e5e4e5f9e10b419",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.11545641059199852,
+        "joint_probability": 0.015009931153054035,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.13000517750457652
+      },
+      {
+        "first_probability": 0.10731846260917377,
+        "joint_probability": 0.013951955781023893,
+        "score1": "0-1",
+        "score2": "1-1",
+        "second_probability": 0.13000517750457652
+      },
+      {
+        "first_probability": 0.11545641059199852,
+        "joint_probability": 0.013288044869783966,
+        "score1": "1-1",
+        "score2": "0-1",
+        "second_probability": 0.11509144275012537
+      },
+      {
+        "first_probability": 0.09578285796008203,
+        "joint_probability": 0.012452267450996105,
+        "score1": "1-2",
+        "score2": "1-1",
+        "second_probability": 0.13000517750457652
+      },
+      {
+        "first_probability": 0.10731846260917377,
+        "joint_probability": 0.012351436695415193,
+        "score1": "0-1",
+        "score2": "0-1",
+        "second_probability": 0.11509144275012537
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.0670536359502732,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "75",
+        "name": "Stoke City"
+      },
+      "competition": {
+        "code": "ELC",
+        "name": "ELC"
+      },
+      "homeTeam": {
+        "id": "1379",
+        "name": "Lincoln"
+      },
+      "id": "1563320",
+      "provider": "API-Football",
+      "utcDate": "2026-12-09T19:45:00+00:00"
+    },
+    "generated_at_utc": "2026-11-25T20:28:02.513003+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "1355",
+        "name": "Portsmouth"
+      },
+      "competition": {
+        "code": "ELC",
+        "name": "ELC"
+      },
+      "homeTeam": {
+        "id": "59",
+        "name": "Preston"
+      },
+      "id": "1563321",
+      "provider": "API-Football",
+      "utcDate": "2026-12-09T19:45:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "75",
+        "fixture_id": "1563320",
+        "forecast_id": "b024f3808ebb4bc1062761d6c5d5dc6d3546aad8f0d20f22a3b011cccae5e25a",
+        "home_team_id": "1379",
+        "input_digest": "aa9000c825b37163501a14dbad5d401b4fc31b878b270cb9a8982b2d75c98316",
+        "kickoff_utc": "2026-12-09T19:45:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "1355",
+        "fixture_id": "1563321",
+        "forecast_id": "789e35afbb0e9cfce8be968900ab8d729f533d2f91c2a9c0dbe62d5769742c82",
+        "home_team_id": "59",
+        "input_digest": "8d18591a00a1520f0aa0b10220f7eab54e1720cc61c65ff04e1f53eb79466d86",
+        "kickoff_utc": "2026-12-09T19:45:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-25T20:26:32.177009+00:00",
+      "2026-11-25T20:26:32.375777+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-10",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-10",
+  "target_70_percent_proven": false
+}
