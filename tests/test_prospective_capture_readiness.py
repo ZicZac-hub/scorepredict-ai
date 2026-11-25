@@ -27,7 +27,7 @@ def test_v1_v2_archives_remain_untouched_and_v3_registers_its_own_protocol(tmp_p
 
 def test_scheduled_audit_runs_after_capture_and_stages_new_archive():
     workflow = Path(".github/workflows/prematch-evidence.yml").read_text()
-    assert workflow.index("run: python v21_capture_sources.py") < workflow.index(
+    assert workflow.index("run: python v21_capture_sources_v2.py") < workflow.index(
         "run: python verified_xg_evidence_pipeline.py --output data/verified_xg_replay/latest_report.json")
     assert "if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')" in workflow
     assert "data/professional_paired_study_v2/" in workflow
