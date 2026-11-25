@@ -32,3 +32,30 @@ def test_invalid_and_missing_evidence():
     assert final["paired_xg_used"] is False and final["paired_market_used"] is False
     assert len({(x["score1"],x["score2"]) for x in final["five_doubles"]})==5
     assert PROTOCOL["automatic_model_promotion"] is False
+
+
+def test_watchdog_evidence_coverage_distinguishes_missing_and_unknown():
+    from v42_research_bot import evidence_coverage
+    performance = {
+        "valid_opportunities": 3,
+        "rows": [
+            {"unified_final_evidence": {"paired_xg_used": True, "paired_market_used": False}},
+            {"unified_final_evidence": {"paired_xg_used": False, "paired_market_used": True}},
+            {"unified_final_evidence": {"paired_xg_used": None}},
+        ],
+        "lineup_coverage": {"both_matches_confirmed_at_decision": 1},
+    }
+    summary = evidence_coverage(performance)
+    assert summary["valid_pairs"] == 3
+    assert summary["xg"] == {"used": 1, "not_used": 1, "unknown": 1}
+    assert summary["market"] == {"used": 1, "not_used": 1, "unknown": 1}
+    assert summary["confirmed_lineups_both_matches"] == 1
+    with pytest.raises(ValueError, match="inconsistent_evidence_row_count"):
+        evidence_coverage({**performance, "valid_opportunities": 4})
+
+
+def test_watchdog_empty_archive_is_not_a_failed_or_missing_pair():
+    from v42_research_bot import evidence_coverage
+    summary = evidence_coverage({"valid_opportunities": 0, "rows": [],
+        "lineup_coverage": {"both_matches_confirmed_at_decision": 0}})
+    assert summary["xg"] == summary["market"] == {"used": 0, "not_used": 0, "unknown": 0}
