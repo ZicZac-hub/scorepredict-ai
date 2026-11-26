@@ -23,7 +23,8 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
     cap = min(MAX_EXTRA, max(0, int(extra_limit)))
     report = {"extra_call_limit": cap, "extra_adapter_calls": 0,
               "eligible_fixtures": 0, "attempted_fixtures": 0,
-              "outcomes": {}, "source_groups": {}, "no_live_model_change": True}
+              "outcomes": {}, "source_groups": {}, "source_group_states": {},
+              "domestic_retry_entries": 0, "no_live_model_change": True}
     outcomes = Counter()
 
     def can_spend(n):
@@ -36,15 +37,43 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
         report["extra_adapter_calls"] += 1
         return request(*args, **kwargs)
 
-    def group(fixture, at):
+    # Research retries are isolated to the end-of-run handoff. A failed
+    # or stale cache entry must not permanently masquerade as available.
+    retried=set()
+    def source_state(k, cutoff):
+        if k not in cache:
+            return "missing"
+        try:
+            rows, meta, error=cache[k]
+            if error:
+                return "provider_error"
+            if meta.get("freshness_known") is not True or meta.get("stale") is not False:
+                return "unqualified_freshness"
+            if _date(meta["fetched_at_utc"])>cutoff:
+                return "future_observation"
+            return "qualified" if rows else "qualified_empty"
+        except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
+            return "invalid_metadata"
+
+    def group(fixture, at, *, retry=False):
         comp=fixture["competition"]
         season=season_year(fixture)
         keys=[("API-Football",str(comp["id"]),year) for year in (season,season-1)]
-        missing=sum(k not in cache for k in keys)
-        if missing and not can_spend(missing):
+        missing=[k for k in keys if k not in cache]
+        # Do not mutate European entries after their original evidence was
+        # observed. Only domestic history refresh can retry failed entries.
+        retry_keys=[k for k in keys if retry and k in cache and k not in retried
+                    and source_state(k,at) in ("provider_error","unqualified_freshness","invalid_metadata")]
+        if missing and not can_spend(len(missing)):
             return None
         if not time_available():
             return None
+        # Retry only with spare capacity after accounting for absent seasons.
+        # Preserve failed entries if the bounded request cannot be made.
+        if retry_keys and can_spend(len(missing)+len(retry_keys)):
+            for k in retry_keys:
+                retried.add(k)
+                cache.pop(k)
         return loader(fixture, as_of=at, api_key=key,
                       api_request=bounded_request, cache=cache)
 
@@ -97,14 +126,12 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
             proxy={**template,"competition":{"id":league,"code":code,"season":season}}
             keys=[("API-Football",str(league),year) for year in (season,season-1)]
             try:
-                group(proxy,at)
-                report["source_groups"][code+":"+str(season)]=sum(
-                    k in cache and cache[k][2] is None and
-                    cache[k][1].get("freshness_known") is True and
-                    cache[k][1].get("stale") is False and
-                    bool(cache[k][1].get("fetched_at_utc")) and
-                    _date(cache[k][1]["fetched_at_utc"])<=_date(clock())
-                    for k in keys)
+                group(proxy,at,retry=True)
+                states={str(k[2]):source_state(k,_date(clock())) for k in keys}
+                group_id=code+":"+str(season)
+                report["source_group_states"][group_id]=states
+                report["source_groups"][group_id]=sum(
+                    s in ("qualified","qualified_empty") for s in states.values())
             except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
                 outcomes["domestic_source_error"]+=1
     for kickoff,fid,fixture,evidence in eligible:
@@ -117,6 +144,7 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
             outcomes[outcome]+=1
         except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
             outcomes["receipt_error"]+=1
+    report["domestic_retry_entries"]=len(retried)
     report["outcomes"]=dict(outcomes)
     report["candidate_limit_skipped"]=max(0,len(candidates)-MAX_CANDIDATES)
     return report

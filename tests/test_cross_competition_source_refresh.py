@@ -66,3 +66,39 @@ def test_extra_budget_never_exceeds_existing_remaining_calls(tmp_path):
     r,calls,frozen,_=harness(tmp_path,[fixture()],remaining=5)
     assert len(calls)==4 and len(calls)<=5
     assert r["extra_adapter_calls"]==4
+
+
+def test_domestic_failed_cache_entry_retries_with_spare_budget(tmp_path):
+    _,_,_,cache=harness(tmp_path,[fixture()])
+    league=DOMESTIC["PL"]
+    key=("API-Football",str(league),2031)
+    cache[key]=([],{"freshness_known":False},"ProviderAccessError")
+    r,calls,frozen,_=harness(tmp_path,[fixture()],limit=1,cache=cache)
+    assert calls==[(league,2031)]
+    assert r["domestic_retry_entries"]==1
+    assert r["extra_adapter_calls"]==1
+    assert r["source_group_states"]["PL:2031"]["2031"]=="qualified_empty"
+    assert frozen==[(101,18)]
+
+
+def test_light_run_does_not_retry_and_reports_failure_separately(tmp_path):
+    _,_,_,cache=harness(tmp_path,[fixture()])
+    league=DOMESTIC["PL"]
+    cache[("API-Football",str(league),2031)]=([],{"freshness_known":False},"ProviderAccessError")
+    r,calls,_,_=harness(tmp_path,[fixture()],limit=0,cache=cache)
+    assert calls==[]
+    assert r["domestic_retry_entries"]==0
+    assert r["source_group_states"]["PL:2031"]=={"2031":"provider_error","2030":"qualified_empty"}
+    assert r["source_groups"]["PL:2031"]==1
+
+
+def test_stale_domestic_retry_respects_remaining_main_budget(tmp_path):
+    _,_,_,cache=harness(tmp_path,[fixture()])
+    league=DOMESTIC["PL"]
+    for year in (2031,2030):
+        cache[("API-Football",str(league),year)]=([],{"freshness_known":True,
+            "stale":True,"fetched_at_utc":NOW.isoformat()},None)
+    r,calls,_,_=harness(tmp_path,[fixture()],remaining=1,cache=cache)
+    assert calls==[]
+    assert r["domestic_retry_entries"]==0
+    assert set(r["source_group_states"]["PL:2031"].values())=={"unqualified_freshness"}
