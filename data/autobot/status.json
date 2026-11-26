@@ -4,30 +4,30 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-26T22:32:03.468844+00:00",
+  "last_run_utc": "2026-11-26T23:31:58.682384+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
     "hit_rate": 0.0,
     "hits": 0,
-    "pending_sets": 2,
-    "verified_sets": 9
+    "pending_sets": 1,
+    "verified_sets": 10
   },
   "priority": "five_exact_score_doubles",
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 54.1,
+    "age_minutes": 52.0,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-26T21:37:58.894580+00:00",
+    "collector_started_at_utc": "2026-11-26T22:39:55.898699+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 14,
+    "processed_fixtures": 10,
     "producer_api_budget_unchanged": true,
     "uefa_fixtures_one_qualified_match_short": 9,
     "uefa_history_audit_available": true,
-    "uefa_history_fixture_observations": 14,
+    "uefa_history_fixture_observations": 9,
     "uefa_history_season_source_states": {
-      "rows_returned": 28
+      "rows_returned": 18
     },
     "v37_sparse_saved": 0,
     "v37_sparse_saved_by_league": {},
@@ -62,9 +62,9 @@
         "3-4": 9
       }
     },
-    "v8_saved": 5,
+    "v8_saved": 1,
     "v8_saved_by_league": {
-      "EL": 5
+      "BSA": 1
     },
     "v8_source_errors": 0
   },
@@ -75,8 +75,8 @@
     "original_frozen_decisions": 7,
     "pending_days": 1,
     "source_ineligibility": {
-      "invalid_source_time": 226,
-      "not_original_v8_model": 928,
+      "invalid_source_time": 228,
+      "not_original_v8_model": 942,
       "outside_research_freeze_window": 228
     },
     "verified_paired_days": 6
@@ -290,15 +290,15 @@
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-26T21:40:42.793390+00:00",
-    "evaluated_at_utc": "2026-11-26T21:40:42.793434+00:00",
+    "capture_at_utc": "2026-11-26T22:45:30.582780+00:00",
+    "evaluated_at_utc": "2026-11-26T22:45:30.582814+00:00",
     "hits": 0,
     "issued": 2,
     "minimum_review_pairs": 100,
     "new_trials": [],
     "observed_hit_rate": 0.0,
     "outside_decision_window": 17,
-    "pending": 1,
+    "pending": 0,
     "report_available": true,
     "research_only": true,
     "same_pair_comparison": {
@@ -306,44 +306,50 @@
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": -0.0010015611840056282,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.0612279103107585,
+        "normal_95_interval": [
+          -0.06074185381897919,
+          0.18319767444049617
+        ],
+        "sample_pairs": 2
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": 0.014858420173219145,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.2120271102931235,
+        "normal_95_interval": [
+          -0.17442352234188901,
+          0.598477742928136
+        ],
+        "sample_pairs": 2
       },
       "same_pair_metrics": {
         "baseline_v8": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6473244244642089,
-          "single_score_log_loss": 3.2788283686449553,
-          "verified_sets": 1,
+          "outcome_brier": 0.5056316209382172,
+          "single_score_log_loss": 3.136446113656669,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         },
         "unified_final": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6483259856482145,
-          "single_score_log_loss": 3.263969948471736,
-          "verified_sets": 1,
+          "outcome_brier": 0.4444037106274587,
+          "single_score_log_loss": 2.9244190033635453,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         }
       },
-      "verified_common_pairs": 1
+      "verified_common_pairs": 2
     },
     "source_rejections": {},
     "target_70_percent_proven": false,
-    "verified": 1
+    "verified": 2
   },
   "v8_v25_same_pair": {
     "pending_pairs": 1,
