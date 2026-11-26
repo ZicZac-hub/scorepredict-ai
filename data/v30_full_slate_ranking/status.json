@@ -1,5 +1,5 @@
 {
-  "candidate_pair_rows_awaiting_verified_finals": 3,
+  "candidate_pair_rows_awaiting_verified_finals": 31,
   "candidate_pair_rows_independently_verified": 272,
   "complete_day_unweighted_mean_candidate_hit_fraction": 0.030952380952380953,
   "days": [
@@ -7386,12 +7386,88 @@
       "sydney_day": "2026-11-27",
       "unique_fixtures_missing_verified_final": 3,
       "unique_fixtures_verified": 0
+    },
+    {
+      "candidate_count": 28,
+      "candidate_hit_rows_are_correlated_not_independent_trials": true,
+      "candidate_pairs_pending": 28,
+      "candidate_pairs_verified": 0,
+      "candidate_rows": [],
+      "complete_slate": false,
+      "exploratory_verified_candidate_rows": {
+        "mean_v8_reference_mass_for_robust_five": null,
+        "model_expected_robust_hits_sum_correlated": null,
+        "observed_robust_five_fraction": null,
+        "observed_robust_five_hits": 0,
+        "observed_v8_optimal_five_hits": 0,
+        "verified_pair_rows": 0
+      },
+      "frozen_source_count": 8,
+      "missing_fixture_evidence": [
+        {
+          "fixture_id": "1550216",
+          "kickoff_utc": "2026-11-27T19:45:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1552238",
+          "kickoff_utc": "2026-11-27T19:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1552830",
+          "kickoff_utc": "2026-11-27T19:45:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1557485",
+          "kickoff_utc": "2026-11-27T20:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563294",
+          "kickoff_utc": "2026-11-27T20:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1570468",
+          "kickoff_utc": "2026-11-27T20:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1575237",
+          "kickoff_utc": "2026-11-27T19:30:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1575551",
+          "kickoff_utc": "2026-11-27T20:15:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        }
+      ],
+      "no_forecasts_created_during_grading": true,
+      "original_candidate_catalog_sha256": "fe36a97ad721da812435b3d6f55c82c3d489ec5f0f17948bc5f5ba20dcdb41f6",
+      "original_cutoff_utc": "2026-11-26T20:29:27.549271+00:00",
+      "original_issued_at_utc": "2026-11-26T20:29:29.353209+00:00",
+      "original_policy": "FROZEN",
+      "status": "awaiting_verified_finals",
+      "sydney_day": "2026-11-28",
+      "unique_fixtures_missing_verified_final": 8,
+      "unique_fixtures_verified": 0
     }
   ],
-  "days_still_missing_results": 1,
+  "days_still_missing_results": 2,
   "days_with_some_verified_pairs": 5,
-  "evaluated_at_utc": "2026-11-26T19:40:09.247185+00:00",
-  "frozen_candidate_pair_rows": 275,
+  "evaluated_at_utc": "2026-11-26T20:38:35.434215+00:00",
+  "frozen_candidate_pair_rows": 303,
   "fully_verified_slate_days": 5,
   "initial_full_slate_day_review_target": 30,
   "initial_review_ready": false,
@@ -7402,7 +7478,7 @@
   "no_production_model_promotion": true,
   "no_retroactive_chosen_pair_alteration": true,
   "original_abstained_days": 0,
-  "original_frozen_days": 6,
+  "original_frozen_days": 7,
   "overlapping_pairs_are_not_independent_samples": true,
   "partially_verified_slate_days": 0,
   "research_scope": "original_pre_match_write_once_v28_full_candidate_catalogs",

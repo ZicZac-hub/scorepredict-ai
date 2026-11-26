@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-26T20:39:04.012294+00:00",
+  "prospective": true,
+  "record_sha256": "76f4d7cbb0234b6579a18907592556e78557b1de235243056f92665df23a5420",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.09787786925294806,
+        "joint_probability": 0.021459076746276944,
+        "score1": "2-1",
+        "score2": "1-0",
+        "second_probability": 0.21924339904478052
+      },
+      {
+        "first_probability": 0.09522115191259473,
+        "joint_probability": 0.02087660900627667,
+        "score1": "1-1",
+        "score2": "1-0",
+        "second_probability": 0.21924339904478052
+      },
+      {
+        "first_probability": 0.08523575782688872,
+        "joint_probability": 0.01868737726612484,
+        "score1": "1-0",
+        "score2": "1-0",
+        "second_probability": 0.21924339904478052
+      },
+      {
+        "first_probability": 0.08268102816803014,
+        "joint_probability": 0.01812726965207617,
+        "score1": "2-0",
+        "score2": "1-0",
+        "second_probability": 0.21924339904478052
+      },
+      {
+        "first_probability": 0.09787786925294806,
+        "joint_probability": 0.017149848120750422,
+        "score1": "2-1",
+        "score2": "0-0",
+        "second_probability": 0.17521681102834052
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.09630018079150504,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "1124",
+        "name": "OFI"
+      },
+      "competition": {
+        "code": "EL",
+        "name": "EL"
+      },
+      "homeTeam": {
+        "id": "211",
+        "name": "Benfica"
+      },
+      "id": "1636230",
+      "provider": "API-Football",
+      "utcDate": "2026-12-10T20:00:00+00:00"
+    },
+    "generated_at_utc": "2026-11-26T20:39:04.012246+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "321",
+        "name": "Lillestrom"
+      },
+      "competition": {
+        "code": "EL",
+        "name": "EL"
+      },
+      "homeTeam": {
+        "id": "646",
+        "name": "Levski Sofia"
+      },
+      "id": "1636284",
+      "provider": "API-Football",
+      "utcDate": "2026-12-10T20:00:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "1124",
+        "fixture_id": "1636230",
+        "forecast_id": "bc3030738851ddfd8fcc191c5011dbd1ba607ddd47300a965e40fb7fb3beebd9",
+        "home_team_id": "211",
+        "input_digest": "17612684f305420545538ba157bfeec1307a7303dc6496a726dc0a0c115ae8cc",
+        "kickoff_utc": "2026-12-10T20:00:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "321",
+        "fixture_id": "1636284",
+        "forecast_id": "89593fc415538ddd17921b1f246c5f9966183b9b1a5955c7c66d9c8edcdbcf6e",
+        "home_team_id": "646",
+        "input_digest": "fcf31a59d1f61a7479370e93f0967a5d5d397f4694cfb1eec935d5dd8c5c34a1",
+        "kickoff_utc": "2026-12-10T20:00:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-26T20:37:10.730284+00:00",
+      "2026-11-26T20:37:11.230458+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-11",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-11",
+  "target_70_percent_proven": false
+}

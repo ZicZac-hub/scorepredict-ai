@@ -1,5 +1,5 @@
 {
-  "evaluated_at_utc": "2026-11-26T19:39:12.865218+00:00",
+  "evaluated_at_utc": "2026-11-26T20:37:31.153353+00:00",
   "no_new_external_requests": true,
   "original_frozen_predictions_modified": false,
   "production_model_promoted": false,
@@ -9,8 +9,8 @@
     "both_policies_verified_same_days": 3,
     "comparability_warning": "The same-day policies may select DIFFERENT match fixtures. Compare day-level selection success, NOT same-match probability calibration or a controlled same-fixture prediction experiment.",
     "different_fixture_pairs_same_day": 0,
-    "evaluated_at_utc": "2026-11-26T19:39:12.865218+00:00",
-    "frozen_decision_days": 4,
+    "evaluated_at_utc": "2026-11-26T20:37:31.153353+00:00",
+    "frozen_decision_days": 5,
     "invalid_or_tampered_decisions_excluded": {},
     "invalid_verified_results_excluded": {},
     "no_live_model_promotion": true,
@@ -180,6 +180,39 @@
         ],
         "v27_model_rank_score_not_hit_probability": 0.059445759647,
         "v27_pair_status": "pending"
+      },
+      {
+        "candidate_fixtures": 8,
+        "decision": "V27_SELECTED",
+        "eligible_pairs": 28,
+        "evaluated_pairs": 28,
+        "model_mass_is_not_measured_accuracy": true,
+        "same_two_fixtures_as_v25": false,
+        "status": "pending",
+        "sydney_date": "2026-11-28",
+        "v25_frozen_pair_ids": [
+          [
+            "API-Football",
+            "1550216"
+          ],
+          [
+            "API-Football",
+            "1575551"
+          ]
+        ],
+        "v25_pair_status": "pending",
+        "v27_frozen_pair_ids": [
+          [
+            "API-Football",
+            "1550216"
+          ],
+          [
+            "API-Football",
+            "1557485"
+          ]
+        ],
+        "v27_model_rank_score_not_hit_probability": 0.063477590084,
+        "v27_pair_status": "pending"
       }
     ],
     "same_fixture_pair_comparisons": 3,
@@ -189,7 +222,7 @@
       5.551115123125783e-17,
       0.5614970317550454
     ],
-    "v27_pending_pair_results": 1,
+    "v27_pending_pair_results": 2,
     "v27_verified_pair_results": 3,
     "v27_wilson_95_same_days": [
       5.551115123125783e-17,
@@ -205,7 +238,12 @@
   },
   "prospective_freeze": {
     "live_predictions_unchanged": true,
-    "new_decisions": [],
+    "new_decisions": [
+      {
+        "day": "2026-11-28",
+        "decision": "V27_SELECTED"
+      }
+    ],
     "not_created": {
       "not_a_new_v25_freeze": 9
     },
