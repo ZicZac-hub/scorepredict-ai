@@ -2,6 +2,7 @@
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import numpy as np
+import pytest
 import engine
 from forecast_model import predict, LIVE_MODEL_VERSION
 from reference_model import fit, score_matrix
@@ -92,6 +93,37 @@ def test_missing_explicit_league_population_is_disclosed_fallback():
     assert result['model_version'] == LIVE_MODEL_VERSION+'-fallback-v6'
     assert result['fallback_reason']
     assert result['model_weights']['fitted_opponent_dixon_coles'] == 0
+
+
+@pytest.mark.parametrize('variant,league_id,component_count,uses_market', [
+    ('archived_market_v8', 39, 2, True),
+    ('archived_market_v8', 40, 2, False),
+    ('archived_market_v8', 39, 1, False),
+    ('research_v8', 39, 2, False),
+])
+def test_market_variant_uses_v8_cutoff_only_on_supported_forecasts(
+        monkeypatch, variant, league_id, component_count, uses_market):
+    import archived_market_forecast
+    import research_ensemble_v8
+
+    target = fixture()
+    target['competition']['id'] = league_id
+    cutoff = '2026-01-15T08:00:00+00:00'
+    source = {'component_count': component_count, 'evidence': {'forecast_as_of': cutoff}}
+    adjusted = {**source, 'market_used': True}
+    calls = []
+
+    def apply_market(match, base, *, now):
+        calls.append((match, base, now))
+        return adjusted
+
+    monkeypatch.setattr(research_ensemble_v8, 'predict', lambda *args, **kwargs: source)
+    monkeypatch.setattr(archived_market_forecast, 'adjust_forecast', apply_market)
+
+    result = predict(target, [], variant=variant)
+
+    assert calls == ([(target, source, cutoff)] if uses_market else [])
+    assert result is (adjusted if uses_market else source)
 
 
 def test_team_only_history_is_not_mislabeled_full_league_population():

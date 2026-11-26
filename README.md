@@ -45,6 +45,7 @@ to the live numerical model. See [10 AI + Sportmonks setup guide](
 TEN_AI_AND_SPORTMONKS_SETUP.md) for secure configuration and cost limits.
 
 ## Features
+- Daily predictions in the Premier League, La Liga, Bundesliga, Serie A and Ligue 1 use a bounded market adjustment when verified saved 1X2 and over/under 2.5 prices are available. In a matched 2024–25 replay, top-five exact-score hits increased from 813 to 835 across 1,674 matches. [Replay and source details](docs/market-odds-replay.md)
 - Upcoming real fixtures from football-data.org competitions accessible to your key
 - Recent and venue-weighted attacking/defensive rates, Poisson exact-score probability matrix
 - Ten exact-score candidates per match, 1X2 probabilities, context-aware narrative

@@ -17,6 +17,8 @@ PROMOTION_STATUS = 'v6_retained_after_exact_score_validation'
 PROMOTION_EVIDENCE = {'paired_matches': 1385, 'v6_exact_hits': 163, 'v7_exact_hits': 157,
                       'sample': 'Independent five-league 2026 provider replay; separate from live archive',
                       'evidence_protocol': 'legacy kickoff-only historical replay, before shared-evidence-v1'}
+# API-Football IDs for the five leagues covered by the market replay.
+MARKET_REPLAY_LEAGUES = {'39', '61', '78', '135', '140'}
 
 
 def _summary(result):
@@ -28,18 +30,22 @@ def _summary(result):
 
 
 def predict(fixture, history, max_goals=10, variant='baseline', league_history=None):
-    """Retain validated v6 live scores; expose fitted v7 as an explicit comparison.
+    """Dispatch to the requested model using the available pre-match evidence.
 
     A full league population is needed for fitting opponent ratings. Team-only
     histories retain a clearly disclosed v6 fallback rather than manufactured
     league evidence. Original saved predictions are never modified here.
     """
-    if variant == 'research_v8':
-        # Explicit experimental opt-in. The original default and immutable
-        # pre-kickoff forecasts remain unchanged; no vendor AI is called.
+    if variant in ('research_v8', 'archived_market_v8'):
         from research_ensemble_v8 import predict as predict_research_v8
-        return predict_research_v8(fixture, history, league_history=league_history,
-                                   max_goals=max_goals)
+        result = predict_research_v8(fixture, history, league_history=league_history,
+                                     max_goals=max_goals)
+        if (result is None or variant == 'research_v8' or result['component_count'] < 2
+                or fixture.get('provider') != 'API-Football'
+                or str((fixture.get('competition') or {}).get('id')) not in MARKET_REPLAY_LEAGUES):
+            return result
+        from archived_market_forecast import adjust_forecast
+        return adjust_forecast(fixture, result, now=result['evidence']['forecast_as_of'])
     if variant not in ('baseline', 'reference_v7'):
         return legacy.predict(fixture, history, max_goals=max_goals,
                               variant=variant, league_history=league_history)
