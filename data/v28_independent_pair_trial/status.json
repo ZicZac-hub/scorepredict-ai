@@ -1,27 +1,26 @@
 {
   "forecast_production_model_modified": false,
   "freeze": {
-    "created": [],
-    "no_live_model_change": true,
-    "not_frozen_inspected": [
+    "created": [
       {
-        "eligible_fixtures": 2,
-        "state": "not_frozen_retry_when_new_sources_available",
-        "sydney_day": "2026-11-28"
+        "day": "2026-11-28",
+        "eligible_pairs": 28,
+        "policy": "FROZEN"
       }
     ],
+    "no_live_model_change": true,
+    "not_frozen_inspected": [],
     "skipped": {
-      "already_frozen_day": 1,
-      "insufficient_eligible_fixtures_retry_later": 1
+      "already_frozen_day": 1
     },
     "source_ineligibility": {
-      "invalid_source_time": 220,
+      "invalid_source_time": 226,
       "not_original_v8_model": 912,
-      "outside_research_freeze_window": 236
+      "outside_research_freeze_window": 218
     },
     "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
-  "generated_at_utc": "2026-11-26T19:39:15.047207+00:00",
+  "generated_at_utc": "2026-11-26T20:29:27.549261+00:00",
   "no_additional_provider_or_llm_calls": true,
   "original_v8_v25_v26_v27_forecasts_changed": false,
   "prospective_accuracy_improvement_not_established": true,
@@ -37,15 +36,15 @@
     "control_only_wins": 0,
     "different_pair_days": 0,
     "do_not_treat_pending_as_losses": true,
-    "evaluated_at_utc": "2026-11-26T19:39:16.472542+00:00",
+    "evaluated_at_utc": "2026-11-26T20:29:29.370208+00:00",
     "exact_paired_test_two_sided_p": null,
     "excluded_invalid_or_tampered_files": {},
     "initial_review_ready": false,
     "initial_verified_day_review_target": 100,
     "invalid_verified_final_evidence": {},
     "no_promotion_to_live_model": true,
-    "original_frozen_decisions": 6,
-    "pending_days": 1,
+    "original_frozen_decisions": 7,
+    "pending_days": 2,
     "quality_hit_rate": 0.0,
     "quality_hit_wilson_95": [
       0.0,
@@ -288,6 +287,37 @@
         "same_pre_match_cutoff_for_both_arms": true,
         "status": "pending",
         "sydney_day": "2026-11-27",
+        "verified_control": false,
+        "verified_quality": false
+      },
+      {
+        "all_qualified_four_team_pairs": 28,
+        "control_pair": [
+          [
+            "API-Football",
+            "1550216"
+          ],
+          [
+            "API-Football",
+            "1575551"
+          ]
+        ],
+        "eligible_fixtures": 8,
+        "policy": "FROZEN",
+        "quality_pair": [
+          [
+            "API-Football",
+            "1550216"
+          ],
+          [
+            "API-Football",
+            "1557485"
+          ]
+        ],
+        "same_fixture_pair": false,
+        "same_pre_match_cutoff_for_both_arms": true,
+        "status": "pending",
+        "sydney_day": "2026-11-28",
         "verified_control": false,
         "verified_quality": false
       }
