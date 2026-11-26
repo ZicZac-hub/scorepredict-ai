@@ -12,12 +12,24 @@ import requests
 from v42_research_trial import main, ROOT, PAIR_ROOT, SOURCE_ROOT, _pair, utc, PROTOCOL
 from persist_prematch import write_json
 
+def advisory_configuration(*, use_ai=True):
+    """Expose configuration separately from API outcomes, never the key."""
+    enabled=os.getenv("V42_AI_RESEARCH_ENABLED","").strip().lower() in ("1","true","yes")
+    key_present=bool(os.getenv("OPENAI_API_KEY","").strip())
+    return {"enabled":enabled,"key_present":key_present,
+            "attempt_allowed":bool(use_ai and enabled and key_present),
+            "reason":("no_ai_trigger" if not use_ai else
+                      "disabled_by_configuration" if not enabled else
+                      "missing_key" if not key_present else "eligible_for_daily_attempt")}
+
+
 def advisory(report, root=ROOT):
-    if os.getenv("V42_AI_RESEARCH_ENABLED","").lower() not in ("1","true","yes"):
+    config=advisory_configuration()
+    if not config["enabled"]:
         return "disabled"
-    key=os.getenv("OPENAI_API_KEY","")
-    if not key:
+    if not config["key_present"]:
         return "missing_key"
+    key=os.getenv("OPENAI_API_KEY","").strip()
     day=datetime.now(timezone.utc).date().isoformat()
     receipt=Path(root)/("ai_attempt_"+day+".json")
     receipt.parent.mkdir(parents=True,exist_ok=True)
@@ -149,7 +161,8 @@ def tick(*, use_ai=True):
                 "paired_data":e["lineup_coverage"],"evidence_coverage":coverage,
                 "decision_windows":window_diagnostics(now=clock),
                 "ai_mode":"configured_advisory" if use_ai else "no_ai_smoke",
-                "ai":advisory(report) if use_ai else "disabled",
+                "ai":advisory(report) if use_ai else "skipped_no_ai_trigger",
+                "ai_configuration":advisory_configuration(use_ai=use_ai),
                 "ai_evidence":advisory_evidence(),
                 "auto_promotes":False,"auto_edits_code":False}
     except Exception as exc:

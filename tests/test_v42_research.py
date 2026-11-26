@@ -59,3 +59,36 @@ def test_watchdog_empty_archive_is_not_a_failed_or_missing_pair():
     summary = evidence_coverage({"valid_opportunities": 0, "rows": [],
         "lineup_coverage": {"both_matches_confirmed_at_decision": 0}})
     assert summary["xg"] == summary["market"] == {"used": 0, "not_used": 0, "unknown": 0}
+
+
+@pytest.mark.parametrize("enabled,key,use_ai,reason,allowed",[
+    ("true","synthetic",False,"no_ai_trigger",False),
+    ("false","synthetic",True,"disabled_by_configuration",False),
+    ("true","   ",True,"missing_key",False),
+    (" TRUE ","synthetic",True,"eligible_for_daily_attempt",True),
+])
+def test_advisory_configuration_is_sanitized_and_distinguishes_skip(
+        monkeypatch,enabled,key,use_ai,reason,allowed):
+    import json
+    from v42_research_bot import advisory_configuration
+    monkeypatch.setenv("V42_AI_RESEARCH_ENABLED",enabled)
+    monkeypatch.setenv("OPENAI_API_KEY",key)
+    state=advisory_configuration(use_ai=use_ai)
+    assert state["reason"]==reason
+    assert state["attempt_allowed"] is allowed
+    assert state["key_present"] is bool(key.strip())
+    assert "synthetic" not in json.dumps(state)
+
+
+def test_advisory_missing_or_disabled_does_not_request(monkeypatch,tmp_path):
+    import v42_research_bot as bot
+    def forbidden(*a,**k):
+        pytest.fail("unexpected paid request")
+    monkeypatch.setattr(bot.requests,"post",forbidden)
+    monkeypatch.setenv("V42_AI_RESEARCH_ENABLED","true")
+    monkeypatch.setenv("OPENAI_API_KEY"," ")
+    assert bot.advisory({},root=tmp_path)=="missing_key"
+    monkeypatch.setenv("V42_AI_RESEARCH_ENABLED","false")
+    monkeypatch.setenv("OPENAI_API_KEY","synthetic")
+    assert bot.advisory({},root=tmp_path)=="disabled"
+    assert list(tmp_path.iterdir())==[]
