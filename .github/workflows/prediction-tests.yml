@@ -57,6 +57,11 @@ jobs:
         run: |
           python v28_independent_pair_trial.py --verify-only
           python -c 'import json; r=json.load(open("data/v28_independent_pair_trial/status.json")); assert not r["forecast_production_model_modified"]; assert r["original_v8_v25_v26_v27_forecasts_changed"] is False; print("V28 verified matched policy days:",r["verified_comparison"]["verified_paired_days"], "new future-only decisions:",r["verified_comparison"]["original_frozen_decisions"])'
+      - name: Regrade Final Five Doubles without issuing new selections
+        run: |
+          python final_five_doubles.py --verify-only
+          git status --porcelain --untracked-files=all -- data/final_five_doubles/decisions/ > /tmp/final-five-doubles-decision-changes
+          test ! -s /tmp/final-five-doubles-decision-changes
       - name: Verify source-frozen V25 anchored probability challenger without issuing predictions
         run: |
           python -m unittest -q test_v25_anchored_challenger.py

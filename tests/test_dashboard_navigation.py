@@ -97,6 +97,7 @@ def test_pwa_deep_link_selects_doubles_mode(offline_app, mode, label):
     offline_app.query_params['mode'] = [mode]
     app = offline_app.run()
     _assert_page(app, 'doubles', 'Five Score Doubles')
+    assert any(item.value == 'Final Five Doubles' for item in app.subheader)
     assert app.radio(key='smart_double_mode').value == label
     assert 'studio_auto' not in _buttons(app)
 
@@ -129,6 +130,7 @@ def test_ai_five_button_opens_fast_studio_and_generates_five_no_cost_doubles(off
     app=offline_app.run()
     app.button(key="zz_route_ai_five").click().run()
     _assert_page(app,"ai_five","AI Five-Double Studio")
+    assert any(item.value == 'Final Five Doubles' for item in app.subheader)
     assert _param(app,"view")=="ai_five"
     assert "ziczac_ai_five_run" in _buttons(app)
     assert "zz_ai_five_live_feed" in {x.key for x in app.toggle}
@@ -136,7 +138,7 @@ def test_ai_five_button_opens_fast_studio_and_generates_five_no_cost_doubles(off
 
     app.button(key="ziczac_ai_five_run").click().run()
     assert not app.exception
-    assert any("Final five exact-score doubles" in x.value for x in app.markdown)
+    assert any("Five exact-score doubles for research" in x.value for x in app.markdown)
 
 
 def test_pro_provider_works_without_primary_key_or_catalog(offline_app, monkeypatch):
