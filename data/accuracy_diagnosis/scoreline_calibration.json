@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2204534510420055,
-          "expected_events": 41.0134804157974,
-          "observed_events": 39,
-          "observed_rate": 0.34210526315789475,
-          "predicted_rate": 0.35976737206839826,
-          "rate_gap_observed_minus_predicted": -0.017662108910503536
+          "brier": 0.22317152678944857,
+          "expected_events": 42.011810022661095,
+          "observed_events": 40,
+          "observed_rate": 0.3418803418803419,
+          "predicted_rate": 0.35907529933898374,
+          "rate_gap_observed_minus_predicted": -0.017194957458641837
         },
         "exact_0_3": {
-          "brier": 0.01725175490128974,
-          "expected_events": 2.4914115403302004,
+          "brier": 0.016815296676948917,
+          "expected_events": 2.528401168222811,
           "observed_events": 2,
-          "observed_rate": 0.017543859649122806,
-          "predicted_rate": 0.02185448719587895,
-          "rate_gap_observed_minus_predicted": -0.004310627546756144
+          "observed_rate": 0.017094017094017096,
+          "predicted_rate": 0.02161026639506676,
+          "rate_gap_observed_minus_predicted": -0.004516249301049666
         },
         "exact_3_0": {
-          "brier": 0.04194937765850781,
-          "expected_events": 4.779491412566931,
+          "brier": 0.041000317941964834,
+          "expected_events": 4.97339779791866,
           "observed_events": 5,
-          "observed_rate": 0.043859649122807015,
-          "predicted_rate": 0.041925363268130976,
-          "rate_gap_observed_minus_predicted": 0.001934285854676044
+          "observed_rate": 0.042735042735042736,
+          "predicted_rate": 0.04250767348648428,
+          "rate_gap_observed_minus_predicted": 0.00022736924855845878
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18524784495457983,
-          "expected_events": 20.288225603141047,
+          "brier": 0.18197775038865305,
+          "expected_events": 20.950772571146477,
           "observed_events": 27,
-          "observed_rate": 0.23684210526315788,
-          "predicted_rate": 0.17796689125562323,
-          "rate_gap_observed_minus_predicted": 0.058875214007534676
+          "observed_rate": 0.23076923076923078,
+          "predicted_rate": 0.17906643223202118,
+          "rate_gap_observed_minus_predicted": 0.051702798537209604
         }
       },
-      "verified_fixtures": 114
+      "verified_fixtures": 117
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22330333402826227,
-          "expected_events": 37.82635196019756,
-          "observed_events": 35,
-          "observed_rate": 0.330188679245283,
-          "predicted_rate": 0.3568523769829959,
-          "rate_gap_observed_minus_predicted": -0.02666369773771286
+          "brier": 0.22614246442727207,
+          "expected_events": 38.824681567061255,
+          "observed_events": 36,
+          "observed_rate": 0.3302752293577982,
+          "predicted_rate": 0.35618973914735097,
+          "rate_gap_observed_minus_predicted": -0.025914509789552797
         },
         "exact_0_3": {
-          "brier": 0.009801612565193168,
-          "expected_events": 2.2796949800619473,
+          "brier": 0.009538170498774944,
+          "expected_events": 2.3166846079545578,
           "observed_events": 1,
-          "observed_rate": 0.009433962264150943,
-          "predicted_rate": 0.021506556415678748,
-          "rate_gap_observed_minus_predicted": -0.012072594151527805
+          "observed_rate": 0.009174311926605505,
+          "predicted_rate": 0.021253987228940896,
+          "rate_gap_observed_minus_predicted": -0.012079675302335393
         },
         "exact_3_0": {
-          "brier": 0.04490770892593202,
-          "expected_events": 4.432421416988386,
+          "brier": 0.04380757148888798,
+          "expected_events": 4.626327802340115,
           "observed_events": 5,
-          "observed_rate": 0.04716981132075472,
-          "predicted_rate": 0.04181529638668288,
-          "rate_gap_observed_minus_predicted": 0.005354514934071832
+          "observed_rate": 0.045871559633027525,
+          "predicted_rate": 0.04244337433339555,
+          "rate_gap_observed_minus_predicted": 0.003428185299631972
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18831227663416766,
-          "expected_events": 18.598709350214925,
+          "brier": 0.18471783297130348,
+          "expected_events": 19.261256318220358,
           "observed_events": 26,
-          "observed_rate": 0.24528301886792453,
-          "predicted_rate": 0.1754595221718389,
-          "rate_gap_observed_minus_predicted": 0.06982349669608562
+          "observed_rate": 0.23853211009174313,
+          "predicted_rate": 0.17670877356165465,
+          "rate_gap_observed_minus_predicted": 0.06182333653008846
         }
       },
-      "verified_fixtures": 106
+      "verified_fixtures": 109
     }
   },
   "focus": {
@@ -3545,6 +3545,93 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "0-0",
+        "captured_at_utc": "2026-11-14T02:30:13.891843+00:00",
+        "fixture_id": "1636261",
+        "fixture_name": "Ferencvarosi TC vs Celje",
+        "forecast_id": "1f70a0076e3528413e749f44ff00730ec658c5291773be0bc291a0309a8add37",
+        "kickoff_utc": "2026-11-26T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.027853174551023666,
+          "actual_exact_score_rank_min": 14,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.4826559417004913
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0051515400988681
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.07920084643630174
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.32028978353224447
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-0",
+        "captured_at_utc": "2026-11-14T02:30:13.927258+00:00",
+        "fixture_id": "1636294",
+        "fixture_name": "Lyon vs Lillestrom",
+        "forecast_id": "82f329c203dabed3a95caa2c827715bf2f91e7f8563fc4f57cc19b5a1fa5faff",
+        "kickoff_utc": "2026-11-26T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0571357954330466,
+          "actual_exact_score_rank_min": 7,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.3186988736442175
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.007079299177089767
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0886312903213168
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.2485460807434472
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-3",
+        "captured_at_utc": "2026-11-14T02:30:13.962188+00:00",
+        "fixture_id": "1636305",
+        "fixture_name": "OFI vs Anderlecht",
+        "forecast_id": "eb9e10df068bcf6b4b30966e5924e95e6bd0c9c1e6c6ec4c491db758d563dd4a",
+        "kickoff_utc": "2026-11-26T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.028405928249932995,
+          "actual_exact_score_rank_min": 11,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.19697479151898684
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.024758788616652355
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.026074248594110817
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.09371110372973936
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "4-0",
         "captured_at_utc": "2026-11-14T02:30:13.820712+00:00",
         "fixture_id": "1636315",
@@ -6621,6 +6708,93 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "0-0",
+        "captured_at_utc": "2026-11-24T20:03:01.597791+00:00",
+        "fixture_id": "1636261",
+        "fixture_name": "Ferencvarosi TC vs Celje",
+        "forecast_id": "cf5c2295da5756c53ae31dc5fc9aaed3d13f49b561d6ecc366cd6c9b2a44859d",
+        "kickoff_utc": "2026-11-26T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.027853174551023666,
+          "actual_exact_score_rank_min": 14,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.4826559417004913
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0051515400988681
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.07920084643630174
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.32028978353224447
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "0-0",
+        "captured_at_utc": "2026-11-24T20:03:03.360559+00:00",
+        "fixture_id": "1636294",
+        "fixture_name": "Lyon vs Lillestrom",
+        "forecast_id": "f4b26a96fdba73ff00a76965c543d3d8819776988dd341148b4105265a9544e2",
+        "kickoff_utc": "2026-11-26T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.0571357954330466,
+          "actual_exact_score_rank_min": 7,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.3186988736442175
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.007079299177089767
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0886312903213168
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.2485460807434472
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-3",
+        "captured_at_utc": "2026-11-24T20:03:05.108613+00:00",
+        "fixture_id": "1636305",
+        "fixture_name": "OFI vs Anderlecht",
+        "forecast_id": "bf8c7ebda0105e51df17ba533af582aba2114e560bd4bbe56cdedfde85be9d49",
+        "kickoff_utc": "2026-11-26T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.028405928249932995,
+          "actual_exact_score_rank_min": 11,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.19697479151898684
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.024758788616652355
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.026074248594110817
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.09371110372973936
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "4-0",
         "captured_at_utc": "2026-11-24T20:02:58.141841+00:00",
         "fixture_id": "1636315",
@@ -6682,7 +6856,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-26T21:16:44.246263+00:00",
+  "result_cutoff_utc": "2026-11-26T23:23:53.275979+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
