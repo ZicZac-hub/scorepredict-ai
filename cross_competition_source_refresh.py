@@ -124,6 +124,105 @@ def discover_memberships(gaps, seasons, *, key, request, clock, can_spend):
             "research_only":True,"history_recovered":False}
 
 
+# Initial audit targets from authenticated capture_coverage.json,
+# 2026-11-26T09:02:35Z. Membership metadata is not score history.
+OBSERVED_MEMBERSHIPS = {2026: {1393:144, 3402:318, 637:218, 646:172}}
+
+
+def sparse_gap(fixture, evidence):
+    """Explain the existing V37 eligibility gate without changing it."""
+    import engine
+    from research_ensemble_v8 import _asof_history
+    from v37_sparse_history_research import (MIN_LEAGUE_GAMES, MIN_UNRELATED_GAMES,
+                                             MIN_TEAM_GAMES, V8_TEAM_MINIMUM)
+    cutoff=_date(evidence["as_of_utc"])
+    population=_asof_history(fixture,evidence["history"],cutoff)
+    h,a=fixture["homeTeam"]["id"],fixture["awayTeam"]["id"]
+    unrelated=sum(h not in (m["homeTeam"]["id"],m["awayTeam"]["id"]) and
+                  a not in (m["homeTeam"]["id"],m["awayTeam"]["id"]) for m in population)
+    hn,an=(len(engine._games(population,t,limit=10)) for t in (h,a))
+    if len(population)<MIN_LEAGUE_GAMES:
+        reason="league_history_below_minimum"
+    elif unrelated<MIN_UNRELATED_GAMES:
+        reason="unrelated_history_below_minimum"
+    elif min(hn,an)<MIN_TEAM_GAMES:
+        reason="team_history_below_minimum"
+    elif min(hn,an)>=V8_TEAM_MINIMUM:
+        reason="outside_sparse_band_not_a_data_shortage"
+    else:
+        reason="other_control_gate"
+    return {"reason":reason,"league_matches":len(population),
+            "unrelated_matches":unrelated,"home_matches":hn,"away_matches":an}
+
+
+def audit_discovered_history(eligible, gaps, *, key, request, clock, can_spend, loader):
+    """Collect at most one known new league's two seasons, in an isolated cache."""
+    tasks={}
+    for kickoff,fid,fixture,_ in eligible:
+        if gaps.get(fid,{}).get("unavailable_groups")!=[]:
+            continue
+        season=season_year(fixture)
+        for side in ("home","away"):
+            item=gaps[fid].get(side,{})
+            team=str(item.get("team_id",""))
+            if not team.isdecimal() or item.get("reason")!="no_membership_in_qualified_supported_leagues":
+                continue
+            league=OBSERVED_MEMBERSHIPS.get(season,{}).get(int(team))
+            if league is not None:
+                tasks.setdefault((season,league),[]).append((kickoff,fixture,side,int(team)))
+    report={"candidate_groups":len(tasks),"attempted_groups":0,"results":{},
+            "research_only":True,"model_inputs_changed":False}
+    if not tasks or not can_spend(2):
+        return report
+    order=sorted(tasks)
+    offset=int(_date(clock()).timestamp()//21600)%len(order)
+    season,league=order[offset]
+    entries=tasks[(season,league)]
+    if not any(k>_date(clock())+timedelta(minutes=5) for k,_,_,_ in entries):
+        return report
+    report["attempted_groups"]=1
+    result={"source_states":{},"teams":[]}
+    report["results"][str(season)+":"+str(league)]=result
+    isolated={}
+    proxy={**entries[0][1],"competition":{"id":league,"code":"API-"+str(league),"season":season}}
+    try:
+        loader(proxy,as_of=_date(clock()),api_key=key,api_request=request,cache=isolated)
+        cutoff=_date(clock())
+        qualified={}
+        for year in (season,season-1):
+            rows,meta,error=isolated.get(("API-Football",str(league),year),([],{},True))
+            if (error or meta.get("freshness_known") is not True or meta.get("stale") is not False
+                    or _date(meta["fetched_at_utc"])>cutoff):
+                result["source_states"][str(year)]="unqualified"
+                continue
+            year_proxy={**proxy,"competition":{**proxy["competition"],"season":year}}
+            qualified[year]=[m for m in build_evidence(year_proxy,rows,cutoff)["history"]
+                             if season_year(m)==year]
+            result["source_states"][str(year)]="qualified" if qualified[year] else "qualified_empty"
+        if len(qualified)!=2:
+            return report
+        rows=qualified[season]+qualified[season-1]
+        ids=[str(m.get("id")) for m in rows]
+        for kickoff,fixture,side,team in entries:
+            if cutoff>=kickoff:
+                continue
+            def contains(m):
+                return str(team) in (str(m["homeTeam"]["id"]),str(m["awayTeam"]["id"]))
+            games=[m for m in rows if contains(m)]
+            venue=[m for m in games if str(m[side+"Team"]["id"])==str(team)]
+            current=any(contains(m) for m in qualified[season])
+            valid_ids=all(m.get("id") is not None for m in rows) and len(ids)==len(set(ids))
+            ready=(current and valid_ids and len(rows)>=MIN_LEAGUE and
+                   len(games)>=MIN_TEAM and len(venue)>=MIN_VENUE)
+            result["teams"].append({"team_id":team,"fixture_id":str(fixture["id"]),
+                "current_membership_observed":current,"league_matches":len(rows),
+                "team_matches":len(games),"venue_matches":len(venue),
+                "history_counts_qualified":ready})
+    except (ValueError,TypeError,KeyError,AttributeError,OverflowError,RuntimeError,OSError):
+        result["error"]="unqualified_or_unavailable_history"
+    return report
+
+
 def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
             time_available, extra_limit=0, root=ROOT,
             loader=load_evidence, recorder=freeze, sparse_predict=predict):
@@ -132,7 +231,7 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
     report = {"extra_call_limit": cap, "extra_adapter_calls": 0,
               "eligible_fixtures": 0, "attempted_fixtures": 0,
               "outcomes": {}, "source_groups": {}, "source_group_states": {},
-              "domestic_retry_entries": 0, "domestic_context_gaps": {},
+              "domestic_retry_entries": 0, "domestic_context_gaps": {}, "sparse_context_gaps": {},
               "no_live_model_change": True}
     outcomes = Counter()
 
@@ -221,6 +320,10 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
                 continue
             if sparse_predict(fixture,evidence["history"],as_of=evidence["as_of_utc"]) is None:
                 outcomes["sparse_control_unavailable"]+=1
+                try:
+                    report["sparse_context_gaps"][fid]=sparse_gap(fixture,evidence)
+                except (KeyError,ValueError,TypeError,AttributeError,OverflowError):
+                    report["sparse_context_gaps"][fid]={"reason":"diagnostic_unavailable"}
                 continue
             eligible.append((kickoff,fid,fixture,evidence))
         except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
@@ -258,6 +361,9 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
                     report["domestic_context_gaps"][fid]={"reason":"diagnostic_unavailable"}
         except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
             outcomes["receipt_error"]+=1
+    report["new_league_history_audit"]=audit_discovered_history(
+        eligible,report["domestic_context_gaps"],key=key,request=bounded_request,
+        clock=clock,can_spend=can_spend,loader=loader)
     report["domestic_membership_discovery"]=discover_memberships(
         report["domestic_context_gaps"],
         {fid:season_year(fixture) for _,fid,fixture,_ in eligible},
