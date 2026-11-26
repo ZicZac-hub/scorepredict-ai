@@ -4,7 +4,7 @@
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-26T17:16:24.796788+00:00",
+  "last_run_utc": "2026-11-26T18:11:22.581220+00:00",
   "next_priority": "Investigate league-specific authenticated V8 history shortfalls before changing score distributions; preserve the existing minimums and prospectively frozen tickets.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
@@ -17,17 +17,17 @@
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 52.7,
+    "age_minutes": 41.5,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-26T16:23:40.213298+00:00",
+    "collector_started_at_utc": "2026-11-26T17:29:50.267727+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 12,
+    "processed_fixtures": 15,
     "producer_api_budget_unchanged": true,
     "uefa_fixtures_one_qualified_match_short": 12,
     "uefa_history_audit_available": true,
-    "uefa_history_fixture_observations": 12,
+    "uefa_history_fixture_observations": 15,
     "uefa_history_season_source_states": {
-      "rows_returned": 24
+      "rows_returned": 30
     },
     "v37_sparse_saved": 0,
     "v37_sparse_saved_by_league": {},
@@ -62,8 +62,10 @@
         "3-4": 12
       }
     },
-    "v8_saved": 0,
-    "v8_saved_by_league": {},
+    "v8_saved": 3,
+    "v8_saved_by_league": {
+      "EL": 3
+    },
     "v8_source_errors": 0
   },
   "target_five_double_hit_rate": 0.7,
@@ -73,9 +75,9 @@
     "original_frozen_decisions": 6,
     "pending_days": 1,
     "source_ineligibility": {
-      "invalid_source_time": 214,
-      "not_original_v8_model": 892,
-      "outside_research_freeze_window": 239
+      "invalid_source_time": 220,
+      "not_original_v8_model": 898,
+      "outside_research_freeze_window": 233
     },
     "verified_paired_days": 5
   },
@@ -288,15 +290,17 @@
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-26T16:27:18.525816+00:00",
-    "evaluated_at_utc": "2026-11-26T16:27:18.525847+00:00",
+    "capture_at_utc": "2026-11-26T17:32:41.283624+00:00",
+    "evaluated_at_utc": "2026-11-26T17:32:41.283742+00:00",
     "hits": 0,
-    "issued": 1,
+    "issued": 2,
     "minimum_review_pairs": 100,
-    "new_trials": [],
+    "new_trials": [
+      "2026-11-27"
+    ],
     "observed_hit_rate": 0.0,
-    "outside_decision_window": 17,
-    "pending": 0,
+    "outside_decision_window": 16,
+    "pending": 1,
     "report_available": true,
     "research_only": true,
     "same_pair_comparison": {
