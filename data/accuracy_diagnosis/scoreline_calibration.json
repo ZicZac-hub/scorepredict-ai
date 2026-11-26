@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22195986897662764,
-          "expected_events": 39.5651933044623,
+          "brier": 0.22049085705874127,
+          "expected_events": 39.8078855913015,
           "observed_events": 38,
-          "observed_rate": 0.34545454545454546,
-          "predicted_rate": 0.3596835754951118,
-          "rate_gap_observed_minus_predicted": -0.014229030040566344
+          "observed_rate": 0.34234234234234234,
+          "predicted_rate": 0.3586295999216351,
+          "rate_gap_observed_minus_predicted": -0.016287257579292783
         },
         "exact_0_3": {
-          "brier": 0.01784080599199469,
-          "expected_events": 2.4043101807536207,
+          "brier": 0.017681312696135914,
+          "expected_events": 2.416017022841499,
           "observed_events": 2,
-          "observed_rate": 0.01818181818181818,
-          "predicted_rate": 0.02185736527957837,
-          "rate_gap_observed_minus_predicted": -0.003675547097760188
+          "observed_rate": 0.018018018018018018,
+          "predicted_rate": 0.021765919124698187,
+          "rate_gap_observed_minus_predicted": -0.0037479011066801713
         },
         "exact_3_0": {
-          "brier": 0.04331176938634975,
-          "expected_events": 4.550404459220741,
+          "brier": 0.04294455009813035,
+          "expected_events": 4.600906225467041,
           "observed_events": 5,
-          "observed_rate": 0.045454545454545456,
-          "predicted_rate": 0.0413673132656431,
-          "rate_gap_observed_minus_predicted": 0.004087232188902355
+          "observed_rate": 0.04504504504504504,
+          "predicted_rate": 0.0414496056348382,
+          "rate_gap_observed_minus_predicted": 0.00359543941020684
         },
         "winning_margin_at_least_three": {
-          "brier": 0.1849835656984653,
-          "expected_events": 19.388595910348215,
+          "brier": 0.18347245456725497,
+          "expected_events": 19.519936041816532,
           "observed_events": 26,
-          "observed_rate": 0.23636363636363636,
-          "predicted_rate": 0.1762599628213474,
-          "rate_gap_observed_minus_predicted": 0.06010367354228895
+          "observed_rate": 0.23423423423423423,
+          "predicted_rate": 0.17585527965600478,
+          "rate_gap_observed_minus_predicted": 0.05837895457822944
         }
       },
-      "verified_fixtures": 110
+      "verified_fixtures": 111
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22503966250623741,
-          "expected_events": 36.37806484886246,
+          "brier": 0.2234266516672569,
+          "expected_events": 36.62075713570166,
           "observed_events": 34,
-          "observed_rate": 0.3333333333333333,
-          "predicted_rate": 0.35664769459669077,
-          "rate_gap_observed_minus_predicted": -0.02331436126335743
+          "observed_rate": 0.3300970873786408,
+          "predicted_rate": 0.3555413314145792,
+          "rate_gap_observed_minus_predicted": -0.025444244035938438
         },
         "exact_0_3": {
-          "brier": 0.0101447012968908,
-          "expected_events": 2.1925936204853675,
+          "brier": 0.010047539635286718,
+          "expected_events": 2.204300462573246,
           "observed_events": 1,
-          "observed_rate": 0.00980392156862745,
-          "predicted_rate": 0.021496015887111447,
-          "rate_gap_observed_minus_predicted": -0.011692094318483996
+          "observed_rate": 0.009708737864077669,
+          "predicted_rate": 0.021400975364788796,
+          "rate_gap_observed_minus_predicted": -0.011692237500711125
         },
         "exact_3_0": {
-          "brier": 0.04649296789781742,
-          "expected_events": 4.203334463642196,
+          "brier": 0.046066341300692946,
+          "expected_events": 4.2538362298884955,
           "observed_events": 5,
-          "observed_rate": 0.049019607843137254,
-          "predicted_rate": 0.04120916140825682,
-          "rate_gap_observed_minus_predicted": 0.007810446434880435
+          "observed_rate": 0.04854368932038835,
+          "predicted_rate": 0.04129938087270384,
+          "rate_gap_observed_minus_predicted": 0.00724430844768451
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18814744338461628,
-          "expected_events": 17.699079657422097,
+          "brier": 0.18648824713946577,
+          "expected_events": 17.830419788890413,
           "observed_events": 25,
-          "observed_rate": 0.24509803921568626,
-          "predicted_rate": 0.17352038879825585,
-          "rate_gap_observed_minus_predicted": 0.07157765041743043
+          "observed_rate": 0.24271844660194175,
+          "predicted_rate": 0.17311087173680012,
+          "rate_gap_observed_minus_predicted": 0.06960757486514162
         }
       },
-      "verified_fixtures": 102
+      "verified_fixtures": 103
     }
   },
   "focus": {
@@ -640,6 +640,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.17270177125455816
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-1",
+        "captured_at_utc": "2026-11-24T23:14:45.699207+00:00",
+        "fixture_id": "1492461",
+        "fixture_name": "Atletico-MG vs Corinthians",
+        "forecast_id": "fb457a9d278cec89f42abb81a4db8c8c90fc34868acdbfa6240465b67f598841",
+        "kickoff_utc": "2026-11-25T23:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.1222903677035398,
+          "actual_exact_score_rank_min": 2,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2426922868392003
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.011706842087878186
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05050176624630038
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.13134013146831586
           }
         },
         "provider": "API-Football"
@@ -3838,6 +3867,35 @@
       },
       {
         "actual_score": "1-1",
+        "captured_at_utc": "2026-11-24T05:59:32.000357+00:00",
+        "fixture_id": "1492461",
+        "fixture_name": "Atletico-MG vs Corinthians",
+        "forecast_id": "7bf5350abf23b0adc2a2a31ad6770e96e1a6c3849528af8620ca4d92f61a265b",
+        "kickoff_utc": "2026-11-25T23:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.1222903677035398,
+          "actual_exact_score_rank_min": 2,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2426922868392003
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.011706842087878186
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05050176624630038
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.13134013146831586
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-1",
         "captured_at_utc": "2026-11-22T20:04:09.593493+00:00",
         "fixture_id": "1492463",
         "fixture_name": "Botafogo vs Sao Paulo",
@@ -6450,7 +6508,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-25T23:15:50.460417+00:00",
+  "result_cutoff_utc": "2026-11-26T03:21:16.576485+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
