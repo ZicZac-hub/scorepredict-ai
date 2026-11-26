@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-26T21:40:42.793434+00:00",
+  "evaluated_at_utc": "2026-11-26T22:45:30.582814+00:00",
   "external_requests": 0,
   "invalid_opportunities": 0,
   "limitations": [
@@ -23,15 +23,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6473244244642089,
-      "pending": 1,
-      "set_brier_descriptive": 0.0061029249397646455,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.2788283686449553,
-      "verified": 1,
+      "outcome_brier": 0.5056316209382172,
+      "pending": 0,
+      "set_brier_descriptive": 0.006492553550761702,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 3.136446113656669,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     },
     "poisson_marginal": {
@@ -41,15 +41,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6494020963903047,
-      "pending": 1,
-      "set_brier_descriptive": 0.00609022897481392,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.2836083555316495,
-      "verified": 1,
+      "outcome_brier": 0.5078849296729044,
+      "pending": 0,
+      "set_brier_descriptive": 0.0064443489068064675,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 3.135241387743391,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     },
     "unified_core": {
@@ -59,15 +59,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6483259856482145,
-      "pending": 1,
-      "set_brier_descriptive": 0.005871687062676385,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.263969948471736,
-      "verified": 1,
+      "outcome_brier": 0.5060157909384146,
+      "pending": 0,
+      "set_brier_descriptive": 0.006232362508977059,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 3.132116245481409,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     },
     "unified_final": {
@@ -77,15 +77,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6483259856482145,
-      "pending": 1,
-      "set_brier_descriptive": 0.005871687062676385,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.263969948471736,
-      "verified": 1,
+      "outcome_brier": 0.4444037106274587,
+      "pending": 0,
+      "set_brier_descriptive": 0.0046167007848277155,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 2.9244190033635453,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     }
   },
@@ -99,123 +99,141 @@
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": -0.002077671926095759,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": -0.0022533087346871816,
+        "normal_95_interval": [
+          -0.00259755687952637,
+          -0.001909060589847993
+        ],
+        "sample_pairs": 2
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": -0.004779986886694232,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.0012047259132781374,
+        "normal_95_interval": [
+          -0.010525311174667705,
+          0.01293476300122398
+        ],
+        "sample_pairs": 2
       },
       "same_pair_metrics": {
         "baseline_v8": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6473244244642089,
-          "single_score_log_loss": 3.2788283686449553,
-          "verified_sets": 1,
+          "outcome_brier": 0.5056316209382172,
+          "single_score_log_loss": 3.136446113656669,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         },
         "poisson_marginal": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6494020963903047,
-          "single_score_log_loss": 3.2836083555316495,
-          "verified_sets": 1,
+          "outcome_brier": 0.5078849296729044,
+          "single_score_log_loss": 3.135241387743391,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         }
       },
-      "verified_common_pairs": 1
+      "verified_common_pairs": 2
     },
     "unified_core": {
       "baseline_only_set_wins": 0,
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": -0.0010015611840056282,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": -0.00038417000019747016,
+        "normal_95_interval": [
+          -0.0015942567204614599,
+          0.0008259167200665195
+        ],
+        "sample_pairs": 2
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": 0.014858420173219145,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.004329868175259932,
+        "normal_95_interval": [
+          -0.016306093740740123,
+          0.024965830091259987
+        ],
+        "sample_pairs": 2
       },
       "same_pair_metrics": {
         "baseline_v8": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6473244244642089,
-          "single_score_log_loss": 3.2788283686449553,
-          "verified_sets": 1,
+          "outcome_brier": 0.5056316209382172,
+          "single_score_log_loss": 3.136446113656669,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         },
         "unified_core": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6483259856482145,
-          "single_score_log_loss": 3.263969948471736,
-          "verified_sets": 1,
+          "outcome_brier": 0.5060157909384146,
+          "single_score_log_loss": 3.132116245481409,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         }
       },
-      "verified_common_pairs": 1
+      "verified_common_pairs": 2
     },
     "unified_final": {
       "baseline_only_set_wins": 0,
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": -0.0010015611840056282,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.0612279103107585,
+        "normal_95_interval": [
+          -0.06074185381897919,
+          0.18319767444049617
+        ],
+        "sample_pairs": 2
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": 0.014858420173219145,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.2120271102931235,
+        "normal_95_interval": [
+          -0.17442352234188901,
+          0.598477742928136
+        ],
+        "sample_pairs": 2
       },
       "same_pair_metrics": {
         "baseline_v8": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6473244244642089,
-          "single_score_log_loss": 3.2788283686449553,
-          "verified_sets": 1,
+          "outcome_brier": 0.5056316209382172,
+          "single_score_log_loss": 3.136446113656669,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         },
         "unified_final": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6483259856482145,
-          "single_score_log_loss": 3.263969948471736,
-          "verified_sets": 1,
+          "outcome_brier": 0.4444037106274587,
+          "single_score_log_loss": 2.9244190033635453,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         }
       },
-      "verified_common_pairs": 1
+      "verified_common_pairs": 2
     }
   },
-  "pending_opportunities": 1,
+  "pending_opportunities": 0,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -301,7 +319,10 @@
           2,
           1
         ],
-        null
+        [
+          1,
+          3
+        ]
       ],
       "lineup_context": [
         {
@@ -321,23 +342,47 @@
       ],
       "methods": {
         "baseline_v8": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.0829589185184978,
+            "hit": false,
+            "outcome_brier": 0.3639388174122255,
+            "score_log_loss": 2.9940638586683823,
+            "set_brier_descriptive": 0.006882182161758758
+          },
+          "status": "verified"
         },
         "poisson_marginal": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.08245282796119861,
+            "hit": false,
+            "outcome_brier": 0.3663677629555041,
+            "score_log_loss": 2.986874419955132,
+            "set_brier_descriptive": 0.006798468838799016
+          },
+          "status": "verified"
         },
         "unified_core": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.08119752431741828,
+            "hit": false,
+            "outcome_brier": 0.3637055962286148,
+            "score_log_loss": 3.0002625424910816,
+            "set_brier_descriptive": 0.006593037955277733
+          },
+          "status": "verified"
         },
         "unified_final": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.057980294126358536,
+            "hit": false,
+            "outcome_brier": 0.24048143560670288,
+            "score_log_loss": 2.5848680582553545,
+            "set_brier_descriptive": 0.003361714506979046
+          },
+          "status": "verified"
         }
       },
-      "status": "pending",
+      "status": "verified",
       "sydney_date": "2026-11-27",
       "unified_final_evidence": {
         "paired_market_used": true,
@@ -349,6 +394,6 @@
   "source_rejections": {},
   "target_70_percent_proven": false,
   "valid_opportunities": 2,
-  "verified_opportunities": 1,
+  "verified_opportunities": 2,
   "version": "v41-fixed-pair-unified-ensemble-v1"
 }

@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-26T21:40:42.458560+00:00",
+  "evaluated_at_utc": "2026-11-26T22:45:30.251592+00:00",
   "external_requests": 0,
   "incremental_xg_comparison": {
     "poisson_only_wins": 0,
@@ -39,15 +39,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6473244244642089,
-      "pending": 1,
-      "set_brier_descriptive": 0.0061029249397646455,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.2788283686449553,
-      "verified": 1,
+      "outcome_brier": 0.5056316209382172,
+      "pending": 0,
+      "set_brier_descriptive": 0.006492553550761702,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 3.136446113656669,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     },
     "conditional_margin_125": {
@@ -57,15 +57,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6471418753203266,
-      "pending": 1,
-      "set_brier_descriptive": 0.0061029249397646455,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.183792398303736,
-      "verified": 1,
+      "outcome_brier": 0.5038791412850226,
+      "pending": 0,
+      "set_brier_descriptive": 0.00649351960680536,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 3.1255453271367037,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     },
     "poisson_marginal": {
@@ -75,15 +75,15 @@
       "invalid_opportunities": 0,
       "issued": 2,
       "opportunities": 2,
-      "outcome_brier": 0.6494020963903047,
-      "pending": 1,
-      "set_brier_descriptive": 0.00609022897481392,
-      "single_fixtures_evaluated": 2,
-      "single_score_log_loss": 3.2836083555316495,
-      "verified": 1,
+      "outcome_brier": 0.5078849296729044,
+      "pending": 0,
+      "set_brier_descriptive": 0.0064443489068064675,
+      "single_fixtures_evaluated": 4,
+      "single_score_log_loss": 3.135241387743391,
+      "verified": 2,
       "wilson_95": [
         0.0,
-        0.7934506856227626
+        0.6576197724933469
       ]
     },
     "poisson_xg": {
@@ -125,80 +125,92 @@
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": 0.00018254914388227128,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.001752479653194583,
+        "normal_95_interval": [
+          -0.0013245841450575473,
+          0.004829543451446714
+        ],
+        "sample_pairs": 2
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": 0.09503597034121913,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.010900786519965067,
+        "normal_95_interval": [
+          -0.1540041737696929,
+          0.17580574680962302
+        ],
+        "sample_pairs": 2
       },
       "same_pair_metrics": {
         "baseline_v8": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6473244244642089,
-          "single_score_log_loss": 3.2788283686449553,
-          "verified_sets": 1,
+          "outcome_brier": 0.5056316209382172,
+          "single_score_log_loss": 3.136446113656669,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         },
         "conditional_margin_125": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6471418753203266,
-          "single_score_log_loss": 3.183792398303736,
-          "verified_sets": 1,
+          "outcome_brier": 0.5038791412850226,
+          "single_score_log_loss": 3.1255453271367037,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         }
       },
-      "verified_common_pairs": 1
+      "verified_common_pairs": 2
     },
     "poisson_marginal": {
       "baseline_only_set_wins": 0,
       "challenger_only_set_wins": 0,
       "positive_advantage_means_lower_challenger_loss": true,
       "proper_same_event_outcome_brier_advantage": {
-        "mean": -0.002077671926095759,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": -0.0022533087346871816,
+        "normal_95_interval": [
+          -0.00259755687952637,
+          -0.001909060589847993
+        ],
+        "sample_pairs": 2
       },
       "proper_same_event_score_log_loss_advantage": {
-        "mean": -0.004779986886694232,
-        "normal_95_interval": null,
-        "sample_pairs": 1
+        "mean": 0.0012047259132781374,
+        "normal_95_interval": [
+          -0.010525311174667705,
+          0.01293476300122398
+        ],
+        "sample_pairs": 2
       },
       "same_pair_metrics": {
         "baseline_v8": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6473244244642089,
-          "single_score_log_loss": 3.2788283686449553,
-          "verified_sets": 1,
+          "outcome_brier": 0.5056316209382172,
+          "single_score_log_loss": 3.136446113656669,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         },
         "poisson_marginal": {
           "hit_rate": 0.0,
           "hits": 0,
-          "outcome_brier": 0.6494020963903047,
-          "single_score_log_loss": 3.2836083555316495,
-          "verified_sets": 1,
+          "outcome_brier": 0.5078849296729044,
+          "single_score_log_loss": 3.135241387743391,
+          "verified_sets": 2,
           "wilson_95": [
             0.0,
-            0.7934506856227626
+            0.6576197724933469
           ]
         }
       },
-      "verified_common_pairs": 1
+      "verified_common_pairs": 2
     },
     "poisson_xg": {
       "baseline_only_set_wins": 0,
@@ -269,7 +281,7 @@
       "verified_common_pairs": 0
     }
   },
-  "pending_opportunities": 1,
+  "pending_opportunities": 0,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -349,7 +361,10 @@
           2,
           1
         ],
-        null
+        [
+          1,
+          3
+        ]
       ],
       "lineup_context": [
         {
@@ -369,16 +384,34 @@
       ],
       "methods": {
         "baseline_v8": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.0829589185184978,
+            "hit": false,
+            "outcome_brier": 0.3639388174122255,
+            "score_log_loss": 2.9940638586683823,
+            "set_brier_descriptive": 0.006882182161758758
+          },
+          "status": "verified"
         },
         "conditional_margin_125": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.08297056269452482,
+            "hit": false,
+            "outcome_brier": 0.3606164072497186,
+            "score_log_loss": 3.0672982559696713,
+            "set_brier_descriptive": 0.0068841142738460745
+          },
+          "status": "verified"
         },
         "poisson_marginal": {
-          "metrics": null,
-          "status": "pending"
+          "metrics": {
+            "estimated_coverage": 0.08245282796119861,
+            "hit": false,
+            "outcome_brier": 0.3663677629555041,
+            "score_log_loss": 2.986874419955132,
+            "set_brier_descriptive": 0.006798468838799016
+          },
+          "status": "verified"
         },
         "poisson_xg": {
           "metrics": null,
@@ -389,13 +422,13 @@
           "status": "abstained"
         }
       },
-      "status": "pending",
+      "status": "verified",
       "sydney_date": "2026-11-27"
     }
   ],
   "source_rejections": {},
   "target_70_percent_proven": false,
   "valid_opportunities": 2,
-  "verified_opportunities": 1,
+  "verified_opportunities": 2,
   "version": "v40-fixed-pair-poisson-xg-ablation-v1"
 }

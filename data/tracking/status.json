@@ -12,8 +12,8 @@
       "hit": 4,
       "hit_rate": 0.13333333333333333,
       "miss": 26,
-      "pending": 0,
-      "recorded": 30,
+      "pending": 1,
+      "recorded": 31,
       "verified": 30
     },
     "ai_groqcloud": {
@@ -28,91 +28,91 @@
       "hit": 1,
       "hit_rate": 0.1,
       "miss": 9,
-      "pending": 0,
-      "recorded": 10,
+      "pending": 1,
+      "recorded": 11,
       "verified": 10
     },
     "automatic_five_double": {
       "hit": 0,
       "hit_rate": 0.0,
-      "miss": 9,
-      "pending": 2,
+      "miss": 10,
+      "pending": 1,
       "recorded": 11,
-      "verified": 9
+      "verified": 10
     },
     "frozen_v10": {
       "hit": 17,
-      "hit_rate": 0.16037735849056603,
-      "miss": 89,
-      "pending": 17,
-      "recorded": 123,
-      "verified": 106
+      "hit_rate": 0.1559633027522936,
+      "miss": 92,
+      "pending": 18,
+      "recorded": 127,
+      "verified": 109
     },
     "frozen_v12": {
       "hit": 17,
-      "hit_rate": 0.15315315315315314,
-      "miss": 94,
-      "pending": 184,
-      "recorded": 295,
-      "verified": 111
+      "hit_rate": 0.14912280701754385,
+      "miss": 97,
+      "pending": 182,
+      "recorded": 296,
+      "verified": 114
     },
     "frozen_v13": {
       "hit": 16,
-      "hit_rate": 0.14414414414414414,
-      "miss": 95,
-      "pending": 184,
-      "recorded": 295,
-      "verified": 111
+      "hit_rate": 0.14035087719298245,
+      "miss": 98,
+      "pending": 182,
+      "recorded": 296,
+      "verified": 114
     },
     "frozen_v8": {
       "hit": 14,
-      "hit_rate": 0.12280701754385964,
-      "miss": 100,
-      "pending": 229,
+      "hit_rate": 0.11965811965811966,
+      "miss": 103,
+      "pending": 226,
       "recorded": 343,
-      "verified": 114
+      "verified": 117
     },
     "frozen_v8_control": {
       "hit": 9,
-      "hit_rate": 0.1232876712328767,
-      "miss": 64,
-      "pending": 17,
-      "recorded": 90,
-      "verified": 73
+      "hit_rate": 0.11842105263157894,
+      "miss": 67,
+      "pending": 18,
+      "recorded": 94,
+      "verified": 76
     },
     "frozen_v8_near": {
       "hit": 15,
-      "hit_rate": 0.14150943396226415,
-      "miss": 91,
-      "pending": 21,
-      "recorded": 127,
-      "verified": 106
+      "hit_rate": 0.13761467889908258,
+      "miss": 94,
+      "pending": 22,
+      "recorded": 131,
+      "verified": 109
     },
     "frozen_v9": {
       "hit": 19,
-      "hit_rate": 0.17592592592592593,
-      "miss": 89,
-      "pending": 17,
-      "recorded": 125,
-      "verified": 108
+      "hit_rate": 0.17117117117117117,
+      "miss": 92,
+      "pending": 18,
+      "recorded": 129,
+      "verified": 111
     },
     "website_original": {
       "hit": 13,
-      "hit_rate": 0.15476190476190477,
-      "miss": 71,
-      "pending": 186,
+      "hit_rate": 0.14942528735632185,
+      "miss": 74,
+      "pending": 183,
       "recorded": 270,
-      "verified": 84
+      "verified": 87
     }
   },
-  "checked_at_utc": "2026-11-26T21:40:57.813732+00:00",
+  "checked_at_utc": "2026-11-26T22:45:45.699135+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
-    "miss": 9,
-    "pending": 2,
+    "miss": 10,
+    "pending": 1,
     "recorded": 11,
-    "verified": 9
+    "verified": 10
   },
   "identity_conflicts": 0,
   "legacy_records_without_verifiable_identity": 0,
@@ -20944,6 +20944,35 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:28.326227+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1557483', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Coventry",
+          "away_team_id": "1346",
+          "fixture_id": "1557483",
+          "home_team": "Leeds",
+          "home_team_id": "63",
+          "kickoff_utc": "2026-11-28T15:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T15:00:00.000000Z",
+      "source": "frozen_v8_near",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-15T00:19:42.867864+00:00",
       "choices": [
         [
@@ -21002,6 +21031,35 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:30.308268+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1557484', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Brentford",
+          "away_team_id": "55",
+          "fixture_id": "1557484",
+          "home_team": "Manchester United",
+          "home_team_id": "33",
+          "kickoff_utc": "2026-11-28T15:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T15:00:00.000000Z",
+      "source": "frozen_v8_near",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-15T00:19:43.041781+00:00",
       "choices": [
         [
@@ -21027,6 +21085,35 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-28T15:00:00.000000Z",
       "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:32.902901+00:00",
+      "choices": [
+        [
+          "2-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1563287', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Bolton",
+          "away_team_id": "68",
+          "fixture_id": "1563287",
+          "home_team": "Birmingham",
+          "home_team_id": "54",
+          "kickoff_utc": "2026-11-28T15:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T15:00:00.000000Z",
+      "source": "frozen_v8_near",
       "status": "pending"
     },
     {
@@ -21350,6 +21437,93 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:15.411265+00:00",
+      "choices": [
+        [
+          "2-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575234', 'v10')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Union Berlin",
+          "away_team_id": "182",
+          "fixture_id": "1575234",
+          "home_team": "FSV Mainz 05",
+          "home_team_id": "164",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v10",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:15.389656+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575234', 'v8_control')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Union Berlin",
+          "away_team_id": "182",
+          "fixture_id": "1575234",
+          "home_team": "FSV Mainz 05",
+          "home_team_id": "164",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_control",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v8_control",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:15.389656+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575234', 'v9')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Union Berlin",
+          "away_team_id": "182",
+          "fixture_id": "1575234",
+          "home_team": "FSV Mainz 05",
+          "home_team_id": "164",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v9",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v9",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-15T00:19:41.874893+00:00",
       "choices": [
         [
@@ -21379,6 +21553,64 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:19.635935+00:00",
+      "choices": [
+        [
+          "0-2"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575235', 'v9')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Bayern M\u00fcnchen",
+          "away_team_id": "157",
+          "fixture_id": "1575235",
+          "home_team": "Hamburger SV",
+          "home_team_id": "175",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v9",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v9",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:19.635935+00:00",
+      "choices": [
+        [
+          "1-2"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575235', 'v8_control')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Bayern M\u00fcnchen",
+          "away_team_id": "157",
+          "fixture_id": "1575235",
+          "home_team": "Hamburger SV",
+          "home_team_id": "175",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_control",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v8_control",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-15T00:19:41.943959+00:00",
       "choices": [
         [
@@ -21404,6 +21636,35 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
       "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:19.658246+00:00",
+      "choices": [
+        [
+          "0-2"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575235', 'v10')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Bayern M\u00fcnchen",
+          "away_team_id": "157",
+          "fixture_id": "1575235",
+          "home_team": "Hamburger SV",
+          "home_team_id": "175",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v10",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v10",
       "status": "pending"
     },
     {
@@ -21466,6 +21727,93 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:23.826406+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575236', 'v10')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "SV Elversberg",
+          "away_team_id": "1660",
+          "fixture_id": "1575236",
+          "home_team": "1. FC K\u00f6ln",
+          "home_team_id": "192",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v10",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:23.805340+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575236', 'v9')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "SV Elversberg",
+          "away_team_id": "1660",
+          "fixture_id": "1575236",
+          "home_team": "1. FC K\u00f6ln",
+          "home_team_id": "192",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v9",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v9",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:23.805340+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575236', 'v8_control')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "SV Elversberg",
+          "away_team_id": "1660",
+          "fixture_id": "1575236",
+          "home_team": "1. FC K\u00f6ln",
+          "home_team_id": "192",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_control",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v8_control",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-15T00:19:42.013025+00:00",
       "choices": [
         [
@@ -21491,6 +21839,35 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
       "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:25.789647+00:00",
+      "choices": [
+        [
+          "0-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1575238', 'v8_near')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "FC Schalke 04",
+          "away_team_id": "174",
+          "fixture_id": "1575238",
+          "home_team": "SC Paderborn 07",
+          "home_team_id": "185",
+          "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_near",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:30:00.000000Z",
+      "source": "frozen_v8_near",
       "status": "pending"
     },
     {
@@ -21549,6 +21926,93 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-28T14:00:00Z",
       "source": "website_original",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:10.752190+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550210', 'v9')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Parma",
+          "away_team_id": "523",
+          "fixture_id": "1550210",
+          "home_team": "Frosinone",
+          "home_team_id": "512",
+          "kickoff_utc": "2026-11-28T14:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v9",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:00:00.000000Z",
+      "source": "frozen_v9",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:10.785912+00:00",
+      "choices": [
+        [
+          "2-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550210', 'v10')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Parma",
+          "away_team_id": "523",
+          "fixture_id": "1550210",
+          "home_team": "Frosinone",
+          "home_team_id": "512",
+          "kickoff_utc": "2026-11-28T14:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v10",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:00:00.000000Z",
+      "source": "frozen_v10",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:10.752190+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1550210', 'v8_control')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Parma",
+          "away_team_id": "523",
+          "fixture_id": "1550210",
+          "home_team": "Frosinone",
+          "home_team_id": "512",
+          "kickoff_utc": "2026-11-28T14:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8_control",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-28T14:00:00.000000Z",
+      "source": "frozen_v8_control",
       "status": "pending"
     },
     {
@@ -24102,6 +24566,64 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:45:17.315987+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1552238', 'gemini')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Willem II",
+          "away_team_id": "195",
+          "fixture_id": "1552238",
+          "home_team": "Groningen",
+          "home_team_id": "202",
+          "kickoff_utc": "2026-11-27T19:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gemini-3.5-flash-lite",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
+      "source": "ai_gemini",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:45:17.315987+00:00",
+      "choices": [
+        [
+          "2-1"
+        ]
+      ],
+      "detail": "scheduled_verified_evidence",
+      "id": "('ai', 'API-Football', '1552238', 'openai')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Willem II",
+          "away_team_id": "195",
+          "fixture_id": "1552238",
+          "home_team": "Groningen",
+          "home_team_id": "202",
+          "kickoff_utc": "2026-11-27T19:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "gpt-4o-mini",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
+      "source": "ai_openai",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-13T09:18:16.677032+00:00",
       "choices": [
         [
@@ -24247,6 +24769,64 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:00.395579+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492478', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Remo",
+          "away_team_id": "1198",
+          "fixture_id": "1492478",
+          "home_team": "Sao Paulo",
+          "home_team_id": "126",
+          "kickoff_utc": "2026-11-26T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-26T23:00:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-26T22:40:00.427627+00:00",
+      "choices": [
+        [
+          "1-0"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492478', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Remo",
+          "away_team_id": "1198",
+          "fixture_id": "1492478",
+          "home_team": "Sao Paulo",
+          "home_team_id": "126",
+          "kickoff_utc": "2026-11-26T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-26T23:00:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-25T08:50:08.855065+00:00",
       "choices": [
         [
@@ -24275,7 +24855,9 @@
       "status": "pending"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-13T09:18:16.344496+00:00",
       "choices": [
         [
@@ -24297,14 +24879,18 @@
         }
       ],
       "model": "reference-informed-v7-v6-retained",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00Z",
       "source": "website_original",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-13T09:18:16.449285+00:00",
       "choices": [
         [
@@ -24326,14 +24912,18 @@
         }
       ],
       "model": "reference-informed-v7-v6-retained",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00Z",
       "source": "website_original",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-13T09:18:16.220140+00:00",
       "choices": [
         [
@@ -24355,14 +24945,18 @@
         }
       ],
       "model": "reference-informed-v7-v6-retained",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00Z",
       "source": "website_original",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-26T19:38:43.771259+00:00",
       "choices": [
         [
@@ -24384,14 +24978,18 @@
         }
       ],
       "model": "v12",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v12",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-26T19:38:43.789200+00:00",
       "choices": [
         [
@@ -24413,14 +25011,18 @@
         }
       ],
       "model": "v13",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v13",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-14T02:29:01.782600+00:00",
       "choices": [
         [
@@ -24442,14 +25044,18 @@
         }
       ],
       "model": "v8",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-25T02:43:59.031191+00:00",
       "choices": [
         [
@@ -24471,14 +25077,18 @@
         }
       ],
       "model": "v9",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v9",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-25T02:43:59.031191+00:00",
       "choices": [
         [
@@ -24500,14 +25110,18 @@
         }
       ],
       "model": "v8_control",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8_control",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-25T02:43:59.057542+00:00",
       "choices": [
         [
@@ -24529,14 +25143,18 @@
         }
       ],
       "model": "v10",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v10",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-24T20:03:01.597791+00:00",
       "choices": [
         [
@@ -24558,14 +25176,18 @@
         }
       ],
       "model": "v8_near",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8_near",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-26T19:38:45.440663+00:00",
       "choices": [
         [
@@ -24587,14 +25209,18 @@
         }
       ],
       "model": "v13",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v13",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-14T02:29:01.827951+00:00",
       "choices": [
         [
@@ -24616,14 +25242,18 @@
         }
       ],
       "model": "v8",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-26T19:38:45.423778+00:00",
       "choices": [
         [
@@ -24645,14 +25275,18 @@
         }
       ],
       "model": "v12",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v12",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-25T08:50:03.001180+00:00",
       "choices": [
         [
@@ -24674,14 +25308,18 @@
         }
       ],
       "model": "v10",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v10",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-25T08:50:02.984202+00:00",
       "choices": [
         [
@@ -24703,14 +25341,18 @@
         }
       ],
       "model": "v8_control",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8_control",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-25T08:50:02.984202+00:00",
       "choices": [
         [
@@ -24732,14 +25374,18 @@
         }
       ],
       "model": "v9",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v9",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "0-0"
+      ],
       "captured_at_utc": "2026-11-24T20:03:03.360559+00:00",
       "choices": [
         [
@@ -24761,14 +25407,18 @@
         }
       ],
       "model": "v8_near",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8_near",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-25T08:50:05.758006+00:00",
       "choices": [
         [
@@ -24790,14 +25440,18 @@
         }
       ],
       "model": "v9",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v9",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-14T02:29:01.870274+00:00",
       "choices": [
         [
@@ -24819,14 +25473,18 @@
         }
       ],
       "model": "v8",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-25T08:50:05.774107+00:00",
       "choices": [
         [
@@ -24848,14 +25506,18 @@
         }
       ],
       "model": "v10",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v10",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-26T19:38:46.725067+00:00",
       "choices": [
         [
@@ -24877,14 +25539,18 @@
         }
       ],
       "model": "v12",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v12",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-25T08:50:05.758006+00:00",
       "choices": [
         [
@@ -24906,14 +25572,18 @@
         }
       ],
       "model": "v8_control",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8_control",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-24T20:03:05.108613+00:00",
       "choices": [
         [
@@ -24935,14 +25605,18 @@
         }
       ],
       "model": "v8_near",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v8_near",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-26T19:38:46.748080+00:00",
       "choices": [
         [
@@ -24964,11 +25638,13 @@
         }
       ],
       "model": "v13",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T20:00:00.000000Z",
       "source": "frozen_v13",
-      "status": "pending"
+      "status": "miss"
     },
     {
       "actual_scores": [
@@ -26027,7 +26703,10 @@
       "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "2-1",
+        "1-3"
+      ],
       "captured_at_utc": "2026-11-25T18:17:29.876511+00:00",
       "choices": [
         [
@@ -26075,11 +26754,17 @@
         }
       ],
       "model": "v8",
-      "option_hits": [],
+      "option_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-26T17:45:00.000000Z",
       "source": "automatic_five_double",
-      "status": "pending"
+      "status": "miss"
     },
     {
       "actual_scores": [
@@ -54415,11 +55100,11 @@
   "single_record_counts_include_multiple_models": true,
   "singles": {
     "hit": 125,
-    "hit_rate": 0.143184421534937,
-    "miss": 748,
-    "pending": 855,
-    "recorded": 1728,
-    "verified": 873
+    "hit_rate": 0.13935340022296544,
+    "miss": 772,
+    "pending": 851,
+    "recorded": 1748,
+    "verified": 897
   },
-  "unique_verified_single_fixtures": 114
+  "unique_verified_single_fixtures": 117
 }
