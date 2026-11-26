@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-26T16:26:43.828638+00:00",
+  "prospective": true,
+  "record_sha256": "8885b262c0b58f98b7671293a626e0b455084fcfc554e8cf53db235c840bebbf",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.10440493031400191,
+        "joint_probability": 0.011264015112848073,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.10788777004085064
+      },
+      {
+        "first_probability": 0.09875653761060224,
+        "joint_probability": 0.010654622619763271,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.10788777004085064
+      },
+      {
+        "first_probability": 0.09813368004122995,
+        "joint_probability": 0.010587423905550631,
+        "score1": "2-1",
+        "score2": "1-1",
+        "second_probability": 0.10788777004085064
+      },
+      {
+        "first_probability": 0.0965491828080254,
+        "joint_probability": 0.010416476032424293,
+        "score1": "2-0",
+        "score2": "1-1",
+        "second_probability": 0.10788777004085064
+      },
+      {
+        "first_probability": 0.10440493031400191,
+        "joint_probability": 0.00928848689170107,
+        "score1": "1-1",
+        "score2": "2-1",
+        "second_probability": 0.08896597951615486
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.052211024562287336,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "728",
+        "name": "Rayo Vallecano"
+      },
+      "competition": {
+        "code": "PD",
+        "name": "PD"
+      },
+      "homeTeam": {
+        "id": "543",
+        "name": "Real Betis"
+      },
+      "id": "1570463",
+      "provider": "API-Football",
+      "utcDate": "2026-11-28T13:00:00+00:00"
+    },
+    "generated_at_utc": "2026-11-26T16:26:43.828573+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-v8-near-kickoff-research-v1",
+      "ziczac-v8-near-kickoff-research-v1"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "1660",
+        "name": "SV Elversberg"
+      },
+      "competition": {
+        "code": "BL1",
+        "name": "BL1"
+      },
+      "homeTeam": {
+        "id": "192",
+        "name": "1. FC K\u00f6ln"
+      },
+      "id": "1575236",
+      "provider": "API-Football",
+      "utcDate": "2026-11-28T14:30:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "728",
+        "fixture_id": "1570463",
+        "forecast_id": "d7486a804863d5b2d74cc5d32be9222a502c5646ac33a106d7d897f979161626",
+        "home_team_id": "543",
+        "input_digest": "9cf8a51c3886f534cfb3ca98ac51401f177be1b26998ad66b40959bb1dea5f20",
+        "kickoff_utc": "2026-11-28T13:00:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "1660",
+        "fixture_id": "1575236",
+        "forecast_id": "0262bca41a64fe7916013d9036687c400f0eed23177a303d50371c690041977b",
+        "home_team_id": "192",
+        "input_digest": "3d6cbed64876d59ca31b23d7e5c8b18e79f2ee22863e32b5335c876141f12da8",
+        "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-26T16:23:56.364754+00:00",
+      "2026-11-26T16:24:03.586195+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-11-29",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-29",
+  "target_70_percent_proven": false
+}
