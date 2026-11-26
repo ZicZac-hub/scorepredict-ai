@@ -162,3 +162,37 @@ def test_membership_discovery_deduplicates_and_respects_spare_budget():
     assert report["history_recovered"] is False
     assert discover_memberships(gaps,{"1":2031},key="synthetic",request=request,
         clock=lambda:NOW,can_spend=lambda n:False)["attempted"]==0
+
+
+def test_sparse_gap_distinguishes_dense_history_from_shortage(monkeypatch):
+    import engine
+    import research_ensemble_v8
+    from cross_competition_source_refresh import sparse_gap
+    population=[{"homeTeam":{"id":3},"awayTeam":{"id":4}} for _ in range(40)]
+    monkeypatch.setattr(research_ensemble_v8,"_asof_history",lambda *a: population)
+    monkeypatch.setattr(engine,"_games",lambda *a,**k:[None]*5)
+    evidence={"history":[],"as_of_utc":NOW.isoformat()}
+    assert sparse_gap(fixture(),evidence)["reason"]=="outside_sparse_band_not_a_data_shortage"
+    monkeypatch.setattr(engine,"_games",lambda *a,**k:[None])
+    assert sparse_gap(fixture(),evidence)["reason"]=="team_history_below_minimum"
+
+
+def test_discovered_history_audit_uses_isolated_budget_and_fails_closed():
+    from cross_competition_source_refresh import audit_discovered_history
+    f=fixture()
+    f["competition"]["season"]=2026
+    f["homeTeam"]["id"]=1393
+    eligible=[(NOW+timedelta(hours=2),"101",f,{})]
+    gaps={"101":{"unavailable_groups":[],"home":{"team_id":"1393",
+          "reason":"no_membership_in_qualified_supported_leagues"}}}
+    calls=[]
+    def loader(proxy,as_of,api_key,api_request,cache):
+        calls.append(proxy["competition"]["id"])
+        assert cache=={}
+        cache[("API-Football","144",2026)]=([],{"freshness_known":True,"stale":True},None)
+    kwargs={"key":"synthetic","request":lambda *a:None,"clock":lambda:NOW,"loader":loader}
+    assert audit_discovered_history(eligible,gaps,can_spend=lambda n:False,**kwargs)["attempted_groups"]==0
+    r=audit_discovered_history(eligible,gaps,can_spend=lambda n:n<=2,**kwargs)
+    assert calls==[144] and r["attempted_groups"]==1
+    assert r["results"]["2026:144"]["teams"]==[]
+    assert r["model_inputs_changed"] is False
