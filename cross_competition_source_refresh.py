@@ -8,12 +8,68 @@ from collections import Counter
 from datetime import timedelta
 from pathlib import Path
 from cross_competition_capture import freeze, ROOT
-from cross_competition_strength import DOMESTIC
-from history_pipeline import season_year, _date, load_evidence
+from cross_competition_strength import DOMESTIC, MIN_LEAGUE, MIN_TEAM, MIN_VENUE
+from history_pipeline import season_year, _date, load_evidence, build_evidence
 from v37_sparse_history_research import predict
 
 MAX_EXTRA = 20
 MAX_CANDIDATES = 24
+
+
+def domestic_gap(fixture, cache, cutoff):
+    """Read-only diagnosis of missing contexts, using the same source gates.
+    Absence from supported sources is not proof of nonparticipation.
+    """
+    cutoff=_date(cutoff)
+    season=season_year(fixture)
+    populations={}
+    unavailable=[]
+    for code,league in DOMESTIC.items():
+        current=[]
+        rows=[]
+        for year in (season,season-1):
+            try:
+                raw,meta,error=cache[("API-Football",str(league),year)]
+                if error or not meta.get("freshness_known") or meta.get("stale") is not False or _date(meta["fetched_at_utc"])>cutoff:
+                    raise ValueError("unqualified_source")
+                proxy={**fixture,"competition":{"id":league,"code":code,"season":year}}
+                qualified=[r for r in build_evidence(proxy,raw,cutoff)["history"] if season_year(r)==year]
+                rows.extend(qualified)
+                if year==season:
+                    current=qualified
+            except (KeyError,ValueError,TypeError,AttributeError,OverflowError):
+                unavailable.append(code+":"+str(year))
+        populations[code]=(current,rows)
+    result={"unavailable_groups":unavailable,"absence_not_proof_of_nonparticipation":True}
+    for side in ("home","away"):
+        team=str(fixture[side+"Team"]["id"])
+        def includes(row):
+            return team in (str(row["homeTeam"]["id"]),str(row["awayTeam"]["id"]))
+        members=[code for code,(current,rows) in populations.items() if any(includes(r) for r in current)]
+        item={"team_id":team,"observed_current_memberships":members}
+        if not members:
+            reason="no_membership_in_qualified_supported_leagues"
+        elif len(members)>1:
+            reason="ambiguous_membership"
+        else:
+            rows=populations[members[0]][1]
+            games=[r for r in rows if includes(r)]
+            venue=[r for r in games if str(r[side+"Team"]["id"])==team]
+            item.update(league_matches=len(rows),team_matches=len(games),venue_matches=len(venue))
+            ids=[str(r.get("id")) for r in rows]
+            if any(r.get("id") is None for r in rows) or len(ids)!=len(set(ids)):
+                reason="duplicate_or_missing_fixture_id"
+            elif len(rows)<MIN_LEAGUE:
+                reason="league_history_below_minimum"
+            elif len(games)<MIN_TEAM:
+                reason="team_history_below_minimum"
+            elif len(venue)<MIN_VENUE:
+                reason="venue_history_below_minimum"
+            else:
+                reason="context_counts_qualified"
+        item["reason"]=reason
+        result[side]=item
+    return result
 
 
 def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
@@ -24,7 +80,8 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
     report = {"extra_call_limit": cap, "extra_adapter_calls": 0,
               "eligible_fixtures": 0, "attempted_fixtures": 0,
               "outcomes": {}, "source_groups": {}, "source_group_states": {},
-              "domestic_retry_entries": 0, "no_live_model_change": True}
+              "domestic_retry_entries": 0, "domestic_context_gaps": {},
+              "no_live_model_change": True}
     outcomes = Counter()
 
     def can_spend(n):
@@ -142,6 +199,11 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
         try:
             outcome=recorder(fixture,evidence,cache,root=root,clock=clock)
             outcomes[outcome]+=1
+            if outcome=="missing_or_ambiguous_domestic_context" and time_available():
+                try:
+                    report["domestic_context_gaps"][fid]=domestic_gap(fixture,cache,_date(clock()))
+                except (KeyError,ValueError,TypeError,AttributeError,OverflowError):
+                    report["domestic_context_gaps"][fid]={"reason":"diagnostic_unavailable"}
         except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
             outcomes["receipt_error"]+=1
     report["domestic_retry_entries"]=len(retried)
