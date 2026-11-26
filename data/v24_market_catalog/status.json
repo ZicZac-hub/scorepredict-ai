@@ -1,32 +1,32 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-26T11:29:32.166093+00:00",
+  "at_utc": "2026-11-26T12:37:56.699927+00:00",
   "attempts": [],
   "binding": {
     "catalog_snapshot_rejections": {
-      "market_quotes_stale": 2
+      "market_quotes_stale": 16
     },
     "fixtures_without_catalog": 225,
-    "missing_catalog": 227,
+    "missing_catalog": 239,
     "new_bindings": [],
     "out_of_window": 214,
     "v8_checked": 239,
-    "v8_with_catalog": 12
+    "v8_with_catalog": 0
   },
   "catalog_rejection_counts": {},
-  "completed_at_utc": "2026-11-26T11:29:33.199718+00:00",
+  "completed_at_utc": "2026-11-26T12:37:58.045301+00:00",
   "coverage_health": {
     "catalog_snapshot_rejections": {
-      "market_quotes_stale": 2
+      "market_quotes_stale": 16
     },
     "does_not_establish_accuracy_gain": true,
     "eligible_frozen_forecasts": 239,
     "fixtures_without_catalog": 225,
-    "matched_market_forecasts": 12,
+    "matched_market_forecasts": 0,
     "new_identity_validated_packets": 0,
     "provider_request_errors": 0,
-    "reason": "market_available_for_some_fixtures",
-    "unmatched_market_forecasts": 227
+    "reason": "market_not_matched_to_frozen_fixtures",
+    "unmatched_market_forecasts": 239
   },
   "daily_limit": 12,
   "empty_pages": 0,
@@ -35,7 +35,6 @@
     "2026-11-26",
     "2026-11-27",
     "2026-11-28",
-    "2026-11-30",
     "2026-12-01",
     "2026-12-02",
     "2026-12-03",
@@ -45,7 +44,8 @@
     "2026-12-07",
     "2026-12-08",
     "2026-12-09",
-    "2026-11-29"
+    "2026-11-29",
+    "2026-11-30"
   ],
   "new_catalog_fixtures": [],
   "new_source_bindings": [],
