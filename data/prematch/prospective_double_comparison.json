@@ -1,24 +1,24 @@
 {
   "balanced_only_vs_original": 0,
-  "diversified_only_vs_original": 0,
+  "diversified_only_vs_original": 1,
   "exclusions": {
-    "awaiting_both_verified_results": 15
+    "awaiting_both_verified_results": 11
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.053091607161820493,
-      "win_rate": 0.04,
+      "mean_estimated_probability_coverage": 0.05241201226095353,
+      "win_rate": 0.037037037037037035,
       "wins": 2
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.04067464857653614,
-      "win_rate": 0.0,
-      "wins": 0
+      "mean_estimated_probability_coverage": 0.04022935152637869,
+      "win_rate": 0.018518518518518517,
+      "wins": 1
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.053728543093992664,
-      "win_rate": 0.04,
+      "mean_estimated_probability_coverage": 0.053072875804370485,
+      "win_rate": 0.037037037037037035,
       "wins": 2
     }
   },
@@ -26,7 +26,7 @@
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 2,
   "pairs_frozen": 65,
-  "pairs_verified": 50,
+  "pairs_verified": 54,
   "rows": [
     {
       "actual_scores": [
@@ -495,6 +495,37 @@
     },
     {
       "actual_scores": [
+        "2-0",
+        "0-3"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.030653128284192824,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.024997117784416798,
+      "first_match": "Atletico Madrid vs Viking",
+      "league": "CL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.03126619364139928,
+      "pair_key": "CL_1635625_1635642",
+      "second_match": "Club Brugge KV vs Liverpool"
+    },
+    {
+      "actual_scores": [
         "2-2",
         "5-1"
       ],
@@ -523,6 +554,37 @@
       "original_probability_coverage": 0.040189220486515555,
       "pair_key": "CL_1635692_1635715",
       "second_match": "Real Madrid vs PSV Eindhoven"
+    },
+    {
+      "actual_scores": [
+        "1-4",
+        "0-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.029710700994795666,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.02597261920019603,
+      "first_match": "Sabah FA vs Barcelona",
+      "league": "CL",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.03130310226202819,
+      "pair_key": "CL_1635718_1635728",
+      "second_match": "Slavia Praha vs Villarreal"
     },
     {
       "actual_scores": [
@@ -957,6 +1019,68 @@
       "original_probability_coverage": 0.06294030678820359,
       "pair_key": "ELC_1563281_1563282",
       "second_match": "Wolves vs Derby"
+    },
+    {
+      "actual_scores": [
+        "1-3",
+        "0-2"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.055472740383520514,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.0427523525249439,
+      "first_match": "Bolton vs West Brom",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 3
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.057107108494988866,
+      "pair_key": "ELC_1563283_1563284",
+      "second_match": "Burnley vs Birmingham"
+    },
+    {
+      "actual_scores": [
+        "0-1",
+        "2-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.05983173433795713,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": true,
+      "diversified_probability_coverage": 0.044930464088085945,
+      "first_match": "Watford vs Blackburn",
+      "league": "ELC",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 2,
+        "match_2_scores": 4
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.05983173433795713,
+      "pair_key": "ELC_1563285_1563286",
+      "second_match": "Stoke City vs Millwall"
     },
     {
       "actual_scores": [

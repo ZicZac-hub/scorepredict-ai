@@ -1,8 +1,8 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-25T21:32:07.846858+00:00",
+  "evaluated_at_utc": "2026-11-26T00:26:57.999347+00:00",
   "external_requests": 0,
-  "frozen_set_files": 16,
+  "frozen_set_files": 17,
   "hits": 0,
   "note": "Only raw-policy prospective calibration bootstrap; premium still requires independent calibration evidence.",
   "observed_hit_rate": 0.0,
@@ -125,12 +125,18 @@
     },
     {
       "actual_scores": [
-        null,
-        null
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ]
       ],
       "estimated_coverage": 0.06424714371436865,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-26"
     },
     {
@@ -142,6 +148,16 @@
       "hit": null,
       "status": "pending",
       "sydney_date": "2026-11-27"
+    },
+    {
+      "actual_scores": [
+        null,
+        null
+      ],
+      "estimated_coverage": 0.06635920914898097,
+      "hit": null,
+      "status": "pending",
+      "sydney_date": "2026-11-28"
     },
     {
       "actual_scores": [
@@ -217,7 +233,7 @@
   "schema_version": 1,
   "selection_scope": "auto_max_raw_coverage_same_day_v1",
   "source_rejections": {},
-  "source_valid_sets": 16,
+  "source_valid_sets": 17,
   "target_70_percent_proven": false,
   "trials": [
     {
@@ -492,11 +508,50 @@
       "source_record_sha256": "91ede41c76ebe35ec9779c7ab4c8d12510398625f024a4028af4077bca6d3071",
       "verification_status": "verified",
       "verified_at_utc": "2026-11-24T23:19:17.650684+00:00"
+    },
+    {
+      "estimated_coverage": 0.06424714371436865,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1563286"
+        ],
+        [
+          "API-Football",
+          "1563285"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Watford",
+          "Blackburn"
+        ],
+        [
+          "Stoke City",
+          "Millwall"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-25T19:45:00.000000Z",
+        "2026-11-25T20:00:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-23T23:12:49.189728+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "c58751b3cbd29ddfc2f7666b7abe28bea165e23cbc46f9cd3a3c342ff6c4174b",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-25T23:15:39.218056+00:00"
     }
   ],
-  "verified_sets": 7,
+  "verified_sets": 8,
   "wilson_95": [
-    5.551115123125783e-17,
-    0.35433043506668743
+    0.0,
+    0.32440756488388023
   ]
 }

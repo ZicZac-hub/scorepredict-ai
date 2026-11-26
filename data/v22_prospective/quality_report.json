@@ -122,7 +122,7 @@
       "verified_evaluated": 0
     }
   },
-  "checked_at_utc": "2026-11-25T21:32:41.899604+00:00",
+  "checked_at_utc": "2026-11-26T00:27:41.183356+00:00",
   "frozen_v22_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
@@ -187,55 +187,65 @@
     "source_availability_and_bias_review": true
   },
   "schema": 1,
-  "source_capture_attempted_legs": 1,
+  "source_capture_attempted_legs": 2,
   "source_capture_daily_attempts_limit": 6,
-  "source_capture_daily_attempts_used": 5,
+  "source_capture_daily_attempts_used": 2,
   "source_capture_eligible_legs": 16,
   "source_capture_enabled": true,
-  "source_capture_last_run": "2026-11-25T21:32:18.039393+00:00",
+  "source_capture_last_run": "2026-11-26T00:27:06.916287+00:00",
   "source_capture_reason": "partial_or_complete_source_packets",
-  "source_capture_saved_packets": 1,
+  "source_capture_saved_packets": 2,
   "source_capture_skipped_reasons": [
-    "1636231:near_kickoff_budget_reserved",
-    "1636315:near_kickoff_budget_reserved",
-    "1636334:near_kickoff_budget_reserved",
-    "1636261:near_kickoff_budget_reserved",
-    "1636294:near_kickoff_budget_reserved",
-    "1636305:near_kickoff_budget_reserved",
-    "1492478:near_kickoff_budget_reserved",
-    "1552238:near_kickoff_budget_reserved",
-    "1575237:near_kickoff_budget_reserved",
-    "1550216:near_kickoff_budget_reserved",
-    "1552830:near_kickoff_budget_reserved",
-    "1557485:near_kickoff_budget_reserved",
-    "1563294:near_kickoff_budget_reserved",
-    "1570468:near_kickoff_budget_reserved",
-    "1575551:near_kickoff_budget_reserved"
+    "1636334:per_run_attempt_budget_exhausted",
+    "1636261:per_run_attempt_budget_exhausted",
+    "1636294:per_run_attempt_budget_exhausted",
+    "1636305:per_run_attempt_budget_exhausted",
+    "1492478:per_run_attempt_budget_exhausted",
+    "1552238:per_run_attempt_budget_exhausted",
+    "1575237:per_run_attempt_budget_exhausted",
+    "1550216:per_run_attempt_budget_exhausted",
+    "1552830:per_run_attempt_budget_exhausted",
+    "1557485:per_run_attempt_budget_exhausted",
+    "1563294:per_run_attempt_budget_exhausted",
+    "1570468:per_run_attempt_budget_exhausted",
+    "1575551:per_run_attempt_budget_exhausted",
+    "1492475:per_run_attempt_budget_exhausted"
   ],
-  "source_capture_source_queries": 16,
+  "source_capture_source_queries": 32,
   "source_completeness": {
-    "packets_checked": 345,
-    "with_2_market_types": 342,
+    "packets_checked": 349,
+    "with_2_market_types": 346,
     "with_6_per_team": 32,
     "with_both_starting_XIs": 1,
-    "with_historical_xg": 34,
-    "with_independent_provider_prediction": 34,
-    "with_reported_injuries": 21,
+    "with_historical_xg": 36,
+    "with_independent_provider_prediction": 36,
+    "with_reported_injuries": 23,
     "with_stats_but_no_genuine_xg": 0,
-    "with_verified_historical_match_statistics": 34
+    "with_verified_historical_match_statistics": 36
   },
   "sportmonks_independent_xg": {
-    "attempt_number": 0,
+    "attempt_number": 1,
     "both_sides_xg_packets": 0,
     "discovery_cached_pages": 0,
     "discovery_pages_examined": 0,
-    "discovery_response_schema": null,
-    "discovery_scope": null,
+    "discovery_response_schema": {
+      "body_kind": "object",
+      "data_kind": "list",
+      "error_present": false,
+      "has_more_kind": "NoneType",
+      "message_class": "provider_access_or_subscription",
+      "message_present": true,
+      "next_cursor_present": false,
+      "next_page_present": false,
+      "pagination_kind": "NoneType",
+      "row_count": 0
+    },
+    "discovery_scope": "team",
     "enabled": true,
     "frozen_evidence_packets": 0,
     "incremental_accuracy_not_yet_demonstrated": true,
     "last_provider_observation": {
-      "at_utc": "2026-11-25T03:46:52.707553+00:00",
+      "at_utc": "2026-11-26T00:27:26.123577+00:00",
       "captured": 0,
       "http_status_category": "not_reported",
       "matched_future_fixtures": 0,
@@ -249,56 +259,56 @@
         "row_count": 0
       }
     },
-    "last_run_utc": "2026-11-25T21:32:24.244860+00:00",
+    "last_run_utc": "2026-11-26T00:27:26.123577+00:00",
     "matched_future_fixtures_last_run": 0,
     "matched_historical_xg_last_run": 0,
     "provider_error_type": null,
     "provider_subscription_not_assumed": true,
-    "reason": "daily_request_budget_exhausted",
+    "reason": "provider_access_or_subscription",
     "requests_limit_per_day": 4,
-    "requests_used_today": 4,
+    "requests_used_today": 1,
     "research_only_not_used_by_v22": true,
-    "selected_forecast_fixture_id": null,
+    "selected_forecast_fixture_id": "1636231",
     "six_xg_for_both_teams_packets": 0,
     "token_present": true,
     "unverified_source_packet_count": 0,
     "unverified_source_packet_reasons": {}
   },
   "v23_early_market_capture_enabled": true,
-  "v23_early_market_last_run": "2026-11-25T21:32:16.581113+00:00",
+  "v23_early_market_last_run": "2026-11-26T00:27:05.739364+00:00",
   "v23_early_market_new_packets": 0,
   "v23_market_form_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
       "hits": 0,
-      "pending": 2,
-      "verified": 7,
+      "pending": 1,
+      "verified": 8,
       "wilson_95": [
-        5.551115123125783e-17,
-        0.35433043506668743
+        0.0,
+        0.32440756488388023
       ]
     },
     "v23_market_form": {
       "hit_rate": 0.0,
       "hits": 0,
-      "pending": 2,
-      "verified": 7,
+      "pending": 1,
+      "verified": 8,
       "wilson_95": [
-        5.551115123125783e-17,
-        0.35433043506668743
+        0.0,
+        0.32440756488388023
       ]
     }
   },
   "v23_not_observed_success_without_verified_pairs": false,
-  "v23_source_qualified_pairs": 0,
+  "v23_source_qualified_pairs": 2,
   "v24_broad_market_collection": {
     "enabled": true,
-    "last_run_utc": "2026-11-25T21:32:13.816737+00:00",
+    "last_run_utc": "2026-11-26T00:27:02.759013+00:00",
     "max_requests_per_day": 12,
-    "new_fixture_markets_last_run": 0,
-    "new_v8_source_bindings_last_run": 0,
+    "new_fixture_markets_last_run": 20,
+    "new_v8_source_bindings_last_run": 2,
     "not_all_external_web_sources": true,
-    "queries_last_run": 0,
-    "requests_used_today": 12
+    "queries_last_run": 2,
+    "requests_used_today": 2
   }
 }
