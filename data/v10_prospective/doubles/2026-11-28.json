@@ -1,0 +1,86 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-26T19:39:00.536203+00:00",
+  "challenger_exclusions": {
+    "v10": "ineligible_or_different_selected_v8_evidence",
+    "v12": "missing_one_or_both_challenger_forecasts",
+    "v13": "missing_same_evidence_pre_match_v13_pair",
+    "v9": "ineligible_or_different_selected_v8_evidence"
+  },
+  "estimated_coverage": 0.06635920914898097,
+  "first": {
+    "away_team": "Bologna",
+    "away_team_id": "500",
+    "fixture_id": "1550216",
+    "forecast_id": "238ccbfde6fc7444af53816c770bd0ae176fe2b748cf5940c15a391bd24c4e14",
+    "home_team": "Venezia",
+    "home_team_id": "517",
+    "kickoff_utc": "2026-11-27T19:45:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.015357901109003005,
+      "score1": "0-1",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.013783732672316442,
+      "score1": "1-1",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.012985768466854923,
+      "score1": "0-2",
+      "score2": "1-1"
+    },
+    {
+      "joint_probability": 0.012218451637569556,
+      "score1": "0-1",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.012013355263237038,
+      "score1": "1-2",
+      "score2": "1-1"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v2-fresh-research",
+  "same_pair_challengers": {},
+  "second": {
+    "away_team": "Chelsea",
+    "away_team_id": "49",
+    "fixture_id": "1557485",
+    "forecast_id": "582e05298deb5592e1ebfb9bd2b50e193ae3f6aed904b73eb0d4cf88ed6e3941",
+    "home_team": "Nottingham Forest",
+    "home_team_id": "65",
+    "kickoff_utc": "2026-11-27T20:00:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "selected_forecasts": {
+    "1": {
+      "captured_at_utc": "2026-11-25T23:27:14.420727Z",
+      "input_digest": "43c4367bc6885a0b56582db8b5770601c45921eb27a13dc56a41a855eb35647e",
+      "source": "v8_near"
+    },
+    "2": {
+      "captured_at_utc": "2026-11-25T23:27:21.727264Z",
+      "input_digest": "3bda7e1c5785a4e147e898fa90677dc2720e2de8f2671d1868b581429c1a6dc6",
+      "source": "v8_near"
+    }
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "selection_window": {
+    "max_hours_before_first_eligible_kickoff": 24,
+    "minimum_minutes_before_each_selected_match": 45
+  },
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-28"
+}

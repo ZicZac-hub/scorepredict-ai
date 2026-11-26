@@ -7,8 +7,8 @@
   "evidence": "genuinely_frozen_pre_kickoff_only",
   "five_doubles": {
     "average_estimated_coverage": 0.07159768123041434,
-    "awaiting_both_results": 1,
-    "frozen_pairs": 10,
+    "awaiting_both_results": 2,
+    "frozen_pairs": 11,
     "hit_rate": 0.0,
     "rows": [
       {
@@ -122,6 +122,10 @@
       {
         "status": "awaiting_verified_results",
         "sydney_date": "2026-11-27"
+      },
+      {
+        "status": "awaiting_verified_results",
+        "sydney_date": "2026-11-28"
       }
     ],
     "same_pair_challengers": {
@@ -187,7 +191,6 @@
   },
   "freeze_diagnostics": {
     "abstained": {
-      "2026-11-28": "waiting_for_near_matchday_fixture_research",
       "2026-11-29": "waiting_for_near_matchday_fixture_research",
       "2026-11-30": "waiting_for_near_matchday_fixture_research",
       "2026-12-01": "waiting_for_near_matchday_fixture_research",
@@ -203,7 +206,9 @@
       "2026-12-11": "waiting_for_near_matchday_fixture_research"
     },
     "days_evaluated": 14,
-    "days_saved": [],
+    "days_saved": [
+      "2026-11-28"
+    ],
     "near_research_available": 21,
     "v14_robust_days_saved": []
   },
@@ -223,22 +228,22 @@
     "v12": {
       "exact_score_hits": 17,
       "exact_score_rate": 0.1574074074074074,
-      "frozen_fixtures": 281,
+      "frozen_fixtures": 287,
       "mean_expected_exact_hits": 11.98838682520313,
       "mean_outcome_brier": 0.5926018360053935,
       "mean_score_log_loss": 3.009155484911966,
-      "pending_fixtures": 173,
+      "pending_fixtures": 179,
       "top3_hit_rate": 0.2962962962962963,
       "verified_fixtures": 108
     },
     "v13": {
       "exact_score_hits": 16,
       "exact_score_rate": 0.14814814814814814,
-      "frozen_fixtures": 281,
+      "frozen_fixtures": 287,
       "mean_expected_exact_hits": 11.90242927640267,
       "mean_outcome_brier": 0.5920276720937574,
       "mean_score_log_loss": 3.0160867283247135,
-      "pending_fixtures": 173,
+      "pending_fixtures": 179,
       "top3_hit_rate": 0.3148148148148148,
       "verified_fixtures": 108
     },

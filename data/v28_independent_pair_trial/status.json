@@ -3,11 +3,25 @@
   "freeze": {
     "created": [],
     "no_live_model_change": true,
-    "not_frozen_inspected": [],
-    "skipped": {},
-    "source_ineligibility": {}
+    "not_frozen_inspected": [
+      {
+        "eligible_fixtures": 2,
+        "state": "not_frozen_retry_when_new_sources_available",
+        "sydney_day": "2026-11-28"
+      }
+    ],
+    "skipped": {
+      "already_frozen_day": 1,
+      "insufficient_eligible_fixtures_retry_later": 1
+    },
+    "source_ineligibility": {
+      "invalid_source_time": 220,
+      "not_original_v8_model": 912,
+      "outside_research_freeze_window": 236
+    },
+    "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
-  "generated_at_utc": "2026-11-26T19:28:12.296024+00:00",
+  "generated_at_utc": "2026-11-26T19:39:15.047207+00:00",
   "no_additional_provider_or_llm_calls": true,
   "original_v8_v25_v26_v27_forecasts_changed": false,
   "prospective_accuracy_improvement_not_established": true,
@@ -23,7 +37,7 @@
     "control_only_wins": 0,
     "different_pair_days": 0,
     "do_not_treat_pending_as_losses": true,
-    "evaluated_at_utc": "2026-11-26T19:28:12.296034+00:00",
+    "evaluated_at_utc": "2026-11-26T19:39:16.472542+00:00",
     "exact_paired_test_two_sided_p": null,
     "excluded_invalid_or_tampered_files": {},
     "initial_review_ready": false,
