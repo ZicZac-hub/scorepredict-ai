@@ -102,3 +102,29 @@ def test_stale_domestic_retry_respects_remaining_main_budget(tmp_path):
     assert calls==[]
     assert r["domestic_retry_entries"]==0
     assert set(r["source_group_states"]["PL:2031"].values())=={"unqualified_freshness"}
+
+
+def test_domestic_gap_identifies_unobserved_membership_and_missing_source():
+    from cross_competition_source_refresh import domestic_gap
+    from test_cross_competition_strength import FIXTURE, NOW as at, cache
+    sources=cache()
+    sources.pop(("API-Football","140",2031))
+    result=domestic_gap(FIXTURE,sources,at)
+    assert result["home"]["reason"]=="context_counts_qualified"
+    assert result["away"]["reason"]=="no_membership_in_qualified_supported_leagues"
+    assert "PD:2031" in result["unavailable_groups"]
+    assert result["absence_not_proof_of_nonparticipation"] is True
+
+
+def test_domestic_gap_detects_ambiguous_membership_and_future_observation():
+    from cross_competition_source_refresh import domestic_gap
+    from test_cross_competition_strength import FIXTURE, NOW as at, cache, league
+    sources=cache()
+    meta=dict(sources[("API-Football","140",2031)][1])
+    sources[("API-Football","78",2031)]=(league(2,"BL1",78,300,False),meta,None)
+    result=domestic_gap(FIXTURE,sources,at)
+    assert result["away"]["reason"]=="ambiguous_membership"
+    meta["fetched_at_utc"]=(at+timedelta(minutes=1)).isoformat()
+    result=domestic_gap(FIXTURE,sources,at)
+    assert result["away"]["reason"]=="context_counts_qualified"
+    assert "BL1:2031" in result["unavailable_groups"]
