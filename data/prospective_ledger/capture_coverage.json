@@ -3,7 +3,7 @@
   "api_call_limit": 120,
   "budget_skipped": [],
   "captured_fixtures": 0,
-  "collector_started_at_utc": "2026-11-26T06:15:28.842346+00:00",
+  "collector_started_at_utc": "2026-11-26T07:47:57.037062+00:00",
   "coverage_complete": false,
   "cross_competition_capture": {
     "missing_or_ambiguous_domestic_context": 12
@@ -11,58 +11,222 @@
   "cross_competition_source_refresh": {
     "attempted_fixtures": 12,
     "candidate_limit_skipped": 0,
+    "domestic_context_gaps": {
+      "1636255": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "league_matches": 398,
+          "observed_current_memberships": [
+            "BL1"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "168",
+          "team_matches": 44,
+          "venue_matches": 22
+        },
+        "home": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "620"
+        },
+        "unavailable_groups": []
+      },
+      "1636270": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "637"
+        },
+        "home": {
+          "league_matches": 398,
+          "observed_current_memberships": [
+            "BL1"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "167",
+          "team_matches": 44,
+          "venue_matches": 22
+        },
+        "unavailable_groups": []
+      },
+      "1636277": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "3402"
+        },
+        "home": {
+          "league_matches": 500,
+          "observed_current_memberships": [
+            "SA"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "496",
+          "team_matches": 50,
+          "venue_matches": 25
+        },
+        "unavailable_groups": []
+      },
+      "1636298": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "646"
+        },
+        "home": {
+          "league_matches": 406,
+          "observed_current_memberships": [
+            "FL1"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "81",
+          "team_matches": 45,
+          "venue_matches": 23
+        },
+        "unavailable_groups": []
+      },
+      "1636307": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "league_matches": 500,
+          "observed_current_memberships": [
+            "SA"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "489",
+          "team_matches": 50,
+          "venue_matches": 25
+        },
+        "home": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "553"
+        },
+        "unavailable_groups": []
+      },
+      "1636329": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "347"
+        },
+        "home": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "1393"
+        },
+        "unavailable_groups": []
+      },
+      "1636336": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "league_matches": 426,
+          "observed_current_memberships": [
+            "DED"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "201",
+          "team_matches": 47,
+          "venue_matches": 24
+        },
+        "home": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "628"
+        },
+        "unavailable_groups": []
+      },
+      "1636343": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "336"
+        },
+        "home": {
+          "league_matches": 490,
+          "observed_current_memberships": [
+            "PL"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "746",
+          "team_matches": 49,
+          "venue_matches": 24
+        },
+        "unavailable_groups": []
+      },
+      "1636349": {
+        "absence_not_proof_of_nonparticipation": true,
+        "away": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "247"
+        },
+        "home": {
+          "observed_current_memberships": [],
+          "reason": "no_membership_in_qualified_supported_leagues",
+          "team_id": "4799"
+        },
+        "unavailable_groups": []
+      }
+    },
     "domestic_retry_entries": 0,
     "eligible_fixtures": 18,
-    "extra_adapter_calls": 0,
-    "extra_call_limit": 0,
+    "extra_adapter_calls": 16,
+    "extra_call_limit": 20,
     "no_live_model_change": true,
     "outcomes": {
-      "missing_or_ambiguous_domestic_context": 12,
+      "frozen": 3,
+      "missing_or_ambiguous_domestic_context": 9,
       "sparse_control_unavailable": 6
     },
     "source_group_states": {
       "BL1:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "DED:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "ELC:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "FL1:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "PD:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "PL:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "PPL:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "SA:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       }
     },
     "source_groups": {
-      "BL1:2026": 0,
-      "DED:2026": 0,
-      "ELC:2026": 0,
-      "FL1:2026": 0,
-      "PD:2026": 0,
-      "PL:2026": 0,
-      "PPL:2026": 0,
-      "SA:2026": 0
+      "BL1:2026": 2,
+      "DED:2026": 2,
+      "ELC:2026": 2,
+      "FL1:2026": 2,
+      "PD:2026": 2,
+      "PL:2026": 2,
+      "PPL:2026": 2,
+      "SA:2026": 2
     }
   },
   "daily_pick_days_written": [],
@@ -98,7 +262,7 @@
   "prediction_errors": [],
   "prediction_unavailable": 12,
   "processed_fixtures": 12,
-  "provider_adapter_calls": 13,
+  "provider_adapter_calls": 32,
   "provider_fixture_counts": {
     "BL1": 18,
     "BSA": 19,
@@ -117,7 +281,7 @@
   "uefa_two_season_history_coverage": [
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:33.010382+00:00",
+      "as_of_utc": "2026-11-26T07:48:00.792870+00:00",
       "competition": "EL",
       "fixture_id": "1636244",
       "forecast_policy_unchanged": true,
@@ -170,7 +334,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:33.821967+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.316892+00:00",
       "competition": "EL",
       "fixture_id": "1636255",
       "forecast_policy_unchanged": true,
@@ -223,7 +387,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:33.903811+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.388088+00:00",
       "competition": "EL",
       "fixture_id": "1636298",
       "forecast_policy_unchanged": true,
@@ -276,7 +440,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.014786+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.487510+00:00",
       "competition": "EL",
       "fixture_id": "1636307",
       "forecast_policy_unchanged": true,
@@ -329,7 +493,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.097450+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.559285+00:00",
       "competition": "EL",
       "fixture_id": "1636329",
       "forecast_policy_unchanged": true,
@@ -382,7 +546,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.179752+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.631550+00:00",
       "competition": "EL",
       "fixture_id": "1636252",
       "forecast_policy_unchanged": true,
@@ -435,7 +599,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.262565+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.703248+00:00",
       "competition": "EL",
       "fixture_id": "1636270",
       "forecast_policy_unchanged": true,
@@ -488,7 +652,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.344560+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.775014+00:00",
       "competition": "EL",
       "fixture_id": "1636277",
       "forecast_policy_unchanged": true,
@@ -541,7 +705,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.427361+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.847076+00:00",
       "competition": "EL",
       "fixture_id": "1636301",
       "forecast_policy_unchanged": true,
@@ -594,7 +758,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.510473+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.919019+00:00",
       "competition": "EL",
       "fixture_id": "1636336",
       "forecast_policy_unchanged": true,
@@ -647,7 +811,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.592805+00:00",
+      "as_of_utc": "2026-11-26T07:48:01.991003+00:00",
       "competition": "EL",
       "fixture_id": "1636343",
       "forecast_policy_unchanged": true,
@@ -700,7 +864,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T06:15:34.675895+00:00",
+      "as_of_utc": "2026-11-26T07:48:02.062810+00:00",
       "competition": "EL",
       "fixture_id": "1636349",
       "forecast_policy_unchanged": true,
@@ -753,11 +917,14 @@
     }
   ],
   "upcoming_fixtures": 235,
-  "v10_market_calls": 0,
-  "v10_market_refresh_checked": 0,
+  "v10_market_calls": 1,
+  "v10_market_refresh_checked": 1,
   "v10_market_refresh_errors": [],
-  "v10_market_refresh_v10_saved": 0,
-  "v10_market_refresh_v9_saved": 0,
+  "v10_market_refresh_reasons": {
+    "verified_market_comparison_saved": 1
+  },
+  "v10_market_refresh_v10_saved": 1,
+  "v10_market_refresh_v9_saved": 1,
   "v10_near_research_saved": 0,
   "v10_research_backfill_checked": 0,
   "v10_research_backfill_errors": [],
@@ -771,12 +938,12 @@
       "team_history_below_five": 12
     }
   },
-  "v10_shadow_v10_saved": 0,
+  "v10_shadow_v10_saved": 1,
   "v10_shadow_v12_saved": 0,
   "v10_shadow_v13_saved": 0,
   "v10_shadow_v8_saved": 0,
   "v10_shadow_v8_saved_by_league": {},
-  "v10_shadow_v9_saved": 0,
+  "v10_shadow_v9_saved": 1,
   "v37_sparse_shadow_coverage": {
     "EL": {
       "original_v37_already_issued": 12
