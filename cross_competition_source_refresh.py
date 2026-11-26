@@ -72,6 +72,58 @@ def domestic_gap(fixture, cache, cutoff):
     return result
 
 
+def membership_candidates(payload, season, observed_at):
+    """Discovery only: provider league metadata is not qualified match history."""
+    meta=payload["metadata"]
+    if (meta.get("provider")!="API-Football" or
+            meta.get("freshness_known") is not True or meta.get("stale") is not False or
+            _date(meta["fetched_at_utc"])>_date(observed_at)):
+        return {"status":"unqualified_source","leagues":[]}
+    candidates={}
+    for item in payload["data"]:
+        league=item.get("league") or {}
+        country=item.get("country") or {}
+        identifier=league.get("id")
+        if (type(identifier) is not int or identifier<=0 or league.get("type")!="League"
+                or not country.get("code") or country.get("name")=="World"
+                or not any(s.get("year")==season for s in item.get("seasons",[]))):
+            continue
+        candidates[identifier]={"league_id":identifier,"country_code":str(country["code"]),
+                                "already_supported":identifier in DOMESTIC.values()}
+    return {"status":"candidates_only" if candidates else "no_candidates",
+            "leagues":[candidates[k] for k in sorted(candidates)]}
+
+
+def discover_memberships(gaps, seasons, *, key, request, clock, can_spend):
+    """Use only spare collector budget; never feed discovery into frozen models."""
+    targets=set()
+    for fid,gap in gaps.items():
+        if gap.get("unavailable_groups")!=[] or fid not in seasons:
+            continue
+        for side in ("home","away"):
+            item=gap.get(side,{})
+            team=str(item.get("team_id",""))
+            if team.isdecimal() and item.get("reason")=="no_membership_in_qualified_supported_leagues":
+                targets.add((seasons[fid],int(team)))
+    targets=sorted(targets)
+    if targets:
+        # Rotate after each six-hour bucket to avoid always querying the same IDs.
+        offset=int(_date(clock()).timestamp()//21600)%len(targets)
+        targets=targets[offset:]+targets[:offset]
+    results={}
+    for season,team in targets:
+        if not can_spend(1):
+            break
+        try:
+            payload=request(key,"/leagues",{"team":team,"season":season},with_metadata=True)
+            result=membership_candidates(payload,season,clock())
+        except (KeyError,ValueError,TypeError,AttributeError,OverflowError,RuntimeError,OSError):
+            result={"status":"provider_or_payload_error","leagues":[]}
+        results[str(season)+":"+str(team)]=result
+    return {"target_count":len(targets),"attempted":len(results),"results":results,
+            "research_only":True,"history_recovered":False}
+
+
 def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
             time_available, extra_limit=0, root=ROOT,
             loader=load_evidence, recorder=freeze, sparse_predict=predict):
@@ -206,6 +258,10 @@ def refresh(fixtures, cache, *, key, request, clock, remaining_calls,
                     report["domestic_context_gaps"][fid]={"reason":"diagnostic_unavailable"}
         except (ValueError,TypeError,KeyError,OSError,AttributeError,OverflowError):
             outcomes["receipt_error"]+=1
+    report["domestic_membership_discovery"]=discover_memberships(
+        report["domestic_context_gaps"],
+        {fid:season_year(fixture) for _,fid,fixture,_ in eligible},
+        key=key,request=bounded_request,clock=clock,can_spend=can_spend)
     report["domestic_retry_entries"]=len(retried)
     report["outcomes"]=dict(outcomes)
     report["candidate_limit_skipped"]=max(0,len(candidates)-MAX_CANDIDATES)
