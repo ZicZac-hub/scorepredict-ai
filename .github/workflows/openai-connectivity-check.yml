@@ -1,0 +1,67 @@
+name: One-time OpenAI connectivity verification
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/openai-connectivity-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Send one minimal OpenAI API request and report safe status
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request, urllib.error
+          key = os.getenv("OPENAI_API_KEY", "")
+          if not key:
+              print("RESULT: missing_OPENAI_API_KEY_secret")
+              raise SystemExit(1)
+          body = json.dumps({"model":"gpt-4o-mini","input":"Reply OK.","max_output_tokens":32,"store":False}).encode()
+          request = urllib.request.Request(
+              "https://api.openai.com/v1/responses",
+              data=body,
+              headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},
+              method="POST")
+          try:
+              with urllib.request.urlopen(request,timeout=25) as response:
+                  result=json.load(response)
+                  ok = response.status == 200 and bool(result.get("id"))
+                  print("RESULT: connected_http_200" if ok else "RESULT: unexpected_success_body")
+                  raise SystemExit(0 if ok else 1)
+          except urllib.error.HTTPError as error:
+              code = error.code
+              try:
+                  details=json.loads(error.read(4096)).get("error",{})
+                  reason=details.get("code")
+                  error_type=details.get("type")
+                  parameter=details.get("param")
+                  message=str(details.get("message") or "").lower()
+              except (ValueError,AttributeError):
+                  reason=None
+                  error_type=None
+                  parameter=None
+                  message=""
+              allowed={"insufficient_quota","rate_limit_exceeded","invalid_api_key","billing_hard_limit_reached","invalid_request_error","model_not_found","unsupported_parameter"}
+              safe_types={"invalid_request_error","authentication_error","insufficient_quota","rate_limit_exceeded"}
+              safe_params={"model","input","max_output_tokens","store"}
+              categories={"unsupported_parameter":("unsupported" in message and "parameter" in message),
+                          "model_access":("model" in message and ("access" in message or "not found" in message)),
+                          "token_limit":("token" in message and ("minimum" in message or "least" in message)),
+                          "organization_verification":("verif" in message and "organi" in message)}
+              category=next((name for name,matched in categories.items() if matched),"unclassified")
+              print("RESULT: http_"+str(code))
+              print("SAFE_ERROR_CODE:",reason if reason in allowed else "unavailable")
+              print("SAFE_ERROR_TYPE:",error_type if error_type in safe_types else "unavailable")
+              print("SAFE_ERROR_PARAMETER:",parameter if parameter in safe_params else "unavailable")
+              print("SAFE_ERROR_CATEGORY:",category)
+              raise SystemExit(1)
+          except Exception as error:
+              print("RESULT: transport_error_"+type(error).__name__)
+              raise SystemExit(1)
+          PY
