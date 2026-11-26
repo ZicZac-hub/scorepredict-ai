@@ -128,3 +128,37 @@ def test_domestic_gap_detects_ambiguous_membership_and_future_observation():
     result=domestic_gap(FIXTURE,sources,at)
     assert result["away"]["reason"]=="context_counts_qualified"
     assert "BL1:2031" in result["unavailable_groups"]
+
+
+def test_membership_discovery_filters_cups_and_stale_observations():
+    from cross_competition_source_refresh import membership_candidates
+    payload={"metadata":{"provider":"API-Football","freshness_known":True,
+                         "stale":False,"fetched_at_utc":NOW.isoformat()},
+             "data":[{"league":{"id":88,"type":"League"},"country":{"code":"NL","name":"Netherlands"},"seasons":[{"year":2031}]},
+                     {"league":{"id":999,"type":"Cup"},"country":{"code":"NL"},"seasons":[{"year":2031}]},
+                     {"league":{"id":1000,"type":"League"},"country":{"code":"NL"},"seasons":[{"year":2030}]}]}
+    assert membership_candidates(payload,2031,NOW)=={
+        "status":"candidates_only","leagues":[{"league_id":88,"country_code":"NL","already_supported":True}]}
+    payload["metadata"]["stale"]=True
+    assert membership_candidates(payload,2031,NOW)["status"]=="unqualified_source"
+
+
+def test_membership_discovery_deduplicates_and_respects_spare_budget():
+    from cross_competition_source_refresh import discover_memberships
+    missing=lambda team:{"team_id":str(team),"reason":"no_membership_in_qualified_supported_leagues"}
+    gaps={"1":{"unavailable_groups":[],"home":missing(5),"away":missing(6)},
+          "2":{"unavailable_groups":[],"home":missing(5)},
+          "3":{"unavailable_groups":["PL:2031"],"home":missing(7)}}
+    calls=[]
+    def request(key,endpoint,params,**kwargs):
+        calls.append((key,endpoint,params,kwargs))
+        return {"metadata":{"provider":"API-Football","freshness_known":True,
+                            "stale":False,"fetched_at_utc":NOW.isoformat()},"data":[]}
+    report=discover_memberships(gaps,{"1":2031,"2":2031,"3":2031},key="synthetic",
+        request=request,clock=lambda:NOW,can_spend=lambda n:len(calls)+n<=1)
+    assert report["target_count"]==2 and report["attempted"]==1
+    assert calls[0][1]=="/leagues" and calls[0][2]["team"] in (5,6)
+    assert calls[0][3]=={"with_metadata":True}
+    assert report["history_recovered"] is False
+    assert discover_memberships(gaps,{"1":2031},key="synthetic",request=request,
+        clock=lambda:NOW,can_spend=lambda n:False)["attempted"]==0
