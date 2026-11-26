@@ -43,7 +43,7 @@
             "as_of_utc": "2026-11-25T23:27:14.420727Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 5.24,
-            "evidence_age_hours_at_decision": 21.17,
+            "evidence_age_hours_at_decision": 22.18,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 5.34,
@@ -60,7 +60,7 @@
           "model_version": "ziczac-v8-near-kickoff-research-v1",
           "provider": "API-Football",
           "v25_probability": {
-            "frozen_at_utc": "2026-11-26T20:37:23.097343+00:00",
+            "frozen_at_utc": "2026-11-26T21:38:16.885773+00:00",
             "score_matrix": [
               [
                 0.08734913832708095,
@@ -462,7 +462,7 @@
             "as_of_utc": "2026-11-25T23:27:27.553367Z",
             "away_recent_matches_observed": 10.0,
             "away_rest_days": 19.2,
-            "evidence_age_hours_at_decision": 21.17,
+            "evidence_age_hours_at_decision": 22.18,
             "genuine_shot_based_xg_available": false,
             "home_recent_matches_observed": 10.0,
             "home_rest_days": 26.09,
@@ -479,7 +479,7 @@
           "model_version": "ziczac-v8-near-kickoff-research-v1",
           "provider": "API-Football",
           "v25_probability": {
-            "frozen_at_utc": "2026-11-26T20:37:23.097343+00:00",
+            "frozen_at_utc": "2026-11-26T21:38:16.885773+00:00",
             "score_matrix": [
               [
                 0.08877595146006448,
@@ -741,7 +741,7 @@
             "version": "v25-equal-sensitivity-mixture-v1"
           }
         },
-        "selected_at_utc": "2026-11-26T20:37:23.097343+00:00",
+        "selected_at_utc": "2026-11-26T21:38:16.885773+00:00",
         "sensitivity_model_names": [
           "baseline_v8",
           "poisson_marginal",
@@ -749,8 +749,8 @@
           "bivariate_poisson_c012"
         ],
         "source_age_hours": [
-          21.17,
-          21.17
+          22.18,
+          22.18
         ],
         "source_freshness_warning": false,
         "sydney_date": "2026-11-28",
@@ -761,8 +761,8 @@
     "eligible_fixtures": 9,
     "excluded": {
       "invalid_source_time": 226,
-      "not_original_v8_model": 918,
-      "outside_research_freeze_window": 221
+      "not_original_v8_model": 928,
+      "outside_research_freeze_window": 226
     },
     "next_possible_pair_window_utc": "2026-11-27T12:30:00+00:00",
     "next_possible_sydney_day": "2026-11-28",
@@ -771,14 +771,12 @@
   },
   "conflicting_verified_results_excluded": 0,
   "external_api_requests": 0,
-  "generated_at_utc": "2026-11-26T20:37:23.097343+00:00",
+  "generated_at_utc": "2026-11-26T21:38:16.885773+00:00",
   "model_promotion": false,
   "model_version": "pro-analyst-v25-robust-sensitivity-shadow",
   "never_a_claim_of_70_percent_accuracy": true,
-  "new_sets": [
-    "2026-11-28"
-  ],
-  "observed_robust_hit_rate": 0.125,
+  "new_sets": [],
+  "observed_robust_hit_rate": 0.1111111111111111,
   "outcomes": [
     {
       "actual_scores": [
@@ -877,9 +875,15 @@
       "sydney_date": "2026-11-26"
     },
     {
+      "actual_scores": [
+        "2-1",
+        "4-0"
+      ],
+      "baseline_hit": false,
       "first": "1636231",
+      "robust_hit": false,
       "second": "1636315",
-      "status": "pending",
+      "status": "verified",
       "sydney_date": "2026-11-27"
     },
     {
@@ -889,9 +893,9 @@
       "sydney_date": "2026-11-28"
     }
   ],
-  "pending_sets": 2,
+  "pending_sets": 1,
   "policy": "read_only_validation_of_immutable_source_forecasts_with_strict_provider_identity",
   "robust_wins": 1,
   "total_frozen_sets": 10,
-  "verified_sets": 8
+  "verified_sets": 9
 }
