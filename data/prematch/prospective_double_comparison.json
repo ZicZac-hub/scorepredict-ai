@@ -2,23 +2,23 @@
   "balanced_only_vs_original": 0,
   "diversified_only_vs_original": 1,
   "exclusions": {
-    "awaiting_both_verified_results": 11
+    "awaiting_both_verified_results": 10
   },
   "frozen_balanced_weight": 0.15,
   "methods": {
     "balanced": {
-      "mean_estimated_probability_coverage": 0.05241201226095353,
-      "win_rate": 0.037037037037037035,
+      "mean_estimated_probability_coverage": 0.052598906495065434,
+      "win_rate": 0.03636363636363636,
       "wins": 2
     },
     "diversified": {
-      "mean_estimated_probability_coverage": 0.04022935152637869,
-      "win_rate": 0.018518518518518517,
+      "mean_estimated_probability_coverage": 0.04039908191163248,
+      "win_rate": 0.01818181818181818,
       "wins": 1
     },
     "original": {
-      "mean_estimated_probability_coverage": 0.053072875804370485,
-      "win_rate": 0.037037037037037035,
+      "mean_estimated_probability_coverage": 0.053265551166658945,
+      "win_rate": 0.03636363636363636,
       "wins": 2
     }
   },
@@ -26,7 +26,7 @@
   "original_only_vs_balanced": 0,
   "original_only_vs_diversified": 2,
   "pairs_frozen": 65,
-  "pairs_verified": 54,
+  "pairs_verified": 55,
   "rows": [
     {
       "actual_scores": [
@@ -368,6 +368,37 @@
       "original_probability_coverage": 0.06072964401978863,
       "pair_key": "BSA_1492460_1492466",
       "second_match": "Fluminense vs Mirassol"
+    },
+    {
+      "actual_scores": [
+        "3-0",
+        "1-1"
+      ],
+      "balanced_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 4,
+        "match_2_scores": 2
+      },
+      "balanced_hit": false,
+      "balanced_probability_coverage": 0.0626911951371083,
+      "diversified_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 5,
+        "match_2_scores": 5
+      },
+      "diversified_hit": false,
+      "diversified_probability_coverage": 0.049564522715337615,
+      "first_match": "Chapecoense-sc vs Palmeiras",
+      "league": "BSA",
+      "original_coverage": {
+        "distinct_exact_score_pairs": 5,
+        "match_1_scores": 3,
+        "match_2_scores": 2
+      },
+      "original_hit": false,
+      "original_probability_coverage": 0.0636700207302359,
+      "pair_key": "BSA_1492461_1492472",
+      "second_match": "Atletico-MG vs Corinthians"
     },
     {
       "actual_scores": [

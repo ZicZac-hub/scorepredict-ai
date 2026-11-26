@@ -1,39 +1,32 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-26T06:17:43.059851+00:00",
-  "attempts": [
-    {
-      "date": "2026-11-26",
-      "page": 11
-    },
-    {
-      "date": "2026-11-26",
-      "page": 12
-    }
-  ],
+  "at_utc": "2026-11-26T09:05:58.229645+00:00",
+  "attempts": [],
   "binding": {
-    "catalog_snapshot_rejections": {},
+    "catalog_snapshot_rejections": {
+      "market_quotes_stale": 2
+    },
     "fixtures_without_catalog": 225,
-    "missing_catalog": 225,
+    "missing_catalog": 227,
     "new_bindings": [],
     "out_of_window": 214,
     "v8_checked": 239,
-    "v8_with_catalog": 14
+    "v8_with_catalog": 12
   },
-  "catalog_rejection_counts": {
-    "fixture_already_started": 6
-  },
-  "completed_at_utc": "2026-11-26T06:17:45.816143+00:00",
+  "catalog_rejection_counts": {},
+  "completed_at_utc": "2026-11-26T09:05:59.419957+00:00",
   "coverage_health": {
-    "catalog_snapshot_rejections": {},
+    "catalog_snapshot_rejections": {
+      "market_quotes_stale": 2
+    },
     "does_not_establish_accuracy_gain": true,
     "eligible_frozen_forecasts": 239,
     "fixtures_without_catalog": 225,
-    "matched_market_forecasts": 14,
+    "matched_market_forecasts": 12,
     "new_identity_validated_packets": 0,
     "provider_request_errors": 0,
     "reason": "market_available_for_some_fixtures",
-    "unmatched_market_forecasts": 225
+    "unmatched_market_forecasts": 227
   },
   "daily_limit": 12,
   "empty_pages": 0,
@@ -42,7 +35,6 @@
     "2026-11-26",
     "2026-11-27",
     "2026-11-28",
-    "2026-11-29",
     "2026-11-30",
     "2026-12-01",
     "2026-12-02",
@@ -52,25 +44,16 @@
     "2026-12-06",
     "2026-12-07",
     "2026-12-08",
-    "2026-12-09"
+    "2026-12-09",
+    "2026-11-29"
   ],
-  "new_catalog_fixtures": [
-    "1651254",
-    "1651387",
-    "1651388",
-    "1651511",
-    "1651515"
-  ],
+  "new_catalog_fixtures": [],
   "new_source_bindings": [],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
   "provider_errors": [],
-  "provider_fixture_rows": 11,
-  "queries": 2,
-  "quote_diagnostics": {
-    "accepted_bookmaker_market": 423,
-    "incomplete_supported_market": 57,
-    "unsupported_market_type": 1694
-  },
+  "provider_fixture_rows": 0,
+  "queries": 0,
+  "quote_diagnostics": {},
   "request_budget_per_run": 2,
   "requests_used_today": 12,
   "skipped_stale": 0
