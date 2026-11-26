@@ -56,6 +56,7 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
     targeted=targeted_pair_models(source_root=source_root,pair_root=pair_root,now=clock)
     targets={(str(row["provider"]),str(row["fixture_id"]),str(row["forecast_id"]))
              for row in targeted}
+    target_deadline=min((utc(row["kickoff_utc"]) for row in targeted),default=None)
     if targeted:
         identities={(str(row["provider"]),str(row["fixture_id"])) for row in targeted}
         models=list(targeted)+[row for row in models if
@@ -86,6 +87,13 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             late_window=(clock+timedelta(minutes=8)<kickoff<=
                          clock+timedelta(minutes=NEAR_REFRESH_MAX_MINUTES))
             target=(str(leg["provider"]),str(leg["fixture_id"]),str(leg["forecast_id"])) in targets
+            # Paired research must observe both legs before the earlier
+            # kickoff. Do not spend reserved paired attempts after its window
+            # closes merely because the second match starts later.
+            capture_deadline=min(kickoff,target_deadline) if target else kickoff
+            if not clock+timedelta(minutes=8)<capture_deadline:
+                result["skipped"].append(str(leg["fixture_id"])+":common_pair_window_closed")
+                continue
             refresh_needed=bool(path.exists() and (late_window or target) and
                                 availability["refresh_reasons"])
             # An early fixed-pair refresh must not consume the later XI refresh.
@@ -147,7 +155,7 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             evidence=load_evidence(fixture,as_of=clock,api_key=key,
                                    api_request=cb,cache=cache)
             clock=observation_time()
-            if not clock+timedelta(minutes=8)<kickoff:
+            if not clock+timedelta(minutes=8)<capture_deadline:
                 result["skipped"].append(str(leg["fixture_id"])+":history_completed_outside_capture_window")
                 continue
             provider=capture(fixture,evidence["history"],key,

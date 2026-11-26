@@ -41,3 +41,27 @@ def test_two_legs_keep_provider_credential_after_history_archive(tmp_path, monke
     assert calls == [(stage, leg["fixture_id"], sentinel)
                      for leg in legs for stage in ("history", "capture")]
     assert sentinel not in (root / "status.json").read_text()
+
+
+def test_common_pair_deadline_stops_late_second_leg_attempt(tmp_path, monkeypatch):
+    from datetime import timedelta
+    source, pairs, legs = fixture_sources(tmp_path)
+    root = tmp_path / "packets"
+    current = [NOW]
+    seen = []
+    def history(fixture, **kwargs):
+        return {"history": [], "input_digest": "synthetic"}
+    def capture(fixture, history, key, **kwargs):
+        leg = next(row for row in legs if row["fixture_id"] == str(fixture["id"]))
+        seen.append(leg["fixture_id"])
+        current[0] = NOW + timedelta(minutes=53)
+        return packet(leg, captured=current[0])
+    monkeypatch.setattr(collector, "current_pair", lambda *a, **k: list(legs))
+    monkeypatch.setattr(collector, "load_evidence", history)
+    monkeypatch.setattr(collector, "capture", capture)
+    monkeypatch.setenv("V21_DAILY_CAPTURE_ATTEMPTS", "6")
+    status = collector.capture_pair(root=root, source_root=source, pair_root=pairs,
+        enabled=True, api_key="synthetic", now=NOW, clock=lambda: current[0])
+    assert seen == [legs[0]["fixture_id"]]
+    assert status["attempted_legs"] == status["daily_attempts_used"] == 1
+    assert legs[1]["fixture_id"] + ":common_pair_window_closed" in status["skipped"]
