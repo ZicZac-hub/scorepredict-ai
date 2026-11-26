@@ -24,7 +24,7 @@
       "total_goals_bias_actual_minus_expected": null,
       "verified_leg_slots": 0
     },
-    "finished_original_v8_fixtures": 111,
+    "finished_original_v8_fixtures": 114,
     "holdout_source_receipts": [],
     "kind": "retrospective_chronological_replay_from_real_original_pre_match_forecasts",
     "limitations": [
@@ -48,7 +48,7 @@
       "historical_chronological_test_ready": false,
       "max_prior_verified_before_any_historical_source_capture": 0,
       "minimum_prior_verified_fixtures_for_correction": 30,
-      "verified_original_v8_fixtures_known_now": 111
+      "verified_original_v8_fixtures_known_now": 114
     },
     "v26_minus_v8_log_loss": null,
     "v26_minus_v8_multiclass_brier": null,
@@ -79,26 +79,22 @@
     "verified_holdout_fixtures": 0,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
-  "evaluated_at_utc": "2026-11-26T20:37:25.243169+00:00",
+  "evaluated_at_utc": "2026-11-26T21:16:45.191251+00:00",
   "no_provider_calls": true,
   "original_frozen_forecasts_changed": false,
   "production_model_promoted": false,
   "prospective_freeze": {
-    "abstentions": {
-      "v25_set_not_new_in_same_freeze_window": 9
-    },
+    "abstentions": {},
     "live_model_changed": false,
     "model": "v26-temporal-tail-calibration-v1-research-only",
-    "new_frozen_days": [
-      "2026-11-28"
-    ]
+    "new_frozen_days": []
   },
   "prospective_verified": {
     "70_percent_proven": false,
     "invalid_or_tampered_sets_excluded": {},
     "no_historical_v26_probability_backfill": true,
     "no_model_promotion": true,
-    "pending_pairs": 2,
+    "pending_pairs": 1,
     "rows": [
       {
         "actual_scores": [
@@ -371,11 +367,94 @@
         "v8_same_pair_five_hit": false
       },
       {
+        "actual_scores": [
+          "2-1",
+          "4-0"
+        ],
         "new_v26_selection_at_utc": "2026-11-25T18:17:38.060092+00:00",
         "original_v25_source_selected_at_utc": "2026-11-25T18:17:35.500387+00:00",
-        "status": "pending",
+        "status": "verified",
         "sydney_date": "2026-11-27",
-        "training_fixtures_before_selection": 102
+        "training_fixtures_before_selection": 102,
+        "v25_robust_five_hit": false,
+        "v26_five_hit": false,
+        "v26_leg_score_metrics": [
+          {
+            "actual_score": "2-1",
+            "actual_total_goals": 3,
+            "exact_score_log_loss": 2.447341158635416,
+            "exact_score_probability": 0.08652333275072352,
+            "expected_total_goals": 2.886995496988229,
+            "goal_mae": 0.30878380817783213,
+            "multiclass_score_brier": 0.9047110525869282,
+            "over_3_5_brier": 0.10953644641763267,
+            "over_3_5_observed": 0,
+            "over_3_5_probability": 0.3309629079181422,
+            "top_five_hit": 1,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.051052174343023,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.22594728222092647
+          },
+          {
+            "actual_score": "4-0",
+            "actual_total_goals": 4,
+            "exact_score_log_loss": 5.959425007459674,
+            "exact_score_probability": 0.0025813958287281774,
+            "expected_total_goals": 3.2765566410027107,
+            "goal_mae": 2.52136010451019,
+            "multiclass_score_brier": 1.051271655310771,
+            "over_3_5_brier": 0.3397164415993524,
+            "over_3_5_observed": 1,
+            "over_3_5_probability": 0.41714801055555073,
+            "top_five_hit": 0,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.02896751429208898,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.1701984556101758
+          }
+        ],
+        "v8_leg_score_metrics": [
+          {
+            "actual_score": "2-1",
+            "actual_total_goals": 3,
+            "exact_score_log_loss": 2.4269703029331993,
+            "exact_score_probability": 0.08830396197204886,
+            "expected_total_goals": 2.9075149125910027,
+            "goal_mae": 0.31459670250600796,
+            "multiclass_score_brier": 0.9011137702576718,
+            "over_3_5_brier": 0.11028565086169541,
+            "over_3_5_observed": 0,
+            "over_3_5_probability": 0.33209283470393547,
+            "top_five_hit": 1,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.04652591818947495,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.21569867451951333
+          },
+          {
+            "actual_score": "4-0",
+            "actual_total_goals": 4,
+            "exact_score_log_loss": 5.95821090208302,
+            "exact_score_probability": 0.00258453181860898,
+            "expected_total_goals": 3.291932920844426,
+            "goal_mae": 2.52382881338494,
+            "multiclass_score_brier": 1.0514293832529458,
+            "over_3_5_brier": 0.3391259555231066,
+            "over_3_5_observed": 1,
+            "over_3_5_probability": 0.41765477977139137,
+            "top_five_hit": 0,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.02628367777570001,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.16212241601857533
+          }
+        ],
+        "v8_same_pair_five_hit": false
       },
       {
         "new_v26_selection_at_utc": "2026-11-26T20:37:25.243169+00:00",
@@ -386,52 +465,52 @@
       }
     ],
     "same_legs_v26_score_metrics": {
-      "high_goal_4_plus_observed": 2,
-      "high_goal_probability_gap_observed_minus_predicted": 0.06970862566478331,
+      "high_goal_4_plus_observed": 3,
+      "high_goal_probability_gap_observed_minus_predicted": 0.08376760443937586,
       "low_goal_0_or_1_observed": 1,
-      "mean_actual_total_goals": 2.6666666666666665,
-      "mean_exact_score_log_loss": 2.9098549209011835,
-      "mean_expected_total_goals": 2.56030174925322,
-      "mean_goal_mae": 0.8858382684464482,
-      "mean_multiclass_score_brier": 0.9195139014341555,
-      "mean_over_3_5_brier": 0.2587976799541732,
-      "mean_over_3_5_observed": 0.3333333333333333,
-      "mean_over_3_5_probability": 0.26362470766855,
-      "mean_top_five_hit": 0.6666666666666666,
-      "mean_top_one_hit": 0.3333333333333333,
-      "mean_top_three_hit": 0.6666666666666666,
-      "mean_under_1_5_brier": 0.15846693179424776,
-      "mean_under_1_5_observed": 0.16666666666666666,
-      "mean_under_1_5_probability": 0.29067622413879385,
-      "top_five_exact_hits": 4,
+      "mean_actual_total_goals": 2.875,
+      "mean_exact_score_log_loss": 3.2332369614377736,
+      "mean_expected_total_goals": 2.6906703291887824,
+      "mean_goal_mae": 1.018146690420839,
+      "mean_multiclass_score_brier": 0.934133264562829,
+      "mean_over_3_5_brier": 0.25025487096775306,
+      "mean_over_3_5_observed": 0.375,
+      "mean_over_3_5_probability": 0.29123239556062414,
+      "mean_top_five_hit": 0.625,
+      "mean_top_one_hit": 0.25,
+      "mean_top_three_hit": 0.5,
+      "mean_under_1_5_brier": 0.1288526599250748,
+      "mean_under_1_5_observed": 0.125,
+      "mean_under_1_5_probability": 0.26752538533298315,
+      "top_five_exact_hits": 5,
       "top_one_exact_hits": 2,
       "top_three_exact_hits": 4,
-      "total_goals_bias_actual_minus_expected": 0.10636491741344667,
-      "verified_leg_slots": 6
+      "total_goals_bias_actual_minus_expected": 0.18432967081121765,
+      "verified_leg_slots": 8
     },
     "same_legs_v8_score_metrics": {
-      "high_goal_4_plus_observed": 2,
-      "high_goal_probability_gap_observed_minus_predicted": 0.06956241791991613,
+      "high_goal_4_plus_observed": 3,
+      "high_goal_probability_gap_observed_minus_predicted": 0.08345336163052125,
       "low_goal_0_or_1_observed": 1,
-      "mean_actual_total_goals": 2.6666666666666665,
-      "mean_exact_score_log_loss": 2.9015453285750006,
-      "mean_expected_total_goals": 2.593239594035249,
-      "mean_goal_mae": 0.8917931805013596,
-      "mean_multiclass_score_brier": 0.9170004032469038,
-      "mean_over_3_5_brier": 0.25860597100006766,
-      "mean_over_3_5_observed": 0.3333333333333333,
-      "mean_over_3_5_probability": 0.2637709154134172,
-      "mean_top_five_hit": 0.6666666666666666,
-      "mean_top_one_hit": 0.3333333333333333,
-      "mean_top_three_hit": 0.6666666666666666,
-      "mean_under_1_5_brier": 0.15428485548300933,
-      "mean_under_1_5_observed": 0.16666666666666666,
-      "mean_under_1_5_probability": 0.2720753563686404,
-      "top_five_exact_hits": 4,
+      "mean_actual_total_goals": 2.875,
+      "mean_exact_score_log_loss": 3.2243066470582775,
+      "mean_expected_total_goals": 2.7198606747058656,
+      "mean_goal_mae": 1.0236480748623882,
+      "mean_multiclass_score_brier": 0.931818196624005,
+      "mean_over_3_5_brier": 0.250130929048151,
+      "mean_over_3_5_observed": 0.375,
+      "mean_over_3_5_probability": 0.29154663836947875,
+      "mean_top_five_hit": 0.625,
+      "mean_top_one_hit": 0.25,
+      "mean_top_three_hit": 0.5,
+      "mean_under_1_5_brier": 0.12481484110790385,
+      "mean_under_1_5_observed": 0.125,
+      "mean_under_1_5_probability": 0.2512841535937414,
+      "top_five_exact_hits": 5,
       "top_one_exact_hits": 2,
       "top_three_exact_hits": 4,
-      "total_goals_bias_actual_minus_expected": 0.07342707263141746,
-      "verified_leg_slots": 6
+      "total_goals_bias_actual_minus_expected": 0.15513932529413443,
+      "verified_leg_slots": 8
     },
     "same_pair_five_hits": {
       "v25_robust": 0,
@@ -441,12 +520,12 @@
     "schema_version": 1,
     "study": "genuinely_frozen_v26_on_same_original_v25_fixture_pairs",
     "v26_five_hit_wilson_95": [
-      5.551115123125783e-17,
-      0.5614970317550454
+      0.0,
+      0.4898908364545973
     ],
-    "v26_minus_v8_log_loss": 0.00830959232618289,
-    "v26_minus_v8_multiclass_brier": 0.0025134981872516615,
-    "verified_pairs": 3,
+    "v26_minus_v8_log_loss": 0.008930314379496096,
+    "v26_minus_v8_multiclass_brier": 0.002315067938823967,
+    "verified_pairs": 4,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
   "seventy_percent_proven": false,

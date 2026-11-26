@@ -1,21 +1,13 @@
 {
   "freeze": {
-    "created": [
-      {
-        "decision": "DISTINCT_PAIR_FROZEN",
-        "sydney_day": "2026-11-28"
-      }
-    ],
-    "excluded": {
-      "original_v28_older_than_20_minute_window": 3,
-      "write_once_v29_already_exists": 3
-    },
+    "created": [],
+    "excluded": {},
     "live_forecast_changed": false
   },
-  "generated_at_utc": "2026-11-26T20:38:30.057562+00:00",
+  "generated_at_utc": "2026-11-26T21:17:03.797051+00:00",
   "no_new_provider_or_llm_requests": true,
   "research": {
-    "evaluated_at_utc": "2026-11-26T20:38:30.057562+00:00",
+    "evaluated_at_utc": "2026-11-26T21:17:03.797051+00:00",
     "invalid_final_result_sources_excluded": {},
     "live_predictions_unchanged": true,
     "no_source_or_forecast_changes": true,
@@ -192,28 +184,34 @@
           "eligible_pairs": 3,
           "fixture_statuses": [
             {
-              "final_status": "awaiting_independently_verified_result",
+              "final_status": "verified_final",
               "fixture_id": "1636231",
               "kickoff_utc": "2026-11-26T17:45:00+00:00",
               "provider": "API-Football",
-              "verified_goals": null
+              "verified_goals": [
+                2,
+                1
+              ]
             },
             {
-              "final_status": "awaiting_independently_verified_result",
+              "final_status": "verified_final",
               "fixture_id": "1636315",
               "kickoff_utc": "2026-11-26T17:45:00+00:00",
               "provider": "API-Football",
-              "verified_goals": null
+              "verified_goals": [
+                4,
+                0
+              ]
             }
           ],
           "policy": "FROZEN",
           "quality_and_robustness_identical_pair": true,
-          "status": "pending",
+          "status": "verified",
           "sydney_day": "2026-11-27",
           "unique_fixture_count": 2,
           "unique_fixtures_awaiting_kickoff": 0,
-          "unique_fixtures_awaiting_verified_final": 2,
-          "verified_unique_fixtures": 0
+          "unique_fixtures_awaiting_verified_final": 0,
+          "verified_unique_fixtures": 2
         },
         {
           "eligible_pairs": 28,
@@ -254,12 +252,12 @@
       "next_saved_fixture_kickoff_utc": "2026-11-27T19:45:00+00:00",
       "v28_distinct_policy_pair_days": 1,
       "v28_fixtures_before_kickoff": 3,
-      "v28_fixtures_past_kickoff_awaiting_verified_result": 2,
+      "v28_fixtures_past_kickoff_awaiting_verified_result": 0,
       "v28_frozen_active_days": 7,
       "v28_identical_policy_pair_days": 6,
       "v28_total_distinct_fixture_count": 15,
-      "v28_verified_day_count": 5,
-      "v28_verified_distinct_fixture_count": 10,
+      "v28_verified_day_count": 6,
+      "v28_verified_distinct_fixture_count": 12,
       "verified_fixture_count_is_not_five_double_win_rate": true
     },
     "v29_distinct_pair_experiment": {
@@ -267,17 +265,17 @@
       "alternative_five_wins": 0,
       "alternative_only_wins": 0,
       "alternative_wilson95": [
-        0.0,
-        0.6576197724933469
+        5.551115123125783e-17,
+        0.5614970317550454
       ],
-      "both_arms_verified_days": 2,
+      "both_arms_verified_days": 3,
       "decisions": 4,
       "frozen_alternatives": 4,
       "initial_review_ready": false,
       "invalid_or_modified_set_exclusions": {},
       "minimum_initial_verified_day_review": 100,
       "paired_exact_p": null,
-      "pending_alternatives": 2,
+      "pending_alternatives": 1,
       "rows": [
         {
           "alt_pair_shares_fixtures_with_v28_quality": 1,
@@ -379,6 +377,7 @@
         },
         {
           "alt_pair_shares_fixtures_with_v28_quality": 1,
+          "alternative_five_hit": false,
           "alternative_fixture_keys": [
             [
               "API-Football",
@@ -389,10 +388,20 @@
               "1636334"
             ]
           ],
-          "alternative_verified_legs": 0,
-          "control_verified_legs": 0,
+          "alternative_scores": [
+            "2-1",
+            "2-0"
+          ],
+          "alternative_verified_legs": 2,
+          "control_scores": [
+            "2-1",
+            "4-0"
+          ],
+          "control_verified_legs": 2,
           "decision": "DISTINCT_PAIR_FROZEN",
-          "status": "pending",
+          "original_robustness_five_hit": false,
+          "quality_control_five_hit": false,
+          "status": "verified",
           "sydney_day": "2026-11-27",
           "v28_quality_fixture_keys": [
             [
@@ -457,8 +466,8 @@
       "v28_quality_control_five_wins": 0,
       "v28_quality_only_wins": 0,
       "v28_quality_wilson95": [
-        0.0,
-        0.6576197724933469
+        5.551115123125783e-17,
+        0.5614970317550454
       ]
     },
     "verified_final_evidence_conflicts_excluded": 0,

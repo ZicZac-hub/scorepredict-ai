@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22049085705874127,
-          "expected_events": 39.8078855913015,
-          "observed_events": 38,
-          "observed_rate": 0.34234234234234234,
-          "predicted_rate": 0.3586295999216351,
-          "rate_gap_observed_minus_predicted": -0.016287257579292783
+          "brier": 0.2204534510420055,
+          "expected_events": 41.0134804157974,
+          "observed_events": 39,
+          "observed_rate": 0.34210526315789475,
+          "predicted_rate": 0.35976737206839826,
+          "rate_gap_observed_minus_predicted": -0.017662108910503536
         },
         "exact_0_3": {
-          "brier": 0.017681312696135914,
-          "expected_events": 2.416017022841499,
+          "brier": 0.01725175490128974,
+          "expected_events": 2.4914115403302004,
           "observed_events": 2,
-          "observed_rate": 0.018018018018018018,
-          "predicted_rate": 0.021765919124698187,
-          "rate_gap_observed_minus_predicted": -0.0037479011066801713
+          "observed_rate": 0.017543859649122806,
+          "predicted_rate": 0.02185448719587895,
+          "rate_gap_observed_minus_predicted": -0.004310627546756144
         },
         "exact_3_0": {
-          "brier": 0.04294455009813035,
-          "expected_events": 4.600906225467041,
+          "brier": 0.04194937765850781,
+          "expected_events": 4.779491412566931,
           "observed_events": 5,
-          "observed_rate": 0.04504504504504504,
-          "predicted_rate": 0.0414496056348382,
-          "rate_gap_observed_minus_predicted": 0.00359543941020684
+          "observed_rate": 0.043859649122807015,
+          "predicted_rate": 0.041925363268130976,
+          "rate_gap_observed_minus_predicted": 0.001934285854676044
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18347245456725497,
-          "expected_events": 19.519936041816532,
-          "observed_events": 26,
-          "observed_rate": 0.23423423423423423,
-          "predicted_rate": 0.17585527965600478,
-          "rate_gap_observed_minus_predicted": 0.05837895457822944
+          "brier": 0.18524784495457983,
+          "expected_events": 20.288225603141047,
+          "observed_events": 27,
+          "observed_rate": 0.23684210526315788,
+          "predicted_rate": 0.17796689125562323,
+          "rate_gap_observed_minus_predicted": 0.058875214007534676
         }
       },
-      "verified_fixtures": 111
+      "verified_fixtures": 114
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2234266516672569,
-          "expected_events": 36.62075713570166,
-          "observed_events": 34,
-          "observed_rate": 0.3300970873786408,
-          "predicted_rate": 0.3555413314145792,
-          "rate_gap_observed_minus_predicted": -0.025444244035938438
+          "brier": 0.22330333402826227,
+          "expected_events": 37.82635196019756,
+          "observed_events": 35,
+          "observed_rate": 0.330188679245283,
+          "predicted_rate": 0.3568523769829959,
+          "rate_gap_observed_minus_predicted": -0.02666369773771286
         },
         "exact_0_3": {
-          "brier": 0.010047539635286718,
-          "expected_events": 2.204300462573246,
+          "brier": 0.009801612565193168,
+          "expected_events": 2.2796949800619473,
           "observed_events": 1,
-          "observed_rate": 0.009708737864077669,
-          "predicted_rate": 0.021400975364788796,
-          "rate_gap_observed_minus_predicted": -0.011692237500711125
+          "observed_rate": 0.009433962264150943,
+          "predicted_rate": 0.021506556415678748,
+          "rate_gap_observed_minus_predicted": -0.012072594151527805
         },
         "exact_3_0": {
-          "brier": 0.046066341300692946,
-          "expected_events": 4.2538362298884955,
+          "brier": 0.04490770892593202,
+          "expected_events": 4.432421416988386,
           "observed_events": 5,
-          "observed_rate": 0.04854368932038835,
-          "predicted_rate": 0.04129938087270384,
-          "rate_gap_observed_minus_predicted": 0.00724430844768451
+          "observed_rate": 0.04716981132075472,
+          "predicted_rate": 0.04181529638668288,
+          "rate_gap_observed_minus_predicted": 0.005354514934071832
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18648824713946577,
-          "expected_events": 17.830419788890413,
-          "observed_events": 25,
-          "observed_rate": 0.24271844660194175,
-          "predicted_rate": 0.17311087173680012,
-          "rate_gap_observed_minus_predicted": 0.06960757486514162
+          "brier": 0.18831227663416766,
+          "expected_events": 18.598709350214925,
+          "observed_events": 26,
+          "observed_rate": 0.24528301886792453,
+          "predicted_rate": 0.1754595221718389,
+          "rate_gap_observed_minus_predicted": 0.06982349669608562
         }
       },
-      "verified_fixtures": 103
+      "verified_fixtures": 106
     }
   },
   "focus": {
@@ -3514,6 +3514,93 @@
           }
         },
         "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-1",
+        "captured_at_utc": "2026-11-14T02:30:13.756232+00:00",
+        "fixture_id": "1636231",
+        "fixture_name": "Be\u015fikta\u015f vs Hapoel Beer Sheva",
+        "forecast_id": "9f60434066b61c8b6c9523403aad86ebd77afffe7252eeeeaef1483269974b21",
+        "kickoff_utc": "2026-11-26T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08830396197204886,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.3320928347039354
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.002671390984464878
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.10639349637467788
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.29017460175452353
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "4-0",
+        "captured_at_utc": "2026-11-14T02:30:13.820712+00:00",
+        "fixture_id": "1636315",
+        "fixture_name": "Plzen vs Benfica",
+        "forecast_id": "21dfae83d53104177fb57b8ea2532f86791e825fa9f0d6c4edc8a274ee6b5cf5",
+        "kickoff_utc": "2026-11-26T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.00258453181860898,
+          "actual_exact_score_rank_min": 31,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.41765477977139137
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0630344575633504
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.009090327392102372
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.2230979025693538
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-0",
+        "captured_at_utc": "2026-11-14T02:30:13.856108+00:00",
+        "fixture_id": "1636334",
+        "fixture_name": "Red Bull Salzburg vs Ararat-Armenia",
+        "forecast_id": "953c1ae8e574413c641200c579e5a1f5d826ed90c344da5e29431cd6f612a73a",
+        "kickoff_utc": "2026-11-26T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08045999760136938,
+          "actual_exact_score_rank_min": 3,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.45584721002057477
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.009688668940886309
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.06310136333310996
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.25501705700063576
+          }
+        },
+        "provider": "API-Football"
       }
     ],
     "v8_near": [
@@ -6503,12 +6590,99 @@
           }
         },
         "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-1",
+        "captured_at_utc": "2026-11-24T20:02:56.416419+00:00",
+        "fixture_id": "1636231",
+        "fixture_name": "Be\u015fikta\u015f vs Hapoel Beer Sheva",
+        "forecast_id": "a67af2ae8c7b14865ae59446c22cc83b019e74dd79397ee75ddaf6ff2d8f6030",
+        "kickoff_utc": "2026-11-26T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08830396197204886,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.3320928347039354
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.002671390984464878
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.10639349637467788
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.29017460175452353
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "4-0",
+        "captured_at_utc": "2026-11-24T20:02:58.141841+00:00",
+        "fixture_id": "1636315",
+        "fixture_name": "Plzen vs Benfica",
+        "forecast_id": "9105ab82b443ac7ea01624ae33a41cc196b97ec15278df6c43f86597a439976b",
+        "kickoff_utc": "2026-11-26T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.00258453181860898,
+          "actual_exact_score_rank_min": 31,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.41765477977139137
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0630344575633504
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.009090327392102372
+          },
+          "winning_margin_at_least_three": {
+            "observed": 1,
+            "predicted_probability": 0.2230979025693538
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "2-0",
+        "captured_at_utc": "2026-11-24T20:02:59.871083+00:00",
+        "fixture_id": "1636334",
+        "fixture_name": "Red Bull Salzburg vs Ararat-Armenia",
+        "forecast_id": "cfa214c1e5e87863acd0b4209f272c6fe91d597bf8828c1020fe5871c853d4f3",
+        "kickoff_utc": "2026-11-26T17:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08045999760136938,
+          "actual_exact_score_rank_min": 3,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.45584721002057477
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.009688668940886309
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.06310136333310996
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.25501705700063576
+          }
+        },
+        "provider": "API-Football"
       }
     ]
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-26T03:21:16.576485+00:00",
+  "result_cutoff_utc": "2026-11-26T21:16:44.246263+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
