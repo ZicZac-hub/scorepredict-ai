@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-26T16:27:18.525847+00:00",
+  "evaluated_at_utc": "2026-11-26T17:32:41.283742+00:00",
   "external_requests": 0,
   "invalid_opportunities": 0,
   "limitations": [
@@ -13,7 +13,7 @@
   "lineup_coverage": {
     "both_matches_confirmed_at_decision": 0,
     "numerical_lineup_weight": 0.0,
-    "some_reported_lineup_at_decision": 0
+    "some_reported_lineup_at_decision": 1
   },
   "methods": {
     "baseline_v8": {
@@ -21,10 +21,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 1,
-      "opportunities": 1,
+      "issued": 2,
+      "opportunities": 2,
       "outcome_brier": 0.6473244244642089,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.0061029249397646455,
       "single_fixtures_evaluated": 2,
       "single_score_log_loss": 3.2788283686449553,
@@ -39,10 +39,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 1,
-      "opportunities": 1,
+      "issued": 2,
+      "opportunities": 2,
       "outcome_brier": 0.6494020963903047,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.00609022897481392,
       "single_fixtures_evaluated": 2,
       "single_score_log_loss": 3.2836083555316495,
@@ -57,10 +57,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 1,
-      "opportunities": 1,
+      "issued": 2,
+      "opportunities": 2,
       "outcome_brier": 0.6483259856482145,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.005871687062676385,
       "single_fixtures_evaluated": 2,
       "single_score_log_loss": 3.263969948471736,
@@ -75,10 +75,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 1,
-      "opportunities": 1,
+      "issued": 2,
+      "opportunities": 2,
       "outcome_brier": 0.6483259856482145,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.005871687062676385,
       "single_fixtures_evaluated": 2,
       "single_score_log_loss": 3.263969948471736,
@@ -92,7 +92,7 @@
   "minimum_review_verified_pairs": 100,
   "model_promoted": false,
   "no_automatic_promotion": true,
-  "opportunities": 1,
+  "opportunities": 2,
   "paired_comparisons": {
     "poisson_marginal": {
       "baseline_only_set_wins": 0,
@@ -215,7 +215,7 @@
       "verified_common_pairs": 1
     }
   },
-  "pending_opportunities": 0,
+  "pending_opportunities": 1,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -294,12 +294,58 @@
         "paired_market_used": false,
         "paired_xg_used": false
       }
+    },
+    {
+      "actual_scores": [
+        null,
+        null
+      ],
+      "lineup_context": [
+        {
+          "both_confirmed_xis": true,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 2
+        },
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        }
+      ],
+      "methods": {
+        "baseline_v8": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "poisson_marginal": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "unified_core": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "unified_final": {
+          "metrics": null,
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "sydney_date": "2026-11-27",
+      "unified_final_evidence": {
+        "paired_market_used": true,
+        "paired_xg_used": false
+      }
     }
   ],
   "single_final_arm": "unified_final",
   "source_rejections": {},
   "target_70_percent_proven": false,
-  "valid_opportunities": 1,
+  "valid_opportunities": 2,
   "verified_opportunities": 1,
   "version": "v41-fixed-pair-unified-ensemble-v1"
 }
