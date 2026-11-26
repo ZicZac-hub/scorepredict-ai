@@ -9,6 +9,8 @@ on:
       - 'v42_research_trial.py'
       - 'v42_research_engine.py'
       - 'v42_late_research_trial.py'
+      - 'v42_cutoff_comparison.py'
+      - 'tests/test_v42_cutoff_comparison.py'
       - 'tests/test_v42_late_cutoff.py'
       - 'tests/test_v42_research.py'
   workflow_run:
@@ -42,7 +44,7 @@ jobs:
           python-version: '3.11'
           cache: pip
       - run: python -m pip install -r requirements.txt 'pytest>=8,<10'
-      - run: python -m pytest -q tests/test_v42_research.py tests/test_v42_late_cutoff.py
+      - run: python -m pytest -q tests/test_v42_research.py tests/test_v42_late_cutoff.py tests/test_v42_cutoff_comparison.py
       - name: Refresh authenticated research archive
         id: refresh
         run: |
@@ -55,7 +57,9 @@ jobs:
       - name: Run separate late-cutoff trial without API requests
         id: late
         continue-on-error: true
-        run: python v42_late_research_trial.py
+        run: |
+          python v42_late_research_trial.py
+          python v42_cutoff_comparison.py
       - name: Publish only isolated research archive
         if: steps.refresh.outcome == 'success'
         env:
@@ -69,7 +73,7 @@ jobs:
               roots.append(Path("data/v42_late_research"))
           volatile={"checked_at_utc","evaluated_at_utc","started_at_utc","completed_at_utc"}
           for p in (p for root in roots for p in root.glob("*.json")):
-              if p.name not in {"status.json","performance.json","watchdog.json"}:
+              if p.name not in {"status.json","performance.json","watchdog.json","cutoff_comparison.json"}:
                   continue
               old=subprocess.run(["git","show","HEAD:"+str(p)],capture_output=True,text=True)
               if old.returncode==0:
