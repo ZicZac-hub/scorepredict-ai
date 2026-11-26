@@ -1,13 +1,13 @@
 {
-  "already_captured": 220,
+  "already_captured": 215,
   "api_call_limit": 120,
   "budget_skipped": [],
-  "captured_fixtures": 1,
-  "collector_started_at_utc": "2026-11-26T18:22:21.177871+00:00",
+  "captured_fixtures": 6,
+  "collector_started_at_utc": "2026-11-26T19:38:38.482089+00:00",
   "coverage_complete": false,
   "cross_competition_capture": {
     "missing_or_ambiguous_domestic_context": 14,
-    "sparse_control_unavailable": 1
+    "sparse_control_unavailable": 3
   },
   "cross_competition_source_refresh": {
     "attempted_fixtures": 7,
@@ -30,12 +30,6 @@
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -52,21 +46,20 @@
           "team_id": "637"
         },
         "home": {
-          "observed_current_memberships": [],
-          "reason": "no_membership_in_qualified_supported_leagues",
-          "team_id": "167"
+          "league_matches": 398,
+          "observed_current_memberships": [
+            "BL1"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "167",
+          "team_matches": 44,
+          "venue_matches": 22
         },
         "unavailable_groups": [
           "PL:2026",
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -83,21 +76,20 @@
           "team_id": "3402"
         },
         "home": {
-          "observed_current_memberships": [],
-          "reason": "no_membership_in_qualified_supported_leagues",
-          "team_id": "496"
+          "league_matches": 500,
+          "observed_current_memberships": [
+            "SA"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "496",
+          "team_matches": 50,
+          "venue_matches": 25
         },
         "unavailable_groups": [
           "PL:2026",
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -109,9 +101,14 @@
       "1636301": {
         "absence_not_proof_of_nonparticipation": true,
         "away": {
-          "observed_current_memberships": [],
-          "reason": "no_membership_in_qualified_supported_leagues",
-          "team_id": "94"
+          "league_matches": 406,
+          "observed_current_memberships": [
+            "FL1"
+          ],
+          "reason": "context_counts_qualified",
+          "team_id": "94",
+          "team_matches": 45,
+          "venue_matches": 22
         },
         "home": {
           "observed_current_memberships": [],
@@ -123,12 +120,6 @@
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -154,12 +145,6 @@
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -185,12 +170,6 @@
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -216,12 +195,6 @@
           "PL:2025",
           "PD:2026",
           "PD:2025",
-          "BL1:2026",
-          "BL1:2025",
-          "SA:2026",
-          "SA:2025",
-          "FL1:2026",
-          "FL1:2025",
           "DED:2026",
           "DED:2025",
           "PPL:2026",
@@ -249,8 +222,8 @@
     },
     "source_group_states": {
       "BL1:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "DED:2026": {
         "2025": "missing",
@@ -261,8 +234,8 @@
         "2026": "missing"
       },
       "FL1:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       },
       "PD:2026": {
         "2025": "missing",
@@ -277,35 +250,38 @@
         "2026": "missing"
       },
       "SA:2026": {
-        "2025": "missing",
-        "2026": "missing"
+        "2025": "qualified",
+        "2026": "qualified"
       }
     },
     "source_groups": {
-      "BL1:2026": 0,
+      "BL1:2026": 2,
       "DED:2026": 0,
       "ELC:2026": 0,
-      "FL1:2026": 0,
+      "FL1:2026": 2,
       "PD:2026": 0,
       "PL:2026": 0,
       "PPL:2026": 0,
-      "SA:2026": 0
+      "SA:2026": 2
     }
   },
-  "daily_pick_days_written": [],
-  "daily_research_candidates": 0,
+  "daily_pick_days_written": [
+    "2026-11-27",
+    "2026-11-28"
+  ],
+  "daily_research_candidates": 5,
   "database_records_written": 0,
   "database_recovered_forecasts": 0,
   "database_recovered_settlements": 0,
   "database_status": "not_configured",
   "discovery_budget_skipped": [],
   "discovery_cache_hits": 0,
-  "eligible_horizon_fixtures": 15,
+  "eligible_horizon_fixtures": 20,
   "fixture_limit": 0,
   "history_source_errors": [],
   "league_errors": [],
   "leagues_checked": 11,
-  "ledger_records_written": 4,
+  "ledger_records_written": 24,
   "lookahead_days": 14,
   "news_coverage_complete": true,
   "news_errors": [],
@@ -324,8 +300,8 @@
   },
   "prediction_errors": [],
   "prediction_unavailable": 14,
-  "processed_fixtures": 15,
-  "provider_adapter_calls": 13,
+  "processed_fixtures": 20,
+  "provider_adapter_calls": 39,
   "provider_fixture_counts": {
     "BL1": 18,
     "BSA": 19,
@@ -344,7 +320,7 @@
   "uefa_two_season_history_coverage": [
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:25.322198+00:00",
+      "as_of_utc": "2026-11-26T19:38:42.707006+00:00",
       "competition": "EL",
       "fixture_id": "1636252",
       "forecast_policy_unchanged": true,
@@ -352,8 +328,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -397,7 +374,61 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:25.824638+00:00",
+      "as_of_utc": "2026-11-26T19:38:43.453992+00:00",
+      "competition": "EL",
+      "fixture_id": "1636261",
+      "forecast_policy_unchanged": true,
+      "kickoff_utc": "2026-11-26T20:00:00Z",
+      "minimum_missing_to_five": 0,
+      "no_additional_provider_calls": true,
+      "policy_exclusions": {
+        "not_available_as_of": 5,
+        "target_fixture": 1,
+        "unfinished": 66
+      },
+      "provider": "API-Football",
+      "qualified_team_matches": {
+        "away": 8,
+        "home": 24
+      },
+      "seasons": [
+        {
+          "freshness_known": true,
+          "qualified_population": 152,
+          "qualified_team_matches": {
+            "away": 4,
+            "home": 12
+          },
+          "returned_season_rows": 224,
+          "returned_team_rows": {
+            "away": 8,
+            "home": 16
+          },
+          "season": 2026,
+          "source_season_mismatches": 0,
+          "source_state": "rows_returned"
+        },
+        {
+          "freshness_known": true,
+          "qualified_population": 271,
+          "qualified_team_matches": {
+            "away": 4,
+            "home": 12
+          },
+          "returned_season_rows": 271,
+          "returned_team_rows": {
+            "away": 4,
+            "home": 12
+          },
+          "season": 2025,
+          "source_season_mismatches": 0,
+          "source_state": "rows_returned"
+        }
+      ]
+    },
+    {
+      "absence_not_proof_of_nonparticipation": true,
+      "as_of_utc": "2026-11-26T19:38:44.580200+00:00",
       "competition": "EL",
       "fixture_id": "1636270",
       "forecast_policy_unchanged": true,
@@ -405,8 +436,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -450,7 +482,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:25.889212+00:00",
+      "as_of_utc": "2026-11-26T19:38:44.867139+00:00",
       "competition": "EL",
       "fixture_id": "1636277",
       "forecast_policy_unchanged": true,
@@ -458,8 +490,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -503,7 +536,61 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:25.988673+00:00",
+      "as_of_utc": "2026-11-26T19:38:45.148286+00:00",
+      "competition": "EL",
+      "fixture_id": "1636294",
+      "forecast_policy_unchanged": true,
+      "kickoff_utc": "2026-11-26T20:00:00Z",
+      "minimum_missing_to_five": 0,
+      "no_additional_provider_calls": true,
+      "policy_exclusions": {
+        "not_available_as_of": 5,
+        "target_fixture": 1,
+        "unfinished": 66
+      },
+      "provider": "API-Football",
+      "qualified_team_matches": {
+        "away": 6,
+        "home": 14
+      },
+      "seasons": [
+        {
+          "freshness_known": true,
+          "qualified_population": 152,
+          "qualified_team_matches": {
+            "away": 6,
+            "home": 4
+          },
+          "returned_season_rows": 224,
+          "returned_team_rows": {
+            "away": 10,
+            "home": 8
+          },
+          "season": 2026,
+          "source_season_mismatches": 0,
+          "source_state": "rows_returned"
+        },
+        {
+          "freshness_known": true,
+          "qualified_population": 271,
+          "qualified_team_matches": {
+            "away": 0,
+            "home": 10
+          },
+          "returned_season_rows": 271,
+          "returned_team_rows": {
+            "away": 0,
+            "home": 10
+          },
+          "season": 2025,
+          "source_season_mismatches": 0,
+          "source_state": "rows_returned"
+        }
+      ]
+    },
+    {
+      "absence_not_proof_of_nonparticipation": true,
+      "as_of_utc": "2026-11-26T19:38:46.196218+00:00",
       "competition": "EL",
       "fixture_id": "1636301",
       "forecast_policy_unchanged": true,
@@ -511,8 +598,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -556,7 +644,61 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.054918+00:00",
+      "as_of_utc": "2026-11-26T19:38:46.473417+00:00",
+      "competition": "EL",
+      "fixture_id": "1636305",
+      "forecast_policy_unchanged": true,
+      "kickoff_utc": "2026-11-26T20:00:00Z",
+      "minimum_missing_to_five": 0,
+      "no_additional_provider_calls": true,
+      "policy_exclusions": {
+        "not_available_as_of": 5,
+        "target_fixture": 1,
+        "unfinished": 66
+      },
+      "provider": "API-Football",
+      "qualified_team_matches": {
+        "away": 12,
+        "home": 6
+      },
+      "seasons": [
+        {
+          "freshness_known": true,
+          "qualified_population": 152,
+          "qualified_team_matches": {
+            "away": 10,
+            "home": 6
+          },
+          "returned_season_rows": 224,
+          "returned_team_rows": {
+            "away": 14,
+            "home": 10
+          },
+          "season": 2026,
+          "source_season_mismatches": 0,
+          "source_state": "rows_returned"
+        },
+        {
+          "freshness_known": true,
+          "qualified_population": 271,
+          "qualified_team_matches": {
+            "away": 2,
+            "home": 0
+          },
+          "returned_season_rows": 271,
+          "returned_team_rows": {
+            "away": 2,
+            "home": 0
+          },
+          "season": 2025,
+          "source_season_mismatches": 0,
+          "source_state": "rows_returned"
+        }
+      ]
+    },
+    {
+      "absence_not_proof_of_nonparticipation": true,
+      "as_of_utc": "2026-11-26T19:38:47.490857+00:00",
       "competition": "EL",
       "fixture_id": "1636336",
       "forecast_policy_unchanged": true,
@@ -564,8 +706,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -609,7 +752,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.120589+00:00",
+      "as_of_utc": "2026-11-26T19:38:47.757865+00:00",
       "competition": "EL",
       "fixture_id": "1636343",
       "forecast_policy_unchanged": true,
@@ -617,8 +760,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -662,7 +806,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.186064+00:00",
+      "as_of_utc": "2026-11-26T19:38:48.023848+00:00",
       "competition": "EL",
       "fixture_id": "1636349",
       "forecast_policy_unchanged": true,
@@ -670,8 +814,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -715,7 +860,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.253446+00:00",
+      "as_of_utc": "2026-11-26T19:38:50.396957+00:00",
       "competition": "EL",
       "fixture_id": "1636214",
       "forecast_policy_unchanged": true,
@@ -723,8 +868,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -768,7 +914,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.353841+00:00",
+      "as_of_utc": "2026-11-26T19:38:50.576682+00:00",
       "competition": "EL",
       "fixture_id": "1636216",
       "forecast_policy_unchanged": true,
@@ -776,8 +922,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -821,7 +968,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.441480+00:00",
+      "as_of_utc": "2026-11-26T19:38:50.752148+00:00",
       "competition": "EL",
       "fixture_id": "1636221",
       "forecast_policy_unchanged": true,
@@ -829,8 +976,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -874,7 +1022,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.572705+00:00",
+      "as_of_utc": "2026-11-26T19:38:50.926515+00:00",
       "competition": "EL",
       "fixture_id": "1636263",
       "forecast_policy_unchanged": true,
@@ -882,8 +1030,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -927,7 +1076,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.692626+00:00",
+      "as_of_utc": "2026-11-26T19:38:51.106424+00:00",
       "competition": "EL",
       "fixture_id": "1636271",
       "forecast_policy_unchanged": true,
@@ -935,8 +1084,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -980,7 +1130,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.792865+00:00",
+      "as_of_utc": "2026-11-26T19:38:51.313490+00:00",
       "competition": "EL",
       "fixture_id": "1636297",
       "forecast_policy_unchanged": true,
@@ -988,8 +1138,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -1033,60 +1184,7 @@
     },
     {
       "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:26.882600+00:00",
-      "competition": "EL",
-      "fixture_id": "1636313",
-      "forecast_policy_unchanged": true,
-      "kickoff_utc": "2026-12-10T17:45:00Z",
-      "minimum_missing_to_five": 0,
-      "no_additional_provider_calls": true,
-      "policy_exclusions": {
-        "target_fixture": 1,
-        "unfinished": 71
-      },
-      "provider": "API-Football",
-      "qualified_team_matches": {
-        "away": 14,
-        "home": 8
-      },
-      "seasons": [
-        {
-          "freshness_known": true,
-          "qualified_population": 152,
-          "qualified_team_matches": {
-            "away": 4,
-            "home": 8
-          },
-          "returned_season_rows": 224,
-          "returned_team_rows": {
-            "away": 8,
-            "home": 12
-          },
-          "season": 2026,
-          "source_season_mismatches": 0,
-          "source_state": "rows_returned"
-        },
-        {
-          "freshness_known": true,
-          "qualified_population": 271,
-          "qualified_team_matches": {
-            "away": 10,
-            "home": 0
-          },
-          "returned_season_rows": 271,
-          "returned_team_rows": {
-            "away": 10,
-            "home": 0
-          },
-          "season": 2025,
-          "source_season_mismatches": 0,
-          "source_state": "rows_returned"
-        }
-      ]
-    },
-    {
-      "absence_not_proof_of_nonparticipation": true,
-      "as_of_utc": "2026-11-26T18:22:27.443969+00:00",
+      "as_of_utc": "2026-11-26T19:38:51.493649+00:00",
       "competition": "EL",
       "fixture_id": "1636323",
       "forecast_policy_unchanged": true,
@@ -1094,8 +1192,9 @@
       "minimum_missing_to_five": 1,
       "no_additional_provider_calls": true,
       "policy_exclusions": {
+        "not_available_as_of": 5,
         "target_fixture": 1,
-        "unfinished": 71
+        "unfinished": 66
       },
       "provider": "API-Football",
       "qualified_team_matches": {
@@ -1139,7 +1238,7 @@
     }
   ],
   "upcoming_fixtures": 235,
-  "v10_market_calls": 0,
+  "v10_market_calls": 4,
   "v10_market_refresh_checked": 0,
   "v10_market_refresh_errors": [],
   "v10_market_refresh_v10_saved": 0,
@@ -1157,24 +1256,24 @@
       "team_history_below_five": 14
     }
   },
-  "v10_shadow_v10_saved": 0,
-  "v10_shadow_v12_saved": 1,
-  "v10_shadow_v13_saved": 1,
-  "v10_shadow_v8_saved": 1,
+  "v10_shadow_v10_saved": 4,
+  "v10_shadow_v12_saved": 6,
+  "v10_shadow_v13_saved": 6,
+  "v10_shadow_v8_saved": 6,
   "v10_shadow_v8_saved_by_league": {
-    "EL": 1
+    "BL1": 1,
+    "EL": 3,
+    "FL1": 1,
+    "SA": 1
   },
-  "v10_shadow_v9_saved": 0,
+  "v10_shadow_v9_saved": 4,
   "v37_sparse_shadow_coverage": {
     "EL": {
-      "new_pre_kickoff_sparse_model_issued": 7,
-      "original_v37_already_issued": 7
+      "original_v37_already_issued": 14
     }
   },
-  "v37_sparse_shadow_saved": 7,
-  "v37_sparse_shadow_saved_by_league": {
-    "EL": 7
-  },
+  "v37_sparse_shadow_saved": 0,
+  "v37_sparse_shadow_saved_by_league": {},
   "v8_min_team_history_bins_by_league": {
     "EL": {
       "3-4": 14
