@@ -22,6 +22,14 @@
 
 A free, transparent football score forecasting Streamlit application. No fabricated fixtures, paid services or hidden prediction guarantees.
 
+## V43 integrated football forecast
+
+Open **V43 Forecast** in Matchday Studio to generate a single-match score distribution or five exact-score doubles for two eligible matches on the same Sydney matchday. V43 blends the V41 grouped statistical model with the four V42 score-shape hypotheses. Pre-kickoff xG and market data enter only when they pass the time and fixture checks. For doubles, both matches must qualify for a given adjustment. The combined forecast is experimental.
+
+**Research and validation** shows the version history, archived data sources and matched replay results. The replay compares common independently settled regulation scores within each cohort. It runs read-only with `python v43_replay.py`.
+
+The existing Private Access gate and server-side configuration control optional OpenAI, Claude and other provider reviews. Each configured provider reviews the same available match context on request. Their opinions carry zero numerical forecast weight. See [on-demand provider setup](ON_DEMAND_AI_SETUP.md).
+
 ## Matchday Studio 2.0 interface
 
 The existing website is https://ziczacscorepredict-ai.streamlit.app/ . The updated interface has a compact Version 2.0 header, route-specific content, and Home buttons for AI Auto Select, Manual Select, Deep Research, prediction history and real performance. Choosing a section updates `?view=` in the URL; Home cards no longer appear above every other page. Direct doubles links also accept `&mode=auto` or `&mode=manual`.
