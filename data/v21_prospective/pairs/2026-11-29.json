@@ -1,0 +1,149 @@
+{
+  "captured_at_utc": "2026-11-27T03:21:19.294639+00:00",
+  "first": {
+    "away_team_id": "56",
+    "fixture_id": "1563296",
+    "forecast_id": "4f87ac4b0dc9974d603cf4813ce13167045d01d87748d68dc8e643f50ff754c3",
+    "home_team_id": "60",
+    "input_digest": "afa6194419bf4d71c0964abd8af82922ccab8303b14f7f9001270d23022accbe",
+    "kickoff_utc": "2026-11-28T15:00:00.000000Z",
+    "provider": "API-Football"
+  },
+  "methods": {
+    "baseline_v8": {
+      "coverage": 0.09235005449349157,
+      "doubles": [
+        {
+          "joint_probability": 0.020188198962451533,
+          "score1": "1-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.019594521941697828,
+          "score1": "1-1",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.018375814686473566,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.017835434688372783,
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.01635608421449586,
+          "score1": "2-0",
+          "score2": "0-0"
+        }
+      ]
+    },
+    "bivariate_poisson_c012": {
+      "coverage": 0.0934656612307258,
+      "doubles": [
+        {
+          "joint_probability": 0.02004215425332726,
+          "score1": "1-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.019609039564994813,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.018412484334746234,
+          "score1": "1-1",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.0180145871170484,
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.0173873959606091,
+          "score1": "1-0",
+          "score2": "1-1"
+        }
+      ]
+    },
+    "negative_binomial_r3": {
+      "coverage": 0.0968246385035653,
+      "doubles": [
+        {
+          "joint_probability": 0.022753416555052013,
+          "score1": "1-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.02176082216654371,
+          "score1": "0-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.018294102395907452,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.01749604099985121,
+          "score1": "0-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.016520256386210925,
+          "score1": "1-1",
+          "score2": "0-0"
+        }
+      ]
+    },
+    "poisson_marginal": {
+      "coverage": 0.08655196179410203,
+      "doubles": [
+        {
+          "joint_probability": 0.018716223654470947,
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.01792791960871876,
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "joint_probability": 0.01703969157573421,
+          "score1": "1-0",
+          "score2": "0-0"
+        },
+        {
+          "joint_probability": 0.016546125980683977,
+          "score1": "1-0",
+          "score2": "1-1"
+        },
+        {
+          "joint_probability": 0.016322000974494145,
+          "score1": "1-1",
+          "score2": "0-0"
+        }
+      ]
+    }
+  },
+  "not_promoted": true,
+  "policy": "rank_all_eligible_pairs_or_abstain; no_future_results",
+  "robust_model_coverage": 0.09235005449349157,
+  "schema": 1,
+  "second": {
+    "away_team_id": "174",
+    "fixture_id": "1575238",
+    "forecast_id": "0ea06f1a0111fc9da6ea019da39cd1c74bcb616929e5926130165163d5b35f7d",
+    "home_team_id": "185",
+    "input_digest": "616413865f69dfff1f9ea4711e3861e20664f1ca5bce79fe45d5f4a20e15dba3",
+    "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+    "provider": "API-Football"
+  },
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-29"
+}

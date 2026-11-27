@@ -122,7 +122,7 @@
       "verified_evaluated": 0
     }
   },
-  "checked_at_utc": "2026-11-27T02:11:03.527190+00:00",
+  "checked_at_utc": "2026-11-27T03:21:38.403680+00:00",
   "frozen_v22_vs_v8": {
     "baseline_v8": {
       "hit_rate": 0.0,
@@ -187,17 +187,19 @@
     "source_availability_and_bias_review": true
   },
   "schema": 1,
-  "source_capture_attempted_legs": 2,
+  "source_capture_attempted_legs": 0,
   "source_capture_daily_attempts_limit": 6,
   "source_capture_daily_attempts_used": 4,
   "source_capture_eligible_legs": 47,
   "source_capture_enabled": true,
-  "source_capture_last_run": "2026-11-27T02:10:35.551260+00:00",
-  "source_capture_reason": "partial_or_complete_source_packets",
-  "source_capture_saved_packets": 2,
+  "source_capture_last_run": "2026-11-27T03:21:15.375296+00:00",
+  "source_capture_reason": "no_new_source_evidence",
+  "source_capture_saved_packets": 0,
   "source_capture_skipped_reasons": [
     "1552238:original_preserved",
     "1575237:original_preserved",
+    "1550216:original_preserved",
+    "1552830:original_preserved",
     "1557485:fixed_pair_common_cutoff_budget_reserved",
     "1563294:fixed_pair_common_cutoff_budget_reserved",
     "1570468:fixed_pair_common_cutoff_budget_reserved",
@@ -242,10 +244,10 @@
     "1575553:fixed_pair_common_cutoff_budget_reserved",
     "1492471:fixed_pair_common_cutoff_budget_reserved"
   ],
-  "source_capture_source_queries": 32,
+  "source_capture_source_queries": 0,
   "source_completeness": {
-    "packets_checked": 397,
-    "with_2_market_types": 394,
+    "packets_checked": 401,
+    "with_2_market_types": 398,
     "with_6_per_team": 36,
     "with_both_starting_XIs": 2,
     "with_historical_xg": 44,
@@ -255,7 +257,7 @@
     "with_verified_historical_match_statistics": 44
   },
   "sportmonks_independent_xg": {
-    "attempt_number": 2,
+    "attempt_number": 3,
     "both_sides_xg_packets": 0,
     "discovery_cached_pages": 0,
     "discovery_pages_examined": 0,
@@ -276,7 +278,7 @@
     "frozen_evidence_packets": 0,
     "incremental_accuracy_not_yet_demonstrated": true,
     "last_provider_observation": {
-      "at_utc": "2026-11-27T02:10:42.536478+00:00",
+      "at_utc": "2026-11-27T03:21:17.163896+00:00",
       "captured": 0,
       "http_status_category": "not_reported",
       "matched_future_fixtures": 0,
@@ -290,14 +292,14 @@
         "row_count": 0
       }
     },
-    "last_run_utc": "2026-11-27T02:10:42.536478+00:00",
+    "last_run_utc": "2026-11-27T03:21:17.163896+00:00",
     "matched_future_fixtures_last_run": 0,
     "matched_historical_xg_last_run": 0,
     "provider_error_type": null,
     "provider_subscription_not_assumed": true,
     "reason": "provider_access_or_subscription",
     "requests_limit_per_day": 4,
-    "requests_used_today": 2,
+    "requests_used_today": 3,
     "research_only_not_used_by_v22": true,
     "selected_forecast_fixture_id": "1552238",
     "six_xg_for_both_teams_packets": 0,
@@ -306,7 +308,7 @@
     "unverified_source_packet_reasons": {}
   },
   "v23_early_market_capture_enabled": true,
-  "v23_early_market_last_run": "2026-11-27T02:10:33.348897+00:00",
+  "v23_early_market_last_run": "2026-11-27T03:21:13.399780+00:00",
   "v23_early_market_new_packets": 2,
   "v23_market_form_vs_v8": {
     "baseline_v8": {
@@ -331,15 +333,15 @@
     }
   },
   "v23_not_observed_success_without_verified_pairs": false,
-  "v23_source_qualified_pairs": 16,
+  "v23_source_qualified_pairs": 22,
   "v24_broad_market_collection": {
     "enabled": true,
-    "last_run_utc": "2026-11-27T02:10:29.560991+00:00",
+    "last_run_utc": "2026-11-27T03:21:09.654152+00:00",
     "max_requests_per_day": 12,
     "new_fixture_markets_last_run": 20,
-    "new_v8_source_bindings_last_run": 4,
+    "new_v8_source_bindings_last_run": 2,
     "not_all_external_web_sources": true,
     "queries_last_run": 2,
-    "requests_used_today": 4
+    "requests_used_today": 6
   }
 }
