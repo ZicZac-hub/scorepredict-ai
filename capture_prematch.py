@@ -597,7 +597,15 @@ def main():
     from v10_prospective import capture_market_followup as refresh_v10_market
     from v10_prospective import capture_near_research as refresh_v8_near
     _daily_candidates=[]
+    early_history_counts={}
     def _record_v10(fixture,evidence,observed,code,request,remaining):
+        if os.environ.get("V44_EARLY_HISTORY_ENABLED")=="true":
+            try:
+                from v44_early_history import freeze as freeze_early_history
+                outcome=freeze_early_history(fixture,evidence)
+            except (OSError,ValueError,TypeError,KeyError,AttributeError,ArithmeticError) as exc:
+                outcome="error_"+type(exc).__name__
+            early_history_counts[outcome]=early_history_counts.get(outcome,0)+1
         return capture_v10(fixture,evidence,observed,api_key=key,
                            request=request,market_calls_remaining=remaining)
     def _refresh_market(fixture,evidence,observed,code,request,remaining):
@@ -622,6 +630,7 @@ def main():
         research_backfill_limit=_positive_limit(os.environ.get('V10_BACKFILL_LIMIT'),0),
         market_refresher=_refresh_market,
         research_market_refresh_limit=_positive_limit(os.environ.get('V10_MARKET_REFRESH_LIMIT'),0))
+    payload['diagnostics']['v44_early_history']=early_history_counts
     saved_days=save_for_dates(_daily_candidates)
     payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)
     payload['diagnostics']['daily_pick_days_written']=saved_days
