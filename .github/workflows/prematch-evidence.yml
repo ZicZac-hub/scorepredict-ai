@@ -319,6 +319,8 @@ jobs:
         env:
           V21_EVIDENCE_ENABLED: "true"
           V22_DEEP_XG_ENABLED: "true"
+          # Opt in only after successful research and full regression validation.
+          V44_VENUE_COLLECTION_ENABLED: ${{ vars.V44_VENUE_COLLECTION_ENABLED }}
           V21_DAILY_CAPTURE_ATTEMPTS: ${{ vars.V21_DAILY_CAPTURE_ATTEMPTS }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python v21_capture_sources_v2.py
