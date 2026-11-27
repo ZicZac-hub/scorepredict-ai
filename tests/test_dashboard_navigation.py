@@ -294,3 +294,16 @@ def test_v43_route_generates_a_pair_and_passes_valid_scores_to_research(offline_
     assert calls[-1][0] == 2
     app.selectbox(key="v43_second").set_value(None).run()
     assert not any(item.value == "Combined five exact-score doubles" for item in app.subheader)
+
+
+def test_v43_recheck_final_scores_loads_read_only_target_panel(offline_app):
+    offline_app.query_params["view"] = ["v43"]
+    app = offline_app.run()
+    app.radio(key="v43_pane").set_value("Research and validation").run()
+    _assert_page(app, "v43", "V43 Integrated Forecast")
+    assert any(item.value == "70% five-double target" for item in app.subheader)
+    assert any("at least 79" in item.value for item in app.caption)
+
+    app.button(key="v43_recheck_finals").click().run()
+    assert not app.exception
+    assert any(item.label == "Final scores and reasons for misses" for item in app.expander)

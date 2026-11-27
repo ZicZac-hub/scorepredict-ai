@@ -9,6 +9,7 @@ from ai_five_live_finder import research_day
 from on_demand_ai import _secret, private_gate_ready, utc
 from sydney_display import sydney_timestamp
 from v25_upcoming import available, pair_catalog
+from v43_feasibility import model_feasibility, validation_gate
 from v43_prediction import forecast_pair, forecast_single
 from v43_research import render_v43_research
 
@@ -81,6 +82,16 @@ def _render_result(st, result, rows):
              "Joint probability": f"{choice['joint_probability']:.2%}"}
             for choice in result["five_doubles"]
         ], hide_index=True, use_container_width=True)
+        if result.get("full_score_grids"):
+            feasibility = model_feasibility(result["full_score_grids"])
+            with st.expander("What would it take to cover 70%?"):
+                st.metric("Maximum modeled coverage with five doubles", f"{feasibility['maximum_five_model_mass']:.2%}")
+                width = feasibility["minimum_combinations_for_target_model_mass"]
+                if width is not None:
+                    st.metric("Exact-score combinations for 70% modeled coverage", width)
+                else:
+                    st.caption("The search limit was reached before 70% coverage.")
+                st.caption(f"With the same score probabilities for each match, any dependence model has an upper bound of {feasibility['marginal_top_five_upper_bound']:.2%} for five selections. These figures describe the forecast distributions.")
 
     labels = [f"{model['home_team']} vs {model['away_team']}" for model in result["fixture_models"]]
     selected = 0
@@ -174,11 +185,80 @@ def _replay(_hour):
     return evaluate()
 
 
+@lru_cache(maxsize=1)
+def _prospective(_hour):
+    from v43_prospective import evaluate
+    return evaluate()
+
+
+def _refresh_final_scores():
+    _replay.cache_clear()
+    _prospective.cache_clear()
+    _research_catalog.cache_clear()
+
+
+_RESULT_LABELS = {
+    "hit": "Hit",
+    "both_leg_scores_outside_selected_options": "Both scores missing from their match selections",
+    "one_leg_score_outside_selected_options": "One score missing from its match selections",
+    "leg_scores_present_but_not_in_same_combination": "Both scores selected in different doubles",
+    "pending": "Awaiting verification",
+    "awaiting_kickoff": "Awaiting kickoff",
+    "awaiting_verified_final": "Awaiting verified final",
+}
+
+
+def _render_target(st, retrospective, prospective):
+    st.subheader("70% five-double target")
+    feasibility = retrospective["feasibility"]
+    if feasibility["pairs_with_grids"]:
+        low, high = feasibility["maximum_five_model_mass_range"]
+        st.write(f"Five doubles cover at most **{low:.2%}–{high:.2%}** across {feasibility['pairs_with_grids']} archived V43 replay pairs. **{feasibility['pairs_reaching_target_with_five']}** reached the 70% target in the model.")
+        width = feasibility["combinations_for_target_range"]
+        if width:
+            st.caption(f"Reaching 70% modeled coverage took {width[0]}–{width[1]} distinct combinations across {feasibility['exact_target_count_pairs']} pairs.")
+        bound_low, bound_high = feasibility["marginal_top_five_upper_bound_range"]
+        st.caption(f"Even allowing dependence between the matches, the upper bound with the same individual score distributions was {bound_low:.2%}–{bound_high:.2%}.")
+    with st.expander("Final scores and reasons for misses", expanded=True):
+        if retrospective["pair_details"]:
+            rows = []
+            for pair in reversed(retrospective["pair_details"]):
+                first, second = pair["fixtures"]
+                finals = [_format_score(leg["actual_score"]) if leg["actual_score"] is not None
+                          else _RESULT_LABELS[leg["status"]] for leg in (first, second)]
+                rows.append({"Sydney date": pair["sydney_date"],
+                             "First match": first["match"], "First final": finals[0],
+                             "Second match": second["match"], "Second final": finals[1],
+                             "V43 replay result": _RESULT_LABELS[pair["result"]],
+                             "Five-double model coverage": f"{pair['feasibility']['maximum_five_model_mass']:.2%}",
+                             "Combinations for 70% model coverage": pair["feasibility"]["minimum_combinations_for_target_model_mass"]})
+            st.dataframe(rows, hide_index=True, use_container_width=True)
+        else:
+            st.info("No matching original pair records are available to replay.")
+
+    st.markdown("#### Prospective verification")
+    total = prospective["verified_pairs"]
+    st.write(f"**{prospective['hits']} hits from {total} verified pairs** · {prospective['pending_pairs']} pending · {prospective['abstained_pairs']} abstained")
+    st.caption(f"{prospective['pending_kickoff_pairs']} awaiting kickoff · {prospective['pending_verification_pairs']} awaiting verified finals · {prospective['missed_windows']} missed capture windows")
+    if prospective["wilson_95"]:
+        low, high = prospective["wilson_95"]
+        st.caption(f"Observed 95% Wilson interval {low:.1%}–{high:.1%}. This calculation assumes independent pairs.")
+    review = prospective["fixed_review"]
+    review_hits = validation_gate(0, review["cohort_size"])["minimum_hits_for_wilson_lower_bound"]
+    st.caption(f"Fixed review cohort · {review['issued']}/{review['cohort_size']} issued · {review['verified']} verified. Once the first {review['cohort_size']} issued pairs have settled, at least {review_hits} need to hit for the lower end of the 95% Wilson interval to reach 70%.")
+    if review["complete"]:
+        status = "met" if review["met"] else "below target"
+        st.caption(f"Completed fixed review · {review['hits']}/{review['cohort_size']} hits · {status}")
+    st.caption("The next model work is to test time-stamped markets, historical shot xG and score-tail calibration on the same fixtures and cutoffs. Track the share of opportunities that qualify alongside observed hits.")
+
+
 def _evidence_view(st, clock):
     hour = int(clock.timestamp() // 3600)
+    st.button("Recheck saved final scores", key="v43_recheck_finals", on_click=_refresh_final_scores)
+    replay = _replay(hour)
+    _render_target(st, replay["cohorts"]["original_pair_archive"], _prospective(hour))
     st.subheader("Historical replay")
     st.caption("Each comparison scores the same verified fixtures within its cohort. Cohorts can overlap. Retrospective results do not establish prospective accuracy.")
-    replay = _replay(hour)
     with st.expander("Matched replay results", expanded=True):
         for label, cohort in replay["cohorts"].items():
             st.markdown(f"**{label.replace('_', ' ')}**")

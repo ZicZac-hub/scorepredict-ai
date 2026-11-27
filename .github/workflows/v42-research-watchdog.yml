@@ -10,9 +10,14 @@ on:
       - 'v42_research_engine.py'
       - 'v42_late_research_trial.py'
       - 'v42_cutoff_comparison.py'
+      - 'v43_prospective.py'
+      - 'v43_prediction.py'
+      - 'v43_feasibility.py'
       - 'tests/test_v42_cutoff_comparison.py'
       - 'tests/test_v42_late_cutoff.py'
       - 'tests/test_v42_research.py'
+      - 'tests/test_v43_prospective.py'
+      - 'tests/test_v43_feasibility.py'
   workflow_run:
     workflows: ['Capture verified pre-match evidence']
     types: [completed]
@@ -60,10 +65,17 @@ jobs:
         run: |
           python v42_late_research_trial.py
           python v42_cutoff_comparison.py
+      - name: Capture and verify the V43 five-double trial without API requests
+        id: v43
+        continue-on-error: true
+        run: |
+          python -m pytest -q tests/test_v43_prospective.py tests/test_v43_feasibility.py
+          python v43_prospective.py --freeze
       - name: Publish only isolated research archive
         if: steps.refresh.outcome == 'success'
         env:
           LATE_OUTCOME: ${{ steps.late.outcome }}
+          V43_OUTCOME: ${{ steps.v43.outcome }}
         run: |
           python - <<'PY'
           import json, subprocess, os
@@ -89,8 +101,11 @@ jobs:
           else
             git restore --worktree -- data/v42_late_research/ 2>/dev/null || true
           fi
+          if [ "$V43_OUTCOME" = "success" ]; then
+            git add data/v43_prospective/
+          fi
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data: isolated V42 research refresh [skip ci]'
+          git commit -m 'data: isolated V42 and V43 research refresh [skip ci]'
           # Other scheduled evidence writers may update main concurrently.
           # Retry non-fast-forward pushes, but never silently merge a frozen
           # receipt conflict or force-push. The artifact step preserves output.
@@ -109,6 +124,9 @@ jobs:
           done
           echo "::error::V42 could not publish after four attempts."
           exit 1
+      - name: Report a failed V43 trial check
+        if: steps.v43.outcome == 'failure'
+        run: exit 1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -116,5 +134,6 @@ jobs:
           path: |
             data/v42_research/
             data/v42_late_research/
+            data/v43_prospective/
           if-no-files-found: warn
           retention-days: 14
