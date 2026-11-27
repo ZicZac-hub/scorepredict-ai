@@ -32,3 +32,19 @@ def test_missing_exact_history_distinguished_from_available_refresh(tmp_path):
     assert a.inspect_leg(m,NOW,NOW,source,history)=="refresh_available_missing_history"
     save(source,history,1,with_receipt=False)
     assert a.inspect_leg(m,NOW,NOW,source,history)=="one_shot_near_without_exact_history"
+
+
+def test_refresh_deadline_and_fixture_identity_are_reported(tmp_path,monkeypatch):
+    pairs=tmp_path/"pairs";(pairs/"sets").mkdir(parents=True)
+    (pairs/"sets"/"2025-02-01.json").write_text("{}")
+    first={"provider":"API-Football","fixture_id":"1","kickoff_utc":(NOW+timedelta(hours=4)).isoformat()}
+    second={**first,"fixture_id":"2","kickoff_utc":(NOW+timedelta(hours=5)).isoformat()}
+    monkeypatch.setattr(a.sources,"_pair",lambda *args,**kw:({"predicted_at_utc":NOW.isoformat()},[first,second]))
+    monkeypatch.setattr(a,"inspect_leg",lambda m,*args:"refresh_available_missing_history" if m["fixture_id"]=="1" else "one_shot_near_without_exact_history")
+    r=a.evaluate(pair_root=pairs,now=NOW)
+    assert r["counts"]["existing_refresh_path_open"]==1
+    row=r["rows"][0]
+    assert row["priority_refresh_window_status"]=="open"
+    assert row["priority_refresh_closes_utc"]==(NOW+timedelta(hours=3,minutes=15)).isoformat()
+    assert row["fixtures"][0]["fixture_id"]=="1"
+    assert row["fixtures"][1]["status"]=="one_shot_near_without_exact_history"
