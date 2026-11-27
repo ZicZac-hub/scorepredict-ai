@@ -44,3 +44,22 @@ def test_no_protocol_does_not_create_files(tmp_path):
                       pair_root=tmp_path/"pairs",now=NOW)
     assert not report["registered"]
     assert list(tmp_path.iterdir())==[]
+
+
+def test_future_original_pair_preflight_counts_missing_legs(tmp_path,monkeypatch):
+    root=tmp_path/"trial"; root.mkdir()
+    (root/"protocol.json").write_text("{}")
+    pair_root=tmp_path/"pairs"; (pair_root/"sets").mkdir(parents=True)
+    (pair_root/"sets"/"2025-02-01.json").write_text("{}")
+    later=NOW+timedelta(hours=5)
+    models=[{**MODEL,"kickoff_utc":later.isoformat()},
+            {**MODEL,"fixture_id":"2","kickoff_utc":later.isoformat()}]
+    monkeypatch.setattr(d.trial,"_protocol",lambda *a:{"registered_at_utc":NOW.isoformat()})
+    monkeypatch.setattr(d.sources,"_pair",lambda *a,**k:({"predicted_at_utc":NOW.isoformat()},models))
+    monkeypatch.setattr(d,"history_status",lambda m,*a:"ready" if m["fixture_id"]=="1" else "missing_exact_history_receipt")
+    result=d.evaluate(root=root,pair_root=pair_root,history_root=tmp_path/"history",now=NOW)
+    assert result["counts"]["future_pair_opportunities"]==1
+    assert result["counts"]["future_one_history_ready"]==1
+    assert result["counts"]["future_with_trial_file"]==0
+    assert result["leg_statuses"]["future:missing_exact_history_receipt"]==1
+    assert not (root/"trials").exists()
