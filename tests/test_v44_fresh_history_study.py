@@ -93,3 +93,74 @@ def test_scheduler_preserves_isolated_protocol_and_trials():
     assert "github.ref == 'refs/heads/main'" in text
     assert 'if [ "$V44_FRESH_OUTCOME" = "success" ]; then' in text
     assert "--diff-filter=DMRTUXB -- data/v44_fresh_history_study/protocol.json data/v44_fresh_history_study/trials/" in text
+
+
+def test_full_archive_to_verified_settlement_without_backfill(tmp_path,monkeypatch):
+    from history_pipeline import build_evidence
+    from forecast_ledger import append_file_record
+    import professional_double_shadow as shadow
+
+    source=tmp_path/"source";history=tmp_path/"history";pairs=tmp_path/"pairs";root=tmp_path/"study"
+    original_time=NOW-timedelta(hours=2)
+    fixtures=[]
+    for i in (1,2):
+        fixture={"provider":"API-Football","id":i,"utcDate":(NOW+timedelta(hours=2)).isoformat(),
+                 "homeTeam":{"id":i*2,"name":"Home "+str(i)},
+                 "awayTeam":{"id":i*2+1,"name":"Away "+str(i)},
+                 "competition":{"id":39,"season":2024}}
+        fixtures.append(fixture)
+        original={"provider":fixture["provider"],"fixture_id":str(i),
+                  "home_team_id":str(i*2),"away_team_id":str(i*2+1),
+                  "home_team":"Home "+str(i),"away_team":"Away "+str(i),
+                  "fixture_name":"Home "+str(i)+" vs Away "+str(i),
+                  "competition":"PL","model_key":"v8","model_version":"original-test-v8",
+                  "input_digest":"original-"+str(i),"horizon":"early","score_basis":"regulation",
+                  "kickoff_utc":fixture["utcDate"],
+                  "captured_at_utc":(original_time-timedelta(minutes=1)).isoformat(),
+                  "evidence_as_of_utc":(original_time-timedelta(minutes=2)).isoformat(),
+                  "score_matrix":np.outer([.4,.3,.2,.075,.025],[.4,.3,.2,.075,.025]).tolist()}
+        assert append_file_record(original,root=source)
+    status=shadow.freeze(root=pairs,source_root=source,now=original_time,clock=lambda:original_time)
+    assert len(status["new_sets"])==1
+    original_path=next((pairs/"sets").glob("*.json"))
+    original_bytes=original_path.read_bytes()
+    original_pair,original_models=s.sources._pair(original_path,source_root=source,decision=NOW)
+    cutoff=NOW-timedelta(minutes=5)
+    for f in fixtures:
+        past={**f,"id":100+f["id"],"utcDate":"2025-01-20T12:00:00Z","status":"FINISHED",
+              "score":{"fullTime":{"home":2,"away":1},"duration":"REGULAR"}}
+        evidence=build_evidence(f,[past],cutoff)
+        assert s.early.freeze(f,evidence,root=history,clock=lambda:cutoff+timedelta(seconds=1))=="written"
+        m=next(m for m in original_models if str(m["fixture_id"])==str(f["id"]))
+        fresh={k:v for k,v in m.items() if k not in ("forecast_id","record_id")}
+        fresh.update({"model_key":"v8_near","model_version":"fresh-test-v8","horizon":"near",
+                      "input_digest":evidence["input_digest"],"evidence_as_of_utc":evidence["as_of_utc"],
+                      "captured_at_utc":(cutoff+timedelta(seconds=2)).isoformat()})
+        assert append_file_record(fresh,root=source)
+    # Isolate orchestration from the rating estimator's minimum-history threshold.
+    monkeypatch.setattr(s.ratings,"predict",lambda *a:{"status":"ready","grid":np.full((5,5),.04)})
+    kwargs=dict(root=root,source_root=source,history_root=history,pair_root=pairs)
+    assert s.freeze(**kwargs,now=NOW,clock=lambda:NOW)["issued"]==1
+    frozen=next((root/"trials").glob("*.json"))
+    saved=frozen.read_bytes()
+    assert s.freeze(**kwargs,now=NOW,clock=lambda:NOW)["preserved"]==1
+    assert frozen.read_bytes()==saved and original_path.read_bytes()==original_bytes
+    assert s.evaluate(**kwargs,prematch_root=tmp_path/"none",now=NOW)["counts"]["pending"]==1
+    finals={}
+    for m in original_models:
+        result={k:m[k] for k in ("provider","fixture_id","home_team_id","away_team_id","kickoff_utc")}
+        result.update({"status":"FT","evidence_version":2,"score_basis":"regulation",
+                       "home_goals":0,"away_goals":0,"verified_at_utc":(NOW+timedelta(hours=5)).isoformat()})
+        finals[str(m["fixture_id"])]=result
+    (source/"verified_results.json").write_text(json.dumps(finals))
+    settled=s.evaluate(**kwargs,prematch_root=tmp_path/"none",now=NOW+timedelta(hours=6))
+    assert settled["counts"].get("rejected",0)==0
+    assert settled["comparisons"]["fresh_v8"]["pairs"]==1
+    assert settled["comparisons"]["fresh_v8"]["hits"]==1
+    altered=json.loads(saved)
+    altered["references"][0]["receipt_sha256"]="tampered"
+    altered["sha256"]=s.early.digest({k:v for k,v in altered.items() if k!="sha256"})
+    frozen.write_text(json.dumps(altered))
+    rejected=s.evaluate(**kwargs,prematch_root=tmp_path/"none",now=NOW+timedelta(hours=6))
+    assert rejected["counts"]["rejected"]==1
+    assert rejected["comparisons"]["fresh_v8"]["pairs"]==0
