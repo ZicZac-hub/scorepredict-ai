@@ -57,8 +57,8 @@ def diagnose(raw,actual):
     return {"expected":mean,"actual":actual,"error_observed_minus_expected":actual-mean,
             "variance":float(np.dot(p,np.square(support-mean))),
             "ranked_probability_score":rps,"pit_bin_mass":hist.tolist(),
-            "outside_support":actual>=len(p),
-            "zero_probability_observation":actual>=len(p) or p[actual]==0}
+            "outside_support":bool(actual>=len(p)),
+            "zero_probability_observation":bool(actual>=len(p) or p[actual]==0)}
 
 def summarize(rows):
     out={}
@@ -72,8 +72,8 @@ def summarize(rows):
                 **{"mean_"+key:float(np.mean([x[key] for x in items])) if n else None
                    for key in ("expected","actual","error_observed_minus_expected","variance","ranked_probability_score")},
                 "nonrandomized_pit_bin_fractions":hist,
-                "outside_support":sum(x["outside_support"] for x in items),
-                "zero_probability_observations":sum(x["zero_probability_observation"] for x in items)}
+                "outside_support":int(sum(x["outside_support"] for x in items)),
+                "zero_probability_observations":int(sum(x["zero_probability_observation"] for x in items))}
     return out
 
 def evaluate(*,source_root=sources.SOURCE_ROOT,prematch_root=sources.PREMATCH_ROOT,now=None):
