@@ -98,12 +98,24 @@ jobs:
           (root/"opportunity_audit.json").write_text(json.dumps(opportunity,indent=2,sort_keys=True,allow_nan=False)+"\n")
           print(json.dumps(run["capture"],sort_keys=True))
           PY
+      - name: Audit V44 evidence readiness ahead of trial windows
+        id: v44_readiness
+        if: steps.v44.outcome == 'success'
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ""
+          API_FOOTBALL_KEY: ""
+          SPORTMONKS_API_KEY: ""
+        run: |
+          python v44_live_evidence_diagnostics.py > /tmp/v44-readiness.json
+          mv /tmp/v44-readiness.json data/v44_ratings_prospective/readiness.json
       - name: Publish only isolated research archive
         if: steps.refresh.outcome == 'success'
         env:
           LATE_OUTCOME: ${{ steps.late.outcome }}
           V43_OUTCOME: ${{ steps.v43.outcome }}
           V44_OUTCOME: ${{ steps.v44.outcome }}
+          V44_READINESS_OUTCOME: ${{ steps.v44_readiness.outcome }}
         run: |
           python - <<'PY'
           import json, subprocess, os
@@ -133,6 +145,9 @@ jobs:
             git add data/v43_prospective/
           fi
           if [ "$V44_OUTCOME" = "success" ]; then
+            if [ "$V44_READINESS_OUTCOME" = "failure" ]; then
+              echo "::warning::V44 readiness diagnostic failed; preserving successful trial output"
+            fi
             git add -- data/v44_ratings_prospective/
             if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_ratings_prospective/protocol.json data/v44_ratings_prospective/trials/)" ]; then
               echo "::error::Existing V44 trial evidence changed; refusing publication"
