@@ -95,7 +95,12 @@ def capture(fixture,evidence,*,root=ROOT,source_root=sources.SOURCE_ROOT,
     if not qualifies(receipt,model,completed):
         raise ValueError("recovery_receipt_mismatch")
     row["recovery_receipt_sha256"]=receipt["receipt_sha256"]
+    # Keep the original numeric model and receipt unchanged. Provenance
+    # is descriptive, and missing metadata never becomes a fresh label.
+    from v44_recovery_source_freshness import inspect as inspect_freshness
+    row["source_freshness"]=inspect_freshness(fixture,evidence,completed)
     written=append_file_record(row,root=destination,kind="forecasts")
     return {"status":"recovery_written" if written else "recovery_preserved",
             "forecast_id":model["forecast_id"],"receipt_sha256":receipt["receipt_sha256"],
+            "source_freshness_status":row["source_freshness"]["status"],
             "external_requests":0,"automatic_promotion":False}
