@@ -79,22 +79,26 @@
     "verified_holdout_fixtures": 0,
     "version": "v26-temporal-tail-calibration-v1-research-only"
   },
-  "evaluated_at_utc": "2026-11-27T13:45:49.572683+00:00",
+  "evaluated_at_utc": "2026-11-27T14:23:32.941347+00:00",
   "no_provider_calls": true,
   "original_frozen_forecasts_changed": false,
   "production_model_promoted": false,
   "prospective_freeze": {
-    "abstentions": {},
+    "abstentions": {
+      "v25_set_not_new_in_same_freeze_window": 10
+    },
     "live_model_changed": false,
     "model": "v26-temporal-tail-calibration-v1-research-only",
-    "new_frozen_days": []
+    "new_frozen_days": [
+      "2026-11-29"
+    ]
   },
   "prospective_verified": {
     "70_percent_proven": false,
     "invalid_or_tampered_sets_excluded": {},
     "no_historical_v26_probability_backfill": true,
     "no_model_promotion": true,
-    "pending_pairs": 1,
+    "pending_pairs": 2,
     "rows": [
       {
         "actual_scores": [
@@ -462,6 +466,13 @@
         "status": "pending",
         "sydney_date": "2026-11-28",
         "training_fixtures_before_selection": 111
+      },
+      {
+        "new_v26_selection_at_utc": "2026-11-27T14:23:32.941347+00:00",
+        "original_v25_source_selected_at_utc": "2026-11-27T14:23:30.541186+00:00",
+        "status": "pending",
+        "sydney_date": "2026-11-29",
+        "training_fixtures_before_selection": 118
       }
     ],
     "same_legs_v26_score_metrics": {
