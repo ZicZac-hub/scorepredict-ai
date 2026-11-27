@@ -92,11 +92,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/prospective_ledger/capture_coverage.json
-          for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts data/v44_early_history; do
+          for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts; do
             if [ -d "$folder" ]; then
               git add -- "$folder"
             fi
           done
+          # Separately allowlist write-once V44 receipt and blob additions.
+          # Existing receipt edits/deletions are never eligible for publication.
+          for folder in data/v44_early_history/receipts data/v44_early_history/blobs; do
+            if [ -d "$folder" ]; then
+              git add -- "$folder"
+            fi
+          done
+          if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_early_history/)" ]; then
+            echo 'SAFE STOP: existing V44 historical evidence changed'
+            exit 1
+          fi
           if git diff --cached --quiet; then
             echo 'No new authenticated original receipts or coverage'
           else
@@ -153,6 +164,8 @@ jobs:
             data/v10_prospective/forecasts/
             data/prospective_ledger/forecasts/
             data/prospective_ledger/capture_coverage.json
+            data/v44_early_history/receipts/
+            data/v44_early_history/blobs/
             data/prematch/snapshots/
             data/daily_picks/
           if-no-files-found: warn
