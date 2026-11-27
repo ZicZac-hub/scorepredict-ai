@@ -119,9 +119,15 @@ def test_full_archive_to_verified_settlement_without_backfill(tmp_path,monkeypat
                   "captured_at_utc":(original_time-timedelta(minutes=1)).isoformat(),
                   "evidence_as_of_utc":(original_time-timedelta(minutes=2)).isoformat(),
                   "score_matrix":np.outer([.4,.3,.2,.075,.025],[.4,.3,.2,.075,.025]).tolist()}
+        # The real archive reader requires top10_scores; derive them from the
+        # full matrix instead of inventing unrelated score probabilities.
+        original["top10_scores"]=sorted(
+            [[h,a,float(prob) ] for h,line in enumerate(original["score_matrix"])
+             for a,prob in enumerate(line)],key=lambda row:(-row[2],row[0],row[1]))[:10]
         assert append_file_record(original,root=source)
+    assert len(shadow.archive_rows(now=original_time,root=source))==2
     status=shadow.freeze(root=pairs,source_root=source,now=original_time,clock=lambda:original_time)
-    assert len(status["new_sets"])==1
+    assert len(status["new_sets"])==1,status
     original_path=next((pairs/"sets").glob("*.json"))
     original_bytes=original_path.read_bytes()
     original_pair,original_models=s.sources._pair(original_path,source_root=source,decision=NOW)
