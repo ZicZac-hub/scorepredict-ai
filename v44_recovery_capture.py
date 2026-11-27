@@ -7,7 +7,7 @@ separate archive is intentionally invisible to the live prediction readers.
 from datetime import datetime,timedelta,timezone
 from pathlib import Path
 
-from forecast_ledger import append_file_record,_forecast
+from forecast_ledger import append_file_record,_forecast,read_file_records
 from source_capture_clock import capture_clock
 from v10_prospective import utc,read_latest,research_predict,_record
 import v44_early_history as early
@@ -62,7 +62,11 @@ def capture(fixture,evidence,*,root=ROOT,source_root=sources.SOURCE_ROOT,
     # collection or changes to earlier records. The original live archive
     # is never written by this module.
     destination=root/"archive"
-    existing=read_latest(destination).get((*key[:2],MODEL_KEY))
+    existing_rows=[m for m in read_file_records(root=destination,kind="forecasts",
+                    provider=key[0],fixture_id=key[1]) if m.get("model_key")==MODEL_KEY]
+    if len(existing_rows)>1:
+        raise ValueError("multiple_recovery_records_for_fixture")
+    existing=existing_rows[0] if existing_rows else None
     if existing is not None:
         if model_key(existing)!=key:
             return {"status":"existing_recovery_identity_mismatch"}
