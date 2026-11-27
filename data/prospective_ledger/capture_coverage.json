@@ -1,9 +1,9 @@
 {
-  "already_captured": 231,
+  "already_captured": 230,
   "api_call_limit": 120,
   "budget_skipped": [],
-  "captured_fixtures": 0,
-  "collector_started_at_utc": "2026-11-27T21:40:30.019542+00:00",
+  "captured_fixtures": 1,
+  "collector_started_at_utc": "2026-11-27T22:42:07.798709+00:00",
   "coverage_complete": true,
   "cross_competition_source_refresh": {
     "attempted_fixtures": 0,
@@ -33,20 +33,22 @@
     "source_groups": {},
     "sparse_context_gaps": {}
   },
-  "daily_pick_days_written": [],
-  "daily_research_candidates": 0,
+  "daily_pick_days_written": [
+    "2026-11-28"
+  ],
+  "daily_research_candidates": 1,
   "database_records_written": 0,
   "database_recovered_forecasts": 0,
   "database_recovered_settlements": 0,
   "database_status": "not_configured",
   "discovery_budget_skipped": [],
   "discovery_cache_hits": 0,
-  "eligible_horizon_fixtures": 0,
+  "eligible_horizon_fixtures": 1,
   "fixture_limit": 0,
   "history_source_errors": [],
   "league_errors": [],
   "leagues_checked": 11,
-  "ledger_records_written": 0,
+  "ledger_records_written": 4,
   "lookahead_days": 14,
   "news_coverage_complete": true,
   "news_errors": [],
@@ -65,8 +67,8 @@
   },
   "prediction_errors": [],
   "prediction_unavailable": 0,
-  "processed_fixtures": 0,
-  "provider_adapter_calls": 11,
+  "processed_fixtures": 1,
+  "provider_adapter_calls": 16,
   "provider_fixture_counts": {
     "BL1": 19,
     "BSA": 18,
@@ -97,10 +99,12 @@
   "v10_shadow_skipped": {},
   "v10_shadow_skipped_by_league": {},
   "v10_shadow_v10_saved": 0,
-  "v10_shadow_v12_saved": 0,
-  "v10_shadow_v13_saved": 0,
-  "v10_shadow_v8_saved": 0,
-  "v10_shadow_v8_saved_by_league": {},
+  "v10_shadow_v12_saved": 1,
+  "v10_shadow_v13_saved": 1,
+  "v10_shadow_v8_saved": 1,
+  "v10_shadow_v8_saved_by_league": {
+    "BSA": 1
+  },
   "v10_shadow_v9_saved": 0,
   "v37_sparse_shadow_coverage": {},
   "v37_sparse_shadow_saved": 0,
@@ -110,10 +114,13 @@
     "external_requests": 0,
     "max_attempts": 1,
     "reasons": {
-      "no_in_run_history_cache": 1
+      "authenticated_targets_in_discovery": 2,
+      "existing_history_usable_or_not_blocked": 2
     }
   },
-  "v44_early_history": {},
+  "v44_early_history": {
+    "original:written": 1
+  },
   "v8_min_team_history_bins_by_league": {},
   "v8_qualified_away_history_bins_by_league": {},
   "v8_qualified_home_history_bins_by_league": {}
