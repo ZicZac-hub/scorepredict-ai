@@ -10,11 +10,11 @@
     },
     "ai_gemini": {
       "hit": 4,
-      "hit_rate": 0.13333333333333333,
-      "miss": 26,
-      "pending": 4,
+      "hit_rate": 0.12903225806451613,
+      "miss": 27,
+      "pending": 3,
       "recorded": 34,
-      "verified": 30
+      "verified": 31
     },
     "ai_groqcloud": {
       "hit": 0,
@@ -26,11 +26,11 @@
     },
     "ai_openai": {
       "hit": 1,
-      "hit_rate": 0.1,
-      "miss": 9,
-      "pending": 4,
+      "hit_rate": 0.09090909090909091,
+      "miss": 10,
+      "pending": 3,
       "recorded": 14,
-      "verified": 10
+      "verified": 11
     },
     "automatic_five_double": {
       "hit": 0,
@@ -42,70 +42,70 @@
     },
     "frozen_v10": {
       "hit": 17,
-      "hit_rate": 0.15454545454545454,
-      "miss": 93,
-      "pending": 38,
+      "hit_rate": 0.15315315315315314,
+      "miss": 94,
+      "pending": 37,
       "recorded": 148,
-      "verified": 110
+      "verified": 111
     },
     "frozen_v12": {
       "hit": 17,
-      "hit_rate": 0.14782608695652175,
-      "miss": 98,
+      "hit_rate": 0.14655172413793102,
+      "miss": 99,
       "pending": 217,
-      "recorded": 332,
-      "verified": 115
+      "recorded": 333,
+      "verified": 116
     },
     "frozen_v13": {
       "hit": 16,
-      "hit_rate": 0.1391304347826087,
-      "miss": 99,
+      "hit_rate": 0.13793103448275862,
+      "miss": 100,
       "pending": 217,
-      "recorded": 332,
-      "verified": 115
+      "recorded": 333,
+      "verified": 116
     },
     "frozen_v8": {
       "hit": 14,
-      "hit_rate": 0.11864406779661017,
-      "miss": 104,
-      "pending": 239,
+      "hit_rate": 0.11764705882352941,
+      "miss": 105,
+      "pending": 238,
       "recorded": 357,
-      "verified": 118
+      "verified": 119
     },
     "frozen_v8_control": {
       "hit": 9,
-      "hit_rate": 0.11688311688311688,
-      "miss": 68,
-      "pending": 27,
+      "hit_rate": 0.11538461538461539,
+      "miss": 69,
+      "pending": 26,
       "recorded": 104,
-      "verified": 77
+      "verified": 78
     },
     "frozen_v8_near": {
       "hit": 15,
-      "hit_rate": 0.13636363636363635,
-      "miss": 95,
-      "pending": 35,
+      "hit_rate": 0.13513513513513514,
+      "miss": 96,
+      "pending": 34,
       "recorded": 145,
-      "verified": 110
+      "verified": 111
     },
     "frozen_v9": {
       "hit": 19,
-      "hit_rate": 0.16964285714285715,
-      "miss": 93,
-      "pending": 38,
+      "hit_rate": 0.168141592920354,
+      "miss": 94,
+      "pending": 37,
       "recorded": 150,
-      "verified": 112
+      "verified": 113
     },
     "website_original": {
       "hit": 13,
-      "hit_rate": 0.14772727272727273,
-      "miss": 75,
-      "pending": 182,
+      "hit_rate": 0.14606741573033707,
+      "miss": 76,
+      "pending": 181,
       "recorded": 270,
-      "verified": 88
+      "verified": 89
     }
   },
-  "checked_at_utc": "2026-11-27T21:42:52.093611+00:00",
+  "checked_at_utc": "2026-11-27T22:44:25.443011+00:00",
   "five_doubles": {
     "hit": 0,
     "hit_rate": 0.0,
@@ -27176,6 +27176,64 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-14T02:31:39.883662+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492475', 'v8')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cruzeiro",
+          "away_team_id": "135",
+          "fixture_id": "1492475",
+          "home_team": "Fluminense",
+          "home_team_id": "124",
+          "kickoff_utc": "2026-11-27T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v8",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-27T23:00:00.000000Z",
+      "source": "frozen_v8",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
+      "captured_at_utc": "2026-11-27T22:42:11.279568+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492475', 'v13')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cruzeiro",
+          "away_team_id": "135",
+          "fixture_id": "1492475",
+          "home_team": "Fluminense",
+          "home_team_id": "124",
+          "kickoff_utc": "2026-11-27T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v13",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-27T23:00:00.000000Z",
+      "source": "frozen_v13",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-26T07:48:09.260725+00:00",
       "choices": [
         [
@@ -27205,6 +27263,35 @@
     },
     {
       "actual_scores": [],
+      "captured_at_utc": "2026-11-27T22:42:11.262444+00:00",
+      "choices": [
+        [
+          "1-1"
+        ]
+      ],
+      "detail": "",
+      "id": "('API-Football', '1492475', 'v12')",
+      "kind": "single",
+      "legs": [
+        {
+          "away_team": "Cruzeiro",
+          "away_team_id": "135",
+          "fixture_id": "1492475",
+          "home_team": "Fluminense",
+          "home_team_id": "124",
+          "kickoff_utc": "2026-11-27T23:00:00.000000Z",
+          "provider": "API-Football"
+        }
+      ],
+      "model": "v12",
+      "option_hits": [],
+      "private": false,
+      "scheduled_kickoff_utc": "2026-11-27T23:00:00.000000Z",
+      "source": "frozen_v12",
+      "status": "pending"
+    },
+    {
+      "actual_scores": [],
       "captured_at_utc": "2026-11-26T07:48:09.207895+00:00",
       "choices": [
         [
@@ -27230,35 +27317,6 @@
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T23:00:00.000000Z",
       "source": "frozen_v9",
-      "status": "pending"
-    },
-    {
-      "actual_scores": [],
-      "captured_at_utc": "2026-11-14T02:31:39.883662+00:00",
-      "choices": [
-        [
-          "1-1"
-        ]
-      ],
-      "detail": "",
-      "id": "('API-Football', '1492475', 'v8')",
-      "kind": "single",
-      "legs": [
-        {
-          "away_team": "Cruzeiro",
-          "away_team_id": "135",
-          "fixture_id": "1492475",
-          "home_team": "Fluminense",
-          "home_team_id": "124",
-          "kickoff_utc": "2026-11-27T23:00:00.000000Z",
-          "provider": "API-Football"
-        }
-      ],
-      "model": "v8",
-      "option_hits": [],
-      "private": false,
-      "scheduled_kickoff_utc": "2026-11-27T23:00:00.000000Z",
-      "source": "frozen_v8",
       "status": "pending"
     },
     {
@@ -29028,7 +29086,9 @@
       "status": "pending"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-13T19:52:47.313180+00:00",
       "choices": [
         [
@@ -29050,14 +29110,18 @@
         }
       ],
       "model": "reference-informed-v7-v6-retained",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00Z",
       "source": "website_original",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-27T18:37:44.917254+00:00",
       "choices": [
         [
@@ -29079,14 +29143,18 @@
         }
       ],
       "model": "v13",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v13",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-14T02:29:02.529879+00:00",
       "choices": [
         [
@@ -29108,14 +29176,18 @@
         }
       ],
       "model": "v8",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v8",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-25T23:27:07.245429+00:00",
       "choices": [
         [
@@ -29137,14 +29209,18 @@
         }
       ],
       "model": "v8_near",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v8_near",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-27T18:37:44.891536+00:00",
       "choices": [
         [
@@ -29166,14 +29242,18 @@
         }
       ],
       "model": "v12",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v12",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-25T23:27:08.896050+00:00",
       "choices": [
         [
@@ -29195,14 +29275,18 @@
         }
       ],
       "model": "v10",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v10",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-25T23:27:08.872725+00:00",
       "choices": [
         [
@@ -29224,14 +29308,18 @@
         }
       ],
       "model": "v9",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v9",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-25T23:27:08.872725+00:00",
       "choices": [
         [
@@ -29253,14 +29341,18 @@
         }
       ],
       "model": "v8_control",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "frozen_v8_control",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-26T22:45:17.315987+00:00",
       "choices": [
         [
@@ -29282,14 +29374,18 @@
         }
       ],
       "model": "gemini-3.5-flash-lite",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "ai_gemini",
-      "status": "pending"
+      "status": "miss"
     },
     {
-      "actual_scores": [],
+      "actual_scores": [
+        "1-1"
+      ],
       "captured_at_utc": "2026-11-26T22:45:17.315987+00:00",
       "choices": [
         [
@@ -29311,11 +29407,13 @@
         }
       ],
       "model": "gpt-4o-mini",
-      "option_hits": [],
+      "option_hits": [
+        false
+      ],
       "private": false,
       "scheduled_kickoff_utc": "2026-11-27T19:00:00.000000Z",
       "source": "ai_openai",
-      "status": "pending"
+      "status": "miss"
     },
     {
       "actual_scores": [
@@ -59827,11 +59925,11 @@
   "single_record_counts_include_multiple_models": true,
   "singles": {
     "hit": 125,
-    "hit_rate": 0.13812154696132597,
-    "miss": 780,
-    "pending": 1003,
-    "recorded": 1908,
-    "verified": 905
+    "hit_rate": 0.1366120218579235,
+    "miss": 790,
+    "pending": 995,
+    "recorded": 1910,
+    "verified": 915
   },
-  "unique_verified_single_fixtures": 118
+  "unique_verified_single_fixtures": 119
 }
