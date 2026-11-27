@@ -101,6 +101,44 @@ def calculate(models,cutoff,source_root,history_root):
         arm["full_score_grids"]=[g.tolist() for g in arm["full_score_grids"]]
     return refs,arms
 
+def readiness(*,root=ROOT,source_root=sources.SOURCE_ROOT,history_root=early.ROOT,
+              pair_root=sources.PAIR_ROOT,now=None):
+    """Read-only future/open window preflight. No predictions or registration."""
+    now=utc(now or datetime.now(timezone.utc))
+    counts=Counter(); legs=Counter()
+    root=Path(root)
+    registered=utc(protocol(root,now)["registered_at_utc"]) if (root/"protocol.json").exists() else None
+    for path in sorted((Path(pair_root)/"sets").glob("*.json")):
+        try:
+            pair,models=sources._pair(path,source_root=source_root,decision=now)
+            kickoff=min(utc(m["kickoff_utc"]) for m in models)
+            opens=max(utc(pair["predicted_at_utc"]),kickoff-timedelta(hours=3),registered or now)
+            closes=kickoff-timedelta(minutes=5)
+            if closes<=now or closes<=opens:
+                counts["closed_or_ineligible"]+=1
+                continue
+            stage="future" if opens>now else "open"
+            counts[stage+"_pairs"]+=1
+            ready=0
+            for original in models:
+                try:
+                    m,receipt,key=source_for(original,now,source_root,history_root)
+                    result=ratings.predict(receipt["fixture"],receipt["history"],receipt["as_of_utc"])
+                    status="ready" if result["status"]=="ready" else "insufficient_history"
+                except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError) as exc:
+                    status="missing_fresh_exact_history" if str(exc)=="missing_fresh_exact_history" else "invalid_or_unusable_source"
+                legs[stage+":"+status]+=1
+                ready+=int(status=="ready")
+            counts[stage+"_pairs_with_"+str(ready)+"_ready_legs"]+=1
+        except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError):
+            counts["invalid_original_pair"]+=1
+    return {"study_type":VERSION,"registered":registered is not None,
+            "counts":dict(counts),"leg_statuses":dict(legs),"external_requests":0,
+            "automatic_promotion":False,
+            "limitations":["Readiness is measured at the audit time, not guaranteed at a future decision.",
+                           "No original forecast, receipt or trial is modified."]}
+
+
 def freeze(*,root=ROOT,source_root=sources.SOURCE_ROOT,history_root=early.ROOT,pair_root=sources.PAIR_ROOT,now=None,clock=None):
     started,observed=capture_clock(now,clock)
     root=Path(root); p=protocol(root,started,register=True); counts=Counter()
@@ -168,5 +206,11 @@ def evaluate(*,root=ROOT,source_root=sources.SOURCE_ROOT,history_root=early.ROOT
             "automatic_promotion":False,"rows":rows}
 
 if __name__=="__main__":
-    parser=argparse.ArgumentParser();parser.add_argument("--freeze",action="store_true");args=parser.parse_args()
-    print(json.dumps({"capture":freeze(),"evaluation":evaluate()} if args.freeze else evaluate(),indent=2,allow_nan=False))
+    parser=argparse.ArgumentParser()
+    mode=parser.add_mutually_exclusive_group()
+    mode.add_argument("--freeze",action="store_true")
+    mode.add_argument("--readiness",action="store_true")
+    args=parser.parse_args()
+    result=({"capture":freeze(),"evaluation":evaluate(),"readiness":readiness()} if args.freeze
+            else readiness() if args.readiness else evaluate())
+    print(json.dumps(result,indent=2,allow_nan=False))
