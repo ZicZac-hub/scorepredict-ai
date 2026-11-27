@@ -179,7 +179,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             evidence_loader=None, pair_builder=None, clock=None,
             daily_recorder=None, research_recorder=None,
             research_backfill_limit=0,market_refresher=None,
-            research_market_refresh_limit=0):
+            research_market_refresh_limit=0,recovery_refresher=None):
     """Return old-format snapshots and full-grid ledger coverage without fake history.
 
     Optional callbacks make data policy, timing and budget tests independent of
@@ -547,6 +547,18 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                     diagnostics['v44_pair_refresh_reserved']=reserved
                 except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError) as exc:
                     diagnostics['v44_pair_refresh_priority_error']=type(exc).__name__
+            recovery_keys=set()
+            diagnostics['v44_recovery_reserved']=0
+            diagnostics['v44_recovery_reasons']={}
+            if recovery_refresher is not None:
+                try:
+                    from v44_recovery_queue import plan
+                    from v44_refresh_priority import fixture_key as recovery_key
+                    awaiting,recovery_keys=plan(fixtures.values(),awaiting,shadow,now=now,
+                                               limit=research_market_refresh_limit)
+                    diagnostics['v44_recovery_reserved']=len(recovery_keys)
+                except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError) as exc:
+                    diagnostics['v44_recovery_queue_error']=type(exc).__name__
             for kickoff,fixture,code in awaiting[:research_market_refresh_limit]:
                 if max_seconds and time.monotonic()-monotonic_start>=max_seconds:
                     break
@@ -557,6 +569,14 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                         continue
                     packet=evidence_loader(fixture,as_of=observed,api_key=key,
                                            api_request=request,cache=history_cache)
+                    if recovery_keys and recovery_key(fixture) in recovery_keys:
+                        # Spend only the selected existing history-refresh slot.
+                        # No bookmaker request or original forecast rewrite.
+                        recovery_result=recovery_refresher(fixture,packet,_time(current_time()))
+                        reason=recovery_result.get('status','unknown')
+                        reasons=diagnostics['v44_recovery_reasons']
+                        reasons[reason]=reasons.get(reason,0)+1
+                        continue
                     result=market_refresher(
                         fixture,packet,_time(current_time()),code,request,
                         max(0,4-diagnostics['v10_market_calls']))
@@ -640,6 +660,11 @@ def main():
         result=daily_candidate(fixture,evidence,observed,code)
         if result:
             _daily_candidates.append(result)
+    recovery_callback=None
+    if os.environ.get("V44_RECOVERY_CAPTURE_ENABLED")=="true":
+        from v44_recovery_capture import capture as recover_history
+        def recovery_callback(fixture,evidence,observed):
+            return recover_history(fixture,evidence,now=observed)
     payload = collect(key, max_fixtures=_positive_limit(os.environ.get('CAPTURE_MAX_FIXTURES'), 0),
         max_seconds=_positive_limit(os.environ.get('CAPTURE_MAX_SECONDS'), 600),
         database_url=os.environ.get('DATABASE_URL') or None,
@@ -647,7 +672,8 @@ def main():
         daily_recorder=_record_daily,research_recorder=_record_v10,
         research_backfill_limit=_positive_limit(os.environ.get('V10_BACKFILL_LIMIT'),0),
         market_refresher=_refresh_market,
-        research_market_refresh_limit=_positive_limit(os.environ.get('V10_MARKET_REFRESH_LIMIT'),0))
+        research_market_refresh_limit=_positive_limit(os.environ.get('V10_MARKET_REFRESH_LIMIT'),0),
+        recovery_refresher=recovery_callback)
     payload['diagnostics']['v44_early_history']=early_history_counts
     saved_days=save_for_dates(_daily_candidates)
     payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)

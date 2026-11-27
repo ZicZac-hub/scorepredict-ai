@@ -73,6 +73,7 @@ jobs:
           # Reuse already fetched history on main; explicit false is the rollback switch.
           V44_EARLY_HISTORY_ENABLED: ${{ vars.V44_EARLY_HISTORY_ENABLED != 'false' && 'true' || 'false' }}
           V44_PAIR_REFRESH_PRIORITY: ${{ vars.V44_PAIR_REFRESH_PRIORITY != 'false' && 'true' || 'false' }}
+          V44_RECOVERY_CAPTURE_ENABLED: ${{ vars.V44_RECOVERY_CAPTURE_ENABLED == 'true' && 'true' || 'false' }}
           CROSS_COMPETITION_HISTORY_MAX_CALLS: ${{ steps.cadence.outputs.heavy == 'true' && '20' || '0' }}
           V10_BACKFILL_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '12' || '0' }}
           V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}
@@ -108,6 +109,15 @@ jobs:
           done
           if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_early_history/)" ]; then
             echo 'SAFE STOP: existing V44 historical evidence changed'
+            exit 1
+          fi
+          for folder in data/v44_recovery_sources/archive/forecasts data/v44_recovery_sources/history/receipts data/v44_recovery_sources/history/blobs; do
+            if [ -d "$folder" ]; then
+              git add -- "$folder"
+            fi
+          done
+          if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_recovery_sources/)" ]; then
+            echo 'SAFE STOP: existing isolated recovery evidence changed'
             exit 1
           fi
           if git diff --cached --quiet; then
@@ -168,6 +178,7 @@ jobs:
             data/prospective_ledger/capture_coverage.json
             data/v44_early_history/receipts/
             data/v44_early_history/blobs/
+            data/v44_recovery_sources/
             data/prematch/snapshots/
             data/daily_picks/
           if-no-files-found: warn
