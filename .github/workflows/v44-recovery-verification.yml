@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'v44_recovery_evidence_audit.py'
+      - 'v44_collection_health.py'
+      - 'tests/test_v44_collection_health.py'
       - 'tests/test_v44_recovery_evidence_audit.py'
       - '.github/workflows/v44-recovery-verification.yml'
   workflow_dispatch:
@@ -22,7 +24,11 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_v44_recovery_capture.py tests/test_v44_recovery_evidence_audit.py
+      - run: python -m pytest -q tests/test_v44_recovery_capture.py tests/test_v44_recovery_evidence_audit.py tests/test_v44_collection_health.py
+      - name: Inspect published collection health without inferring job status
+        run: |
+          python v44_collection_health.py > /tmp/v44-collection-health.json
+          cat /tmp/v44-collection-health.json
       - name: Reproduce archived recovery forecasts and verify results
         env:
           OPENAI_API_KEY: ""
@@ -35,6 +41,8 @@ jobs:
         if: always()
         with:
           name: v44-recovery-verification
-          path: /tmp/v44-recovery-verification.json
+          path: |
+            /tmp/v44-recovery-verification.json
+            /tmp/v44-collection-health.json
           if-no-files-found: warn
           retention-days: 14
