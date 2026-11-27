@@ -21,7 +21,7 @@ def _time(value):
 
 def _grid(raw, shape=None):
     p = np.asarray(raw, dtype=float)
-    if (p.ndim != 2 or min(p.shape) < 5 or not np.isfinite(p).all()
+    if (p.ndim != 2 or min(p.shape) < 5 or max(p.shape) > 256 or not np.isfinite(p).all()
             or (p < 0).any() or not np.isclose(p.sum(), 1, atol=1e-6, rtol=0)
             or (shape is not None and p.shape != shape)):
         raise ValueError("invalid score distribution")
@@ -33,7 +33,7 @@ def family_pool(families):
     if not families:
         raise ValueError("no model families")
     out = {}
-    shape = None
+    shapes = [None, None]
     for name in sorted(families):
         variants = families[name]
         if not variants:
@@ -43,13 +43,17 @@ def family_pool(families):
             if len(pair) != 2:
                 raise ValueError("two legs required")
             legs = []
-            for raw in pair:
-                p = _grid(raw, shape)
-                shape = p.shape
+            for leg, raw in enumerate(pair):
+                p = _grid(raw, shapes[leg])
+                shapes[leg] = p.shape
                 legs.append(p)
             matrices.append(legs)
-        out[name] = np.mean(matrices, axis=0)
-    return out
+        out[name] = [np.mean([pair[leg] for pair in matrices], axis=0) for leg in (0, 1)]
+    # Different fixtures may have different original score support. Extend
+    # only the array representation with zeros; never invent probability mass.
+    common = tuple(max(s[d] for s in shapes) for d in (0, 1))
+    return {name: np.stack([np.pad(p, [(0, common[d]-p.shape[d]) for d in (0, 1)])
+                            for p in legs]) for name, legs in out.items()}
 
 
 def _validate(row):
@@ -99,16 +103,12 @@ def _weights(training, n):
 
 def _metrics(grids, scores, weights):
     mixed = np.tensordot(weights, grids, axes=1)
-    joint = np.outer(mixed[0].ravel(), mixed[1].ravel())
-    top = np.argsort(-joint.ravel(), kind="stable")[:5]
-    selected = set(map(int, top))
-    shape = mixed[0].shape
-    observed = []
-    for h, a in scores:
-        observed.append(h * shape[1] + a if h < shape[0] and a < shape[1] else None)
-    hit = (None not in observed and observed[0] * joint.shape[1] + observed[1] in selected)
+    from professional_double_optimizer import optimal_five
+    choices = optimal_five(*mixed)
+    strings = [f"{h}-{a}" for h, a in scores]
+    hit = any(p["score1"] == strings[0] and p["score2"] == strings[1] for p in choices)
     likelihood = _likelihood(grids, scores) @ weights
-    return {"hit": bool(hit), "coverage": float(joint.ravel()[top].sum()),
+    return {"hit": bool(hit), "coverage": math.fsum(p["joint_probability"] for p in choices),
             "score_log_loss": float(-np.log(np.maximum(likelihood, 1e-15)).mean())}
 
 
