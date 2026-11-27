@@ -222,10 +222,17 @@ def evaluate(*, root=ROOT, pair_root=sources.PAIR_ROOT, source_root=sources.SOUR
             rejections["unusable_v43_protocol"] = len(paths)
     if protocol and paths:
         finals, conflicts, final_rejections = _result_index(source_root, prematch_root)
+        valid_trials = []
         for path in paths:
             try:
                 record, models = _validated(path, protocol=protocol, pair_root=pair_root,
                                             source_root=source_root, provider_root=provider_root, now=now)
+                valid_trials.append((utc(record["predicted_at_utc"]), path.name, record, models))
+            except (ValueError, KeyError, TypeError, OSError, AttributeError, ArithmeticError) as exc:
+                rejections[str(exc) if isinstance(exc, ValueError) else type(exc).__name__] += 1
+        # Resolve duplicate fixtures before grading, in issuance order regardless of settlement time.
+        for _, _, record, models in sorted(valid_trials, key=lambda trial: trial[:2]):
+            try:
                 ids = {(str(model["provider"]), str(model["fixture_id"])) for model in models}
                 events = {_fixture_event(model) for model in models}
                 if len(ids) != 2 or len(events) != 2 or ids & seen_ids or events & seen_events:
