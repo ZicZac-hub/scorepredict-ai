@@ -59,3 +59,22 @@ def test_matched_arms_normalized(monkeypatch):
     for a in arms.values():
         assert len(a["five_doubles"])==5
         assert all(np.isclose(np.sum(g),1.) for g in a["full_score_grids"])
+
+
+def test_readiness_checks_future_without_issuing_or_registering(tmp_path,monkeypatch):
+    pairs=tmp_path/"pairs";(pairs/"sets").mkdir(parents=True)
+    (pairs/"sets"/"2025-02-01.json").write_text("{}")
+    models=[model("1"),model("2")]
+    for m in models:
+        m["kickoff_utc"]=(NOW+timedelta(hours=5)).isoformat()
+    monkeypatch.setattr(s.sources,"_pair",lambda *a,**k:({"predicted_at_utc":NOW.isoformat()},models))
+    def get(m,*a):
+        if m["fixture_id"]=="2":
+            raise ValueError("missing_fresh_exact_history")
+        return m,{"fixture":{},"history":[],"as_of_utc":NOW.isoformat()},"key"
+    monkeypatch.setattr(s,"source_for",get)
+    monkeypatch.setattr(s.ratings,"predict",lambda *a:{"status":"ready"})
+    result=s.readiness(root=tmp_path/"study",pair_root=pairs,now=NOW)
+    assert result["counts"]["future_pairs_with_1_ready_legs"]==1
+    assert result["leg_statuses"]["future:missing_fresh_exact_history"]==1
+    assert not (tmp_path/"study").exists()
