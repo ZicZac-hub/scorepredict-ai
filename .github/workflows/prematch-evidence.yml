@@ -70,6 +70,8 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CROSS_COMPETITION_RESEARCH_ENABLED: "true"
+          # Reuse already fetched history on main; explicit false is the rollback switch.
+          V44_EARLY_HISTORY_ENABLED: ${{ vars.V44_EARLY_HISTORY_ENABLED != 'false' && 'true' || 'false' }}
           CROSS_COMPETITION_HISTORY_MAX_CALLS: ${{ steps.cadence.outputs.heavy == 'true' && '20' || '0' }}
           V10_BACKFILL_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '12' || '0' }}
           V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}
@@ -96,6 +98,17 @@ jobs:
               git add -- "$folder"
             fi
           done
+          # Separately allowlist write-once V44 receipt and blob additions.
+          # Existing receipt edits/deletions are never eligible for publication.
+          for folder in data/v44_early_history/receipts data/v44_early_history/blobs; do
+            if [ -d "$folder" ]; then
+              git add -- "$folder"
+            fi
+          done
+          if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_early_history/)" ]; then
+            echo 'SAFE STOP: existing V44 historical evidence changed'
+            exit 1
+          fi
           if git diff --cached --quiet; then
             echo 'No new authenticated original receipts or coverage'
           else
@@ -152,6 +165,8 @@ jobs:
             data/v10_prospective/forecasts/
             data/prospective_ledger/forecasts/
             data/prospective_ledger/capture_coverage.json
+            data/v44_early_history/receipts/
+            data/v44_early_history/blobs/
             data/prematch/snapshots/
             data/daily_picks/
           if-no-files-found: warn
@@ -319,6 +334,8 @@ jobs:
         env:
           V21_EVIDENCE_ENABLED: "true"
           V22_DEEP_XG_ENABLED: "true"
+          # Opt in only after successful research and full regression validation.
+          V44_VENUE_COLLECTION_ENABLED: ${{ vars.V44_VENUE_COLLECTION_ENABLED }}
           V21_DAILY_CAPTURE_ATTEMPTS: ${{ vars.V21_DAILY_CAPTURE_ATTEMPTS }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python v21_capture_sources_v2.py

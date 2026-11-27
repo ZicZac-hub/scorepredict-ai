@@ -71,11 +71,39 @@ jobs:
         run: |
           python -m pytest -q tests/test_v43_prospective.py tests/test_v43_feasibility.py
           python v43_prospective.py --freeze
+      - name: Freeze and verify V44 exact-history ratings trial
+        id: v44
+        if: steps.refresh.outcome == 'success' && vars.V44_RATINGS_TRIAL_ENABLED != 'false'
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ""
+          API_FOOTBALL_KEY: ""
+          SPORTMONKS_API_KEY: ""
+        run: |
+          python -m pytest -q tests/test_v44_early_history.py tests/test_v44_score_driven_research.py tests/test_v44_ratings_prospective.py tests/test_v44_opportunity_audit.py
+          python v44_ratings_prospective.py --freeze > /tmp/v44-ratings-run.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from v44_opportunity_audit import evaluate as audit_opportunities
+          run=json.loads(Path("/tmp/v44-ratings-run.json").read_text())
+          report=run["evaluation"]
+          if report["counts"].get("rejected"):
+              raise SystemExit("V44 trial integrity failure")
+          root=Path("data/v44_ratings_prospective")
+          # Keep both the comparative results and actionable capture diagnostics.
+          for name,data in (("performance",report),("capture_status",run["capture"])):
+              (root/(name+".json")).write_text(json.dumps(data,indent=2,sort_keys=True,allow_nan=False)+"\n")
+          opportunity=audit_opportunities(report=report)
+          (root/"opportunity_audit.json").write_text(json.dumps(opportunity,indent=2,sort_keys=True,allow_nan=False)+"\n")
+          print(json.dumps(run["capture"],sort_keys=True))
+          PY
       - name: Publish only isolated research archive
         if: steps.refresh.outcome == 'success'
         env:
           LATE_OUTCOME: ${{ steps.late.outcome }}
           V43_OUTCOME: ${{ steps.v43.outcome }}
+          V44_OUTCOME: ${{ steps.v44.outcome }}
         run: |
           python - <<'PY'
           import json, subprocess, os
@@ -104,6 +132,13 @@ jobs:
           if [ "$V43_OUTCOME" = "success" ]; then
             git add data/v43_prospective/
           fi
+          if [ "$V44_OUTCOME" = "success" ]; then
+            git add -- data/v44_ratings_prospective/
+            if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_ratings_prospective/protocol.json data/v44_ratings_prospective/trials/)" ]; then
+              echo "::error::Existing V44 trial evidence changed; refusing publication"
+              exit 1
+            fi
+          fi
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data: isolated V42 and V43 research refresh [skip ci]'
           # Other scheduled evidence writers may update main concurrently.
@@ -127,6 +162,9 @@ jobs:
       - name: Report a failed V43 trial check
         if: steps.v43.outcome == 'failure'
         run: exit 1
+      - name: Report a failed V44 trial check
+        if: steps.v44.outcome == 'failure'
+        run: exit 1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -135,5 +173,6 @@ jobs:
             data/v42_research/
             data/v42_late_research/
             data/v43_prospective/
+            data/v44_ratings_prospective/
           if-no-files-found: warn
           retention-days: 14
