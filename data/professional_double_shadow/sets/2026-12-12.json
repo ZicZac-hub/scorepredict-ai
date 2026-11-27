@@ -1,0 +1,133 @@
+{
+  "calibration_bootstrap_only_not_premium_recommendation": true,
+  "policy_id": "professional-probability-five-v1",
+  "predicted_at_utc": "2026-11-27T19:47:28.670345+00:00",
+  "prospective": true,
+  "record_sha256": "2bfeedf496939bb2022fbf2462b219d0951c6787bda9d34d27b0ca30f3bb9db4",
+  "schema_version": 1,
+  "selection": {
+    "choices": [
+      {
+        "first_probability": 0.12860898724266434,
+        "joint_probability": 0.015444922305263538,
+        "score1": "1-0",
+        "score2": "1-1",
+        "second_probability": 0.12009209182342342
+      },
+      {
+        "first_probability": 0.12240654298803201,
+        "joint_probability": 0.014700057800306567,
+        "score1": "1-1",
+        "score2": "1-1",
+        "second_probability": 0.12009209182342342
+      },
+      {
+        "first_probability": 0.11498133542331856,
+        "joint_probability": 0.013808349091637022,
+        "score1": "0-0",
+        "score2": "1-1",
+        "second_probability": 0.12009209182342342
+      },
+      {
+        "first_probability": 0.10417185524393904,
+        "joint_probability": 0.012510216005371501,
+        "score1": "0-1",
+        "score2": "1-1",
+        "second_probability": 0.12009209182342342
+      },
+      {
+        "first_probability": 0.12860898724266434,
+        "joint_probability": 0.011147768868544478,
+        "score1": "1-0",
+        "score2": "1-2",
+        "second_probability": 0.08667954788813043
+      }
+    ],
+    "coverage_is_calibrated": false,
+    "dependence_model_available": false,
+    "early_frozen_source": [
+      false,
+      false
+    ],
+    "estimated_coverage": 0.06761131407112311,
+    "expected_value": {
+      "available": false,
+      "reason": "executable_double_prices_not_supplied"
+    },
+    "first_fixture": {
+      "awayTeam": {
+        "id": "174",
+        "name": "FC Schalke 04"
+      },
+      "competition": {
+        "code": "BL1",
+        "name": "BL1"
+      },
+      "homeTeam": {
+        "id": "175",
+        "name": "Hamburger SV"
+      },
+      "id": "1575253",
+      "provider": "API-Football",
+      "utcDate": "2026-12-11T19:30:00+00:00"
+    },
+    "generated_at_utc": "2026-11-27T19:47:28.670320+00:00",
+    "matches_assumed_independent": true,
+    "model_versions": [
+      "ziczac-evidence-ensemble-v8-experimental",
+      "ziczac-evidence-ensemble-v8-experimental"
+    ],
+    "original_forecasts_changed": false,
+    "policy_id": "professional-probability-five-v1",
+    "realized_roi": null,
+    "second_fixture": {
+      "awayTeam": {
+        "id": "96",
+        "name": "Toulouse"
+      },
+      "competition": {
+        "code": "FL1",
+        "name": "FL1"
+      },
+      "homeTeam": {
+        "id": "108",
+        "name": "Auxerre"
+      },
+      "id": "1552847",
+      "provider": "API-Football",
+      "utcDate": "2026-12-11T19:45:00+00:00"
+    },
+    "selection_scope": "auto_max_raw_coverage_same_day_v1",
+    "source_forecast_refs": {
+      "first": {
+        "away_team_id": "174",
+        "fixture_id": "1575253",
+        "forecast_id": "9328e36351f2eb72377d67561e6ee542208490ae9db25f10a9585ed687630090",
+        "home_team_id": "175",
+        "input_digest": "258c248542c15fc7ed5dbeb6eb254fdf63e3b050775dfc5d95ca23717de7c274",
+        "kickoff_utc": "2026-12-11T19:30:00.000000Z",
+        "provider": "API-Football"
+      },
+      "second": {
+        "away_team_id": "96",
+        "fixture_id": "1552847",
+        "forecast_id": "0f95b8e3d3ba084a8b9ef2b60d01276b45740dcf2db18eac132c9e8d707d95b2",
+        "home_team_id": "108",
+        "input_digest": "eafac106ca310f4bfd876561c10018aeb1b91f580ba13e1fa1e6dfafda769db4",
+        "kickoff_utc": "2026-12-11T19:45:00.000000Z",
+        "provider": "API-Football"
+      }
+    },
+    "source_times_utc": [
+      "2026-11-27T19:45:23.265199+00:00",
+      "2026-11-27T19:45:23.529661+00:00"
+    ],
+    "status": "ready",
+    "sydney_date": "2026-12-12",
+    "target_70_percent_proven": false
+  },
+  "selection_scope": "auto_max_raw_coverage_same_day_v1",
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-12-12",
+  "target_70_percent_proven": false
+}
