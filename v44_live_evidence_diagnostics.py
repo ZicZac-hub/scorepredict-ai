@@ -69,17 +69,22 @@ def evaluate(*,root=trial.ROOT,history_root=early.ROOT,pair_root=sources.PAIR_RO
                 continue
             if opens>clock:
                 counts["future_window"]+=1
-                continue
-            stage="open" if clock<closes else "closed"
+                stage="future"
+            else:
+                stage="open" if clock<closes else "closed"
             issued=(root/"trials"/path.name).is_file()
             counts[stage+"_pair_opportunities"]+=1
             counts[stage+"_with_trial_file"]+=int(issued)
+            # A future window can be checked as soon as its original pair
+            # exists. This is readiness only, never a prediction or backfill.
             # Use original decision for historical availability; later
             # receipts never repair a missing original source retrospectively.
             legs=[history_status(m,original,history_root) for m in models]
             for status in legs:
                 statuses[stage+":"+status]+=1
             counts[stage+"_both_histories_ready"]+=int(legs==["ready","ready"])
+            counts[stage+"_one_history_ready"]+=int(legs.count("ready")==1)
+            counts[stage+"_neither_history_ready"]+=int(legs.count("ready")==0)
         except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError):
             counts["invalid_original_pair"]+=1
     return {"study_type":"v44_operational_evidence_diagnostics",
