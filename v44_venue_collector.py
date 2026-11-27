@@ -75,13 +75,14 @@ def capture_venue_aware(fixture,history,api_key,*,enabled=False,reserved_adapter
     packet=capture(fixture,selected,api_key,now=started,clock=observed,
                    request=request,max_history_per_team=limit,
                    include_provider_prediction=include_provider_prediction)
+    calls=(packet.get("diagnostics") or {}).get("queries",0) if isinstance(packet,dict) else 0
     if not valid_snapshot(packet,fixture,now=observed()):
         return {"status":"abstained","reason":"unqualified_provider_snapshot",
-                "sampling":report}
+                "sampling":report,"adapter_calls":calls}
     actual=(packet.get("diagnostics") or {}).get("historical_stats_fixtures_queried")
     if type(actual) is not int or actual!=report["executable"]["requests"]:
         return {"status":"abstained","reason":"unexpected_historical_request_count",
-                "sampling":report}
+                "sampling":report,"adapter_calls":calls}
     return {"status":"captured","provider_snapshot":packet,"sampling":report,
             "reserved_adapter_calls":reserved_adapter_calls,
             "maximum_adapter_calls":maximum,"automatic_promotion":False}
