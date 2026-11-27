@@ -27,7 +27,10 @@ def evaluate(*,root=early.ROOT,source_root=sources.SOURCE_ROOT,pair_root=sources
     for path in sorted((Path(root)/"receipts").glob("*.json")):
         try:
             row=early.load(path,root=root,now=clock)
-            receipts[tuple(row["event"])]=row
+            key=(tuple(row["event"]),row["history_input_digest"])
+            previous=receipts.get(key)
+            if previous is None or utc(row["captured_at_utc"])<utc(previous["captured_at_utc"]):
+                receipts[key]=row
         except (KeyError,ValueError,TypeError,OSError,AttributeError,ArithmeticError):
             rejects["invalid_receipt"]+=1
     counts["qualified_receipts"]=len(receipts)
@@ -42,7 +45,7 @@ def evaluate(*,root=early.ROOT,source_root=sources.SOURCE_ROOT,pair_root=sources
             for model in models:
                 event=(str(model["provider"]),str(model["fixture_id"]),utc(model["kickoff_utc"]).isoformat(),
                        str(model["home_team_id"]),str(model["away_team_id"]))
-                receipt=receipts.get(event)
+                receipt=receipts.get((event,model["input_digest"]))
                 if receipt and qualifies(receipt,model,cutoff):
                     available+=1
             counts["authenticated_original_pairs"]+=1
