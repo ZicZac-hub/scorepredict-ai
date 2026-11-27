@@ -48,4 +48,5 @@ jobs:
           python v44_v9_pair_replay.py > /tmp/v44-v9pairs.json
           python v44_live_evidence_diagnostics.py > /tmp/v44-livediagnostics.json
           python v44_fresh_history_study.py > /tmp/v44-freshhistory.json
-          python -c 'import json; print(json.dumps({name: {k:v for k,v in json.load(open("/tmp/v44-"+name+".json")).items() if k!="rows"} for name in ("fixture","pairs","single","late","xg","venue","collector","transfer","tempo","ratings","early","prospective","rest","opportunities","market","marketpool","v9reliability","v9pairs","livediagnostics","freshhistory")},indent=2))'
+          python v44_fresh_history_study.py --readiness > /tmp/v44-freshreadiness.json
+          python -c 'import json; print(json.dumps({name: {k:v for k,v in json.load(open("/tmp/v44-"+name+".json")).items() if k!="rows"} for name in ("fixture","pairs","single","late","xg","venue","collector","transfer","tempo","ratings","early","prospective","rest","opportunities","market","marketpool","v9reliability","v9pairs","livediagnostics","freshhistory","freshreadiness")},indent=2))'
