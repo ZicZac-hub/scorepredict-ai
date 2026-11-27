@@ -1,96 +1,101 @@
 {
-  "at_utc": "2026-11-27T17:43:39.291338+00:00",
-  "attempted_legs": 0,
-  "calls": 0,
+  "at_utc": "2026-11-27T18:40:56.974838+00:00",
+  "attempted_legs": 2,
+  "calls": 32,
   "capture_window_minutes": [
     8,
     2880
   ],
-  "completed_at_utc": "2026-11-27T17:43:41.304019+00:00",
+  "completed_at_utc": "2026-11-27T18:41:05.701032+00:00",
   "daily_attempts_limit": 6,
-  "daily_attempts_used": 4,
-  "eligible_legs": 68,
+  "daily_attempts_used": 6,
+  "eligible_legs": 70,
   "enabled": true,
+  "frozen_history_inputs": [
+    "data/verified_xg_replay/history/1550216_2df3a62c24f6a145_a0d64561523e3b0a.json",
+    "data/verified_xg_replay/history/1557485_baafe2c1062f233c_aeaf03acb71195e7.json"
+  ],
+  "frozen_shadow_ready": 2,
   "maximum_near_refresh_attempts_per_original": 1,
   "near_refresh_window_minutes": [
     8,
     65
   ],
-  "new_packets": [],
-  "reason": "no_new_source_evidence",
-  "reserved_future_pair_fixture_ids": [
+  "new_packets": [
     "1550216",
     "1557485"
   ],
+  "reason": "partial_or_complete_source_packets",
+  "reserved_future_pair_fixture_ids": [],
   "skipped": [
-    "1552238:original_preserved",
-    "1575237:original_preserved",
-    "1550216:original_preserved",
-    "1552830:original_preserved",
-    "1557485:fixed_pair_common_cutoff_budget_reserved",
-    "1563294:fixed_pair_common_cutoff_budget_reserved",
-    "1570468:fixed_pair_common_cutoff_budget_reserved",
-    "1575551:fixed_pair_common_cutoff_budget_reserved",
-    "1492475:fixed_pair_common_cutoff_budget_reserved",
-    "1563288:fixed_pair_common_cutoff_budget_reserved",
-    "1563290:fixed_pair_common_cutoff_budget_reserved",
-    "1563292:fixed_pair_common_cutoff_budget_reserved",
-    "1570463:fixed_pair_common_cutoff_budget_reserved",
-    "1550210:fixed_pair_common_cutoff_budget_reserved",
-    "1575234:fixed_pair_common_cutoff_budget_reserved",
-    "1575235:fixed_pair_common_cutoff_budget_reserved",
-    "1575236:fixed_pair_common_cutoff_budget_reserved",
-    "1575238:fixed_pair_common_cutoff_budget_reserved",
-    "1557483:fixed_pair_common_cutoff_budget_reserved",
-    "1557484:fixed_pair_common_cutoff_budget_reserved",
-    "1563287:fixed_pair_common_cutoff_budget_reserved",
-    "1563289:fixed_pair_common_cutoff_budget_reserved",
-    "1563291:fixed_pair_common_cutoff_budget_reserved",
-    "1563293:fixed_pair_common_cutoff_budget_reserved",
-    "1563296:fixed_pair_common_cutoff_budget_reserved",
-    "1563297:fixed_pair_common_cutoff_budget_reserved",
-    "1563298:fixed_pair_common_cutoff_budget_reserved",
-    "1570469:fixed_pair_common_cutoff_budget_reserved",
-    "1552236:fixed_pair_common_cutoff_budget_reserved",
-    "1575546:fixed_pair_common_cutoff_budget_reserved",
-    "1575552:fixed_pair_common_cutoff_budget_reserved",
-    "1552828:fixed_pair_common_cutoff_budget_reserved",
-    "1550214:fixed_pair_common_cutoff_budget_reserved",
-    "1557482:fixed_pair_common_cutoff_budget_reserved",
-    "1570466:fixed_pair_common_cutoff_budget_reserved",
-    "1575231:fixed_pair_common_cutoff_budget_reserved",
-    "1552240:fixed_pair_common_cutoff_budget_reserved",
-    "1575545:fixed_pair_common_cutoff_budget_reserved",
-    "1550211:fixed_pair_common_cutoff_budget_reserved",
-    "1552831:fixed_pair_common_cutoff_budget_reserved",
-    "1552832:fixed_pair_common_cutoff_budget_reserved",
-    "1552834:fixed_pair_common_cutoff_budget_reserved",
-    "1552835:fixed_pair_common_cutoff_budget_reserved",
-    "1552234:fixed_pair_common_cutoff_budget_reserved",
-    "1570470:fixed_pair_common_cutoff_budget_reserved",
-    "1575553:fixed_pair_common_cutoff_budget_reserved",
-    "1492471:fixed_pair_common_cutoff_budget_reserved",
-    "1552235:fixed_pair_common_cutoff_budget_reserved",
-    "1550215:fixed_pair_common_cutoff_budget_reserved",
-    "1557480:fixed_pair_common_cutoff_budget_reserved",
-    "1563295:fixed_pair_common_cutoff_budget_reserved",
-    "1570472:fixed_pair_common_cutoff_budget_reserved",
-    "1552237:fixed_pair_common_cutoff_budget_reserved",
-    "1552241:fixed_pair_common_cutoff_budget_reserved",
-    "1550213:fixed_pair_common_cutoff_budget_reserved",
-    "1552829:fixed_pair_common_cutoff_budget_reserved",
-    "1557478:fixed_pair_common_cutoff_budget_reserved",
-    "1557479:fixed_pair_common_cutoff_budget_reserved",
-    "1557481:fixed_pair_common_cutoff_budget_reserved",
-    "1557486:fixed_pair_common_cutoff_budget_reserved",
-    "1575233:fixed_pair_common_cutoff_budget_reserved",
-    "1570465:fixed_pair_common_cutoff_budget_reserved",
-    "1552242:fixed_pair_common_cutoff_budget_reserved",
-    "1552836:fixed_pair_common_cutoff_budget_reserved",
-    "1557477:fixed_pair_common_cutoff_budget_reserved",
-    "1575232:fixed_pair_common_cutoff_budget_reserved",
-    "1550207:fixed_pair_common_cutoff_budget_reserved",
-    "1570464:fixed_pair_common_cutoff_budget_reserved"
+    "1552238:daily_attempt_budget_exhausted",
+    "1575237:daily_attempt_budget_exhausted",
+    "1552830:daily_attempt_budget_exhausted",
+    "1563294:daily_attempt_budget_exhausted",
+    "1570468:daily_attempt_budget_exhausted",
+    "1575551:daily_attempt_budget_exhausted",
+    "1492475:daily_attempt_budget_exhausted",
+    "1563288:daily_attempt_budget_exhausted",
+    "1563290:daily_attempt_budget_exhausted",
+    "1563292:daily_attempt_budget_exhausted",
+    "1570463:daily_attempt_budget_exhausted",
+    "1550210:daily_attempt_budget_exhausted",
+    "1575234:daily_attempt_budget_exhausted",
+    "1575235:daily_attempt_budget_exhausted",
+    "1575236:daily_attempt_budget_exhausted",
+    "1575238:daily_attempt_budget_exhausted",
+    "1557483:daily_attempt_budget_exhausted",
+    "1557484:daily_attempt_budget_exhausted",
+    "1563287:daily_attempt_budget_exhausted",
+    "1563289:daily_attempt_budget_exhausted",
+    "1563291:daily_attempt_budget_exhausted",
+    "1563293:daily_attempt_budget_exhausted",
+    "1563296:daily_attempt_budget_exhausted",
+    "1563297:daily_attempt_budget_exhausted",
+    "1563298:daily_attempt_budget_exhausted",
+    "1570469:daily_attempt_budget_exhausted",
+    "1552236:daily_attempt_budget_exhausted",
+    "1575546:daily_attempt_budget_exhausted",
+    "1575552:daily_attempt_budget_exhausted",
+    "1552828:daily_attempt_budget_exhausted",
+    "1550214:daily_attempt_budget_exhausted",
+    "1557482:daily_attempt_budget_exhausted",
+    "1570466:daily_attempt_budget_exhausted",
+    "1575231:daily_attempt_budget_exhausted",
+    "1552240:daily_attempt_budget_exhausted",
+    "1575545:daily_attempt_budget_exhausted",
+    "1550211:daily_attempt_budget_exhausted",
+    "1552831:daily_attempt_budget_exhausted",
+    "1552832:daily_attempt_budget_exhausted",
+    "1552834:daily_attempt_budget_exhausted",
+    "1552835:daily_attempt_budget_exhausted",
+    "1552234:daily_attempt_budget_exhausted",
+    "1570470:daily_attempt_budget_exhausted",
+    "1575553:daily_attempt_budget_exhausted",
+    "1492471:daily_attempt_budget_exhausted",
+    "1552235:daily_attempt_budget_exhausted",
+    "1550215:daily_attempt_budget_exhausted",
+    "1557480:daily_attempt_budget_exhausted",
+    "1563295:daily_attempt_budget_exhausted",
+    "1570472:daily_attempt_budget_exhausted",
+    "1552237:daily_attempt_budget_exhausted",
+    "1552241:daily_attempt_budget_exhausted",
+    "1550213:daily_attempt_budget_exhausted",
+    "1552829:daily_attempt_budget_exhausted",
+    "1557478:daily_attempt_budget_exhausted",
+    "1557479:daily_attempt_budget_exhausted",
+    "1557481:daily_attempt_budget_exhausted",
+    "1557486:daily_attempt_budget_exhausted",
+    "1575233:daily_attempt_budget_exhausted",
+    "1570465:daily_attempt_budget_exhausted",
+    "1552242:daily_attempt_budget_exhausted",
+    "1552836:daily_attempt_budget_exhausted",
+    "1557477:daily_attempt_budget_exhausted",
+    "1575232:daily_attempt_budget_exhausted",
+    "1550207:daily_attempt_budget_exhausted",
+    "1570464:daily_attempt_budget_exhausted",
+    "1575550:daily_attempt_budget_exhausted",
+    "1575230:daily_attempt_budget_exhausted"
   ],
   "source_availability": {
     "1492471": {
@@ -207,16 +212,18 @@
     "1550214": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
-        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": null,
-      "source_observed_within_3_hours": false,
+      "source_captured_at_utc": "2026-11-27T18:40:56.288057+00:00",
+      "source_observed_within_3_hours": true,
       "xg_fixtures_by_team": {
         "487": 0,
         "503": 0
@@ -243,15 +250,17 @@
     "1550216": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
-        "source_not_observed_within_3_hours",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": "2026-11-27T02:10:39.571503+00:00",
-      "source_observed_within_3_hours": false,
+      "source_captured_at_utc": "2026-11-27T18:41:01.855184+00:00",
+      "source_observed_within_3_hours": true,
       "xg_fixtures_by_team": {
         "500": 6,
         "517": 6
@@ -636,16 +645,18 @@
     "1557482": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
-        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": null,
-      "source_observed_within_3_hours": false,
+      "source_captured_at_utc": "2026-11-27T18:40:56.734899+00:00",
+      "source_observed_within_3_hours": true,
       "xg_fixtures_by_team": {
         "57": 0,
         "66": 0
@@ -690,19 +701,20 @@
     "1557485": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
-      "fresh_market_types": [],
+      "fresh_market_types": [
+        "1x2",
+        "over_2_5",
+        "over_3_5"
+      ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
-        "source_not_observed_within_3_hours",
-        "fewer_than_6_genuine_xg_fixtures_for_either_team",
-        "both_identity_matched_starting_XIs_unavailable",
-        "fresh_1x2_and_goal_total_markets_unavailable"
+        "both_identity_matched_starting_XIs_unavailable"
       ],
-      "source_captured_at_utc": "2026-11-27T02:10:31.529135+00:00",
-      "source_observed_within_3_hours": false,
+      "source_captured_at_utc": "2026-11-27T18:41:05.415619+00:00",
+      "source_observed_within_3_hours": true,
       "xg_fixtures_by_team": {
-        "49": 0,
-        "65": 0
+        "49": 6,
+        "65": 6
       }
     },
     "1557486": {
@@ -931,11 +943,12 @@
       ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
+        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
         "both_identity_matched_starting_XIs_unavailable"
       ],
       "source_captured_at_utc": "2026-11-27T15:33:44.617820+00:00",
-      "source_observed_within_3_hours": true,
+      "source_observed_within_3_hours": false,
       "xg_fixtures_by_team": {
         "1355": 0,
         "1837": 0
@@ -1041,11 +1054,12 @@
       ],
       "lineups_have_zero_numerical_weight": true,
       "refresh_reasons": [
+        "source_not_observed_within_3_hours",
         "fewer_than_6_genuine_xg_fixtures_for_either_team",
         "both_identity_matched_starting_XIs_unavailable"
       ],
       "source_captured_at_utc": "2026-11-27T15:33:45.153803+00:00",
-      "source_observed_within_3_hours": true,
+      "source_observed_within_3_hours": false,
       "xg_fixtures_by_team": {
         "531": 0,
         "535": 0
@@ -1085,6 +1099,24 @@
       "xg_fixtures_by_team": {
         "532": 0,
         "727": 0
+      }
+    },
+    "1575230": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "fewer_than_6_genuine_xg_fixtures_for_either_team",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": null,
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "165": 0,
+        "168": 0
       }
     },
     "1575231": {
@@ -1266,6 +1298,24 @@
         "240": 0
       }
     },
+    "1575550": {
+      "confirmed_xi_team_ids": [],
+      "conflicting_xi_team_ids": [],
+      "fresh_market_types": [],
+      "lineups_have_zero_numerical_weight": true,
+      "refresh_reasons": [
+        "source_not_observed_within_3_hours",
+        "fewer_than_6_genuine_xg_fixtures_for_either_team",
+        "both_identity_matched_starting_XIs_unavailable",
+        "fresh_1x2_and_goal_total_markets_unavailable"
+      ],
+      "source_captured_at_utc": null,
+      "source_observed_within_3_hours": false,
+      "xg_fixtures_by_team": {
+        "230": 0,
+        "762": 0
+      }
+    },
     "1575551": {
       "confirmed_xi_team_ids": [],
       "conflicting_xi_team_ids": [],
@@ -1321,5 +1371,8 @@
       }
     }
   },
-  "targeted_pair_fixture_ids": []
+  "targeted_pair_fixture_ids": [
+    "1550216",
+    "1557485"
+  ]
 }
