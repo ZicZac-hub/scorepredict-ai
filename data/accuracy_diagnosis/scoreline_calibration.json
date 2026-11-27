@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22635365567648683,
-          "expected_events": 42.23807703547497,
+          "brier": 0.22780567951090358,
+          "expected_events": 42.86985586700709,
           "observed_events": 41,
-          "observed_rate": 0.3474576271186441,
-          "predicted_rate": 0.3579498053853811,
-          "rate_gap_observed_minus_predicted": -0.010492178266737057
+          "observed_rate": 0.3445378151260504,
+          "predicted_rate": 0.36025088963871504,
+          "rate_gap_observed_minus_predicted": -0.015713074512664616
         },
         "exact_0_3": {
-          "brier": 0.016673578843021248,
-          "expected_events": 2.5380236561279115,
+          "brier": 0.016533793323049478,
+          "expected_events": 2.5442768126412747,
           "observed_events": 2,
-          "observed_rate": 0.01694915254237288,
-          "predicted_rate": 0.021508675051931454,
-          "rate_gap_observed_minus_predicted": -0.004559522509558571
+          "observed_rate": 0.01680672268907563,
+          "predicted_rate": 0.02138047741715357,
+          "rate_gap_observed_minus_predicted": -0.004573754728077938
         },
         "exact_3_0": {
-          "brier": 0.04067954731184986,
-          "expected_events": 5.029517167020579,
+          "brier": 0.040366731384163336,
+          "expected_events": 5.088291752660574,
           "observed_events": 5,
-          "observed_rate": 0.0423728813559322,
-          "predicted_rate": 0.042623026839157446,
-          "rate_gap_observed_minus_predicted": -0.00025014548322524526
+          "observed_rate": 0.04201680672268908,
+          "predicted_rate": 0.04275875422403844,
+          "rate_gap_observed_minus_predicted": -0.0007419475013493593
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18058831846982631,
-          "expected_events": 21.085028982416482,
+          "brier": 0.18017562864490705,
+          "expected_events": 21.44762825062373,
           "observed_events": 27,
-          "observed_rate": 0.2288135593220339,
-          "predicted_rate": 0.1786866862916651,
-          "rate_gap_observed_minus_predicted": 0.0501268730303688
+          "observed_rate": 0.226890756302521,
+          "predicted_rate": 0.18023217017330864,
+          "rate_gap_observed_minus_predicted": 0.04665858612921236
         }
       },
-      "verified_fixtures": 118
+      "verified_fixtures": 119
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2293328094887871,
-          "expected_events": 39.065023472130434,
+          "brier": 0.2305380157750832,
+          "expected_events": 39.667610152424366,
           "observed_events": 37,
-          "observed_rate": 0.33636363636363636,
-          "predicted_rate": 0.35513657701936757,
-          "rate_gap_observed_minus_predicted": -0.01877294065573122
+          "observed_rate": 0.3333333333333333,
+          "predicted_rate": 0.35736585722904834,
+          "rate_gap_observed_minus_predicted": -0.024032523895715013
         },
         "exact_0_3": {
-          "brier": 0.009452475327008613,
-          "expected_events": 2.3272535059329957,
+          "brier": 0.009367856480608373,
+          "expected_events": 2.334985477000059,
           "observed_events": 1,
-          "observed_rate": 0.00909090909090909,
-          "predicted_rate": 0.021156850053936326,
-          "rate_gap_observed_minus_predicted": -0.012065940963027233
+          "observed_rate": 0.009009009009009009,
+          "predicted_rate": 0.021035905198198732,
+          "rate_gap_observed_minus_predicted": -0.012026896189189722
         },
         "exact_3_0": {
-          "brier": 0.04343621179405894,
-          "expected_events": 4.6807153474004775,
+          "brier": 0.043073178560280916,
+          "expected_events": 4.736746792542456,
           "observed_events": 5,
-          "observed_rate": 0.045454545454545456,
-          "predicted_rate": 0.0425519577036407,
-          "rate_gap_observed_minus_predicted": 0.0029025877509047506
+          "observed_rate": 0.04504504504504504,
+          "predicted_rate": 0.04267339452740951,
+          "rate_gap_observed_minus_predicted": 0.0023716505176355333
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18320612069494138,
-          "expected_events": 19.397011548585425,
+          "brier": 0.18247208825720287,
+          "expected_events": 19.715960635597703,
           "observed_events": 26,
-          "observed_rate": 0.23636363636363636,
-          "predicted_rate": 0.17633646862350386,
-          "rate_gap_observed_minus_predicted": 0.060027167740132496
+          "observed_rate": 0.23423423423423423,
+          "predicted_rate": 0.1776212669873667,
+          "rate_gap_observed_minus_predicted": 0.05661296724686754
         }
       },
-      "verified_fixtures": 110
+      "verified_fixtures": 111
     }
   },
   "focus": {
@@ -1510,6 +1510,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.20997202354782055
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-1",
+        "captured_at_utc": "2026-11-14T02:30:14.546661+00:00",
+        "fixture_id": "1552238",
+        "fixture_name": "Groningen vs Willem II",
+        "forecast_id": "097c3ebd25f6107e7f72f6b243fdd4c89770569fca8b5a110de897ed42811aaf",
+        "kickoff_utc": "2026-11-27T19:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.05255654031936511,
+          "actual_exact_score_rank_min": 6,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.6317788315321113
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.006253156513363224
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05877458563999539
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.3625992682072482
           }
         },
         "provider": "API-Football"
@@ -4795,6 +4824,35 @@
       },
       {
         "actual_score": "1-1",
+        "captured_at_utc": "2026-11-25T23:27:07.245429+00:00",
+        "fixture_id": "1552238",
+        "fixture_name": "Groningen vs Willem II",
+        "forecast_id": "3fe0924824f30a179f353a53f5755aa893bd435f1494e9b8c5d9aa71a33bc41a",
+        "kickoff_utc": "2026-11-27T19:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.059148772237947796,
+          "actual_exact_score_rank_min": 3,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.6025866802939261
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.00773197106706329
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05603144514197814
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.3189490870122783
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-1",
         "captured_at_utc": "2026-11-21T18:14:16.865045+00:00",
         "fixture_id": "1552819",
         "fixture_name": "Lens vs Toulouse",
@@ -6914,7 +6972,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-27T03:25:27.674502+00:00",
+  "result_cutoff_utc": "2026-11-27T22:22:07.676241+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
