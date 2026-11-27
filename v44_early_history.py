@@ -2,7 +2,7 @@
 
 Freeze only actual in-memory, as-of-qualified histories during the existing
 pre-match capture. Never reconstruct a missing historic receipt after kickoff.
-No API calls or change to forecast selection. One receipt per fixture event.
+No API calls or change to forecast selection. One receipt per fixture event and exact history input digest.
 """
 from datetime import datetime,timezone
 import hashlib,json,os,tempfile
@@ -12,7 +12,12 @@ from history_pipeline import build_evidence
 from v10_prospective import utc
 
 ROOT=Path("data/v44_early_history")
-VERSION="early-history-v1"
+VERSION="early-history-v2"
+LEGACY_VERSION="early-history-v1"
+
+
+def receipt_key(event,input_digest):
+    return digest([event,input_digest])
 
 
 def digest(obj):
@@ -76,7 +81,7 @@ def freeze(fixture,evidence,*,root=ROOT,clock=None):
     kickoff=utc(target["utcDate"])
     if not cutoff<=start<kickoff:
         return "outside_pre_match_window"
-    path=root/"receipts"/(digest(_event(target))+".json")
+    path=root/"receipts"/(receipt_key(_event(target),evidence["input_digest"])+".json")
     if path.exists():
         load(path,root=root,now=start)
         return "original_preserved"
@@ -111,10 +116,13 @@ def load(path,*,root=ROOT,now=None):
     root=Path(root)
     path=Path(path)
     record=_read(path)
-    if (record["version"]!=VERSION or record["receipt_sha256"]!=
+    version=record["version"]
+    key=(digest(record["event"]) if version==LEGACY_VERSION else
+         receipt_key(record["event"],record["history_input_digest"]))
+    if (version not in (VERSION,LEGACY_VERSION) or record["receipt_sha256"]!=
             digest({k:v for k,v in record.items() if k!="receipt_sha256"})
             or record["event"]!=_event(record["fixture"])
-            or path.stem!=digest(record["event"])):
+            or path.stem!=key):
         raise ValueError("invalid_receipt")
     cutoff,captured,kickoff=map(utc,(record["as_of_utc"],record["captured_at_utc"],record["fixture"]["utcDate"]))
     if not cutoff<=captured<kickoff or captured>utc(now or datetime.now(timezone.utc)):
