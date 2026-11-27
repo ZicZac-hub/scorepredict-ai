@@ -27,7 +27,7 @@ def _identity(model):
     return str(model["provider"]),str(model["fixture_id"])
 
 
-def load_training(*,source_root,prematch_root,provider_root,clock):
+def load_training(*,source_root,prematch_root,provider_root,clock,family_fn=_single_groups):
     report=inventory.evaluate(source_root=source_root,prematch_root=prematch_root,
                               provider_root=provider_root,now=clock)
     history, rejects=[],Counter()
@@ -47,7 +47,7 @@ def load_training(*,source_root,prematch_root,provider_root,clock):
             actual=row["actual"]
             if len(actual)!=2 or any(type(v) is not int or v<0 for v in actual):
                 raise ValueError("invalid_training_final")
-            groups=_single_groups(_grid(model["score_matrix"]))
+            groups=family_fn(_grid(model["score_matrix"]))
             history.append({"provider_id":_identity(model),"event":tuple(row["event"]),
                             "known":known,"kickoff":kickoff,"roster":tuple(groups),
                             "likelihood":np.array([[_prob(g,actual) for g in groups.values()]])})
@@ -90,10 +90,11 @@ def _summaries(rows):
 
 
 def evaluate(*,pair_root=sources.PAIR_ROOT,source_root=sources.SOURCE_ROOT,
-             prematch_root=sources.PREMATCH_ROOT,provider_root=sources.PROVIDER_ROOT,now=None):
+             prematch_root=sources.PREMATCH_ROOT,provider_root=sources.PROVIDER_ROOT,now=None,
+             family_fn=_single_groups):
     clock=utc(now or datetime.now(timezone.utc))
     training,training_rejects=load_training(source_root=source_root,prematch_root=prematch_root,
-                                          provider_root=provider_root,clock=clock)
+                                          provider_root=provider_root,clock=clock,family_fn=family_fn)
     finals,conflicts,result_rejects=_result_index(source_root,prematch_root)
     paths=sorted((Path(pair_root)/"sets").glob("*.json"))
     candidates,rejects=[],Counter()
@@ -121,7 +122,7 @@ def evaluate(*,pair_root=sources.PAIR_ROOT,source_root=sources.SOURCE_ROOT,
                 pending+=1
                 continue
             base=[_grid(m["score_matrix"]) for m in models]
-            groups=[_single_groups(g) for g in base]
+            groups=[family_fn(g) for g in base]
             roster=tuple(groups[0])
             if tuple(groups[1])!=roster:
                 raise ValueError("inconsistent_family_roster")
