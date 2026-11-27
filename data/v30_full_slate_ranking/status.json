@@ -1,5 +1,5 @@
 {
-  "candidate_pair_rows_awaiting_verified_finals": 28,
+  "candidate_pair_rows_awaiting_verified_finals": 133,
   "candidate_pair_rows_independently_verified": 275,
   "complete_day_unweighted_mean_candidate_hit_fraction": 0.025793650793650796,
   "days": [
@@ -7650,12 +7650,130 @@
       "sydney_day": "2026-11-28",
       "unique_fixtures_missing_verified_final": 8,
       "unique_fixtures_verified": 0
+    },
+    {
+      "candidate_count": 105,
+      "candidate_hit_rows_are_correlated_not_independent_trials": true,
+      "candidate_pairs_pending": 105,
+      "candidate_pairs_verified": 0,
+      "candidate_rows": [],
+      "complete_slate": false,
+      "exploratory_verified_candidate_rows": {
+        "mean_v8_reference_mass_for_robust_five": null,
+        "model_expected_robust_hits_sum_correlated": null,
+        "observed_robust_five_fraction": null,
+        "observed_robust_five_hits": 0,
+        "observed_v8_optimal_five_hits": 0,
+        "verified_pair_rows": 0
+      },
+      "frozen_source_count": 15,
+      "missing_fixture_evidence": [
+        {
+          "fixture_id": "1550210",
+          "kickoff_utc": "2026-11-28T14:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1557483",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1557484",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563287",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563289",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563291",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563293",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563296",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563297",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1563298",
+          "kickoff_utc": "2026-11-28T15:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1570463",
+          "kickoff_utc": "2026-11-28T13:00:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1575234",
+          "kickoff_utc": "2026-11-28T14:30:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1575235",
+          "kickoff_utc": "2026-11-28T14:30:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1575236",
+          "kickoff_utc": "2026-11-28T14:30:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        },
+        {
+          "fixture_id": "1575238",
+          "kickoff_utc": "2026-11-28T14:30:00+00:00",
+          "provider": "API-Football",
+          "status": "before_kickoff"
+        }
+      ],
+      "no_forecasts_created_during_grading": true,
+      "original_candidate_catalog_sha256": "66ee3dfa66b530d02cf8e7a5769da5b52958ef796ecf0435f794205125e6056c",
+      "original_cutoff_utc": "2026-11-27T15:00:04.108333+00:00",
+      "original_issued_at_utc": "2026-11-27T15:00:07.895573+00:00",
+      "original_policy": "FROZEN",
+      "status": "awaiting_verified_finals",
+      "sydney_day": "2026-11-29",
+      "unique_fixtures_missing_verified_final": 15,
+      "unique_fixtures_verified": 0
     }
   ],
-  "days_still_missing_results": 1,
+  "days_still_missing_results": 2,
   "days_with_some_verified_pairs": 6,
-  "evaluated_at_utc": "2026-11-27T14:24:33.127678+00:00",
-  "frozen_candidate_pair_rows": 303,
+  "evaluated_at_utc": "2026-11-27T15:22:26.582737+00:00",
+  "frozen_candidate_pair_rows": 408,
   "fully_verified_slate_days": 6,
   "initial_full_slate_day_review_target": 30,
   "initial_review_ready": false,
@@ -7666,7 +7784,7 @@
   "no_production_model_promotion": true,
   "no_retroactive_chosen_pair_alteration": true,
   "original_abstained_days": 0,
-  "original_frozen_days": 7,
+  "original_frozen_days": 8,
   "overlapping_pairs_are_not_independent_samples": true,
   "partially_verified_slate_days": 0,
   "research_scope": "original_pre_match_write_once_v28_full_candidate_catalogs",
