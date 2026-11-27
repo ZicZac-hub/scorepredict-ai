@@ -36,3 +36,16 @@ def test_bad_input_and_empty_archive(tmp_path):
     assert r["comparisons"]["v9"]["total_goals"]["nonrandomized_pit_bin_fractions"] is None
     assert r["external_requests"]==0 and r["automatic_promotion"] is False
     assert not list(tmp_path.iterdir())
+
+
+def test_nonempty_report_serializes_native_json_scalars():
+    import json
+    p=np.zeros((5,5));p[0,0]=.25;p[1,2]=.75
+    diagnostics={name:g.diagnose(m,0) for name,m in g.marginals(p).items()}
+    rows=[{"diagnostics":{name:diagnostics for name in g.MODELS}}]
+    report={"comparisons":g.summarize(rows),"rows":rows}
+    decoded=json.loads(json.dumps(report,allow_nan=False))
+    assert decoded["comparisons"]["v9"]["total_goals"]["zero_probability_observations"]==0
+    assert decoded["rows"][0]["diagnostics"]["v9"]["home_goals"]["outside_support"] is False
+    assert decoded["rows"][0]["diagnostics"]["v9"]["home_goals"]["zero_probability_observation"] is False
+    assert json.loads(json.dumps(g.diagnose([1.,0.],1)))["zero_probability_observation"] is True
