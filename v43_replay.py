@@ -6,11 +6,12 @@ import json
 import math
 from pathlib import Path
 
-from five_double_accuracy import _final, _result_index
+from five_double_accuracy import _attribution, _final, _result_index
 from professional_double_shadow import _validated as validate_original_pair
 from v10_prospective import utc
 import v42_late_research_trial as late
 import v42_research_trial as early
+from v43_feasibility import model_feasibility
 from v43_prediction import combine_grids
 
 
@@ -54,8 +55,48 @@ def _methods(names, settled):
     return methods
 
 
+def _pair_detail(day, models, combined, finals, clock):
+    grids = combined["full_score_grids"]
+    actual = [_final(model, finals.get((model["provider"], str(model["fixture_id"]))), clock)
+              for model in models]
+    legs = [{
+        "match": f"{model['home_team']} vs {model['away_team']}",
+        "kickoff_utc": model["kickoff_utc"],
+        "actual_score": f"{score[0]}-{score[1]}" if score is not None else None,
+        "status": "verified" if score is not None else (
+            "awaiting_kickoff" if utc(model["kickoff_utc"]) > clock else "awaiting_verified_final"),
+    } for model, score in zip(models, actual)]
+    if all(score is not None for score in actual):
+        attribution = _attribution([{"fixture_id": model["fixture_id"], "score_matrix": grid}
+                                    for model, grid in zip(models, grids)], combined["five_doubles"], actual)
+        outcome = attribution["classification"]
+        ranks = [attribution["actual_joint_score_rank_min"], attribution["actual_joint_score_rank_max"]]
+    else:
+        outcome, ranks = "pending", None
+    return actual, {"sydney_date": day, "fixtures": legs, "result": outcome,
+                    "actual_joint_score_rank": ranks, "feasibility": model_feasibility(grids)}
+
+
+def _feasibility_summary(pairs):
+    evidence = [pair["feasibility"] for pair in pairs]
+    masses = [row["maximum_five_model_mass"] for row in evidence]
+    bounds = [row["marginal_top_five_upper_bound"] for row in evidence]
+    counts = [row["minimum_combinations_for_target_model_mass"] for row in evidence
+              if row["minimum_combinations_for_target_model_mass"] is not None]
+    return {
+        "pairs_with_grids": len(evidence),
+        "pairs_reaching_target_with_five": sum(row["five_reaches_target_model_mass"] for row in evidence),
+        "maximum_five_model_mass_range": [min(masses), max(masses)] if masses else None,
+        "marginal_top_five_upper_bound_range": [min(bounds), max(bounds)] if bounds else None,
+        "combinations_for_target_range": [min(counts), max(counts)] if counts else None,
+        "exact_target_count_pairs": len(counts),
+        "verified_miss_attribution": dict(Counter(pair["result"] for pair in pairs
+                                                 if pair["result"] not in ("pending", "hit"))),
+    }
+
+
 def _cohort(paths, load_pair, *, names, finals, context):
-    settled, rejections = [], Counter()
+    settled, pairs, rejections = [], [], Counter()
     first_day, last_day = None, None
     seen_ids, seen_events = set(), set()
     pending, abstentions, xg_pairs, market_pairs = 0, 0, 0, 0
@@ -80,8 +121,8 @@ def _cohort(paths, load_pair, *, names, finals, context):
         if any(arm["status"] != "issued" for arm in arms.values()):
             abstentions += 1
             continue
-        actual = [_final(model, finals.get((model["provider"], str(model["fixture_id"]))), context["now"])
-                  for model in models]
+        actual, detail = _pair_detail(path.stem, models, combined, finals, context["now"])
+        pairs.append(detail)
         if any(score is None for score in actual):
             pending += 1
             continue
@@ -97,6 +138,7 @@ def _cohort(paths, load_pair, *, names, finals, context):
             "first_verified_sydney_date": first_day, "last_verified_sydney_date": last_day,
             "matched_pairs_with_paired_xg": xg_pairs,
             "matched_pairs_with_paired_market": market_pairs, "source_rejections": dict(rejections),
+            "feasibility": _feasibility_summary(pairs), "pair_details": pairs,
             "methods": _methods(names, settled)}
 
 

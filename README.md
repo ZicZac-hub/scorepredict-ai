@@ -28,6 +28,8 @@ Open **V43 Forecast** in Matchday Studio to generate a single-match score distri
 
 **Research and validation** shows the version history, archived data sources and matched replay results. The replay compares common independently settled regulation scores within each cohort. It runs read-only with `python v43_replay.py`.
 
+The five-double target panel checks verified finals and shows why selections missed. It calculates the maximum modeled coverage for five exact-score combinations and the number of combinations the same distributions would need for 70% coverage. The prospective study freezes one authenticated pair per Sydney matchday before kickoff and grades it against independently verified finals. Run `python v43_prospective.py` to recheck the study without writing records. The first review uses 100 independently settled pairs and a 95% Wilson lower bound of at least 70%. The two-match model still uses statistical probabilities, with no target-driven increase in confidence.
+
 The existing Private Access gate and server-side configuration control optional OpenAI, Claude and other provider reviews. Each configured provider reviews the same available match context on request. Their opinions carry zero numerical forecast weight. See [on-demand provider setup](ON_DEMAND_AI_SETUP.md).
 
 ## Matchday Studio 2.0 interface

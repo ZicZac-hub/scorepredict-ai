@@ -43,6 +43,11 @@ def test_replay_scores_common_settled_pairs_and_reports_other_rows(tmp_path, mon
         "duplicate_physical_fixture": 1, "study_filename_day_mismatch": 1}
     assert report["first_verified_sydney_date"] == report["last_verified_sydney_date"] == days[0]
     assert report["methods"]["v8_original"]["hits"] == 1
+    assert report["feasibility"]["pairs_with_grids"] == 2
+    assert report["pair_details"][0]["result"] == "hit"
+    assert report["pair_details"][0]["fixtures"][1]["actual_score"] == "1-0"
+    assert report["pair_details"][1]["result"] == "pending"
+    assert report["pair_details"][1]["fixtures"][0]["status"] == "awaiting_verified_final"
     for method in report["methods"].values():
         assert method["verified_pairs"] == 1
         assert method["score_log_loss"] > 0
