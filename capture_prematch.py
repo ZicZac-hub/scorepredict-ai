@@ -535,6 +535,18 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                         and timedelta(minutes=45)<kickoff-now<=timedelta(hours=48)):
                     awaiting.append((kickoff,fixture,code))
             awaiting.sort(key=lambda item:(item[0],str(item[1]['id'])))
+            # Reserve at most two EXISTING slots for missing near-history
+            # captures on authenticated original research pairs. No extra
+            # API allowance, no new pairs and no change to baseline captures.
+            diagnostics['v44_pair_refresh_reserved']=0
+            if os.environ.get("V44_PAIR_REFRESH_PRIORITY")=="true":
+                try:
+                    from v44_refresh_priority import prioritize
+                    awaiting,reserved=prioritize(awaiting,shadow,now=now,
+                                                 limit=research_market_refresh_limit)
+                    diagnostics['v44_pair_refresh_reserved']=reserved
+                except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError) as exc:
+                    diagnostics['v44_pair_refresh_priority_error']=type(exc).__name__
             for kickoff,fixture,code in awaiting[:research_market_refresh_limit]:
                 if max_seconds and time.monotonic()-monotonic_start>=max_seconds:
                     break
