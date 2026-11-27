@@ -109,7 +109,7 @@ def _metrics(grids, scores, weights):
     hit = (None not in observed and observed[0] * joint.shape[1] + observed[1] in selected)
     likelihood = _likelihood(grids, scores) @ weights
     return {"hit": bool(hit), "coverage": float(joint.ravel()[top].sum()),
-            "score_log_loss": float(-np.log(np.maximum(likelihood, 1e-12)).mean())}
+            "score_log_loss": float(-np.log(np.maximum(likelihood, 1e-15)).mean())}
 
 
 def walk_forward(rows):
