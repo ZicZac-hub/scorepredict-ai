@@ -9,10 +9,15 @@ multiplicative tempo. Rates still derive from V8, not independent evidence.
 Fixed r=6,20 form ONE challenger family. No retrospective model selection.
 """
 import json
+from datetime import datetime, timezone
 import math
 import numpy as np
 
-from v44_family_pool_research import _grid
+from v44_family_pool_research import _grid, _weights
+from v44_single_calibration import _metrics, MIN_TRAIN_FIXTURES
+from v43_prediction import _combine
+from v10_prospective import utc
+import v42_research_trial as sources
 import v44_pair_transfer_research as transfer
 
 SHAPES=(6.,20.)
@@ -59,8 +64,47 @@ def families(raw):
     return {"anchor":anchor,"shared_tempo":tempo}
 
 
+def single_evaluation(history):
+    """Measure all arms on the same chronological post-warmup fixtures."""
+    rows=[]
+    for row in sorted(history,key=lambda r:(r["decision"],r["provider_id"])):
+        prior=[r["likelihood"] for r in history
+               if r["known"]<row["decision"] and r["provider_id"]!=row["provider_id"]
+               and r["event"]!=row["event"] and r["roster"]==row["roster"]]
+        if len(prior)<MIN_TRAIN_FIXTURES:
+            continue
+        base=row["base_grid"]
+        groups=row["groups"]
+        control=_combine([base],[{}])
+        if control["status"]!="issued":
+            continue
+        w=_weights(prior,len(groups))
+        stacked=np.stack(list(groups.values()))
+        arms={"original_v8":base,
+              "v43_statistical":_grid(control["full_score_grids"][0]),
+              "tempo_only":groups["shared_tempo"],
+              "tempo_equal":stacked.mean(axis=0),
+              "tempo_adaptive":np.tensordot(w,stacked,axes=1)}
+        rows.append({name:_metrics(grid,row["actual"]) for name,grid in arms.items()})
+    result={}
+    for name in ("original_v8","v43_statistical","tempo_only","tempo_equal","tempo_adaptive"):
+        metrics=[r[name] for r in rows]
+        n=len(metrics)
+        result[name]={"fixtures":n,
+                      **{k:math.fsum(m[k] for m in metrics)/n if n else None
+                         for k in ("exact_log_loss","score_brier","outcome_brier","top_score_hit")}}
+    return result
+
+
 def evaluate(**kwargs):
+    clock=utc(kwargs.get('now') or datetime.now(timezone.utc))
+    kwargs={**kwargs,'now':clock}
     report=transfer.evaluate(family_fn=families,**kwargs)
+    history,rejections=transfer.load_training(source_root=kwargs.get('source_root',sources.SOURCE_ROOT),
+        prematch_root=kwargs.get('prematch_root',sources.PREMATCH_ROOT),
+        provider_root=kwargs.get('provider_root',sources.PROVIDER_ROOT),clock=clock,family_fn=families)
+    report['single_fixture_comparisons']=single_evaluation(history)
+    report['single_fixture_training_rejections']=dict(rejections)
     report["study_type"]="shared_gamma_tempo_original_pair_replay"
     report["comparisons"]={
         {"v44_equal":"tempo_equal","v44_transfer":"tempo_adaptive"}.get(name,name):value
