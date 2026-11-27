@@ -158,12 +158,28 @@ def capture_pair(*,root=ROOT,source_root=ORIGINAL_ROOT,now=None,
             if not clock+timedelta(minutes=8)<capture_deadline:
                 result["skipped"].append(str(leg["fixture_id"])+":history_completed_outside_capture_window")
                 continue
-            provider=capture(fixture,evidence["history"],key,
-                             now=observation_time(),request=cb,clock=observation_time,
-                             max_history_per_team=(6 if
-                                 os.environ.get("V22_DEEP_XG_ENABLED")=="true"
-                                 else 1),
-                             include_provider_prediction=True)
+            limit=6 if os.environ.get("V22_DEEP_XG_ENABLED")=="true" else 1
+            if os.environ.get("V44_VENUE_COLLECTION_ENABLED")=="true":
+                from v44_venue_collector import capture_venue_aware
+                # This is the same already-reserved attempt, not a second call.
+                # Four target endpoints plus at most two times the historical limit.
+                outcome=capture_venue_aware(
+                    fixture,evidence["history"],key,enabled=True,
+                    reserved_adapter_calls=4+2*limit,now=observation_time(),
+                    request=cb,clock=observation_time,limit=limit,
+                    include_provider_prediction=True)
+                result.setdefault("v44_sampling",{})[str(leg["fixture_id"])]={
+                    "status":outcome["status"],"reason":outcome.get("reason"),
+                    "sampling":outcome.get("sampling")}
+                if outcome["status"]!="captured":
+                    result["calls"]+=outcome.get("adapter_calls",0)
+                    result["skipped"].append(str(leg["fixture_id"])+":v44_capture_abstained")
+                    continue
+                provider=outcome["provider_snapshot"]
+            else:
+                provider=capture(fixture,evidence["history"],key,
+                                 now=observation_time(),request=cb,clock=observation_time,
+                                 max_history_per_team=limit,include_provider_prediction=True)
             clock=observation_time()
             result["calls"]+=(provider.get("diagnostics") or {}).get("queries",0)
             if not valid_snapshot(provider,fixture,now=clock):
