@@ -47,9 +47,11 @@ def load_training(*,source_root,prematch_root,provider_root,clock,family_fn=_sin
             actual=row["actual"]
             if len(actual)!=2 or any(type(v) is not int or v<0 for v in actual):
                 raise ValueError("invalid_training_final")
-            groups=family_fn(_grid(model["score_matrix"]))
+            base=_grid(model["score_matrix"])
+            groups=family_fn(base)
             history.append({"provider_id":_identity(model),"event":tuple(row["event"]),
-                            "known":known,"kickoff":kickoff,"roster":tuple(groups),
+                            "known":known,"kickoff":kickoff,"decision":decision,
+                            "base_grid":base,"groups":groups,"actual":actual,"roster":tuple(groups),
                             "likelihood":np.array([[_prob(g,actual) for g in groups.values()]])})
         except (KeyError,ValueError,TypeError,OSError,AttributeError,ArithmeticError,LedgerValidationError) as exc:
             rejects[str(exc) if isinstance(exc,ValueError) else type(exc).__name__]+=1
