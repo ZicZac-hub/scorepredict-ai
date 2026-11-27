@@ -80,11 +80,12 @@ jobs:
           API_FOOTBALL_KEY: ""
           SPORTMONKS_API_KEY: ""
         run: |
-          python -m pytest -q tests/test_v44_early_history.py tests/test_v44_score_driven_research.py tests/test_v44_ratings_prospective.py
+          python -m pytest -q tests/test_v44_early_history.py tests/test_v44_score_driven_research.py tests/test_v44_ratings_prospective.py tests/test_v44_opportunity_audit.py
           python v44_ratings_prospective.py --freeze > /tmp/v44-ratings-run.json
           python - <<'PY'
           import json
           from pathlib import Path
+          from v44_opportunity_audit import evaluate as audit_opportunities
           run=json.loads(Path("/tmp/v44-ratings-run.json").read_text())
           report=run["evaluation"]
           if report["counts"].get("rejected"):
@@ -93,6 +94,8 @@ jobs:
           # Keep both the comparative results and actionable capture diagnostics.
           for name,data in (("performance",report),("capture_status",run["capture"])):
               (root/(name+".json")).write_text(json.dumps(data,indent=2,sort_keys=True,allow_nan=False)+"\n")
+          opportunity=audit_opportunities(report=report)
+          (root/"opportunity_audit.json").write_text(json.dumps(opportunity,indent=2,sort_keys=True,allow_nan=False)+"\n")
           print(json.dumps(run["capture"],sort_keys=True))
           PY
       - name: Publish only isolated research archive
