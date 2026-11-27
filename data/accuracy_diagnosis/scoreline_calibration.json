@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22780567951090358,
-          "expected_events": 42.86985586700709,
-          "observed_events": 41,
-          "observed_rate": 0.3445378151260504,
-          "predicted_rate": 0.36025088963871504,
-          "rate_gap_observed_minus_predicted": -0.015713074512664616
+          "brier": 0.2263833085404959,
+          "expected_events": 45.31609692803281,
+          "observed_events": 44,
+          "observed_rate": 0.3492063492063492,
+          "predicted_rate": 0.35965156292089534,
+          "rate_gap_observed_minus_predicted": -0.010445213714546136
         },
         "exact_0_3": {
-          "brier": 0.016533793323049478,
-          "expected_events": 2.5442768126412747,
+          "brier": 0.01566395479026189,
+          "expected_events": 2.7181725934122056,
           "observed_events": 2,
-          "observed_rate": 0.01680672268907563,
-          "predicted_rate": 0.02138047741715357,
-          "rate_gap_observed_minus_predicted": -0.004573754728077938
+          "observed_rate": 0.015873015873015872,
+          "predicted_rate": 0.02157279836041433,
+          "rate_gap_observed_minus_predicted": -0.005699782487398457
         },
         "exact_3_0": {
-          "brier": 0.040366731384163336,
-          "expected_events": 5.088291752660574,
+          "brier": 0.038213991965227845,
+          "expected_events": 5.3440500871835015,
           "observed_events": 5,
-          "observed_rate": 0.04201680672268908,
-          "predicted_rate": 0.04275875422403844,
-          "rate_gap_observed_minus_predicted": -0.0007419475013493593
+          "observed_rate": 0.03968253968253968,
+          "predicted_rate": 0.04241309593002779,
+          "rate_gap_observed_minus_predicted": -0.002730556247488107
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18017562864490705,
-          "expected_events": 21.44762825062373,
+          "brier": 0.17183404643745812,
+          "expected_events": 22.605691656811256,
           "observed_events": 27,
-          "observed_rate": 0.226890756302521,
-          "predicted_rate": 0.18023217017330864,
-          "rate_gap_observed_minus_predicted": 0.04665858612921236
+          "observed_rate": 0.21428571428571427,
+          "predicted_rate": 0.17941025124453377,
+          "rate_gap_observed_minus_predicted": 0.034875463041180506
         }
       },
-      "verified_fixtures": 119
+      "verified_fixtures": 126
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.2305380157750832,
-          "expected_events": 39.667610152424366,
-          "observed_events": 37,
-          "observed_rate": 0.3333333333333333,
-          "predicted_rate": 0.35736585722904834,
-          "rate_gap_observed_minus_predicted": -0.024032523895715013
+          "brier": 0.2287817485829659,
+          "expected_events": 42.05656516749877,
+          "observed_events": 40,
+          "observed_rate": 0.3389830508474576,
+          "predicted_rate": 0.35641156921609124,
+          "rate_gap_observed_minus_predicted": -0.017428518368633624
         },
         "exact_0_3": {
-          "brier": 0.009367856480608373,
-          "expected_events": 2.334985477000059,
+          "brier": 0.00886379010362399,
+          "expected_events": 2.5086993752089506,
           "observed_events": 1,
-          "observed_rate": 0.009009009009009009,
-          "predicted_rate": 0.021035905198198732,
-          "rate_gap_observed_minus_predicted": -0.012026896189189722
+          "observed_rate": 0.00847457627118644,
+          "predicted_rate": 0.021260164196686023,
+          "rate_gap_observed_minus_predicted": -0.01278558792549958
         },
         "exact_3_0": {
-          "brier": 0.043073178560280916,
-          "expected_events": 4.736746792542456,
+          "brier": 0.04061275651305599,
+          "expected_events": 4.991877863564458,
           "observed_events": 5,
-          "observed_rate": 0.04504504504504504,
-          "predicted_rate": 0.04267339452740951,
-          "rate_gap_observed_minus_predicted": 0.0023716505176355333
+          "observed_rate": 0.0423728813559322,
+          "predicted_rate": 0.04230404969122422,
+          "rate_gap_observed_minus_predicted": 6.88316647079844e-05
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18247208825720287,
-          "expected_events": 19.715960635597703,
+          "brier": 0.17331637372522526,
+          "expected_events": 20.843122224579155,
           "observed_events": 26,
-          "observed_rate": 0.23423423423423423,
-          "predicted_rate": 0.1776212669873667,
-          "rate_gap_observed_minus_predicted": 0.05661296724686754
+          "observed_rate": 0.22033898305084745,
+          "predicted_rate": 0.17663662902185726,
+          "rate_gap_observed_minus_predicted": 0.04370235402899022
         }
       },
-      "verified_fixtures": 111
+      "verified_fixtures": 118
     }
   },
   "focus": {
@@ -1254,6 +1254,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "0-0",
+        "captured_at_utc": "2026-11-27T18:37:47.681613+00:00",
+        "fixture_id": "1550216",
+        "fixture_name": "Venezia vs Bologna",
+        "forecast_id": "2ec09a29426d4d04b057e34bdb932c3604fdf5e471e1b771b42ffb78f560391c",
+        "kickoff_utc": "2026-11-27T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.06960427385459246,
+          "actual_exact_score_rank_min": 5,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2777499700859211
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0594848706942912
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.009669682617140333
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1567938860510814
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "3-0",
         "captured_at_utc": "2026-11-22T12:19:21.378644+00:00",
         "fixture_id": "1552225",
@@ -1805,6 +1834,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-0",
+        "captured_at_utc": "2026-11-27T18:37:49.179153+00:00",
+        "fixture_id": "1552830",
+        "fixture_name": "Stade Brestois 29 vs Paris FC",
+        "forecast_id": "76766455b85182ab65292e90ee651c20cc696f91de74cf72517233df325b43c1",
+        "kickoff_utc": "2026-11-27T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08605372422364163,
+          "actual_exact_score_rank_min": 2,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.30303535549350435
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.02627306243112379
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.02944493971216794
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1260200164534109
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-0",
         "captured_at_utc": "2026-11-20T14:58:17.796579+00:00",
         "fixture_id": "1557467",
@@ -2090,6 +2148,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.15424801800357524
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "3-2",
+        "captured_at_utc": "2026-11-14T02:31:37.441202+00:00",
+        "fixture_id": "1557485",
+        "fixture_name": "Nottingham Forest vs Chelsea",
+        "forecast_id": "2092ee7c8843e6ea90baa6c6a454286f882a68a3707911c2dc15851d8e85b424",
+        "kickoff_utc": "2026-11-27T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.02462855939884281,
+          "actual_exact_score_rank_min": 13,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.26893679234375323
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.022674156272603913
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.032213964479538774
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1166992358465373
           }
         },
         "provider": "API-Football"
@@ -2791,6 +2878,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "2-0",
+        "captured_at_utc": "2026-11-14T02:31:38.012531+00:00",
+        "fixture_id": "1563294",
+        "fixture_name": "Southampton vs Middlesbrough",
+        "forecast_id": "a5274103f55363d3e8eef36a1c670d3b0e926b786f5eb704c0638900f3c2693e",
+        "kickoff_utc": "2026-11-27T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.07813092987432095,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.34300877813947184
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01591789784317114
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.04522079424962087
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.15362253176725504
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "3-1",
         "captured_at_utc": "2026-11-21T12:18:35.378164+00:00",
         "fixture_id": "1570453",
@@ -3081,6 +3197,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-3",
+        "captured_at_utc": "2026-11-14T02:31:38.815665+00:00",
+        "fixture_id": "1570468",
+        "fixture_name": "Levante vs Racing Santander",
+        "forecast_id": "d46ab9c38cac368f7972a2adad7c92935e126c86cb706b3b036c281d0db6c09d",
+        "kickoff_utc": "2026-11-27T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.024628683537253712,
+          "actual_exact_score_rank_min": 15,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.5354573131225814
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01026651167721116
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.050996811391767774
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.24695821980483257
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "1-1",
         "captured_at_utc": "2026-11-20T18:57:13.573381+00:00",
         "fixture_id": "1575221",
@@ -3337,6 +3482,64 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.18550302817999986
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "3-3",
+        "captured_at_utc": "2026-11-27T18:37:46.255809+00:00",
+        "fixture_id": "1575237",
+        "fixture_name": "Werder Bremen vs Borussia M\u00f6nchengladbach",
+        "forecast_id": "374f2976caa7c8b2cb23a54dbd374f1991a13255f1c01f2df58db9de13c81db3",
+        "kickoff_utc": "2026-11-27T19:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.016012176673280476,
+          "actual_exact_score_rank_min": 20,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4474501260894342
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.00815388036763149
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0639481998282994
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.2400037371291459
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-2",
+        "captured_at_utc": "2026-11-14T02:31:39.331704+00:00",
+        "fixture_id": "1575551",
+        "fixture_name": "Maritimo vs Nacional",
+        "forecast_id": "430196ee5b11c19c04ec020f5e530cd8b80152163fe05dd2e003bab033d79117",
+        "kickoff_utc": "2026-11-27T20:15:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08489372621347441,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2706027257510631
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.031125401484898122
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.024263942244392493
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.11796577913526214
           }
         },
         "provider": "API-Football"
@@ -4620,6 +4823,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "0-0",
+        "captured_at_utc": "2026-11-25T23:27:14.420727+00:00",
+        "fixture_id": "1550216",
+        "fixture_name": "Venezia vs Bologna",
+        "forecast_id": "238ccbfde6fc7444af53816c770bd0ae176fe2b748cf5940c15a391bd24c4e14",
+        "kickoff_utc": "2026-11-27T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.06960427385459246,
+          "actual_exact_score_rank_min": 5,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2777499700859211
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.0594848706942912
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.009669682617140333
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1567938860510814
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "3-0",
         "captured_at_utc": "2026-11-22T00:24:22.469044+00:00",
         "fixture_id": "1552225",
@@ -5084,6 +5316,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "1-0",
+        "captured_at_utc": "2026-11-25T23:27:18.038100+00:00",
+        "fixture_id": "1552830",
+        "fixture_name": "Stade Brestois 29 vs Paris FC",
+        "forecast_id": "7e8adb285f880c133aa9ef6da5dc4aee44b9b1bb5fccaac167c19b73792454d2",
+        "kickoff_utc": "2026-11-27T19:45:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08605372422364163,
+          "actual_exact_score_rank_min": 2,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.3030353554935043
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.026273062431123786
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.02944493971216794
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1260200164534109
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "0-0",
         "captured_at_utc": "2026-11-20T09:43:46.747051+00:00",
         "fixture_id": "1557467",
@@ -5369,6 +5630,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.15424801800357524
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "3-2",
+        "captured_at_utc": "2026-11-25T23:27:21.727264+00:00",
+        "fixture_id": "1557485",
+        "fixture_name": "Nottingham Forest vs Chelsea",
+        "forecast_id": "582e05298deb5592e1ebfb9bd2b50e193ae3f6aed904b73eb0d4cf88ed6e3941",
+        "kickoff_utc": "2026-11-27T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.025830803752401335,
+          "actual_exact_score_rank_min": 13,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.2764481415906782
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.020944934708820397
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.034730824153153525
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.12064038131755611
           }
         },
         "provider": "API-Football"
@@ -6070,6 +6360,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "2-0",
+        "captured_at_utc": "2026-11-25T23:27:23.692454+00:00",
+        "fixture_id": "1563294",
+        "fixture_name": "Southampton vs Middlesbrough",
+        "forecast_id": "a554e0082cd17a8f7af5961edf81081c7187109b28a858ea9bb0c1e6ad16725f",
+        "kickoff_utc": "2026-11-27T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08206957822990943,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.30566196845868804
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.01585931581092699
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.044767102467189124
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.1409699077243341
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "3-1",
         "captured_at_utc": "2026-11-19T20:27:44.424045+00:00",
         "fixture_id": "1570453",
@@ -6297,6 +6616,35 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.12591091920775727
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-3",
+        "captured_at_utc": "2026-11-25T23:27:25.579926+00:00",
+        "fixture_id": "1570468",
+        "fixture_name": "Levante vs Racing Santander",
+        "forecast_id": "bcbdd541f76632e296ff3c94411ba384addf58f38e12a3ab79186587dd86e3da",
+        "kickoff_utc": "2026-11-27T20:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.026842911236021123,
+          "actual_exact_score_rank_min": 15,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.508006727605118
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.011872432711199704
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0483063799996598
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.22476788117066082
           }
         },
         "provider": "API-Football"
@@ -6558,6 +6906,64 @@
           "winning_margin_at_least_three": {
             "observed": 0,
             "predicted_probability": 0.18570943660545758
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "3-3",
+        "captured_at_utc": "2026-11-25T23:27:10.760129+00:00",
+        "fixture_id": "1575237",
+        "fixture_name": "Werder Bremen vs Borussia M\u00f6nchengladbach",
+        "forecast_id": "401c555e532c7d3830340604ce9f3568be3fd64e5395864b694cf2dc919dee3d",
+        "kickoff_utc": "2026-11-27T19:30:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.016012176673280476,
+          "actual_exact_score_rank_min": 20,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.4474501260894342
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.00815388036763149
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.0639481998282994
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.2400037371291459
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "1-2",
+        "captured_at_utc": "2026-11-25T23:27:27.553367+00:00",
+        "fixture_id": "1575551",
+        "fixture_name": "Maritimo vs Nacional",
+        "forecast_id": "bfa6c94fdfe7fc70b3ca6bca1a260cb1eda6abf2234af59d76e10ac7a5b0460c",
+        "kickoff_utc": "2026-11-27T20:15:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.08489372621347441,
+          "actual_exact_score_rank_min": 4,
+          "at_least_four_total_goals": {
+            "observed": 0,
+            "predicted_probability": 0.2706027257510631
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.031125401484898122
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.024263942244392493
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.11796577913526214
           }
         },
         "provider": "API-Football"
@@ -6972,7 +7378,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-27T22:22:07.676241+00:00",
+  "result_cutoff_utc": "2026-11-27T23:22:32.929733+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
