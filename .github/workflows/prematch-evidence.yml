@@ -74,6 +74,8 @@ jobs:
           V44_EARLY_HISTORY_ENABLED: ${{ vars.V44_EARLY_HISTORY_ENABLED != 'false' && 'true' || 'false' }}
           V44_PAIR_REFRESH_PRIORITY: ${{ vars.V44_PAIR_REFRESH_PRIORITY != 'false' && 'true' || 'false' }}
           V44_RECOVERY_CAPTURE_ENABLED: ${{ vars.V44_RECOVERY_CAPTURE_ENABLED == 'true' && 'true' || 'false' }}
+          # Cache-only recovery never invokes a provider; explicit false rolls it back.
+          V44_CACHE_RECOVERY_ENABLED: ${{ vars.V44_CACHE_RECOVERY_ENABLED != 'false' && 'true' || 'false' }}
           CROSS_COMPETITION_HISTORY_MAX_CALLS: ${{ steps.cadence.outputs.heavy == 'true' && '20' || '0' }}
           V10_BACKFILL_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '12' || '0' }}
           V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}
