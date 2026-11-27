@@ -8,12 +8,12 @@
     ],
     "sets_with_target_model_coverage": 0,
     "verified_miss_attribution": {
-      "both_leg_scores_outside_selected_options": 4,
+      "both_leg_scores_outside_selected_options": 5,
       "leg_scores_present_but_not_in_same_combination": 1,
       "one_leg_score_outside_selected_options": 5
     }
   },
-  "evaluated_at_utc": "2026-11-27T22:44:23.914292+00:00",
+  "evaluated_at_utc": "2026-11-27T23:40:45.034976+00:00",
   "evidence_policy": "original_archived_v8_source_ids_before_selection_and_both_kickoffs_identity_matched_verified_regulation_results",
   "external_requests_performed": 0,
   "limitations": [
@@ -31,12 +31,12 @@
     "hits": 0,
     "independence_of_repeated_sets_not_established": true,
     "minimum_100_sets_and_lower_interval_at_target": false,
-    "misses": 10,
-    "pending_sets": 2,
-    "verified_sets": 10,
+    "misses": 11,
+    "pending_sets": 1,
+    "verified_sets": 11,
     "wilson_95": [
       0.0,
-      0.2775327998628892
+      0.2588329669680317
     ]
   },
   "original_forecasts_or_doubles_modified": false,
@@ -1109,10 +1109,43 @@
         "v8_near",
         "v8_near"
       ],
-      "status": "pending",
+      "status": "miss",
       "sydney_date": "2026-11-28",
       "target_model_mass_reached_by_five": false,
-      "verified_result_attribution": null
+      "verified_result_attribution": {
+        "actual_joint_model_probability": 0.001797934338266377,
+        "actual_joint_score_rank_max": 156,
+        "actual_joint_score_rank_min": 156,
+        "classification": "both_leg_scores_outside_selected_options",
+        "legs": [
+          {
+            "actual_leg_score_covered": false,
+            "actual_model_probability": 0.06960427385459246,
+            "actual_score": "0-0",
+            "actual_score_rank_min": 5,
+            "fixture_id": "1550216",
+            "match": "Venezia vs Bologna",
+            "selected_leg_scores": [
+              "0-1",
+              "0-2",
+              "1-1",
+              "1-2"
+            ]
+          },
+          {
+            "actual_leg_score_covered": false,
+            "actual_model_probability": 0.025830803752401335,
+            "actual_score": "3-2",
+            "actual_score_rank_min": 13,
+            "fixture_id": "1557485",
+            "match": "Nottingham Forest vs Chelsea",
+            "selected_leg_scores": [
+              "1-0",
+              "1-1"
+            ]
+          }
+        ]
+      }
     },
     {
       "captured_at_utc": "2026-11-27T14:23:26.066985+00:00",
