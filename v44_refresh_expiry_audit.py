@@ -67,7 +67,20 @@ def evaluate(*,source_root=sources.SOURCE_ROOT,history_root=early.ROOT,pair_root
             legs.update(statuses)
             counts["upcoming_pairs"]+=1
             counts["pairs_with_"+str(statuses.count("exact_history_valid_at_window_open"))+"_usable_legs"]+=1
-            rows.append({"day":path.stem,"audit_window_utc":opens.isoformat(),"leg_statuses":statuses})
+            refresh_opens=first-timedelta(hours=24)
+            refresh_closes=first-timedelta(minutes=45)
+            phase=("not_yet_open" if now<refresh_opens else
+                   "closed" if now>=refresh_closes else "open")
+            for m,status in zip(models,statuses):
+                if status.startswith("refresh_available"):
+                    counts["existing_refresh_path_"+phase]+=1
+            rows.append({"day":path.stem,"audit_window_utc":opens.isoformat(),
+                         "priority_refresh_opens_utc":refresh_opens.isoformat(),
+                         "priority_refresh_closes_utc":refresh_closes.isoformat(),
+                         "priority_refresh_window_status":phase,"leg_statuses":statuses,
+                         "fixtures":[{"provider":m["provider"],"fixture_id":str(m["fixture_id"]),
+                                      "kickoff_utc":utc(m["kickoff_utc"]).isoformat(),
+                                      "status":status} for m,status in zip(models,statuses)]})
         except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError):
             counts["invalid_pair"]+=1
     return {"study_type":"one_shot_refresh_expiry_audit","counts":dict(counts),
