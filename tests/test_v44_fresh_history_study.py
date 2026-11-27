@@ -78,3 +78,18 @@ def test_readiness_checks_future_without_issuing_or_registering(tmp_path,monkeyp
     assert result["counts"]["future_pairs_with_1_ready_legs"]==1
     assert result["leg_statuses"]["future:missing_fresh_exact_history"]==1
     assert not (tmp_path/"study").exists()
+
+
+def test_scheduler_preserves_isolated_protocol_and_trials():
+    from pathlib import Path
+    text=Path(".github/workflows/v42-research-watchdog.yml").read_text()
+    step=text.split("      - name: Register and verify isolated fresh-history research",1)[1].split("      - name: Run separate late-cutoff trial",1)[0]
+    assert "vars.V44_FRESH_HISTORY_ENABLED != 'false'" in step
+    assert 'OPENAI_API_KEY: ""' in step
+    assert 'API_FOOTBALL_KEY: ""' in step
+    assert "python v44_fresh_history_study.py --freeze" in step
+    assert 'run["evaluation"]["counts"].get("rejected")' in step
+    assert '("readiness",run["readiness"])' in step
+    assert "github.ref == 'refs/heads/main'" in text
+    assert 'if [ "$V44_FRESH_OUTCOME" = "success" ]; then' in text
+    assert "--diff-filter=DMRTUXB -- data/v44_fresh_history_study/protocol.json data/v44_fresh_history_study/trials/" in text
