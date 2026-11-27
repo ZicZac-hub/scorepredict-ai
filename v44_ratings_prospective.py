@@ -93,13 +93,17 @@ def freeze(*,root=ROOT,history_root=early.ROOT,pair_root=sources.PAIR_ROOT,
     protocol=_protocol(root,started,register=True)
     counts=Counter()
     for path in sorted((Path(pair_root)/"sets").glob("*.json")):
+        counts["original_pair_files"]+=1
         destination=root/"trials"/path.name
         if destination.exists():
+            counts["preserved"]+=1
             continue
         try:
             pair,models=sources._pair(path,source_root=source_root,decision=started)
             if not sources._window(models,started):
+                counts["outside_decision_window"]+=1
                 continue
+            counts["eligible_window"]+=1
             arms,references=_arms(pair,models,started,history_root)
             predicted=observed()
             if not sources._window(models,predicted):
@@ -109,9 +113,14 @@ def freeze(*,root=ROOT,history_root=early.ROOT,pair_root=sources.PAIR_ROOT,
                     "protocol_sha256":protocol["sha256"],"pair_sha256":pair["record_sha256"],
                     "history_refs":references,"arms":arms}
             record["sha256"]=early.digest(record)
-            counts["issued"]+=int(early._once(destination,record))
+            if early._once(destination,record):
+                counts["issued"]+=1
+            else:
+                counts["preserved"]+=1
         except (ValueError,KeyError,TypeError,OSError,AttributeError,ArithmeticError) as exc:
             counts[str(exc) if isinstance(exc,ValueError) else type(exc).__name__]+=1
+    for key in ("original_pair_files","preserved","outside_decision_window","eligible_window","issued"):
+        counts.setdefault(key,0)
     return dict(counts)
 
 
