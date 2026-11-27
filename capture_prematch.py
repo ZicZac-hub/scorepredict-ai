@@ -179,7 +179,7 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
             evidence_loader=None, pair_builder=None, clock=None,
             daily_recorder=None, research_recorder=None,
             research_backfill_limit=0,market_refresher=None,
-            research_market_refresh_limit=0,recovery_refresher=None):
+            research_market_refresh_limit=0,recovery_refresher=None,cache_recovery_refresher=None):
     """Return old-format snapshots and full-grid ledger coverage without fake history.
 
     Optional callbacks make data policy, timing and budget tests independent of
@@ -613,6 +613,17 @@ def collect(key, now=None, *, codes=CODES, max_fixtures=0, max_seconds=600,
                 extra_limit=_positive_limit(os.environ.get("CROSS_COMPETITION_HISTORY_MAX_CALLS"),0))
         except (OSError,ValueError,TypeError,KeyError,AttributeError,OverflowError) as exc:
             diagnostics["cross_competition_source_refresh_error"]=type(exc).__name__
+    # A light run can recover a missing historical receipt from evidence
+    # already fetched for other fixtures. No provider callback is supplied.
+    if cache_recovery_refresher is not None:
+        try:
+            from v44_cache_only_recovery import run as recover_cached
+            diagnostics["v44_cache_only_recovery"]=recover_cached(
+                fixtures.values(),history_cache,clock=current_time,
+                time_available=lambda: not max_seconds or time.monotonic()-monotonic_start<max_seconds-30,
+                refresher=cache_recovery_refresher)
+        except (OSError,ValueError,TypeError,KeyError,AttributeError,ArithmeticError) as exc:
+            diagnostics["v44_cache_only_recovery_error"]=type(exc).__name__
     diagnostics['provider_adapter_calls'] = provider_calls
     diagnostics['news_coverage_complete'] = not diagnostics['news_errors']
     diagnostics['coverage_complete'] = not (diagnostics['discovery_budget_skipped'] or diagnostics['budget_skipped'] or diagnostics['league_errors'] or diagnostics['prediction_errors'] or diagnostics['prediction_unavailable'] or diagnostics['history_source_errors'])
@@ -665,6 +676,11 @@ def main():
         from v44_recovery_capture import capture as recover_history
         def recovery_callback(fixture,evidence,observed):
             return recover_history(fixture,evidence,now=observed)
+    cache_recovery_callback=None
+    if os.environ.get("V44_CACHE_RECOVERY_ENABLED")=="true":
+        from v44_recovery_capture import capture as recover_cached_history
+        def cache_recovery_callback(fixture,evidence,observed):
+            return recover_cached_history(fixture,evidence,now=observed)
     payload = collect(key, max_fixtures=_positive_limit(os.environ.get('CAPTURE_MAX_FIXTURES'), 0),
         max_seconds=_positive_limit(os.environ.get('CAPTURE_MAX_SECONDS'), 600),
         database_url=os.environ.get('DATABASE_URL') or None,
@@ -673,7 +689,7 @@ def main():
         research_backfill_limit=_positive_limit(os.environ.get('V10_BACKFILL_LIMIT'),0),
         market_refresher=_refresh_market,
         research_market_refresh_limit=_positive_limit(os.environ.get('V10_MARKET_REFRESH_LIMIT'),0),
-        recovery_refresher=recovery_callback)
+        recovery_refresher=recovery_callback,cache_recovery_refresher=cache_recovery_callback)
     payload['diagnostics']['v44_early_history']=early_history_counts
     saved_days=save_for_dates(_daily_candidates)
     payload['diagnostics']['daily_research_candidates']=len(_daily_candidates)
