@@ -70,6 +70,7 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           CROSS_COMPETITION_RESEARCH_ENABLED: "true"
+          V44_EARLY_HISTORY_ENABLED: ${{ vars.V44_EARLY_HISTORY_ENABLED }}
           CROSS_COMPETITION_HISTORY_MAX_CALLS: ${{ steps.cadence.outputs.heavy == 'true' && '20' || '0' }}
           V10_BACKFILL_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '12' || '0' }}
           V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}
@@ -91,7 +92,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/prospective_ledger/capture_coverage.json
-          for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts; do
+          for folder in data/v10_prospective/forecasts data/prospective_ledger/forecasts data/v44_early_history; do
             if [ -d "$folder" ]; then
               git add -- "$folder"
             fi
