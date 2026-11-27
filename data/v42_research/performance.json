@@ -1,6 +1,6 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-26T22:46:42.315271+00:00",
+  "evaluated_at_utc": "2026-11-27T16:45:25.592457+00:00",
   "external_requests": 0,
   "invalid_opportunities": 0,
   "limitations": [
@@ -21,10 +21,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.40730462544874957,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.005504938818606749,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.662303606687236,
@@ -39,10 +39,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.40207230080104794,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.004050733720323392,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.68110744200806,
@@ -57,10 +57,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.4105604152826545,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.006802280049895918,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.6797834783755086,
@@ -75,10 +75,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.4064659228342048,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.005084772145733464,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.677196260094127,
@@ -93,10 +93,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.41889147523328396,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.004945243740958697,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.685415549338843,
@@ -111,10 +111,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.4063809606328064,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.0052698931845918395,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.6708648843797187,
@@ -129,10 +129,10 @@
       "hit_rate": 0.0,
       "hits": 0,
       "invalid_opportunities": 0,
-      "issued": 2,
-      "opportunities": 2,
+      "issued": 3,
+      "opportunities": 3,
       "outcome_brier": 0.3957115027284674,
-      "pending": 0,
+      "pending": 1,
       "set_brier_descriptive": 0.004614078854178373,
       "single_fixtures_evaluated": 4,
       "single_score_log_loss": 2.7112219852541877,
@@ -146,7 +146,7 @@
   "minimum_review_verified_pairs": 100,
   "model_promoted": false,
   "no_automatic_promotion": true,
-  "opportunities": 2,
+  "opportunities": 3,
   "paired_comparisons": {
     "high_goal": {
       "baseline_only_set_wins": 0,
@@ -425,7 +425,7 @@
       "verified_common_pairs": 2
     }
   },
-  "pending_opportunities": 0,
+  "pending_opportunities": 1,
   "realized_roi": null,
   "result_rejections": {},
   "rows": [
@@ -640,6 +640,64 @@
         "paired_market_used": false,
         "paired_xg_used": false
       }
+    },
+    {
+      "actual_scores": [
+        null,
+        null
+      ],
+      "lineup_context": [
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        },
+        {
+          "both_confirmed_xis": false,
+          "missing_does_not_mean_healthy": true,
+          "numerical_ai_weight": 0.0,
+          "numerical_lineup_weight": 0.0,
+          "reported_lineup_teams": 0
+        }
+      ],
+      "methods": {
+        "baseline_v8": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "high_goal": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "low_goal": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "unified_final": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "upset_sensitivity": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "v41_control": {
+          "metrics": null,
+          "status": "pending"
+        },
+        "wide_margin": {
+          "metrics": null,
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "sydney_date": "2026-11-28",
+      "unified_final_evidence": {
+        "paired_market_used": false,
+        "paired_xg_used": false
+      }
     }
   ],
   "same_cutoff_v41_comparison": {
@@ -658,7 +716,7 @@
   "single_final_arm": "unified_final",
   "source_rejections": {},
   "target_70_percent_proven": false,
-  "valid_opportunities": 2,
+  "valid_opportunities": 3,
   "verified_opportunities": 2,
   "version": "v42-fixed-pair-research-v1"
 }
