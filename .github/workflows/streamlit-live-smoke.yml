@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'app.py'
+      - 'dashboard_ui.py'
+      - 'v43_*.py'
       - 'v25_upcoming_ui.py'
       - 'v25_upcoming.py'
       - 'v25_live_market_check.py'
@@ -44,7 +46,7 @@ jobs:
 
           opener=build_opener(NoRedirect())
           base="https://ziczacscorepredict-ai.streamlit.app"
-          endpoints=("/_stcore/health","/?view=predict")
+          endpoints=("/_stcore/health","/?view=predict","/?view=v43")
           records=[]
           for endpoint in endpoints:
               url=base+endpoint
@@ -73,7 +75,7 @@ jobs:
           summary=os.environ["GITHUB_STEP_SUMMARY"]
           if all(code==200 for code,kind in records):
               with open(summary,"a") as f:
-                  f.write("✅ Streamlit returned HTTP 200 for both checks. This does not prove Python widget execution or deployment of the latest GitHub commit.\n")
+                  f.write("✅ Streamlit returned HTTP 200 for all checks. This does not prove Python widget execution or deployment of the latest GitHub commit.\n")
               sys.exit(0)
           if all(code in (200,301,302,303,307,308) for code,kind in records):
               with open(summary,"a") as f:

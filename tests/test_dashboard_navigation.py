@@ -239,3 +239,58 @@ def test_v25_live_date_selector_starts_today_without_saved_forecasts(offline_app
     app.button(key="zz_v25_discover_day").click().run()
     assert not app.exception
     assert any("API_FOOTBALL_KEY" in e.value for e in app.error)
+
+
+def test_v43_route_generates_a_pair_and_passes_valid_scores_to_research(offline_app, monkeypatch):
+    from datetime import datetime, timedelta, timezone
+
+    import v43_ui
+    from ai_five_double_engine import SYDNEY
+
+    day = datetime.now(SYDNEY).date() + timedelta(days=1)
+
+    def candidate(ident, home, away, hour):
+        kickoff = datetime(day.year, day.month, day.day, hour, tzinfo=SYDNEY)
+        row = {"fixture": {"id": ident, "provider": "API-Football",
+                           "utcDate": kickoff.isoformat(),
+                           "homeTeam": {"id": ident * 2, "name": home},
+                           "awayTeam": {"id": ident * 2 + 1, "name": away}}}
+        return {"key": ("API-Football", str(ident)), "title": f"{home} vs {away}",
+                "row": row, "kickoff": kickoff, "captured_at_utc": datetime.now(timezone.utc).isoformat()}
+
+    matches = [candidate(1, "Alpha", "Beta", 12), candidate(2, "Gamma", "Delta", 15)]
+    monkeypatch.setattr(v43_ui, "_upcoming_archive", lambda minute: [])
+    monkeypatch.setattr(v43_ui, "available", lambda rows, now: ({day.isoformat(): matches}, {}))
+    monkeypatch.setattr(v43_ui, "pair_catalog", lambda selected, now: [tuple(selected)])
+
+    def model(item):
+        fixture = item["row"]["fixture"]
+        return {"home_team": fixture["homeTeam"]["name"], "away_team": fixture["awayTeam"]["name"],
+                "kickoff_utc": fixture["utcDate"], "top_scores": [{"score": "10-2", "probability": .05}],
+                "model_probabilities": {"home": .5, "draw": .25, "away": .25},
+                "expected_goals": {"home": 1.5, "away": .8}}
+
+    calls = []
+    monkeypatch.setattr(v43_ui, "forecast_pair", lambda first, second: {
+        "status": "issued", "fixture_models": [model(item) for item in matches],
+        "five_doubles": [{"score1": "10-2", "score2": "0-1", "joint_probability": .01}],
+        "estimated_coverage": .01, "lineage": {},
+        "decision_as_of_utc": datetime.now(timezone.utc).isoformat(),
+    })
+    monkeypatch.setattr(v43_ui, "render_v43_research",
+                        lambda st, fixture, history, statistical, **kwargs: calls.append((fixture["id"], statistical)))
+
+    offline_app.query_params["view"] = ["v43"]
+    app = offline_app.run()
+    _assert_page(app, "v43", "V43 Integrated Forecast")
+    app.selectbox(key="v43_second").set_value(matches[1]["key"]).run()
+    app.button(key="v43_generate").click().run()
+    assert not app.exception
+    assert any(item.value == "Combined five exact-score doubles" for item in app.subheader)
+    assert calls[-1][1]["scores"] == [[10, 2, .05]]
+
+    app.radio(key="v43_detail_match").set_value(1).run()
+    assert not app.exception
+    assert calls[-1][0] == 2
+    app.selectbox(key="v43_second").set_value(None).run()
+    assert not any(item.value == "Combined five exact-score doubles" for item in app.subheader)

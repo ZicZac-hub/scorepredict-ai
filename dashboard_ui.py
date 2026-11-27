@@ -4,6 +4,7 @@ from html import escape
 PAGES = {
     'home': ('Matchday Studio', 'Verified football research, five exact-score doubles and transparent results.'),
     'predict': ('Daily Predictions', 'Explore upcoming fixtures and researched exact-score probabilities.'),
+    'v43': ('V43 Integrated Forecast', 'Combine score models and eligible match evidence, then inspect the research and validation behind the result.'),
     'deep': ('Deep Research AI', 'Recent form, home and away records, head-to-head and available team news.'),
     'benchmark': ('Model Benchmark', 'Compare verified pre-match forecasts on identical finished fixtures.'),
     'quality': ('Advanced Quality Report', 'Inspect captured xG, lineups, bookmaker markets, source freshness and verified accuracy.'),
