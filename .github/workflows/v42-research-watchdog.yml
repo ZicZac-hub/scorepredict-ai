@@ -13,6 +13,8 @@ on:
       - 'v43_prospective.py'
       - 'v43_prediction.py'
       - 'v43_feasibility.py'
+      - 'v44_fresh_history_study.py'
+      - 'tests/test_v44_fresh_history_study.py'
       - 'tests/test_v42_cutoff_comparison.py'
       - 'tests/test_v42_late_cutoff.py'
       - 'tests/test_v42_research.py'
@@ -59,6 +61,28 @@ jobs:
           else
             python v42_research_bot.py
           fi
+      - name: Register and verify isolated fresh-history research
+        id: v44_fresh
+        if: steps.refresh.outcome == 'success' && vars.V44_FRESH_HISTORY_ENABLED != 'false'
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ""
+          API_FOOTBALL_KEY: ""
+          SPORTMONKS_API_KEY: ""
+        run: |
+          python -m pytest -q tests/test_v44_fresh_history_study.py
+          python v44_fresh_history_study.py --freeze > /tmp/v44-fresh-run.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          run=json.loads(Path("/tmp/v44-fresh-run.json").read_text())
+          if run["evaluation"]["counts"].get("rejected"):
+              raise SystemExit("Fresh-history trial integrity failure")
+          root=Path("data/v44_fresh_history_study")
+          for name,data in (("performance",run["evaluation"]),("capture_status",run["capture"]),("readiness",run["readiness"])):
+              (root/(name+".json")).write_text(json.dumps(data,indent=2,sort_keys=True,allow_nan=False)+"\n")
+          print(json.dumps(run["capture"],sort_keys=True))
+          PY
       - name: Run separate late-cutoff trial without API requests
         id: late
         continue-on-error: true
@@ -115,6 +139,7 @@ jobs:
           LATE_OUTCOME: ${{ steps.late.outcome }}
           V43_OUTCOME: ${{ steps.v43.outcome }}
           V44_OUTCOME: ${{ steps.v44.outcome }}
+          V44_FRESH_OUTCOME: ${{ steps.v44_fresh.outcome }}
           V44_READINESS_OUTCOME: ${{ steps.v44_readiness.outcome }}
         run: |
           python - <<'PY'
@@ -154,6 +179,13 @@ jobs:
               exit 1
             fi
           fi
+          if [ "$V44_FRESH_OUTCOME" = "success" ]; then
+            git add -- data/v44_fresh_history_study/
+            if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v44_fresh_history_study/protocol.json data/v44_fresh_history_study/trials/)" ]; then
+              echo "::error::Existing fresh-history trial evidence changed; refusing publication"
+              exit 1
+            fi
+          fi
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data: isolated V42 and V43 research refresh [skip ci]'
           # Other scheduled evidence writers may update main concurrently.
@@ -180,6 +212,9 @@ jobs:
       - name: Report a failed V44 trial check
         if: steps.v44.outcome == 'failure'
         run: exit 1
+      - name: Report a failed fresh-history trial check
+        if: steps.v44_fresh.outcome == 'failure'
+        run: exit 1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -189,5 +224,6 @@ jobs:
             data/v42_late_research/
             data/v43_prospective/
             data/v44_ratings_prospective/
+            data/v44_fresh_history_study/
           if-no-files-found: warn
           retention-days: 14
