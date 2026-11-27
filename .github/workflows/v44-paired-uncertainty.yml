@@ -1,0 +1,38 @@
+name: V44 paired forecast uncertainty audit
+on:
+  pull_request:
+    paths:
+      - 'v44_paired_uncertainty.py'
+      - 'tests/test_v44_paired_uncertainty.py'
+      - '.github/workflows/v44-paired-uncertainty.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests/test_v44_paired_uncertainty.py
+      - name: Read existing matched forecasts and verified finals
+        env:
+          API_FOOTBALL_KEY: ""
+          SPORTMONKS_API_KEY: ""
+          OPENAI_API_KEY: ""
+        run: |
+          python v44_paired_uncertainty.py > /tmp/v44-paired-uncertainty.json
+          python -c 'import json; r=json.load(open("/tmp/v44-paired-uncertainty.json")); print(json.dumps({k:v for k,v in r.items() if k!="rows"},indent=2))'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v44-paired-uncertainty
+          path: /tmp/v44-paired-uncertainty.json
+          if-no-files-found: warn
+          retention-days: 14
