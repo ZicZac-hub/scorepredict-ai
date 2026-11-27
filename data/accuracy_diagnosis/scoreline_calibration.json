@@ -3,76 +3,76 @@
     "v8": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22317152678944857,
-          "expected_events": 42.011810022661095,
-          "observed_events": 40,
-          "observed_rate": 0.3418803418803419,
-          "predicted_rate": 0.35907529933898374,
-          "rate_gap_observed_minus_predicted": -0.017194957458641837
+          "brier": 0.22635365567648683,
+          "expected_events": 42.23807703547497,
+          "observed_events": 41,
+          "observed_rate": 0.3474576271186441,
+          "predicted_rate": 0.3579498053853811,
+          "rate_gap_observed_minus_predicted": -0.010492178266737057
         },
         "exact_0_3": {
-          "brier": 0.016815296676948917,
-          "expected_events": 2.528401168222811,
+          "brier": 0.016673578843021248,
+          "expected_events": 2.5380236561279115,
           "observed_events": 2,
-          "observed_rate": 0.017094017094017096,
-          "predicted_rate": 0.02161026639506676,
-          "rate_gap_observed_minus_predicted": -0.004516249301049666
+          "observed_rate": 0.01694915254237288,
+          "predicted_rate": 0.021508675051931454,
+          "rate_gap_observed_minus_predicted": -0.004559522509558571
         },
         "exact_3_0": {
-          "brier": 0.041000317941964834,
-          "expected_events": 4.97339779791866,
+          "brier": 0.04067954731184986,
+          "expected_events": 5.029517167020579,
           "observed_events": 5,
-          "observed_rate": 0.042735042735042736,
-          "predicted_rate": 0.04250767348648428,
-          "rate_gap_observed_minus_predicted": 0.00022736924855845878
+          "observed_rate": 0.0423728813559322,
+          "predicted_rate": 0.042623026839157446,
+          "rate_gap_observed_minus_predicted": -0.00025014548322524526
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18197775038865305,
-          "expected_events": 20.950772571146477,
+          "brier": 0.18058831846982631,
+          "expected_events": 21.085028982416482,
           "observed_events": 27,
-          "observed_rate": 0.23076923076923078,
-          "predicted_rate": 0.17906643223202118,
-          "rate_gap_observed_minus_predicted": 0.051702798537209604
+          "observed_rate": 0.2288135593220339,
+          "predicted_rate": 0.1786866862916651,
+          "rate_gap_observed_minus_predicted": 0.0501268730303688
         }
       },
-      "verified_fixtures": 117
+      "verified_fixtures": 118
     },
     "v8_near": {
       "events": {
         "at_least_four_total_goals": {
-          "brier": 0.22614246442727207,
-          "expected_events": 38.824681567061255,
-          "observed_events": 36,
-          "observed_rate": 0.3302752293577982,
-          "predicted_rate": 0.35618973914735097,
-          "rate_gap_observed_minus_predicted": -0.025914509789552797
+          "brier": 0.2293328094887871,
+          "expected_events": 39.065023472130434,
+          "observed_events": 37,
+          "observed_rate": 0.33636363636363636,
+          "predicted_rate": 0.35513657701936757,
+          "rate_gap_observed_minus_predicted": -0.01877294065573122
         },
         "exact_0_3": {
-          "brier": 0.009538170498774944,
-          "expected_events": 2.3166846079545578,
+          "brier": 0.009452475327008613,
+          "expected_events": 2.3272535059329957,
           "observed_events": 1,
-          "observed_rate": 0.009174311926605505,
-          "predicted_rate": 0.021253987228940896,
-          "rate_gap_observed_minus_predicted": -0.012079675302335393
+          "observed_rate": 0.00909090909090909,
+          "predicted_rate": 0.021156850053936326,
+          "rate_gap_observed_minus_predicted": -0.012065940963027233
         },
         "exact_3_0": {
-          "brier": 0.04380757148888798,
-          "expected_events": 4.626327802340115,
+          "brier": 0.04343621179405894,
+          "expected_events": 4.6807153474004775,
           "observed_events": 5,
-          "observed_rate": 0.045871559633027525,
-          "predicted_rate": 0.04244337433339555,
-          "rate_gap_observed_minus_predicted": 0.003428185299631972
+          "observed_rate": 0.045454545454545456,
+          "predicted_rate": 0.0425519577036407,
+          "rate_gap_observed_minus_predicted": 0.0029025877509047506
         },
         "winning_margin_at_least_three": {
-          "brier": 0.18471783297130348,
-          "expected_events": 19.261256318220358,
+          "brier": 0.18320612069494138,
+          "expected_events": 19.397011548585425,
           "observed_events": 26,
-          "observed_rate": 0.23853211009174313,
-          "predicted_rate": 0.17670877356165465,
-          "rate_gap_observed_minus_predicted": 0.06182333653008846
+          "observed_rate": 0.23636363636363636,
+          "predicted_rate": 0.17633646862350386,
+          "rate_gap_observed_minus_predicted": 0.060027167740132496
         }
       },
-      "verified_fixtures": 109
+      "verified_fixtures": 110
     }
   },
   "focus": {
@@ -930,6 +930,35 @@
           "winning_margin_at_least_three": {
             "observed": 1,
             "predicted_probability": 0.23883694529282104
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
+        "actual_score": "3-1",
+        "captured_at_utc": "2026-11-14T02:30:14.017265+00:00",
+        "fixture_id": "1492478",
+        "fixture_name": "Sao Paulo vs Remo",
+        "forecast_id": "daca52775d0d6755810af1443a18f52fcc85416b3ca97a170d70c2accc256199",
+        "kickoff_utc": "2026-11-26T23:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.04829062841329687,
+          "actual_exact_score_rank_min": 9,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.22626701281387654
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.00962248790510079
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.056119369101918275
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.13425641127000643
           }
         },
         "provider": "API-Football"
@@ -4272,6 +4301,35 @@
         "provider": "API-Football"
       },
       {
+        "actual_score": "3-1",
+        "captured_at_utc": "2026-11-25T02:44:04.521333+00:00",
+        "fixture_id": "1492478",
+        "fixture_name": "Sao Paulo vs Remo",
+        "forecast_id": "4172e3d0b2b8e7af1bed17a2b978e32ad4e855fb30c7518d5273a95890e15493",
+        "kickoff_utc": "2026-11-26T23:00:00+00:00",
+        "metrics": {
+          "actual_exact_score_probability": 0.04941023390640398,
+          "actual_exact_score_rank_min": 9,
+          "at_least_four_total_goals": {
+            "observed": 1,
+            "predicted_probability": 0.2403419050691794
+          },
+          "exact_0_3": {
+            "observed": 0,
+            "predicted_probability": 0.010568897978438088
+          },
+          "exact_3_0": {
+            "observed": 0,
+            "predicted_probability": 0.05438754506036205
+          },
+          "winning_margin_at_least_three": {
+            "observed": 0,
+            "predicted_probability": 0.13575523036506698
+          }
+        },
+        "provider": "API-Football"
+      },
+      {
         "actual_score": "5-1",
         "captured_at_utc": "2026-11-22T13:34:31.861157+00:00",
         "fixture_id": "1550197",
@@ -6856,7 +6914,7 @@
   },
   "production_model_promoted": false,
   "result_conflicts_excluded": 0,
-  "result_cutoff_utc": "2026-11-26T23:23:53.275979+00:00",
+  "result_cutoff_utc": "2026-11-27T03:25:27.674502+00:00",
   "result_source_rejections": {},
   "schema_version": 1,
   "source_rejections": {},
