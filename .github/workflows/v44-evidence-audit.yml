@@ -20,10 +20,11 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_v44_family_pool_research.py tests/test_v44_authenticated_replay.py tests/test_v44_fixture_evidence.py tests/test_v44_single_calibration.py
+      - run: python -m pytest -q tests/test_v44_family_pool_research.py tests/test_v44_authenticated_replay.py tests/test_v44_fixture_evidence.py tests/test_v44_single_calibration.py tests/test_v44_late_evidence_audit.py
       - name: Read authenticated archived evidence
         run: |
           python v44_fixture_evidence.py > /tmp/v44-fixture.json
           python v44_authenticated_replay.py > /tmp/v44-pairs.json
           python v44_single_calibration.py > /tmp/v44-single.json
-          python -c 'import json; print(json.dumps({name: {k:v for k,v in json.load(open("/tmp/v44-"+name+".json")).items() if k!="rows"} for name in ("fixture","pairs","single")},indent=2))'
+          python v44_late_evidence_audit.py > /tmp/v44-late.json
+          python -c 'import json; print(json.dumps({name: {k:v for k,v in json.load(open("/tmp/v44-"+name+".json")).items() if k!="rows"} for name in ("fixture","pairs","single","late")},indent=2))'
