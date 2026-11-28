@@ -4,19 +4,20 @@ import v44_joint_rate_tilt as m
 from test_v44_bayesian_rate_calibration import rec,NOW
 
 def test_joint_tilt_preserves_odds_ratio_and_zeros():
-    p=np.array([[.1,.2,0.],[.3,.4,0.]])
+    p=np.zeros((5,5))
+    p[:2,:2]=[[.1,.2],[.3,.4]]
     q=m.tilt(p,(.7,1.2),1.)
     assert np.isclose(q.sum(),1)
     assert np.array_equal(p==0,q==0)
     assert np.isclose(q[0,0]*q[1,1]/(q[0,1]*q[1,0]),
                       p[0,0]*p[1,1]/(p[0,1]*p[1,0]))
-    assert np.dot(q.sum(axis=1),[0,1])<np.dot(p.sum(axis=1),[0,1])
+    assert np.dot(q.sum(axis=1),np.arange(5))<np.dot(p.sum(axis=1),np.arange(5))
     assert np.allclose(m.tilt(p,(1.,1.),.5),p)
     assert np.allclose(m.tilt(p,(.7,1.2),0.),p)
     assert np.isclose(p[1,1],.4)
 
 def test_invalid_parameters():
-    p=np.ones((2,2))/4
+    p=np.ones((5,5))/25
     for scale,strength in [((0.,1.),1.),((1.,float("inf")),.5),((1.,1.),.25)]:
         with pytest.raises(ValueError):
             m.tilt(p,scale,strength)
