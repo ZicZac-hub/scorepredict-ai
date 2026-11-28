@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 import json
+import os
 import sqlite3
 
 import pytest
@@ -73,3 +74,20 @@ def test_later_recovery_cannot_supply_an_original_cutoff_receipt(tmp_path, monke
     assert report["original_pair_legs"]["exact_receipt_available"] == 1
     assert report["original_pair_legs"]["later_recovery_only"] == 1
     assert report["original_pair_legs"]["not_due"] == 2
+
+
+def test_postgres_recovery_preserves_and_reads_snapshot(tmp_path):
+    database_url = os.environ.get("TEST_DATABASE_URL")
+    if not database_url:
+        pytest.skip("An isolated TEST_DATABASE_URL is required for PostgreSQL integration")
+    freeze(tmp_path / "v44_early_history", FIXTURE, evidence()["history"])
+
+    first = history.recover_database(root=tmp_path, now=NOW, database_url=database_url)
+    second = history.recover_database(root=tmp_path, now=NOW, database_url=database_url)
+    assert first["database_backend"] == "postgresql"
+    assert second["database_state"] == "original_preserved"
+    assert second["snapshot_sha256"] == first["snapshot_sha256"]
+    rows = history.load_database_snapshot(first["snapshot_sha256"], database_url=database_url,
+                                          provider="API-Football", fixture_id=10)
+    assert len(rows) == 1
+    assert rows[0]["first_observed_at_utc"] == NOW.isoformat()
