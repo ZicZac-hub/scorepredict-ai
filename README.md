@@ -22,6 +22,10 @@
 
 A free, transparent football score forecasting Streamlit application. No fabricated fixtures, paid services or hidden prediction guarantees.
 
+## V45 data intelligence
+
+Open **V45 Data** in Matchday Studio to check point-in-time history, historical shot xG, market and confirmed starting-XI coverage. The scheduled pipeline can cross-check pre-kickoff starting XIs, diagnose Sportmonks fixture and xG access, and build an authenticated historical result archive. The matched source-impact audit reports how many settled matches support each comparison. See the [V45 setup and audit guide](V45_DATA_INTELLIGENCE.md).
+
 ## V43 integrated football forecast
 
 Open **V43 Forecast** in Matchday Studio to generate a single-match score distribution or five exact-score doubles for two eligible matches on the same Sydney matchday. V43 blends the V41 grouped statistical model with the four V42 score-shape hypotheses. Pre-kickoff xG and market data enter only when they pass the time and fixture checks. For doubles, both matches must qualify for a given adjustment. The combined forecast is experimental.

@@ -85,10 +85,12 @@ def _expose(data, fetched_at, ttl, cache_status, with_metadata):
         'freshness_known': True}}
 
 
-def _request(key, endpoint, params, with_metadata=False):
+def _request(key, endpoint, params, with_metadata=False, *, max_cache_age_seconds=None):
     signature=json.dumps([endpoint,params,hashlib.sha256(key.encode()).hexdigest()],sort_keys=True)
     path=CACHE/(hashlib.sha256(signature.encode()).hexdigest()+".json")
     ttl = cache_ttl(endpoint, params)
+    if max_cache_age_seconds is not None:
+        ttl = max(0, min(ttl, max_cache_age_seconds))
     saved=None
     try:
         saved=json.loads(path.read_text())

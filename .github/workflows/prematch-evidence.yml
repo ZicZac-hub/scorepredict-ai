@@ -85,6 +85,29 @@ jobs:
         id: persist_originals
         if: ${{ !cancelled() && steps.capture.outcome == 'success' }}
         run: python persist_prematch.py --snapshots-only
+      - name: V45 collect and cross-check confirmed starting lineups
+        id: v45_lineups
+        if: ${{ !cancelled() && steps.persist_originals.outcome == 'success' && vars.V45_LINEUPS_ENABLED == 'true' }}
+        continue-on-error: true
+        env:
+          V45_LINEUPS_ENABLED: 'true'
+          V45_LINEUP_DAILY_REQUESTS: ${{ vars.V45_LINEUP_DAILY_REQUESTS }}
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SPORTMONKS_API_TOKEN: ${{ secrets.SPORTMONKS_API_TOKEN }}
+          THIRD_FOOTBALL_API_KEY: ${{ secrets.THIRD_FOOTBALL_API_KEY }}
+        run: python v45_lineups.py
+      - name: V45 diagnose Sportmonks fixture and xG access on demand
+        if: ${{ !cancelled() && steps.persist_originals.outcome == 'success' && github.event_name == 'workflow_dispatch' && vars.V45_SPORTMONKS_FIXTURE_ID != '' }}
+        continue-on-error: true
+        env:
+          V45_SPORTMONKS_FIXTURE_ID: ${{ vars.V45_SPORTMONKS_FIXTURE_ID }}
+          SPORTMONKS_API_TOKEN: ${{ secrets.SPORTMONKS_API_TOKEN }}
+          THIRD_FOOTBALL_API_KEY: ${{ secrets.THIRD_FOOTBALL_API_KEY }}
+        run: |
+          mkdir -p data/v45_intelligence
+          python v45_provider_health.py > /tmp/v45-sportmonks-probe.json
+          mv /tmp/v45-sportmonks-probe.json data/v45_intelligence/sportmonks_probe.json
       - name: Commit write-once source receipts early before long research stages
         id: early_checkpoint
         # The ordinary 50+ step audit can be interrupted by timeout. Publish
@@ -123,6 +146,20 @@ jobs:
             echo 'SAFE STOP: existing isolated recovery evidence changed'
             exit 1
           fi
+          for folder in data/v45_intelligence/lineups/receipts data/v45_intelligence/lineups/attempts data/v45_intelligence/lineups/requests; do
+            if [ -d "$folder" ]; then
+              git add -- "$folder"
+            fi
+          done
+          if [ -n "$(git diff --cached --name-only --diff-filter=DMRTUXB -- data/v45_intelligence/lineups/{receipts,attempts,requests})" ]; then
+            echo 'SAFE STOP: existing V45 lineup evidence or request records changed'
+            exit 1
+          fi
+          for report in data/v45_intelligence/lineups/status.json data/v45_intelligence/sportmonks_probe.json; do
+            if [ -f "$report" ]; then
+              git add -- "$report"
+            fi
+          done
           if git diff --cached --quiet; then
             echo 'No new authenticated original receipts or coverage'
           else
@@ -130,10 +167,12 @@ jobs:
             # restoring them afterward for the existing full audit.
             git commit -m "data: checkpoint genuine pre-match originals [skip ci]"
             published=false
+            checkpoint_stash_saved=false
             # Preserve generated unstaged reports before rebasing committed
             # evidence; never reset or overwrite original frozen receipts.
             if [ -n "$(git status --porcelain)" ]; then
               git stash push --include-untracked -m "capture-unpublished-diagnostics-${GITHUB_RUN_ID}" || exit 1
+              checkpoint_stash_saved=true
             fi
             for attempt in 1 2 3 4; do
               git fetch origin main
@@ -167,6 +206,15 @@ jobs:
               echo 'SAFE STOP: authenticated source checkpoint could not be published'
               exit 1
             fi
+            # The independently verified results must reach downstream grading
+            # and their normal publication step even after an early checkpoint.
+            if [ "$checkpoint_stash_saved" = 'true' ] && ! git stash pop; then
+              if ! python reconcile_capture_conflicts.py; then
+                echo 'SAFE STOP: checkpoint stash needs review'
+                exit 1
+              fi
+              git restore --staged -- .
+            fi
           fi
       - name: Back up uncommitted source files only if early checkpoint fails
         # Even if a later validation job times out, the original pre-match
@@ -182,6 +230,7 @@ jobs:
             data/v44_early_history/receipts/
             data/v44_early_history/blobs/
             data/v44_recovery_sources/
+            data/v45_intelligence/
             data/prematch/snapshots/
             data/daily_picks/
           if-no-files-found: warn
@@ -327,14 +376,22 @@ jobs:
         run: python v19_match_intelligence.py
       - name: V24 broad market-date discovery and verified V8 binding
         # Owner-enabled via existing V23_EARLY_ODDS_ENABLED variable.
-        # Maximum 2 paginated requests per run and 12 per UTC day by
-        # default across this collector; no paid calls on source-code pushes.
+        # V45 protects four pair-specific slots within the existing daily cap.
         if: github.event_name != 'push' && vars.V23_EARLY_ODDS_ENABLED == 'true'
         env:
           V23_EARLY_ODDS_ENABLED: "true"
           V24_DAILY_ODDS_REQUESTS: ${{ vars.V24_DAILY_ODDS_REQUESTS }}
+          V45_MARKET_ENABLED: ${{ vars.V45_MARKET_ENABLED }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-        run: python v24_bulk_market_capture.py
+        run: |
+          python - <<'PYCODE'
+          from datetime import datetime, timezone
+          import json
+          from v24_bulk_market_capture import capture
+          from v45_market_capture import broad_daily_limit
+          started = datetime.now(timezone.utc)
+          print(json.dumps(capture(now=started, daily_limit=broad_daily_limit(now=started)), indent=2))
+          PYCODE
       - name: Optional V23 earlier time-checked bookmaker market snapshots
         # One source request per eligible leg if owner opted in; no auto-spend.
         if: github.event_name != 'push' && vars.V23_EARLY_ODDS_ENABLED == 'true'
@@ -463,6 +520,10 @@ jobs:
       - name: Commit permanent research history
         if: always()
         run: |
+          if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+            echo 'SAFE STOP: unresolved research artifacts'
+            exit 1
+          fi
           # A prior capture step can fail but this job still tries to preserve
           # unaffected data. Never publish a V25 set if a newly frozen source
           # grid is missing, reconstructed or inconsistent with the original.

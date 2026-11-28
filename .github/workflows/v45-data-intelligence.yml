@@ -1,0 +1,42 @@
+name: V45 data intelligence audit
+
+on:
+  schedule:
+    - cron: '38 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v45-data-intelligence-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Audit archived evidence and paired source impact
+        run: |
+          mkdir -p /tmp/v45-data-intelligence
+          python v45_data_intelligence.py > /tmp/v45-data-intelligence/information-quality.json
+          python v45_history.py > /tmp/v45-data-intelligence/history-coverage.json
+          python v45_source_impact.py > /tmp/v45-data-intelligence/source-impact.json
+      - name: Upload V45 diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: v45-data-intelligence
+          path: /tmp/v45-data-intelligence/
+          retention-days: 30
+      - name: Recover authenticated history into private PostgreSQL
+        if: github.ref == 'refs/heads/main' && vars.V45_HISTORY_DATABASE_ENABLED == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python v45_history.py --postgres > /tmp/v45-history-database.json
