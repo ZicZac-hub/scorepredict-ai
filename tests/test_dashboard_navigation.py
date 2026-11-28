@@ -307,3 +307,13 @@ def test_v43_recheck_final_scores_loads_read_only_target_panel(offline_app):
     app.button(key="v43_recheck_finals").click().run()
     assert not app.exception
     assert any(item.label == "Final scores and reasons for misses" for item in app.expander)
+
+
+def test_v45_data_route_renders_archived_quality_without_network(offline_app):
+    offline_app.query_params['view'] = ['v45']
+    app = offline_app.run()
+    _assert_page(app, 'v45', 'V45 Data Intelligence')
+    assert any(item.value == 'Match information quality' for item in app.subheader)
+    app.button(key='v45_audit').click().run()
+    assert not app.exception
+    assert any(item.label == 'Recovered historical results' for item in app.metric)
