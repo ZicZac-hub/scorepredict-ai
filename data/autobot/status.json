@@ -1,27 +1,27 @@
 {
   "ai_connection": "daily_research_memo_saved",
-  "ai_memo": "**Recommended Method:** Implement a Bayesian hierarchical model that incorporates historical data from similar fixtures. This approach allows for addressing missing final leg scores by estimating score distributions through prior distributions that smooth outcomes based on factors like team strength, location, and match importance.\n\n**Falsifiable Validation Test:** Conduct a prospective study by applying the new Bayesian model to a set of upcoming matches. Compare the predicted outcomes against actual results. If the model does not produce an accuracy rate above 50% over a specified number of matches (e.g., at least 30), the hypothesis that this method improves predictive capability can be rejected. This test could also include verification through independent expert reviews to establish the soundness of the model prior to its deployment in competitive scenarios.",
+  "ai_memo": "For future-only pre-kickoff research in football probability modeling, I recommend employing a **Bayesian hierarchical modeling approach**. This method can effectively account for the uncertainty in predicting multiple outcomes and allows for incorporating prior knowledge about teams, conditions, and historical performance. The hierarchical structure handles data from various leagues or match conditions, enhancing the model's adaptability and robustness.\n\nFor a falsifiable validation test, consider conducting a **cross-validation study** on datasets with different conditions (e.g., home and away matches). The hypothesis should be that the predictive accuracy under these varied conditions differs significantly. If the model's performance across conditions does not show statistically significant differences, this would contradict the model\u2019s assumptions about its ability to generalize and adapt, thereby highlighting areas needing refinement or validation.",
   "ai_research_memo_is_non_executable": true,
   "goal_verified": false,
   "integrity": "SOURCE_AUDITS_RECORDED",
-  "last_run_utc": "2026-11-27T23:15:57.261857+00:00",
+  "last_run_utc": "2026-11-28T00:10:52.585546+00:00",
   "next_priority": "Investigate why original score distributions miss one or both final leg scores; prioritize independent high-goal calibration trials.",
   "no_claimed_70_percent_without_independent_evidence": true,
   "original_v8_daily_five_doubles": {
     "hit_rate": 0.0,
     "hits": 0,
-    "pending_sets": 2,
-    "verified_sets": 10
+    "pending_sets": 1,
+    "verified_sets": 11
   },
   "priority": "five_exact_score_doubles",
   "production_model_changed_by_bot": false,
   "runtime_mode": "recurring_GitHub_Actions_not_continuous_host_process",
   "source_capture_health": {
-    "age_minutes": 33.8,
+    "age_minutes": 32.3,
     "collector_freshness": "recent",
-    "collector_started_at_utc": "2026-11-27T22:42:07.798709+00:00",
+    "collector_started_at_utc": "2026-11-27T23:38:33.410029+00:00",
     "not_a_prediction_accuracy_measure": true,
-    "processed_fixtures": 1,
+    "processed_fixtures": 0,
     "producer_api_budget_unchanged": true,
     "uefa_fixtures_one_qualified_match_short": 0,
     "uefa_history_audit_available": true,
@@ -36,10 +36,8 @@
     "v8_away_history_bins_by_league": {},
     "v8_home_history_bins_by_league": {},
     "v8_min_team_history_bins_by_league": {},
-    "v8_saved": 1,
-    "v8_saved_by_league": {
-      "BSA": 1
-    },
+    "v8_saved": 0,
+    "v8_saved_by_league": {},
     "v8_source_errors": 0
   },
   "target_five_double_hit_rate": 0.7,
@@ -47,22 +45,22 @@
     "new_original_decisions_last_run": 0,
     "new_source_capture_required_for_future_v36": true,
     "original_frozen_decisions": 8,
-    "pending_days": 2,
+    "pending_days": 1,
     "source_ineligibility": {
       "invalid_source_time": 246,
       "not_original_v8_model": 1068,
-      "outside_research_freeze_window": 193
+      "outside_research_freeze_window": 192
     },
-    "verified_paired_days": 6
+    "verified_paired_days": 7
   },
   "v30_frozen_candidate_pair_rows": {
-    "completed_independent_sydney_days": 6,
-    "correlated_verified": 275,
-    "pending": 133
+    "completed_independent_sydney_days": 7,
+    "correlated_verified": 303,
+    "pending": 105
   },
   "v34_diagnosis": {
-    "both_actual_leg_scores_missing": 148,
-    "unique_verified_fixtures": 46
+    "both_actual_leg_scores_missing": 169,
+    "unique_verified_fixtures": 54
   },
   "v35_challengers": {
     "frozen_days": 5,
@@ -79,42 +77,42 @@
         "hits": 0,
         "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 3
+        "verified_days": 4
       },
       "low_goal_tilt_0_15": {
         "hits": 0,
         "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 3
+        "verified_days": 4
       },
       "temperature_flatten_1_15": {
         "hits": 0,
         "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 3
+        "verified_days": 4
       },
       "temperature_sharpen_0_85": {
         "hits": 0,
         "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 3
+        "verified_days": 4
       },
       "v25_anchored_75_25": {
         "hits": 0,
         "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 3
+        "verified_days": 4
       },
       "v8_original": {
         "hits": 0,
         "observed_hit_rate": 0.0,
         "review_gate_passed": false,
-        "verified_days": 3
+        "verified_days": 4
       }
     },
-    "pending_days": 2,
+    "pending_days": 1,
     "ready_for_separate_production_review": [],
-    "verified_same_pair_days": 3
+    "verified_same_pair_days": 4
   },
   "v36_challengers": {
     "frozen_days": 5,
@@ -122,42 +120,42 @@
       "baseline": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": 3.2673207752863846,
-          "multiclass_score_brier": 0.9296288509819163,
-          "over_3_5_brier": 0.21454587439898495,
-          "under_1_5_brier": 0.1474228298005407
+          "exact_score_log_loss": 3.240630189329473,
+          "multiclass_score_brier": 0.940889225781534,
+          "over_3_5_brier": 0.23599344801052788,
+          "under_1_5_brier": 0.1873499751749454
         },
         "observed_hit_rate": 0.0,
-        "verified_days": 3
+        "verified_days": 4
       },
       "tail_shift_0_10": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": 3.266508865965521,
-          "multiclass_score_brier": 0.928037824377308,
-          "over_3_5_brier": 0.21313841972794398,
-          "under_1_5_brier": 0.14123178038050624
+          "exact_score_log_loss": 3.247334157152801,
+          "multiclass_score_brier": 0.9404043816147719,
+          "over_3_5_brier": 0.22899429903495436,
+          "under_1_5_brier": 0.18913192664772296
         },
         "observed_hit_rate": 0.0,
-        "verified_days": 3
+        "verified_days": 4
       },
       "tail_temperature_1_10": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": 3.23749272078711,
-          "multiclass_score_brier": 0.9311672130387049,
-          "over_3_5_brier": 0.21328351537775625,
-          "under_1_5_brier": 0.14531705668136344
+          "exact_score_log_loss": 3.2136227071934713,
+          "multiclass_score_brier": 0.9407183296385466,
+          "over_3_5_brier": 0.23212561867571935,
+          "under_1_5_brier": 0.18728297484248652
         },
         "observed_hit_rate": 0.0,
-        "verified_days": 3
+        "verified_days": 4
       }
     },
-    "pending_days": 2,
+    "pending_days": 1,
     "ready_for_separate_production_review": [],
     "research_only_not_live_promoted": true,
-    "unique_verified_physical_fixtures": 6,
-    "verified_independent_sydney_days": 3
+    "unique_verified_physical_fixtures": 8,
+    "verified_independent_sydney_days": 4
   },
   "v37_sparse_uefa_research": {
     "frozen_unique_physical_fixtures": 41,
@@ -228,44 +226,44 @@
       "baseline": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": 3.2615669786070995,
-          "margin_3_plus_brier": 0.1804875925029771,
-          "multiclass_score_brier": 0.9256672895166264,
-          "over_3_5_brier": 0.14943120831344314,
-          "under_1_5_brier": 0.16935000671320574
+          "exact_score_log_loss": 3.2278974628909793,
+          "margin_3_plus_brier": 0.12684813238655887,
+          "multiclass_score_brier": 0.9420016430712131,
+          "over_3_5_brier": 0.19973286182401437,
+          "under_1_5_brier": 0.215277141574857
         },
         "observed_hit_rate": 0.0,
-        "verified_days": 2
+        "verified_days": 3
       },
       "conditional_margin_125": {
         "hits": 0,
         "mean_proper_scores": {
-          "exact_score_log_loss": 3.264811189058767,
-          "margin_3_plus_brier": 0.17601304924916578,
-          "multiclass_score_brier": 0.9331007025305097,
-          "over_3_5_brier": 0.14943120831344314,
-          "under_1_5_brier": 0.16935000671320574
+          "exact_score_log_loss": 3.24533773381928,
+          "margin_3_plus_brier": 0.1260749363976951,
+          "multiclass_score_brier": 0.9473828221925737,
+          "over_3_5_brier": 0.19973286182401437,
+          "under_1_5_brier": 0.215277141574857
         },
         "observed_hit_rate": 0.0,
-        "verified_days": 2
+        "verified_days": 3
       }
     },
-    "pending_days": 2,
+    "pending_days": 1,
     "report_available": true,
     "research_only_not_live_promoted": true,
-    "verified_days": 2
+    "verified_days": 3
   },
   "v39_challengers": {
     "frozen_days": 4,
-    "pending_days": 2,
+    "pending_days": 1,
     "report_available": true,
     "research_only": true,
-    "verified_days": 2
+    "verified_days": 3
   },
   "v41_unified_final": {
     "abstained": 0,
-    "capture_at_utc": "2026-11-27T22:44:16.066907+00:00",
-    "evaluated_at_utc": "2026-11-27T22:44:16.066941+00:00",
+    "capture_at_utc": "2026-11-27T23:40:37.361616+00:00",
+    "evaluated_at_utc": "2026-11-27T23:40:37.361638+00:00",
     "hits": 0,
     "issued": 2,
     "minimum_review_pairs": 100,
@@ -326,10 +324,10 @@
     "verified": 2
   },
   "v8_v25_same_pair": {
-    "pending_pairs": 2,
+    "pending_pairs": 1,
     "v25_wins": 1,
     "v8_wins": 0,
-    "verified_same_pair_sets": 9
+    "verified_same_pair_sets": 10
   },
   "version": "ziczac-five-double-research-bot-v1"
 }

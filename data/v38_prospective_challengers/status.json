@@ -226,7 +226,15 @@
       "sydney_day": "2026-11-27"
     },
     {
+      "actual_scores": [
+        "0-0",
+        "3-2"
+      ],
       "frozen_at_utc": "2026-11-26T20:30:05.224402+00:00",
+      "hits": {
+        "baseline": false,
+        "conditional_margin_125": false
+      },
       "original_selected_fixture_keys": [
         [
           "API-Football",
@@ -237,7 +245,93 @@
           "1557485"
         ]
       ],
-      "status": "pending",
+      "proper_scores": {
+        "baseline": [
+          {
+            "actual_score": "0-0",
+            "actual_total_goals": 0,
+            "exact_score_log_loss": 2.6649293075702434,
+            "exact_score_probability": 0.06960427385459247,
+            "expected_total_goals": 2.6605512045280375,
+            "goal_mae": 1.3302756022640188,
+            "margin_3_plus_brier": 0.0245843227029995,
+            "multiclass_score_brier": 0.9327640856996153,
+            "outside_score_grid": false,
+            "over_3_5_brier": 0.07714504588273008,
+            "over_3_5_observed": 0,
+            "over_3_5_probability": 0.2777499700859211,
+            "top_five_hit": 1,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.5485381144798047,
+            "under_1_5_observed": 1,
+            "under_1_5_probability": 0.25936641010564154
+          },
+          {
+            "actual_score": "3-2",
+            "actual_total_goals": 5,
+            "exact_score_log_loss": 3.6561875553472336,
+            "exact_score_probability": 0.025830803752401328,
+            "expected_total_goals": 2.655273458379811,
+            "goal_mae": 1.1723632708100944,
+            "margin_3_plus_brier": 0.01455410160444534,
+            "multiclass_score_brier": 1.0165766146611583,
+            "outside_score_grid": false,
+            "over_3_5_brier": 0.5235272918075834,
+            "over_3_5_observed": 1,
+            "over_3_5_probability": 0.27644814159067815,
+            "top_five_hit": 0,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.0657247081165143,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.25636830560058377
+          }
+        ],
+        "conditional_margin_125": [
+          {
+            "actual_score": "0-0",
+            "actual_total_goals": 0,
+            "exact_score_log_loss": 2.6649293075702434,
+            "exact_score_probability": 0.06960427385459247,
+            "expected_total_goals": 2.6605512045280375,
+            "goal_mae": 1.3302756022640188,
+            "margin_3_plus_brier": 0.03250526351969361,
+            "multiclass_score_brier": 0.932073727529892,
+            "outside_score_grid": false,
+            "over_3_5_brier": 0.0771450458827301,
+            "over_3_5_observed": 0,
+            "over_3_5_probability": 0.27774997008592117,
+            "top_five_hit": 1,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.5485381144798047,
+            "under_1_5_observed": 1,
+            "under_1_5_probability": 0.25936641010564154
+          },
+          {
+            "actual_score": "3-2",
+            "actual_total_goals": 5,
+            "exact_score_log_loss": 3.747852339110371,
+            "exact_score_probability": 0.023568308275026494,
+            "expected_total_goals": 2.6552734583798108,
+            "goal_mae": 1.1723632708100946,
+            "margin_3_plus_brier": 0.019892157869813833,
+            "multiclass_score_brier": 1.0198203955035117,
+            "outside_score_grid": false,
+            "over_3_5_brier": 0.5235272918075834,
+            "over_3_5_observed": 1,
+            "over_3_5_probability": 0.27644814159067815,
+            "top_five_hit": 0,
+            "top_one_hit": 0,
+            "top_three_hit": 0,
+            "under_1_5_brier": 0.0657247081165143,
+            "under_1_5_observed": 0,
+            "under_1_5_probability": 0.25636830560058377
+          }
+        ]
+      },
+      "status": "verified",
       "sydney_day": "2026-11-28"
     },
     {
@@ -256,46 +350,46 @@
       "sydney_day": "2026-11-29"
     }
   ],
-  "evaluated_at_utc": "2026-11-27T23:15:36.865102+00:00",
+  "evaluated_at_utc": "2026-11-28T00:10:23.906136+00:00",
   "frozen_prospective_days": 4,
   "invalid_or_tampered_v38_sets_excluded": {},
   "methods": {
     "baseline": {
       "hits": 0,
       "mean_proper_scores": {
-        "exact_score_log_loss": 3.2615669786070995,
-        "margin_3_plus_brier": 0.1804875925029771,
-        "multiclass_score_brier": 0.9256672895166264,
-        "over_3_5_brier": 0.14943120831344314,
-        "under_1_5_brier": 0.16935000671320574
+        "exact_score_log_loss": 3.2278974628909793,
+        "margin_3_plus_brier": 0.12684813238655887,
+        "multiclass_score_brier": 0.9420016430712131,
+        "over_3_5_brier": 0.19973286182401437,
+        "under_1_5_brier": 0.215277141574857
       },
       "observed_five_double_hit_rate": 0.0,
       "out_of_score_grid_finals": 0,
       "research_only_not_live_promoted": true,
-      "unique_verified_physical_fixtures": 4,
-      "verified_independent_sydney_days": 2,
+      "unique_verified_physical_fixtures": 6,
+      "verified_independent_sydney_days": 3,
       "wilson95": [
-        0.0,
-        0.6576197724933469
+        5.551115123125783e-17,
+        0.5614970317550454
       ]
     },
     "conditional_margin_125": {
       "hits": 0,
       "mean_proper_scores": {
-        "exact_score_log_loss": 3.264811189058767,
-        "margin_3_plus_brier": 0.17601304924916578,
-        "multiclass_score_brier": 0.9331007025305097,
-        "over_3_5_brier": 0.14943120831344314,
-        "under_1_5_brier": 0.16935000671320574
+        "exact_score_log_loss": 3.24533773381928,
+        "margin_3_plus_brier": 0.1260749363976951,
+        "multiclass_score_brier": 0.9473828221925737,
+        "over_3_5_brier": 0.19973286182401437,
+        "under_1_5_brier": 0.215277141574857
       },
       "observed_five_double_hit_rate": 0.0,
       "out_of_score_grid_finals": 0,
       "research_only_not_live_promoted": true,
-      "unique_verified_physical_fixtures": 4,
-      "verified_independent_sydney_days": 2,
+      "unique_verified_physical_fixtures": 6,
+      "verified_independent_sydney_days": 3,
       "wilson95": [
-        0.0,
-        0.6576197724933469
+        5.551115123125783e-17,
+        0.5614970317550454
       ]
     }
   },
@@ -304,11 +398,11 @@
   "no_live_model_change": true,
   "not_validated_at_seventy_percent": true,
   "original_v28_rejected_or_tampered": {},
-  "pending_days": 2,
+  "pending_days": 1,
   "ready_for_separate_production_review": [],
   "same_pair_comparisons_only": true,
-  "unique_verified_physical_fixtures": 4,
-  "verified_independent_sydney_days": 2,
+  "unique_verified_physical_fixtures": 6,
+  "verified_independent_sydney_days": 3,
   "verified_result_conflicts_excluded": 0,
   "version": "v38-conditional-margin-original-pair-trial-v1"
 }
