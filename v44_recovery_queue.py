@@ -1,4 +1,4 @@
-"""Reserve one existing history-refresh slot for isolated recovery, opt-in.
+"""Reserve one existing heavy history-refresh slot for isolated recovery.
 
 No new fixture selections, no extra quota, no changes to original records.
 The planner inspects only authenticated original fixtures and source receipts.
@@ -28,11 +28,18 @@ def plan(fixtures,awaiting,shadow,*,now,limit,root=recovery.ROOT,
         return queue,set()
     now=utc(now)
     required=targets(now=now,pair_root=pair_root,source_root=source_root)
+    # Do not turn either of the protected normal market refreshes into recovery.
+    protected=set()
+    for row in queue[:2]:
+        try:
+            protected.add(fixture_key(row[1]))
+        except (ValueError,KeyError,TypeError,AttributeError):
+            continue
     options=[]
     for row in fixtures:
         try:
             key=fixture_key(row[1])
-            if key not in required or not timedelta(minutes=45)<key[2]-now<=timedelta(hours=48):
+            if key in protected or key not in required or not timedelta(minutes=45)<key[2]-now<=timedelta(hours=48):
                 continue
             near=shadow.get((*key[:2],"v8_near"))
             if near is None:
@@ -51,11 +58,7 @@ def plan(fixtures,awaiting,shadow,*,now,limit,root=recovery.ROOT,
     if not options:
         return queue,set()
     *_,row,key=min(options,key=lambda v:v[:4])
-    # If this fixture is already in the first two slots, keep that position.
-    # Otherwise put recovery immediately after the two protected normal slots.
-    index=next((i for i,item in enumerate(queue) if fixture_key(item[1])==key),None)
-    if index is not None and index<2:
-        return queue,{key}
+    # Insert only after the two protected normal slots.
     queue=[item for item in queue if fixture_key(item[1])!=key]
     queue.insert(min(2,len(queue)),row)
     return queue,{key}

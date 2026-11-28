@@ -91,5 +91,6 @@ def test_workflow_uses_separate_default_and_existing_checkpoint():
     assert "fixtures.values(),history_cache,clock=current_time," in source
     assert "refresher=cache_recovery_refresher" in source
     assert "vars.V44_CACHE_RECOVERY_ENABLED != 'false'" in workflow
-    assert "vars.V44_RECOVERY_CAPTURE_ENABLED == 'true'" in workflow
+    assert "steps.cadence.outputs.heavy == 'true' && vars.V44_RECOVERY_CAPTURE_ENABLED != 'false'" in workflow
+    assert "V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}" in workflow
     assert "--diff-filter=DMRTUXB -- data/v44_recovery_sources/" in workflow

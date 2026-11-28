@@ -40,13 +40,27 @@ def test_recovery_already_in_normal_queue_is_not_duplicated(tmp_path,monkeypatch
     assert keys=={key}
     assert [r[1]["id"] for r in queue]==[1,2,4,3]
 
-def test_workflow_recovery_is_opt_in_and_checkpoint_is_append_only():
+def test_workflow_recovery_defaults_on_only_for_heavy_runs_and_checkpoint_is_append_only():
     source=Path("capture_prematch.py").read_text()
     workflow=Path(".github/workflows/prematch-evidence.yml").read_text()
     assert 'if os.environ.get("V44_RECOVERY_CAPTURE_ENABLED")=="true":' in source
     assert "for kickoff,fixture,code in awaiting[:research_market_refresh_limit]:" in source
     assert "recovery_refresher(fixture,packet,_time(current_time()))" in source
-    assert "vars.V44_RECOVERY_CAPTURE_ENABLED == 'true'" in workflow
+    assert "steps.cadence.outputs.heavy == 'true' && vars.V44_RECOVERY_CAPTURE_ENABLED != 'false'" in workflow
+    assert "V10_MARKET_REFRESH_LIMIT: ${{ steps.cadence.outputs.heavy == 'true' && '8' || '0' }}" in workflow
     assert "--diff-filter=DMRTUXB -- data/v44_recovery_sources/" in workflow
     assert "data/v44_recovery_sources/archive/forecasts" in workflow
     assert "data/v44_recovery_sources/history/receipts" in workflow
+
+
+def test_protected_normal_slots_are_not_converted_to_recovery(tmp_path,monkeypatch):
+    normal=[row(i,i) for i in (1,2,3,4)]
+    a,b=q.fixture_key(normal[0][1]),q.fixture_key(normal[3][1])
+    shadow={(*k[:2],"v8_near"):{"fixture_id":k[1]} for k in (a,b)}
+    monkeypatch.setattr(q,"targets",lambda **kw:{a:a[2],b:b[2]})
+    monkeypatch.setattr(q,"inspect_leg",lambda *a:"one_shot_near_without_exact_history")
+    queue,keys=q.plan(normal,normal,shadow,now=NOW,limit=4,root=tmp_path)
+    assert keys=={b}
+    assert queue[:2]==normal[:2]
+    monkeypatch.setattr(q,"targets",lambda **kw:{a:a[2]})
+    assert q.plan(normal,normal,shadow,now=NOW,limit=4,root=tmp_path)==(normal,set())
