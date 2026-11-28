@@ -1,0 +1,31 @@
+name: V44 empirical Bayesian rate calibration
+on:
+  pull_request:
+    paths:
+      - 'v44_bayesian_rate_calibration.py'
+      - 'tests/test_v44_bayesian_rate_calibration.py'
+      - '.github/workflows/v44-bayesian-rate-calibration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests/test_v44_bayesian_rate_calibration.py
+      - run: |
+          python v44_bayesian_rate_calibration.py > /tmp/bayesian-rate-calibration.json
+          python -c 'import json; r=json.load(open("/tmp/bayesian-rate-calibration.json")); print(json.dumps({k:v for k,v in r.items() if k!="rows"},indent=2))'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bayesian-rate-calibration
+          path: /tmp/bayesian-rate-calibration.json
+          retention-days: 14
