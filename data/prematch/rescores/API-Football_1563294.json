@@ -1,5 +1,8 @@
 {
-  "actual_score": null,
+  "actual_score": [
+    2,
+    0
+  ],
   "away_team": "Middlesbrough",
   "away_team_id": 70,
   "changed": false,
@@ -8,21 +11,22 @@
   "excluded_from_original_accuracy": true,
   "fallback_reason": null,
   "fixture_id": 1563294,
-  "history_as_of_utc": "2026-11-27T14:22:18.842683+00:00",
+  "history_as_of_utc": "2026-11-13T20:52:01.736154+00:00",
   "history_availability_policy": "shared two-season as-of policy; final-whistle timestamp when supplied, otherwise kickoff plus three hours",
-  "history_count": 761,
+  "history_count": 737,
   "history_warnings": [],
-  "history_window_start_utc": "2024-11-27T14:22:18.842683+00:00",
+  "history_window_start_utc": "2024-11-13T20:52:01.736154+00:00",
   "home_team": "Southampton",
   "home_team_id": 41,
-  "input_digest": "6ea5de408511224f96c5fab566ed65e62e23cc725a1225b6beac52ac27433272",
+  "input_digest": "f0fcdb6ba6b003f8421b41443a622aec562eeb3370ec83b3adc5d2567dbe4e23",
   "kickoff_utc": "2026-11-27T20:00:00Z",
-  "label": "Upcoming forecast revision",
-  "mode": "upcoming",
+  "label": "Retrospective as-of comparison",
+  "mode": "retrospective",
   "model_sources": [
     "Time-decayed fitted opponent attack/defence with fitted Dixon-Coles dependence"
   ],
   "original_captured_at_utc": "2026-11-13T20:52:01.736154+00:00",
+  "original_hit": false,
   "original_kickoff_utc": "2026-11-27T20:00:00Z",
   "original_model": "reference-informed-v7-v6-retained",
   "original_provider": "API-Football",
@@ -36,7 +40,7 @@
   "provenance": {
     "history_days": 730,
     "provider": "API-Football",
-    "requested_as_of_utc": "2026-11-27T14:22:18.842683+00:00",
+    "requested_as_of_utc": "2026-11-13T20:52:01.736154+00:00",
     "result_availability_policy": "finishedAt, otherwise kickoff plus three hours",
     "seasons": [
       2026,
@@ -44,26 +48,26 @@
     ],
     "sources": [
       {
-        "age_seconds": 22.015289068222046,
-        "cache_status": "fresh_cache",
+        "age_seconds": 0.006066322326660156,
+        "cache_status": "network",
         "endpoint": "/fixtures",
-        "fetched_at_utc": "2026-11-27T14:22:00.605869+00:00",
+        "fetched_at_utc": "2026-11-28T03:12:44.333949+00:00",
         "freshness_known": true,
         "provider": "API-Football",
-        "retrieved_at_utc": "2026-11-27T14:22:22.621158+00:00",
+        "retrieved_at_utc": "2026-11-28T03:12:44.340015+00:00",
         "season": 2026,
         "source_season_mismatches": 0,
         "stale": false,
         "ttl_seconds": 900
       },
       {
-        "age_seconds": 21.87071943283081,
-        "cache_status": "fresh_cache",
+        "age_seconds": 0.0067157745361328125,
+        "cache_status": "network",
         "endpoint": "/fixtures",
-        "fetched_at_utc": "2026-11-27T14:22:00.756514+00:00",
+        "fetched_at_utc": "2026-11-28T03:12:44.507212+00:00",
         "freshness_known": true,
         "provider": "API-Football",
-        "retrieved_at_utc": "2026-11-27T14:22:22.627233+00:00",
+        "retrieved_at_utc": "2026-11-28T03:12:44.513928+00:00",
         "season": 2025,
         "source_season_mismatches": 0,
         "stale": false,
@@ -72,75 +76,76 @@
     ]
   },
   "provider": "API-Football",
-  "rescored_at_utc": "2026-11-27T14:22:18.842683+00:00",
-  "revision_id": "20261127T142218842683Z-61885b8a-2724e7eb5b6f",
-  "run_id": "20261127T142218842683Z-61885b8a",
+  "rescored_at_utc": "2026-11-28T03:12:41.076910+00:00",
+  "revision_id": "20261128T031241076910Z-e6c6d636-a5a83bcef93f",
+  "run_id": "20261128T031241076910Z-e6c6d636",
   "source_ref": null,
   "updated_expected_goals": {
-    "away": 1.1557192665270217,
-    "home": 1.6186070170879219
+    "away": 1.187676006100871,
+    "home": 1.6681658959937304
   },
+  "updated_hit": false,
   "updated_model": "reference-informed-v7",
   "updated_outcome_probabilities": {
-    "away": 0.26878812561011395,
-    "draw": 0.25346571577015264,
-    "home": 0.47774615861973324
+    "away": 0.26771189797650086,
+    "draw": 0.2505461987946954,
+    "home": 0.4817419032288035
   },
   "updated_score": [
     1,
     1
   ],
-  "updated_score_probability": 0.12021437443397275,
+  "updated_score_probability": 0.11822536296016839,
   "updated_top10_scores": [
     [
       1,
       1,
-      0.12021437443397275
-    ],
-    [
-      1,
-      0,
-      0.09748592481894557
+      0.11822536296016839
     ],
     [
       2,
       1,
-      0.09445622818160151
+      0.09503204705304352
+    ],
+    [
+      1,
+      0,
+      0.09164246243485123
     ],
     [
       2,
       0,
-      0.08172938785146895
+      0.08001512749654713
+    ],
+    [
+      1,
+      2,
+      0.06765950696622466
     ],
     [
       0,
       1,
-      0.06860566524242837
-    ],
-    [
-      1,
-      2,
-      0.06744372264423736
+      0.06401074526156869
     ],
     [
       0,
       0,
-      0.06589288623385764
+      0.06179678133623051
     ],
     [
       2,
       2,
-      0.05458244137658994
+      0.05643364104794805
     ],
     [
       3,
       1,
-      0.050962504591389984
+      0.052843073323214876
     ],
     [
       3,
       0,
-      0.04409592023539297
+      0.044492835631609315
     ]
   ]
 }
