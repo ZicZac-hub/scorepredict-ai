@@ -3,7 +3,7 @@
   "api_call_limit": 120,
   "budget_skipped": [],
   "captured_fixtures": 0,
-  "collector_started_at_utc": "2026-11-28T02:03:56.923214+00:00",
+  "collector_started_at_utc": "2026-11-28T03:12:02.951996+00:00",
   "coverage_complete": true,
   "cross_competition_source_refresh": {
     "attempted_fixtures": 0,
@@ -19,7 +19,7 @@
     "domestic_retry_entries": 0,
     "eligible_fixtures": 0,
     "extra_adapter_calls": 0,
-    "extra_call_limit": 0,
+    "extra_call_limit": 20,
     "new_league_history_audit": {
       "attempted_groups": 0,
       "candidate_groups": 0,
@@ -66,7 +66,7 @@
   "prediction_errors": [],
   "prediction_unavailable": 0,
   "processed_fixtures": 0,
-  "provider_adapter_calls": 11,
+  "provider_adapter_calls": 27,
   "provider_fixture_counts": {
     "BL1": 23,
     "BSA": 17,
@@ -84,24 +84,29 @@
   "uefa_history_audit_errors": [],
   "uefa_two_season_history_coverage": [],
   "upcoming_fixtures": 230,
-  "v10_market_calls": 0,
-  "v10_market_refresh_checked": 0,
+  "v10_market_calls": 4,
+  "v10_market_refresh_checked": 8,
   "v10_market_refresh_errors": [],
-  "v10_market_refresh_v10_saved": 0,
-  "v10_market_refresh_v9_saved": 0,
-  "v10_near_research_saved": 0,
+  "v10_market_refresh_reasons": {
+    "research_refreshed": 2,
+    "v9_already_frozen": 2,
+    "verified_market_comparison_saved": 4
+  },
+  "v10_market_refresh_v10_saved": 4,
+  "v10_market_refresh_v9_saved": 4,
+  "v10_near_research_saved": 5,
   "v10_research_backfill_checked": 0,
   "v10_research_backfill_errors": [],
   "v10_research_backfill_saved": 0,
   "v10_shadow_errors": [],
   "v10_shadow_skipped": {},
   "v10_shadow_skipped_by_league": {},
-  "v10_shadow_v10_saved": 0,
+  "v10_shadow_v10_saved": 4,
   "v10_shadow_v12_saved": 0,
   "v10_shadow_v13_saved": 0,
   "v10_shadow_v8_saved": 0,
   "v10_shadow_v8_saved_by_league": {},
-  "v10_shadow_v9_saved": 0,
+  "v10_shadow_v9_saved": 4,
   "v37_sparse_shadow_coverage": {},
   "v37_sparse_shadow_saved": 0,
   "v37_sparse_shadow_saved_by_league": {},
@@ -110,10 +115,16 @@
     "external_requests": 0,
     "max_attempts": 1,
     "reasons": {
-      "no_in_run_history_cache": 1
+      "authenticated_targets_in_discovery": 2,
+      "existing_history_usable_or_not_blocked": 2
     }
   },
-  "v44_early_history": {},
+  "v44_early_history": {
+    "near:written": 8
+  },
+  "v44_pair_refresh_reserved": 0,
+  "v44_recovery_reasons": {},
+  "v44_recovery_reserved": 0,
   "v8_min_team_history_bins_by_league": {},
   "v8_qualified_away_history_bins_by_league": {},
   "v8_qualified_home_history_bins_by_league": {}
