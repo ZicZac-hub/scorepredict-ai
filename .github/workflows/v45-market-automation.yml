@@ -1,0 +1,77 @@
+name: V45 automatic near-kickoff market trial
+
+on:
+  schedule:
+    - cron: '6,16,26,36,46,56 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v45-market-automation
+  cancel-in-progress: false
+
+jobs:
+  market-trial:
+    if: github.ref == 'refs/heads/main' && vars.V45_MARKET_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install market research dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'requests>=2.31,<3'
+      - name: Capture V45 near-kickoff odds for the original pair
+        id: market_capture
+        continue-on-error: true
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          V45_MARKET_ENABLED: 'true'
+          V24_DAILY_ODDS_REQUESTS: ${{ vars.V24_DAILY_ODDS_REQUESTS }}
+        run: python v45_market_capture.py
+      - name: Freeze V45 matched forecasts and grade settled trials
+        id: market_trial
+        continue-on-error: true
+        run: python v45_market_trial.py --freeze
+      - name: Publish V45 receipts, frozen trials and quota reservations
+        id: publish
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          bash stage_v45_market_evidence.sh
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'data: archive V45 near-kickoff odds and trial [skip ci]'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo 'SAFE STOP: conflicting V45 publication needs review'
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+      - name: Preserve a failed V45 checkpoint
+        if: ${{ !cancelled() && steps.publish.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: v45-market-recovery
+          path: |
+            data/v45_market_capture/
+            data/v45_market_trial/
+            data/v24_market_catalog/requests/*/v45_target_*.json
+          if-no-files-found: ignore
+      - name: Report V45 collection or trial failure
+        if: ${{ !cancelled() && (steps.market_capture.outcome == 'failure' || steps.market_trial.outcome == 'failure') }}
+        run: |
+          echo '::error::V45 market capture or trial failed. Review the failed step and archive.'
+          exit 1

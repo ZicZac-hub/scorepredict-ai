@@ -167,10 +167,12 @@ jobs:
             # restoring them afterward for the existing full audit.
             git commit -m "data: checkpoint genuine pre-match originals [skip ci]"
             published=false
+            checkpoint_stash_saved=false
             # Preserve generated unstaged reports before rebasing committed
             # evidence; never reset or overwrite original frozen receipts.
             if [ -n "$(git status --porcelain)" ]; then
               git stash push --include-untracked -m "capture-unpublished-diagnostics-${GITHUB_RUN_ID}" || exit 1
+              checkpoint_stash_saved=true
             fi
             for attempt in 1 2 3 4; do
               git fetch origin main
@@ -203,6 +205,15 @@ jobs:
             if [ "$published" != "true" ]; then
               echo 'SAFE STOP: authenticated source checkpoint could not be published'
               exit 1
+            fi
+            # The independently verified results must reach downstream grading
+            # and their normal publication step even after an early checkpoint.
+            if [ "$checkpoint_stash_saved" = 'true' ] && ! git stash pop; then
+              if ! python reconcile_capture_conflicts.py; then
+                echo 'SAFE STOP: checkpoint stash needs review'
+                exit 1
+              fi
+              git restore --staged -- .
             fi
           fi
       - name: Back up uncommitted source files only if early checkpoint fails
@@ -365,14 +376,20 @@ jobs:
         run: python v19_match_intelligence.py
       - name: V24 broad market-date discovery and verified V8 binding
         # Owner-enabled via existing V23_EARLY_ODDS_ENABLED variable.
-        # Maximum 2 paginated requests per run and 12 per UTC day by
-        # default across this collector; no paid calls on source-code pushes.
+        # V45 protects four pair-specific slots within the existing daily cap.
         if: github.event_name != 'push' && vars.V23_EARLY_ODDS_ENABLED == 'true'
         env:
           V23_EARLY_ODDS_ENABLED: "true"
           V24_DAILY_ODDS_REQUESTS: ${{ vars.V24_DAILY_ODDS_REQUESTS }}
+          V45_MARKET_ENABLED: ${{ vars.V45_MARKET_ENABLED }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-        run: python v24_bulk_market_capture.py
+        run: |
+          python - <<'PYCODE'
+          import json
+          from v24_bulk_market_capture import capture
+          from v45_market_capture import broad_daily_limit
+          print(json.dumps(capture(daily_limit=broad_daily_limit()), indent=2))
+          PYCODE
       - name: Optional V23 earlier time-checked bookmaker market snapshots
         # One source request per eligible leg if owner opted in; no auto-spend.
         if: github.event_name != 'push' && vars.V23_EARLY_ODDS_ENABLED == 'true'
@@ -501,6 +518,10 @@ jobs:
       - name: Commit permanent research history
         if: always()
         run: |
+          if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+            echo 'SAFE STOP: unresolved research artifacts'
+            exit 1
+          fi
           # A prior capture step can fail but this job still tries to preserve
           # unaffected data. Never publish a V25 set if a newly frozen source
           # grid is missing, reconstructed or inconsistent with the original.

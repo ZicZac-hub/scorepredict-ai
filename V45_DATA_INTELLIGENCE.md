@@ -24,6 +24,12 @@ Open **V45 Data** in Matchday Studio to see evidence quality for archived fixtur
 
 ## Measuring source impact
 
+### Automatic near-kickoff odds trial
+
+The **V45 automatic near-kickoff market trial** runs on a dedicated ten-minute schedule so that longer football research jobs cannot hold up collection. It reserves up to four requests per UTC day from the existing V24 odds allowance, which defaults to 12. Each pass can request 1X2 and goal-total odds for the two fixtures of one existing frozen pair. It checks the pair at 35–20 minutes and again at 20–5 minutes before the earlier kickoff, based on actual runner time. The bookmaker quote update must be at most three hours old at the decision. The collector uses the configured API-Football key and `V45_MARKET_ENABLED=false` pauses the automation and restores the broad scan's full allowance.
+
+At the first decision in the later window, the workflow freezes the V43 control and the same V43 grids with the market adjustment if both fixtures qualify. The trial records a skip when data is missing or a scheduled run misses the window. It authenticates the original forecasts, quote receipts and any independently captured regulation finals. **V45 Data** shows paired-market coverage, skipped and pending pairs, matched hit counts, and exact-score log loss. The trial uses the supported leagues represented in the existing frozen pairs, with their selection made before the odds check.
+
 `python v45_source_impact.py` compares market and historical shot xG ablations within the same fixtures, decisions and settlement cohort. It keeps the older archived market cohort separate from the fixed-cutoff single-fixture and five-double cohorts. Compare common sample counts, score log loss, outcome Brier scores and descriptive five-double hits. Starting XIs remain contextual until a player-impact model and matched evaluation are available. Historical recovery establishes traceability. Its incremental value requires forecasts with and without the recovered inputs at the same historical cutoffs.
 
 Existing on-demand AI reviewers receive the same timestamped football evidence. The prompt asks them to explain the strongest supplied fact, flag gaps or inconsistencies, and describe a plausible alternative scenario. Deterministic source checks authenticate facts. AI opinions retain zero numerical forecast weight.

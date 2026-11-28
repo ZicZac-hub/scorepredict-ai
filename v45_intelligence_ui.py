@@ -36,6 +36,31 @@ def _impact_rows(comparisons):
     return rows
 
 
+def _automatic_market(st, capture, trial):
+    st.subheader("Automatic market trial")
+    st.caption("The scheduled collector checks both original fixtures around 30 and 15 minutes before the earlier kickoff. The trial tests the market adjustment on the same score grids.")
+    if capture:
+        st.write(f"Published odds status · {_label(capture['reason'])}")
+        st.caption(f"{sydney_timestamp(capture['checked_at_utc'])} · {capture['requests']} requests · {len(capture['receipts'])} receipts")
+    if not trial:
+        st.info("The first scheduled trial report is pending.")
+        return
+    metrics = st.columns(3)
+    cover = trial["paired_market_coverage"]
+    metrics[0].metric("Both fixtures qualified", f"{cover:.1%}" if cover is not None else "Pending")
+    metrics[1].metric("Matched settled pairs", trial["matched_verified_pairs"])
+    metrics[2].metric("Skipped pairs", trial["skipped_pairs"])
+    st.caption(f"{trial['pending_kickoff_pairs']} awaiting kickoff · {trial['pending_verification_pairs']} awaiting verified finals · {trial['missed_windows']} missed decision windows")
+    if trial["invalid_receipts"]:
+        st.warning(f"Excluded {trial['invalid_receipts']} trial records that failed verification.")
+    if trial["matched_verified_pairs"]:
+        st.dataframe([
+            {"Forecast": label, "Five-double hits": trial["metrics"][name]["hits"],
+             "Exact-score log loss": trial["metrics"][name]["score_log_loss"]}
+            for name, label in (("baseline", "Base forecast"), ("with_market", "Market-adjusted forecast"))
+        ], hide_index=True, use_container_width=True)
+
+
 def render(st):
     clock = datetime.now(timezone.utc)
     report = _report(int(clock.timestamp() // 60))
@@ -79,6 +104,8 @@ def render(st):
             st.json(lineup)
     else:
         st.caption("No V45 lineup collection run has been published.")
+
+    _automatic_market(st, report["automatic_market_capture"], report["automatic_market_trial"])
 
     with st.expander("Historical coverage and source impact"):
         st.caption("Recheck archived history and compare forecasts with and without each numerical source on the same verified matches.")

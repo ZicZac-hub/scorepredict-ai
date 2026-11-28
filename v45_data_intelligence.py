@@ -109,6 +109,8 @@ def evaluate(*, root=DATA, now=None):
         "sportmonks": archived_health(root=root),
         "sportmonks_probe": read(root / "v45_intelligence" / "sportmonks_probe.json"),
         "lineup_collection": read(root / "v45_intelligence" / "lineups" / "status.json"),
+        "automatic_market_capture": read(root / "v45_market_capture" / "status.json"),
+        "automatic_market_trial": read(root / "v45_market_trial" / "status.json"),
         "external_requests": 0,
     }
 
