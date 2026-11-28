@@ -5,7 +5,19 @@ on:
       - 'v44_joint_pair_transfer.py'
       - 'tests/test_v44_joint_pair_transfer.py'
       - '.github/workflows/v44-joint-pair-transfer.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'v44_joint_pair_transfer.py'
+      - 'tests/test_v44_joint_pair_transfer.py'
+      - '.github/workflows/v44-joint-pair-transfer.yml'
+  schedule:
+    # Read only saved evidence; no new provider requests or archive writes.
+    - cron: '41 */6 * * *'
   workflow_dispatch:
+concurrency:
+  group: v44-joint-pair-transfer-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   contents: read
 jobs:
@@ -32,4 +44,4 @@ jobs:
         with:
           name: joint-pair-transfer
           path: /tmp/joint-pair-transfer.json
-          retention-days: 14
+          retention-days: 30
