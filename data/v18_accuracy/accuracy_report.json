@@ -20,58 +20,58 @@
         "wilson_95": null
       },
       {
-        "absolute_gap": 0.02887324392472912,
+        "absolute_gap": 0.00239671558992105,
         "estimated_band": "70%\u201380%",
-        "hits": 49,
-        "mean_estimated": 0.7602165275068187,
-        "observed_rate": 0.7313432835820896,
-        "verified": 67,
+        "hits": 69,
+        "mean_estimated": 0.7606384738316793,
+        "observed_rate": 0.7582417582417582,
+        "verified": 91,
         "wilson_95": [
-          0.6148189100033433,
-          0.822777950875308
+          0.6609819026529659,
+          0.8345819634497005
         ]
       },
       {
-        "absolute_gap": 0.018268749788643346,
+        "absolute_gap": 0.04548152654071225,
         "estimated_band": "80%\u201390%",
-        "hits": 17,
-        "mean_estimated": 0.8317312502113566,
-        "observed_rate": 0.85,
-        "verified": 20,
+        "hits": 26,
+        "mean_estimated": 0.8333603144195001,
+        "observed_rate": 0.7878787878787878,
+        "verified": 33,
         "wilson_95": [
-          0.639581135259243,
-          0.9476312541037835
+          0.6224835500784931,
+          0.893239784669792
         ]
       },
       {
-        "absolute_gap": 0.08154559387730709,
+        "absolute_gap": 0.08562921044828675,
         "estimated_band": "90%\u2013100%",
-        "hits": 2,
-        "mean_estimated": 0.9184544061226929,
+        "hits": 3,
+        "mean_estimated": 0.9143707895517132,
         "observed_rate": 1.0,
-        "verified": 2,
+        "verified": 3,
         "wilson_95": [
-          0.3423802275066531,
+          0.4385029682449545,
           1.0
         ]
       }
     ],
-    "brier": 0.17525158451318046,
-    "expected_calibration_error": 0.02767385984813856,
-    "hits": 68,
-    "mean_model_estimate": 0.7798431590947121,
-    "observed_win_rate": 0.7640449438202247,
+    "brier": 0.17390181291411924,
+    "expected_calibration_error": 0.015558103353316378,
+    "hits": 98,
+    "mean_model_estimate": 0.7831661721510349,
+    "observed_win_rate": 0.7716535433070866,
     "sample_too_small_for_reliable_calibration": true,
-    "verified": 89,
+    "verified": 127,
     "wilson_95": [
-      0.6660637395237937,
-      0.8401756129918931
+      0.6913114055666176,
+      0.8360443776989754
     ]
   },
   "evaluated_forecasts_captured_pre_kickoff": true,
   "evaluation_type": "original_prospective_v8_only",
   "evidence": {
-    "awaiting_or_unverified": 268,
+    "awaiting_or_unverified": 230,
     "frozen_source_matches_valid": 357,
     "missing_feature_counts": {
       "independent_market_snapshot_unavailable": 357,
@@ -81,57 +81,75 @@
     },
     "no_extra_paid_calls": true,
     "source_rejections": {},
-    "verified_results": 89
+    "verified_results": 127
   },
   "note": "No new football observations are fabricated. Reliable calibration needs hundreds of verified pre-match predictions. Original five exact-score double results are tracked separately.",
   "per_league": {
     "BL1": {
-      "brier": 0.09636573635231455,
-      "observed_win_rate": 0.8888888888888888,
-      "sample_too_small": true,
-      "verified": 9
-    },
-    "BSA": {
-      "brier": 0.2159227298264681,
-      "observed_win_rate": 0.7,
-      "sample_too_small": true,
-      "verified": 20
-    },
-    "DED": {
-      "brier": 0.11106621564016461,
-      "observed_win_rate": 0.8888888888888888,
-      "sample_too_small": true,
-      "verified": 9
-    },
-    "ELC": {
-      "brier": 0.16982654165329958,
-      "observed_win_rate": 0.75,
-      "sample_too_small": true,
-      "verified": 12
-    },
-    "FL1": {
-      "brier": 0.2965757599299188,
-      "observed_win_rate": 0.5555555555555556,
-      "sample_too_small": true,
-      "verified": 9
-    },
-    "PD": {
-      "brier": 0.20535558673635004,
-      "observed_win_rate": 0.7,
-      "sample_too_small": true,
-      "verified": 10
-    },
-    "PL": {
-      "brier": 0.11167655220816693,
-      "observed_win_rate": 0.9,
-      "sample_too_small": true,
-      "verified": 10
-    },
-    "SA": {
-      "brier": 0.1534627128557356,
+      "brier": 0.1497005416309387,
       "observed_win_rate": 0.8,
       "sample_too_small": true,
       "verified": 10
+    },
+    "BSA": {
+      "brier": 0.21720213076308661,
+      "observed_win_rate": 0.7083333333333334,
+      "sample_too_small": true,
+      "verified": 24
+    },
+    "CL": {
+      "brier": 0.034242526112140584,
+      "observed_win_rate": 1.0,
+      "sample_too_small": true,
+      "verified": 8
+    },
+    "DED": {
+      "brier": 0.17276818351321815,
+      "observed_win_rate": 0.8,
+      "sample_too_small": true,
+      "verified": 10
+    },
+    "EL": {
+      "brier": 0.1354760437620791,
+      "observed_win_rate": 0.8333333333333334,
+      "sample_too_small": true,
+      "verified": 6
+    },
+    "ELC": {
+      "brier": 0.1960247078084257,
+      "observed_win_rate": 0.72,
+      "sample_too_small": true,
+      "verified": 25
+    },
+    "FL1": {
+      "brier": 0.2734854562913106,
+      "observed_win_rate": 0.6,
+      "sample_too_small": true,
+      "verified": 10
+    },
+    "PD": {
+      "brier": 0.189991865330517,
+      "observed_win_rate": 0.7272727272727273,
+      "sample_too_small": true,
+      "verified": 11
+    },
+    "PL": {
+      "brier": 0.10793047489189898,
+      "observed_win_rate": 0.9090909090909091,
+      "sample_too_small": true,
+      "verified": 11
+    },
+    "PPL": {
+      "brier": 0.06501507923209701,
+      "observed_win_rate": 1.0,
+      "sample_too_small": true,
+      "verified": 1
+    },
+    "SA": {
+      "brier": 0.14396020900595297,
+      "observed_win_rate": 0.8181818181818182,
+      "sample_too_small": true,
+      "verified": 11
     }
   },
   "target_70_percent_actual_claim": false,

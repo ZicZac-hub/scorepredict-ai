@@ -2,9 +2,9 @@
   "ai_exact_score_probability_weight": 0.0,
   "automatic_promotion": false,
   "configured_keys_not_automatic_success": true,
-  "evaluated_at_utc": "2026-11-28T08:55:36.717847+00:00",
+  "evaluated_at_utc": "2026-11-28T09:58:22.552234+00:00",
   "excluded": {
-    "unmatched_identity_result_or_time": 14
+    "unmatched_identity_result_or_time": 2
   },
   "fixture_reuse_in_provider_denominator_allowed": false,
   "independence_of_distinct_events_not_established": true,
@@ -13,18 +13,18 @@
   "note": "Brier superiority on 1X2 opinions is not proof of exact-score double superiority.",
   "provider_metrics": {
     "cohere": {
-      "conservative_95pct_lower_bound": 0.0,
-      "mean_paired_outcome_brier_advantage": 0.0,
+      "conservative_95pct_lower_bound": -2.796183192367858e-17,
+      "mean_paired_outcome_brier_advantage": -6.1679056923619804e-18,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 2
+      "source_matched_verified_fixtures": 9
     },
     "gemini": {
-      "conservative_95pct_lower_bound": -0.001151042664426455,
-      "mean_paired_outcome_brier_advantage": 0.0007593522983443474,
+      "conservative_95pct_lower_bound": -0.0007407703574136179,
+      "mean_paired_outcome_brier_advantage": 0.0004913456048110581,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 22
+      "source_matched_verified_fixtures": 34
     },
     "groqcloud": {
       "conservative_95pct_lower_bound": -0.001136063761757298,
@@ -34,12 +34,12 @@
       "source_matched_verified_fixtures": 13
     },
     "openai": {
-      "conservative_95pct_lower_bound": null,
-      "mean_paired_outcome_brier_advantage": 0.0,
+      "conservative_95pct_lower_bound": -2.7986759330301924e-07,
+      "mean_paired_outcome_brier_advantage": -9.45498625910614e-08,
       "passes_statistical_shadow_gate": false,
       "production_weight": 0.0,
-      "source_matched_verified_fixtures": 1
+      "source_matched_verified_fixtures": 14
     }
   },
-  "saved_provider_panel_count": 36
+  "saved_provider_panel_count": 37
 }
