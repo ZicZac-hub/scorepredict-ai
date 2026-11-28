@@ -1,4 +1,4 @@
-"""Bounded, identity-checked API-Football final-score backfill for frozen V8 fixtures."""
+"""Bounded, identity-checked API-Football final-score backfill for frozen V8 and V37 fixtures."""
 import json
 import os
 from datetime import datetime, timedelta, timezone
@@ -7,6 +7,8 @@ from api_football import _request, ProviderQuotaError, ProviderAccessError, Prov
 from v10_prospective import ROOT, read_latest, utc
 from v16_pair_research import original_model
 from v31_slate_settlement import enrolled_due
+from v10_settlement import _verified_v37_references
+from persist_prematch import verified_result
 
 RESULTS = Path("data/prematch/verified_results.json")
 STATUS = Path("data/diagnostics/result_backfill.json")
@@ -63,6 +65,40 @@ def run(request=_request, now=None):
         priority, enrolled = enrolled_due(ROOT, existing, clock)
         status["original_slate_settlement"] = enrolled
         candidates=dict(priority)
+        # V37 is never eligible for V8/V28 forecasts. Enroll only its original
+        # digest-verified research references for result lookup, after V28.
+        # Do not spend a second request for a result already in the v10 archive.
+        sparse_refs={}
+        sparse_report=_verified_v37_references(ROOT,sparse_refs,clock)
+        own_path=Path(ROOT)/"verified_results.json"
+        own=json.loads(own_path.read_text()) if own_path.exists() else {}
+        if not isinstance(own,dict):
+            raise ValueError("invalid_v10_verified_results")
+        sparse_ids=set()
+        sparse_report.update({"already_saved":0,"not_yet_due":0,
+                              "identity_conflicts":0,"due_without_result":0})
+        for fid,frozen in sorted(sparse_refs.items()):
+            if fid in existing or fid in own:
+                saved=[store[fid] for store in (existing,own) if fid in store]
+                if all(verified_result(frozen,row,fid) for row in saved):
+                    sparse_report["already_saved"]+=1
+                else:
+                    sparse_report["identity_conflicts"]+=1
+                continue
+            if utc(frozen["kickoff_utc"])+timedelta(hours=3)>clock:
+                sparse_report["not_yet_due"]+=1
+                continue
+            old=candidates.get(fid)
+            if old is not None and (
+                utc(old["kickoff_utc"])!=utc(frozen["kickoff_utc"]) or
+                any(str(old[k])!=str(frozen[k]) for k in ("home_team_id","away_team_id"))
+            ):
+                sparse_report["identity_conflicts"]+=1
+                continue
+            candidates.setdefault(fid,frozen)
+            sparse_ids.add(fid)
+            sparse_report["due_without_result"]+=1
+        status["v37_settlement"]=sparse_report
         # Newest forecasts remain eligible for the legacy result pipeline,
         # but cannot displace original pre-kickoff V28 source identities.
         try:
@@ -96,18 +132,22 @@ def run(request=_request, now=None):
         status["original_slate_settlement"]["due_frozen_not_in_latest_forecast_index"] = sum(
             fid not in latest_ids for fid in priority)
         # Frozen research fixtures ALWAYS take precedence over legacy rows.
-        # Both arms share the original provider-call budget (max 12*20).
+        # All research sources share the original provider-call budget (max 12*20).
         priority_order=sorted(priority.items(),key=lambda x:utc(x[1]["kickoff_utc"]))
+        sparse_order=sorted(((fid,candidates[fid]) for fid in sparse_ids if fid not in priority),
+                            key=lambda x:utc(x[1]["kickoff_utc"]))
         other_order=sorted(
-            ((fid,source) for fid,source in candidates.items() if fid not in priority),
+            ((fid,source) for fid,source in candidates.items() if fid not in priority and fid not in sparse_ids),
             key=lambda x:utc(x[1]["kickoff_utc"]))
-        ordered=priority_order+other_order
+        ordered=priority_order+sparse_order+other_order
         selected=ordered[:MAX_CALLS*20]
         selected_ids={fid for fid,_ in selected}
         status["original_slate_settlement"]["due_frozen_ids_prioritized"] = sum(
             fid in selected_ids for fid in priority)
         status["original_slate_settlement"]["due_frozen_ids_deferred_by_budget"] = sum(
             fid not in selected_ids for fid in priority)
+        sparse_report["selected"]=len(sparse_ids & selected_ids)
+        sparse_report["deferred_by_budget"]=len(sparse_ids-selected_ids)
         status["requested_fixture_ids"]=len(selected)
         for offset in range(0,len(selected),20):
             group=selected[offset:offset+20]
@@ -126,6 +166,9 @@ def run(request=_request, now=None):
                     frozen=candidates.get(fid)
                     if frozen is None or fid not in dict(group):
                         status["skipped_identity"]+=1
+                        continue
+                    if fid in existing:
+                        # A duplicate provider row cannot overwrite an accepted final.
                         continue
                     try:
                         _accept_verified(item,fid,frozen,existing,status,clock)
