@@ -1,0 +1,35 @@
+name: V44 conditional margin calibration research
+on:
+  pull_request:
+    paths:
+      - 'v44_conditional_margin_research.py'
+      - 'tests/test_v44_conditional_margin_research.py'
+      - '.github/workflows/v44-conditional-margin.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      API_FOOTBALL_KEY: ""
+      SPORTMONKS_API_KEY: ""
+      OPENAI_API_KEY: ""
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests/test_v44_conditional_margin_research.py
+      - run: |
+          python v44_conditional_margin_research.py > /tmp/conditional-margin.json
+          python -c 'import json; r=json.load(open("/tmp/conditional-margin.json")); print(json.dumps({k:v for k,v in r.items() if k!="rows"},indent=2))'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: conditional-margin-research
+          path: /tmp/conditional-margin.json
+          retention-days: 30
