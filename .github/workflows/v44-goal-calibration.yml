@@ -1,0 +1,38 @@
+name: V44 goal count calibration audit
+on:
+  pull_request:
+    paths:
+      - 'v44_goal_calibration_audit.py'
+      - 'tests/test_v44_goal_calibration_audit.py'
+      - '.github/workflows/v44-goal-calibration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests/test_v44_goal_calibration_audit.py
+      - name: Evaluate archived matched goal distributions
+        env:
+          API_FOOTBALL_KEY: ""
+          SPORTMONKS_API_KEY: ""
+          OPENAI_API_KEY: ""
+        run: |
+          python v44_goal_calibration_audit.py > /tmp/v44-goal-calibration.json
+          python -c 'import json; r=json.load(open("/tmp/v44-goal-calibration.json")); print(json.dumps({k:v for k,v in r.items() if k!="rows"},indent=2))'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v44-goal-calibration
+          path: /tmp/v44-goal-calibration.json
+          if-no-files-found: warn
+          retention-days: 14
