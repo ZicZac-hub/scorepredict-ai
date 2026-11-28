@@ -385,10 +385,12 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: |
           python - <<'PYCODE'
+          from datetime import datetime, timezone
           import json
           from v24_bulk_market_capture import capture
           from v45_market_capture import broad_daily_limit
-          print(json.dumps(capture(daily_limit=broad_daily_limit()), indent=2))
+          started = datetime.now(timezone.utc)
+          print(json.dumps(capture(now=started, daily_limit=broad_daily_limit(now=started)), indent=2))
           PYCODE
       - name: Optional V23 earlier time-checked bookmaker market snapshots
         # One source request per eligible leg if owner opted in; no auto-spend.

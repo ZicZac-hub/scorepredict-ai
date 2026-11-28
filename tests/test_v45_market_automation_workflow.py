@@ -17,7 +17,7 @@ def test_market_automation_runs_independently_and_uses_shared_quota():
     assert "vars.V45_MARKET_ENABLED != 'false'" in workflow
     assert "if: github.ref == 'refs/heads/main'" in workflow
     assert "cron: '6,16,26,36,46,56 * * * *'" in workflow
-    assert 'capture(daily_limit=broad_daily_limit())' in prematch
+    assert 'capture(now=started, daily_limit=broad_daily_limit(now=started))' in prematch
     assert prematch.index('run: python v10_settlement.py') < prematch.index('git stash pop')
     assert prematch.index('git stash pop') < prematch.index('Commit permanent research history')
 
