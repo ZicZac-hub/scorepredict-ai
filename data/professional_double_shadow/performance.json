@@ -1,8 +1,8 @@
 {
   "conflicting_result_identities": 0,
-  "evaluated_at_utc": "2026-11-27T10:41:57.530493+00:00",
+  "evaluated_at_utc": "2026-11-28T02:06:27.295531+00:00",
   "external_requests": 0,
-  "frozen_set_files": 19,
+  "frozen_set_files": 20,
   "hits": 0,
   "note": "Only raw-policy prospective calibration bootstrap; premium still requires independent calibration evidence.",
   "observed_hit_rate": 0.0,
@@ -157,12 +157,18 @@
     },
     {
       "actual_scores": [
-        null,
-        null
+        [
+          0,
+          0
+        ],
+        [
+          3,
+          2
+        ]
       ],
       "estimated_coverage": 0.06635920914898097,
-      "hit": null,
-      "status": "pending",
+      "hit": false,
+      "status": "verified",
       "sydney_date": "2026-11-28"
     },
     {
@@ -254,12 +260,22 @@
       "hit": null,
       "status": "pending",
       "sydney_date": "2026-12-11"
+    },
+    {
+      "actual_scores": [
+        null,
+        null
+      ],
+      "estimated_coverage": 0.06761131407112311,
+      "hit": null,
+      "status": "pending",
+      "sydney_date": "2026-12-12"
     }
   ],
   "schema_version": 1,
   "selection_scope": "auto_max_raw_coverage_same_day_v1",
   "source_rejections": {},
-  "source_valid_sets": 19,
+  "source_valid_sets": 20,
   "target_70_percent_proven": false,
   "trials": [
     {
@@ -612,11 +628,50 @@
       "source_record_sha256": "c9c0ebc59c79e97fe1f9a12122282e19a279ff3ca927e734ee44c2990703a0d9",
       "verification_status": "verified",
       "verified_at_utc": "2026-11-26T22:40:37.725151+00:00"
+    },
+    {
+      "estimated_coverage": 0.06635920914898097,
+      "fixture_identities": [
+        [
+          "API-Football",
+          "1550216"
+        ],
+        [
+          "API-Football",
+          "1557485"
+        ]
+      ],
+      "fixture_team_names": [
+        [
+          "Venezia",
+          "Bologna"
+        ],
+        [
+          "Nottingham Forest",
+          "Chelsea"
+        ]
+      ],
+      "hit": false,
+      "kickoffs_utc": [
+        "2026-11-27T19:45:00.000000Z",
+        "2026-11-27T20:00:00.000000Z"
+      ],
+      "model_versions": [
+        "ziczac-v8-near-kickoff-research-v1",
+        "ziczac-v8-near-kickoff-research-v1"
+      ],
+      "policy_id": "professional-probability-five-v1",
+      "predicted_at_utc": "2026-11-26T00:26:57.952132+00:00",
+      "prospective": true,
+      "selection_scope": "auto_max_raw_coverage_same_day_v1",
+      "source_record_sha256": "fb5a7070f06bd02d7ef33391c443d82de8dbd2dc71a79969c48684f53d91b703",
+      "verification_status": "verified",
+      "verified_at_utc": "2026-11-27T23:22:18.135837+00:00"
     }
   ],
-  "verified_sets": 9,
+  "verified_sets": 10,
   "wilson_95": [
     0.0,
-    0.2991450484195441
+    0.2775327998628892
   ]
 }

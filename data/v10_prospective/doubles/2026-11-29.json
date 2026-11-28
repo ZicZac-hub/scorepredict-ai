@@ -1,0 +1,86 @@
+{
+  "accuracy_status": "pending_verified_final_scores",
+  "captured_at_utc": "2026-11-27T14:23:26.066985+00:00",
+  "challenger_exclusions": {
+    "v10": "missing_one_or_both_challenger_forecasts",
+    "v12": "missing_one_or_both_challenger_forecasts",
+    "v13": "missing_same_evidence_pre_match_v13_pair",
+    "v9": "missing_one_or_both_challenger_forecasts"
+  },
+  "estimated_coverage": 0.09919817912222322,
+  "first": {
+    "away_team": "Estac Troyes",
+    "away_team_id": "110",
+    "fixture_id": "1552834",
+    "forecast_id": "9133939dd0bc60f85330d463482fdeec46ff74766abb2dae6adeb804f646ec0f",
+    "home_team": "Nice",
+    "home_team_id": "84",
+    "kickoff_utc": "2026-11-28T19:45:00.000000Z",
+    "model_key": "v8",
+    "model_version": "ziczac-evidence-ensemble-v8-experimental",
+    "provider": "API-Football"
+  },
+  "five_doubles": [
+    {
+      "joint_probability": 0.022761722821679223,
+      "score1": "1-0",
+      "score2": "0-0"
+    },
+    {
+      "joint_probability": 0.02071830187992471,
+      "score1": "1-0",
+      "score2": "1-0"
+    },
+    {
+      "joint_probability": 0.01961712135626823,
+      "score1": "1-1",
+      "score2": "0-0"
+    },
+    {
+      "joint_probability": 0.018245027811217097,
+      "score1": "2-0",
+      "score2": "0-0"
+    },
+    {
+      "joint_probability": 0.017856005253133956,
+      "score1": "1-1",
+      "score2": "1-0"
+    }
+  ],
+  "independence_assumption": true,
+  "minimum_coverage_policy": 0.04,
+  "mode": "prospective",
+  "policy": "v10-evidence-ranked-shadow-v2-fresh-research",
+  "same_pair_challengers": {},
+  "second": {
+    "away_team": "FC Schalke 04",
+    "away_team_id": "174",
+    "fixture_id": "1575238",
+    "forecast_id": "0ea06f1a0111fc9da6ea019da39cd1c74bcb616929e5926130165163d5b35f7d",
+    "home_team": "SC Paderborn 07",
+    "home_team_id": "185",
+    "kickoff_utc": "2026-11-28T14:30:00.000000Z",
+    "model_key": "v8_near",
+    "model_version": "ziczac-v8-near-kickoff-research-v1",
+    "provider": "API-Football"
+  },
+  "selected_forecasts": {
+    "1": {
+      "captured_at_utc": "2026-11-15T00:19:46.298879Z",
+      "input_digest": "4def23920d24fab7a0410997bb9abca5ac57cbb366cdbd2c811e9eb17a381fad",
+      "source": "v8"
+    },
+    "2": {
+      "captured_at_utc": "2026-11-26T22:40:25.789647Z",
+      "input_digest": "616413865f69dfff1f9ea4711e3861e20664f1ca5bce79fe45d5f4a20e15dba3",
+      "source": "v8_near"
+    }
+  },
+  "selection_note": "Maximize sum of five mutually exclusive joint score probabilities across eligible four-team Sydney-day pairs; no arbitrary diversification or model promotion.",
+  "selection_window": {
+    "max_hours_before_first_eligible_kickoff": 24,
+    "minimum_minutes_before_each_selected_match": 45
+  },
+  "status": "frozen_pre_kickoff",
+  "sydney_date": "2026-11-29"
+}

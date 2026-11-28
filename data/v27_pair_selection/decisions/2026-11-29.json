@@ -1,0 +1,132 @@
+{
+  "70_percent_accuracy_not_proven": true,
+  "candidate_catalog": [
+    {
+      "five_robust": [
+        {
+          "score1": "2-0",
+          "score2": "1-0"
+        },
+        {
+          "score1": "1-1",
+          "score2": "1-0"
+        },
+        {
+          "score1": "1-0",
+          "score2": "1-0"
+        },
+        {
+          "score1": "1-0",
+          "score2": "1-1"
+        },
+        {
+          "score1": "1-0",
+          "score2": "2-0"
+        }
+      ],
+      "five_v8_optimal": [
+        {
+          "score1": "2-1",
+          "score2": "1-1"
+        },
+        {
+          "score1": "2-1",
+          "score2": "1-0"
+        },
+        {
+          "score1": "2-1",
+          "score2": "2-1"
+        },
+        {
+          "score1": "2-1",
+          "score2": "2-0"
+        },
+        {
+          "score1": "1-1",
+          "score2": "1-1"
+        }
+      ],
+      "fixture_keys": [
+        [
+          "API-Football",
+          "1550210"
+        ],
+        [
+          "API-Football",
+          "1570463"
+        ]
+      ],
+      "freshness_multiplier": 1.0,
+      "original_v8_top_five_model_mass": 0.048309667261,
+      "rank_quality": 0.04602447368,
+      "source_age_hours": [
+        21.99,
+        21.99
+      ],
+      "v25_lower_envelope_is_uncalibrated": true,
+      "v25_robust_five_under_v8_mass": 0.042596683308
+    }
+  ],
+  "candidate_catalog_sha256": "010a4d4b24f0226535267f74903aabc1a854fba2b638ae3fa26f80c266d40130",
+  "candidate_fixtures": 2,
+  "decision": "V27_ABSTAIN",
+  "eligible_original_source_receipts": [
+    {
+      "away_team_id": "523",
+      "captured_at_utc": "2026-11-26T16:23:59.394136+00:00",
+      "fixture_id": "1550210",
+      "forecast_id": "7998b22b016e3fc2ad1fe6c63b4a0340a09ec3a1b8f656ba4d1b8a7104409305",
+      "home_team_id": "512",
+      "input_digest": "e29dc675fc934569c2d52ed3e4792b73743b098fee0533339b419c4ddff0fa7f",
+      "kickoff_utc": "2026-11-28T14:00:00+00:00",
+      "model_key": "v8_near",
+      "model_version": "ziczac-v8-near-kickoff-research-v1",
+      "provider": "API-Football",
+      "source_sha256": "abda30141806c8ff79e02e209869990769342b74712d457a809914d77c5145ae"
+    },
+    {
+      "away_team_id": "728",
+      "captured_at_utc": "2026-11-26T16:23:56.364754+00:00",
+      "fixture_id": "1570463",
+      "forecast_id": "d7486a804863d5b2d74cc5d32be9222a502c5646ac33a106d7d897f979161626",
+      "home_team_id": "543",
+      "input_digest": "9cf8a51c3886f534cfb3ca98ac51401f177be1b26998ad66b40959bb1dea5f20",
+      "kickoff_utc": "2026-11-28T13:00:00+00:00",
+      "model_key": "v8_near",
+      "model_version": "ziczac-v8-near-kickoff-research-v1",
+      "provider": "API-Football",
+      "source_sha256": "7c38b122dbfb61423fdddac280a852dbac5118d9f1752a176e86dc1a219b82c1"
+    }
+  ],
+  "evaluated_pairs": 1,
+  "excluded_original_sources": {
+    "invalid_source_time": 228,
+    "not_original_v8_model": 991,
+    "outside_research_freeze_window": 238
+  },
+  "independent_verified_result_evaluation": true,
+  "original_forecasts_modified": false,
+  "original_v25_packet_sha256": "6407a54fbaec18677235329711a1c20d985798e19a6d8ba924488f7f36eea079",
+  "original_v25_pair_keys": [
+    [
+      "API-Football",
+      "1550210"
+    ],
+    [
+      "API-Football",
+      "1570463"
+    ]
+  ],
+  "production_model_promoted": false,
+  "qualified_four_team_pairs": 1,
+  "ranking_policy": "0.60*v8_optimal_mass+0.40*v25_robust_mass_under_v8;multiply_by_bounded_72h_freshness;full_slate;predeclared_0.055_min_model_mass",
+  "reason": "fewer_than_two_distinct_eligible_pairs",
+  "schema_version": 1,
+  "selection_is_research_only": true,
+  "source_receipts_sha256": "cd090e9f24816f80a4b476788ad17905e97e15e6d5e44c86ccbd0dacdcb710a5",
+  "sydney_date": "2026-11-29",
+  "v25_decision_at_utc": "2026-11-27T14:23:30.541186+00:00",
+  "v25_v26_forecasts_modified": false,
+  "v27_decision_at_utc": "2026-11-27T14:23:38.583365+00:00",
+  "version": "v27-frozen-full-slate-pair-quality-v1-research-only"
+}

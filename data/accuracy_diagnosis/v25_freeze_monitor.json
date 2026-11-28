@@ -1,15 +1,15 @@
 {
   "70_percent_hit_rate_proven": false,
-  "all_eligible_verified_probability_pairs": 4,
+  "all_eligible_verified_probability_pairs": 5,
   "archived_picks_modified": false,
-  "archived_sets_found": 10,
+  "archived_sets_found": 11,
   "check_passed": true,
   "initial_100_pair_evaluation": {
     "goal": 100,
     "goal_is_not_an_accuracy_guarantee": true,
     "goal_reached": false,
-    "remaining": 96,
-    "verified": 4
+    "remaining": 95,
+    "verified": 5
   },
   "integrity_issues": [],
   "legacy_rows": [
@@ -51,8 +51,8 @@
   ],
   "legacy_sets_not_backfilled": 5,
   "new_pending_pairs": 1,
-  "new_sets_with_both_valid_grids_and_mixture": 5,
-  "new_verified_pairs": 4,
+  "new_sets_with_both_valid_grids_and_mixture": 6,
+  "new_verified_pairs": 5,
   "old_probability_grids_reconstructed": false,
   "policy": "independent_original_frozen_v25_scores_only",
   "probability_required_from_utc": "2026-11-22T05:17:27+00:00",
@@ -90,12 +90,19 @@
       "cohort": "prospective_probability_required",
       "mixture_five_status": "frozen",
       "probability_status": "frozen",
-      "result_status": "pending",
+      "result_status": "verified",
       "sydney_date": "2026-11-28"
+    },
+    {
+      "cohort": "prospective_probability_required",
+      "mixture_five_status": "frozen",
+      "probability_status": "frozen",
+      "result_status": "pending",
+      "sydney_date": "2026-11-29"
     }
   ],
-  "prospective_sets_since_rollout": 5,
+  "prospective_sets_since_rollout": 6,
   "schema_version": 1,
-  "source_valid_sets": 10,
+  "source_valid_sets": 11,
   "status": "collecting_verified_probabilities"
 }

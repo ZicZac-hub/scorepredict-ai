@@ -3,25 +3,18 @@
   "freeze": {
     "created": [],
     "no_live_model_change": true,
-    "not_frozen_inspected": [
-      {
-        "eligible_fixtures": 2,
-        "state": "not_frozen_retry_when_new_sources_available",
-        "sydney_day": "2026-11-29"
-      }
-    ],
+    "not_frozen_inspected": [],
     "skipped": {
-      "already_frozen_day": 1,
-      "insufficient_eligible_fixtures_retry_later": 1
+      "already_frozen_day": 2
     },
     "source_ineligibility": {
-      "invalid_source_time": 228,
-      "not_original_v8_model": 983,
-      "outside_research_freeze_window": 235
+      "invalid_source_time": 246,
+      "not_original_v8_model": 1068,
+      "outside_research_freeze_window": 192
     },
     "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
-  "generated_at_utc": "2026-11-27T14:06:02.957098+00:00",
+  "generated_at_utc": "2026-11-28T02:04:32.542660+00:00",
   "no_additional_provider_or_llm_calls": true,
   "original_v8_v25_v26_v27_forecasts_changed": false,
   "prospective_accuracy_improvement_not_established": true,
@@ -31,25 +24,25 @@
     "caution": "Same-day DIFFERENT-fixture pair-policy selection test, not same-fixture model calibration",
     "control_hit_rate": 0.0,
     "control_hit_wilson_95": [
-      2.7755575615628914e-17,
-      0.3903342879021653
+      5.551115123125783e-17,
+      0.35433043506668743
     ],
     "control_only_wins": 0,
-    "different_pair_days": 0,
+    "different_pair_days": 1,
     "do_not_treat_pending_as_losses": true,
-    "evaluated_at_utc": "2026-11-27T14:06:04.548660+00:00",
+    "evaluated_at_utc": "2026-11-28T02:04:34.170115+00:00",
     "exact_paired_test_two_sided_p": null,
     "excluded_invalid_or_tampered_files": {},
     "initial_review_ready": false,
     "initial_verified_day_review_target": 100,
     "invalid_verified_final_evidence": {},
     "no_promotion_to_live_model": true,
-    "original_frozen_decisions": 7,
+    "original_frozen_decisions": 8,
     "pending_days": 1,
     "quality_hit_rate": 0.0,
     "quality_hit_wilson_95": [
-      2.7755575615628914e-17,
-      0.3903342879021653
+      5.551115123125783e-17,
+      0.35433043506668743
     ],
     "quality_only_wins": 0,
     "quality_wins": 0,
@@ -303,6 +296,11 @@
       },
       {
         "all_qualified_four_team_pairs": 28,
+        "control_actual_scores": [
+          "0-0",
+          "1-2"
+        ],
+        "control_five_double_hit": false,
         "control_pair": [
           [
             "API-Football",
@@ -315,6 +313,11 @@
         ],
         "eligible_fixtures": 8,
         "policy": "FROZEN",
+        "quality_actual_scores": [
+          "0-0",
+          "3-2"
+        ],
+        "quality_five_double_hit": false,
         "quality_pair": [
           [
             "API-Football",
@@ -327,8 +330,39 @@
         ],
         "same_fixture_pair": false,
         "same_pre_match_cutoff_for_both_arms": true,
-        "status": "pending",
+        "status": "verified",
         "sydney_day": "2026-11-28",
+        "verified_control": true,
+        "verified_quality": true
+      },
+      {
+        "all_qualified_four_team_pairs": 105,
+        "control_pair": [
+          [
+            "API-Football",
+            "1563298"
+          ],
+          [
+            "API-Football",
+            "1575238"
+          ]
+        ],
+        "eligible_fixtures": 15,
+        "policy": "FROZEN",
+        "quality_pair": [
+          [
+            "API-Football",
+            "1563298"
+          ],
+          [
+            "API-Football",
+            "1575238"
+          ]
+        ],
+        "same_fixture_pair": true,
+        "same_pre_match_cutoff_for_both_arms": true,
+        "status": "pending",
+        "sydney_day": "2026-11-29",
         "verified_control": false,
         "verified_quality": false
       }
@@ -337,7 +371,7 @@
     "seventy_percent_accuracy_demonstrated": false,
     "study": "standalone_genuinely_prospective_two_pair_selection_policies_same_slate",
     "verified_final_conflicts_excluded": 0,
-    "verified_paired_days": 6,
+    "verified_paired_days": 7,
     "version": "v28-independent-paired-pair-policy-v1-research-only"
   },
   "version": "v28-independent-paired-pair-policy-v1-research-only"

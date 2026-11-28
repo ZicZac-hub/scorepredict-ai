@@ -4,16 +4,16 @@
     "all_original_sets_already_maximize_five_cell_model_coverage": true,
     "model_coverage_range": [
       0.059237574736583476,
-      0.0829589185184978
+      0.09919817912222322
     ],
     "sets_with_target_model_coverage": 0,
     "verified_miss_attribution": {
-      "both_leg_scores_outside_selected_options": 4,
+      "both_leg_scores_outside_selected_options": 5,
       "leg_scores_present_but_not_in_same_combination": 1,
       "one_leg_score_outside_selected_options": 5
     }
   },
-  "evaluated_at_utc": "2026-11-27T10:42:42.959099+00:00",
+  "evaluated_at_utc": "2026-11-28T02:07:14.011433+00:00",
   "evidence_policy": "original_archived_v8_source_ids_before_selection_and_both_kickoffs_identity_matched_verified_regulation_results",
   "external_requests_performed": 0,
   "limitations": [
@@ -31,16 +31,16 @@
     "hits": 0,
     "independence_of_repeated_sets_not_established": true,
     "minimum_100_sets_and_lower_interval_at_target": false,
-    "misses": 10,
+    "misses": 11,
     "pending_sets": 1,
-    "verified_sets": 10,
+    "verified_sets": 11,
     "wilson_95": [
       0.0,
-      0.2775327998628892
+      0.2588329669680317
     ]
   },
   "original_forecasts_or_doubles_modified": false,
-  "original_set_files": 11,
+  "original_set_files": 12,
   "prediction_type": "five_exact_score_combinations_on_the_same_two_matches",
   "result_source_rejections": {},
   "schema_version": 1,
@@ -1109,14 +1109,115 @@
         "v8_near",
         "v8_near"
       ],
-      "status": "pending",
+      "status": "miss",
       "sydney_date": "2026-11-28",
+      "target_model_mass_reached_by_five": false,
+      "verified_result_attribution": {
+        "actual_joint_model_probability": 0.001797934338266377,
+        "actual_joint_score_rank_max": 156,
+        "actual_joint_score_rank_min": 156,
+        "classification": "both_leg_scores_outside_selected_options",
+        "legs": [
+          {
+            "actual_leg_score_covered": false,
+            "actual_model_probability": 0.06960427385459246,
+            "actual_score": "0-0",
+            "actual_score_rank_min": 5,
+            "fixture_id": "1550216",
+            "match": "Venezia vs Bologna",
+            "selected_leg_scores": [
+              "0-1",
+              "0-2",
+              "1-1",
+              "1-2"
+            ]
+          },
+          {
+            "actual_leg_score_covered": false,
+            "actual_model_probability": 0.025830803752401335,
+            "actual_score": "3-2",
+            "actual_score_rank_min": 13,
+            "fixture_id": "1557485",
+            "match": "Nottingham Forest vs Chelsea",
+            "selected_leg_scores": [
+              "1-0",
+              "1-1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "captured_at_utc": "2026-11-27T14:23:26.066985+00:00",
+      "full_grid_diagnosis": {
+        "coverage_cells_examined": 89,
+        "full_joint_support_cells": 57600,
+        "minimum_combinations_for_target_model_coverage": 89,
+        "optimal_five": [
+          {
+            "joint_probability": 0.022761722821679223,
+            "score1": "1-0",
+            "score2": "0-0"
+          },
+          {
+            "joint_probability": 0.02071830187992471,
+            "score1": "1-0",
+            "score2": "1-0"
+          },
+          {
+            "joint_probability": 0.01961712135626823,
+            "score1": "1-1",
+            "score2": "0-0"
+          },
+          {
+            "joint_probability": 0.018245027811217097,
+            "score1": "2-0",
+            "score2": "0-0"
+          },
+          {
+            "joint_probability": 0.017856005253133956,
+            "score1": "1-1",
+            "score2": "1-0"
+          }
+        ],
+        "optimal_five_model_coverage": 0.09919817912222322,
+        "target_computation_status": "exact",
+        "target_model_coverage": 0.7
+      },
+      "model_coverage_shortfall_to_target": 0.6008018208777768,
+      "selected_five_are_probability_optimal": true,
+      "selected_five_model_coverage": 0.09919817912222322,
+      "source_feature_gaps": [
+        {
+          "fixture_id": "1552834",
+          "market_used": false,
+          "validated_lineup_adjustments_applied": false,
+          "verified_shot_xg_available": false
+        },
+        {
+          "fixture_id": "1575238",
+          "market_used": false,
+          "validated_lineup_adjustments_applied": false,
+          "verified_shot_xg_available": false
+        }
+      ],
+      "source_file": "data/v10_prospective/doubles/2026-11-29.json",
+      "source_forecast_ids": [
+        "9133939dd0bc60f85330d463482fdeec46ff74766abb2dae6adeb804f646ec0f",
+        "0ea06f1a0111fc9da6ea019da39cd1c74bcb616929e5926130165163d5b35f7d"
+      ],
+      "source_model_keys": [
+        "v8",
+        "v8_near"
+      ],
+      "status": "pending",
+      "sydney_date": "2026-11-29",
       "target_model_mass_reached_by_five": false,
       "verified_result_attribution": null
     }
   ],
   "source_rejections": {},
-  "source_valid_sets": 11,
+  "source_valid_sets": 12,
   "target": 0.7,
   "target_70_percent_proven": false
 }

@@ -12,24 +12,24 @@
   "configured_provider_count": 6,
   "latest_scheduled_attempted": 1,
   "latest_scheduled_captured": 1,
-  "saved_valid_individual_ai_fixture_records": 33,
+  "saved_valid_individual_ai_fixture_records": 35,
   "actual_successful_provider_counts_by_name": {
-    "gemini": 32,
-    "cohere": 8,
     "groqcloud": 13,
-    "openai": 12
+    "gemini": 34,
+    "openai": 14,
+    "cohere": 9
   },
   "unique_providers_with_valid_saved_votes": 4,
-  "frozen_original_double_sets_checked": 11,
-  "original_sets_with_any_individual_ai_evidence": 2,
+  "frozen_original_double_sets_checked": 12,
+  "original_sets_with_any_individual_ai_evidence": 3,
   "original_sets_with_at_least_two_ai_votes_on_both_legs": 0,
   "source_match_abstention_counts": {
-    "no_source_matched_pre_kickoff_ai_panel": 20,
-    "ready": 2
+    "no_source_matched_pre_kickoff_ai_panel": 21,
+    "ready": 3
   },
   "complete_five_ai_panels_with_verified_results": 0,
   "complete_ten_ai_panels_with_verified_results": 0,
-  "actually_verified_original_five_doubles": 10,
+  "actually_verified_original_five_doubles": 11,
   "actually_verified_original_five_double_wins": 0,
   "original_five_doubles_pending": 1,
   "v15_real_ai_double_accuracy": null,
@@ -226,6 +226,27 @@
     },
     {
       "sydney_day": "2026-11-28",
+      "actual_provider_votes_per_leg": [
+        2,
+        0
+      ],
+      "actual_provider_names_per_leg": [
+        [
+          "gemini",
+          "openai"
+        ],
+        []
+      ],
+      "shared_provider_names": [],
+      "leg_reasons": [
+        "ready",
+        "no_source_matched_pre_kickoff_ai_panel"
+      ],
+      "both_legs_have_at_least_two_providers": false,
+      "exact_frozen_source_and_digest_validation_enforced": true
+    },
+    {
+      "sydney_day": "2026-11-29",
       "actual_provider_votes_per_leg": [
         0,
         0

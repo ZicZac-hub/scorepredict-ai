@@ -1,40 +1,57 @@
 {
   "all_supported_odds_not_guaranteed": true,
-  "at_utc": "2026-11-27T10:42:06.304188+00:00",
-  "attempts": [],
-  "binding": {
-    "catalog_snapshot_rejections": {
-      "market_quotes_stale": 2
+  "at_utc": "2026-11-28T02:06:34.397031+00:00",
+  "attempts": [
+    {
+      "date": "2026-11-28",
+      "page": 3
     },
+    {
+      "date": "2026-11-28",
+      "page": 4
+    }
+  ],
+  "binding": {
+    "catalog_snapshot_rejections": {},
     "fixtures_without_catalog": 241,
-    "missing_catalog": 243,
-    "new_bindings": [],
-    "out_of_window": 228,
-    "v8_checked": 259,
-    "v8_with_catalog": 16
+    "missing_catalog": 241,
+    "new_bindings": [
+      "1552234",
+      "1552236",
+      "1552236",
+      "1552240",
+      "1552828",
+      "1552828",
+      "1552831",
+      "1552832",
+      "1552834",
+      "1552835"
+    ],
+    "out_of_window": 246,
+    "v8_checked": 256,
+    "v8_with_catalog": 15
   },
   "catalog_rejection_counts": {},
-  "completed_at_utc": "2026-11-27T10:42:08.245433+00:00",
+  "completed_at_utc": "2026-11-28T02:06:37.269377+00:00",
   "coverage_health": {
-    "catalog_snapshot_rejections": {
-      "market_quotes_stale": 2
-    },
+    "catalog_snapshot_rejections": {},
     "does_not_establish_accuracy_gain": true,
-    "eligible_frozen_forecasts": 259,
+    "eligible_frozen_forecasts": 256,
     "fixtures_without_catalog": 241,
-    "matched_market_forecasts": 16,
-    "new_identity_validated_packets": 0,
+    "matched_market_forecasts": 15,
+    "new_identity_validated_packets": 10,
     "provider_request_errors": 0,
     "reason": "market_available_for_some_fixtures",
-    "unmatched_market_forecasts": 243
+    "unmatched_market_forecasts": 241
   },
   "daily_limit": 12,
   "empty_pages": 0,
   "enabled": true,
   "forecast_priority_dates": [
-    "2026-11-27",
     "2026-11-28",
     "2026-11-29",
+    "2026-11-30",
+    "2026-12-01",
     "2026-12-02",
     "2026-12-03",
     "2026-12-04",
@@ -44,17 +61,52 @@
     "2026-12-08",
     "2026-12-09",
     "2026-12-10",
-    "2026-11-30",
-    "2026-12-01"
+    "2026-12-11"
   ],
-  "new_catalog_fixtures": [],
-  "new_source_bindings": [],
+  "new_catalog_fixtures": [
+    "1551154",
+    "1551156",
+    "1551385",
+    "1551388",
+    "1551495",
+    "1551498",
+    "1551499",
+    "1551605",
+    "1551606",
+    "1551607",
+    "1551609",
+    "1551904",
+    "1552234",
+    "1552236",
+    "1552240",
+    "1552828",
+    "1552831",
+    "1552832",
+    "1552834",
+    "1552835"
+  ],
+  "new_source_bindings": [
+    "1552234",
+    "1552236",
+    "1552236",
+    "1552240",
+    "1552828",
+    "1552828",
+    "1552831",
+    "1552832",
+    "1552834",
+    "1552835"
+  ],
   "note": "Date pages capped by quota, market availability, original fixture identity and kickoff",
   "provider_errors": [],
-  "provider_fixture_rows": 0,
-  "queries": 0,
-  "quote_diagnostics": {},
+  "provider_fixture_rows": 20,
+  "queries": 2,
+  "quote_diagnostics": {
+    "accepted_bookmaker_market": 1040,
+    "incomplete_supported_market": 149,
+    "unsupported_market_type": 4448
+  },
   "request_budget_per_run": 2,
-  "requests_used_today": 12,
+  "requests_used_today": 4,
   "skipped_stale": 0
 }
