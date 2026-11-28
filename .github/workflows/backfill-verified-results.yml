@@ -94,24 +94,7 @@ jobs:
           git add data/prematch/verified_results.json data/diagnostics/result_backfill.json data/prospective_ledger/comparison.json data/benchmark/summary.json data/accuracy_diagnosis/scoreline_calibration.json data/accuracy_diagnosis/v8_v25_matched.json data/accuracy_diagnosis/v25_freeze_monitor.json data/accuracy_diagnosis/v25_five_double_frontier.json data/v26_temporal_calibration/ data/v27_pair_selection/ data/v28_independent_pair_trial/ data/v25_anchored_challenger/ data/v29_pair_sensitivity/ data/v30_full_slate_ranking/ data/v32_rank_discrimination/ data/v33_early_rank_checkpoints/
           git diff --cached --quiet && exit 0
           git commit -m "chore: backfill identity-verified final results"
-          # Other research steps update reports we intentionally did not stage.
-          # Preserve those files without blocking a clean commit rebase.
-          for attempt in 1 2 3 4; do
-            git fetch origin main
-            if ! git rebase --autostash origin/main; then
-              git rebase --abort || true
-              echo "::error::Conflicting committed evidence requires manual review"
-              exit 1
-            fi
-            if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
-              echo "::error::Unstaged research report conflicts require review"
-              exit 1
-            fi
-            if git push origin HEAD:main; then
-              echo "Verified results published"
-              exit 0
-            fi
-            sleep 3
-          done
-          echo "::error::Verified results could not be published after four attempts"
-          exit 1
+          # Publish only the already-staged commit in a clean detached worktree.
+          # The original checkout retains its untracked and unstaged research
+          # outputs, even when another workflow publishes the same paths.
+          bash scripts/publish_verified_backfill.sh
